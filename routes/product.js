@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
   const data = [
     {
       ProductID: 2001,
-      PageProductID: 9001,
+      SellerID: 123,
       ProductImg: 'https://cdn.example.com/p/2001.png',
       Price: money(1990),
       Stock: 50,
@@ -45,7 +45,7 @@ router.get('/:ProductID', async (req, res) => {
   // TODO: 這裡請組員實作實際的 Sequelize 查詢（指定 Product 與對應語系內容）
   const data = {
     ProductID: id,
-    PageProductID: 9001,
+    SellerID: 123,
     ProductImg: `https://cdn.example.com/p/${id}.png`,
     Price: money(1990),
     Stock: 50,

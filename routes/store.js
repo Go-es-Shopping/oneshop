@@ -59,6 +59,7 @@ router.get('/pages/:PageID', async (req, res) => {
       {
         PageProductID: 9001,
         PageID: pageId,
+        ProductID: 2001,
         DisplayOrder: 1,
         isFeatured: 1
       }

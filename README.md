@@ -122,6 +122,7 @@
     {
       "PageProductID": 9001,
       "PageID": 10,
+      "ProductID": 2001,
       "DisplayOrder": 1,
       "isFeatured": 1
     }
@@ -143,7 +144,7 @@
 [
   {
     "ProductID": 2001,
-    "PageProductID": 9001,
+    "SellerID": 123,
     "ProductImg": "https://cdn.example.com/p/2001.png",
     "Price": 1990.00,
     "Stock": 50,
@@ -166,7 +167,7 @@
 ```json
 {
   "ProductID": 2001,
-  "PageProductID": 9001,
+  "SellerID": 123,
   "ProductImg": "https://cdn.example.com/p/2001.png",
   "Price": 1990.00,
   "Stock": 50,
@@ -233,7 +234,7 @@
     "ShipmentID": 3001,
     "OrderID": 70001,
     "ShippingMethod": "HomeDelivery",
-    "TrackingNumber": null,
+    "TrackingNumber": "ACME123456",
     "ShipmentStatus": 0,
     "ShippedAt": "2026-03-01T10:00:00Z"
   },
@@ -260,7 +261,7 @@
    - PaymentStatus：0=未付款；1=已付款；2=退款中；3=已退款；4=失敗
    - ShipmentStatus：0=準備中；1=已出貨；2=配送中；3=已送達；4=退貨中
  - 欄位備註
-   - TrackingNumber 可為 null
+  - TrackingNumber 不可為 null
    - ShippedAt 為 ISO8601 時間
 
 查詢訂單列表（賣家後台）

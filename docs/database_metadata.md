@@ -1,5 +1,5 @@
 # Database Metadata
-以下彙整Metadata內容，列出各資料表的欄位名稱、資料型態、是否可為 Null，以及名詞解釋。
+以下彙整Metadata內容，列出各資料表的欄位名稱、資料型態、是否可為 Null，以及名詞解釋。所有主鍵（如 AdminID、SellerID、ProductID、PageID、PageProductID 等）皆為 Identity 自動跳號。
 
 ## PlatformAdmin
 
@@ -48,10 +48,10 @@
 | ProductID        | int             | 否        | 所屬商品（用於商品名稱與描述多語系）                                 |
 | LanguageCode     | nvarchar(10)    | 否        | ISO 語系代碼（例：zh-TW、en-US），確保單一頁面不重複定位同語
 系內容                                     |
-| PageTitle        | nvarchar(200)   | 否        | 頁面標題（支援多國語系）                                             |
-| PageDescription  | nvarchar(MAX)   | 否        | 店鋪詳細介紹（支援多國語系文案）                                     |
+| PageTitle        | nvarchar(200)   | 是        | 頁面標題（支援多國語系）                                             |
+| PageDescription  | nvarchar(MAX)   | 是        | 店鋪詳細介紹（支援多國語系文案）                                     |
 | ProductName      | nvarchar(200)   | 否        | 商品名稱（支援多國語系）                                             |
-| ProductDescription | nvarchar(MAX) | 否        | 商品詳細介紹（支援多國語系）                                         |
+| ProductDescription | nvarchar(MAX) | 是        | 商品詳細介紹（支援多國語系）                                         |
 | CTA_Text         | nvarchar(100)   | 否        | 行動呼籲按鈕文字（前台導購；多語系）                                  |
 | CreatedAt        | datetime        | 否        | 建立時間                                                             |
 | UpdatedAt        | datetime        | 否        | 更新時間                                                             |
@@ -62,6 +62,7 @@
 |--------------|------------|-----------|----------------------------------------|
 | PageProductID| int        | 否        | 頁面商品關聯主鍵                       |
 | PageID       | int        | 否        | 所屬頁面                               |
+| ProductID    | int        | 否        | 關聯商品                               |
 | DisplayOrder | int        | 否        | 商品顯示排序                           |
 | isFeatured   | bit        | 否        | 是否為精選／推薦商品（0=否；1=是）     |
 | CreatedAt    | datetime   | 否        | 建立時間                               |
@@ -72,7 +73,7 @@
 | 欄位名稱    | 資料型態        | 可為 Null | 說明                                          |
 |-------------|------------------|-----------|-----------------------------------------------|
 | ProductID   | int              | 否        | 商品主鍵                                      |
-| PageProductID | int            | 否        | 對應 PageProduct                              |
+| SellerID    | int              | 否        | 所屬賣家                                      |
 | ProductImg  | nvarchar(MAX)    | 否        | 商品主圖 URL 路徑                              |
 | Price       | decimal(18,2)    | 否        | 商品單價                                      |
 | Stock       | int              | 否        | 庫存數量（下單成功應連動扣除）                 |
@@ -113,7 +114,7 @@
 | ShipmentID    | int             | 否        | 物流紀錄主鍵                                                 |
 | OrderID       | int             | 否        | 所屬訂單                                                     |
 | ShippingMethod| nvarchar(50)    | 否        | 物流方式（例：7-11、宅配等）                                 |
-| TrackingNumber| nvarchar(100)   | 是        | 物流單號（便於買家查詢）                                     |
+| TrackingNumber| nvarchar(100)   | 否        | 物流單號（便於買家查詢）                                     |
 | ShipmentStatus| nvarchar(30)    | 否        | 物流狀態（0=準備中；1=已出貨；2=配送中；3=已送達；4=退貨中） |
 | ShippedAt     | datetime        | 否        | 賣家按下出貨的時間                                           |
 
@@ -126,4 +127,3 @@
 | ProductID    | int             | 否        | 對應商品                                       |
 | Quantity     | int             | 否        | 購買數量（下單時必須大於 0）                   |
 | UnitPrice    | decimal(12,2)   | 否        | 成交單價（凍結當下價格，避免後續調價影響訂單） |
-
