@@ -7,14 +7,14 @@
 * 多語系支援：所有查詢 API 均支援 ?lang= 參數切換語系（預設為 zh-TW）。
 * 資料格式：金額採 decimal(12,2)，電話採 E.164 國際標準（例：+886...）。
 * 狀態代碼：統一使用數值（0, 1, 2...），具體含義見各模組說明。
-- IsPublished、IsActive、isFeatured 使用位元值（0/1）
-- PlanType：0=免費；1=進階付費
-- Seller.Status：0=審核中；1=營運中；2=停權；3=已關閉
-- OrderStatus：0=處理中；1=待出貨；2=已出貨；3=已送達；4=完成取貨；5=已取消訂單
-- PaymentStatus：0=未付款；1=已付款；2=退款中；3=已退款；4=失敗
-- ShipmentStatus：0=準備中；1=已出貨；2=配送中；3=已送達；4=退貨中
-- BuyerPhone 需採 E.164 標準格式（例：+886912345678）
-- Price、TotalAmount、UnitPrice 為小數（兩位）
+-IsPublished、IsActive、isFeatured 使用位元值（0/1）
+-PlanType：0=免費；1=進階付費
+-Seller.Status：0=審核中；1=營運中；2=停權；3=已關閉
+-OrderStatus：0=處理中；1=待出貨；2=已出貨；3=已送達；4=完成取貨；5=已取消訂單
+-PaymentStatus：0=未付款；1=已付款；2=退款中；3=已退款；4=失敗
+-ShipmentStatus：0=準備中；1=已出貨；2=配送中；3=已送達；4=退貨中
+-BuyerPhone 需採 E.164 標準格式（例：+886912345678）
+-Price、TotalAmount、UnitPrice 為小數（兩位）
 
 ### Auth 模組（賣家帳戶）
 登入
