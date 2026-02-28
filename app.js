@@ -7,6 +7,16 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
+const authRoutes = require('./routes/auth')
+const productRoutes = require('./routes/product')
+const storeRoutes = require('./routes/store')
+const orderRoutes = require('./routes/order')
+
+app.use('/api/auth', authRoutes)
+app.use('/api/products', productRoutes)
+app.use('/api/store', storeRoutes)
+app.use('/api/orders', orderRoutes)
+
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' })
 })
