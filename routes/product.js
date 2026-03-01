@@ -49,8 +49,7 @@ router.get('/:ProductID', async (req, res) => {
     }
     return res.json(data)
   }
-  const data = {}
-  return res.json(data)
+  return res.json({})
 })
 
 module.exports = router
