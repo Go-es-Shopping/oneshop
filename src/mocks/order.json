@@ -1,0 +1,62 @@
+{
+  "created": {
+    "OrderID": 70001,
+    "SellerID": 123,
+    "BuyerName": "王小明",
+    "BuyerPhone": "+886912345678",
+    "BuyerEmail": "buyer@example.com",
+    "BuyerAddress": "台北市中正區 XX 路 1 號",
+    "OrderStatus": 0,
+    "PaymentStatus": 0,
+    "TotalAmount": "1990.00",
+    "Items": [
+      {
+        "OrderdetailID": 1,
+        "OrderID": 70001,
+        "ProductID": 2001,
+        "Quantity": 1,
+        "UnitPrice": "1990.00"
+      }
+    ]
+  },
+  "detail": {
+    "OrderID": 70001,
+    "SellerID": 123,
+    "BuyerName": "王小明",
+    "OrderStatus": 0,
+    "PaymentStatus": 0,
+    "TotalAmount": "1990.00",
+    "Shipment": {
+      "ShipmentID": 3001,
+      "OrderID": 70001,
+      "ShippingMethod": "HomeDelivery",
+      "TrackingNumber": "ACME123456",
+      "ShipmentStatus": 0,
+      "ShippedAt": "2026-03-01T10:00:00Z"
+    },
+    "Payment": {
+      "PaymentID": 4001,
+      "OrderID": 70001,
+      "PaymentMethod": "CreditCard",
+      "PaymentStatus": 0
+    },
+    "Items": [
+      {
+        "OrderdetailID": 1,
+        "OrderID": 70001,
+        "ProductID": 2001,
+        "Quantity": 1,
+        "UnitPrice": "1990.00"
+      }
+    ]
+  },
+  "list": [
+    {
+      "OrderID": 70001,
+      "SellerID": 123,
+      "OrderStatus": 0,
+      "PaymentStatus": 0,
+      "TotalAmount": "1990.00"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "SellerID": 123,
+  "SellerName": "ACME",
+  "StoreName": "ACME Store",
+  "Email": "owner@acme.com",
+  "Phone": "+886912345678",
+  "PlanType": 1,
+  "Status": 1
+}

@@ -1,6 +1,7 @@
 // 模組對應資料表：Product, PageProduct, PageContent
 const express = require('express')
 const sequelize = require('../config/database')
+const { readMock } = require('../src/mocks/utils')
 
 const router = express.Router()
 
@@ -22,19 +23,14 @@ router.get('/', async (req, res) => {
   const mock = await useMock()
   const lang = req.query.lang || 'zh-TW'
   // TODO: 這裡請組員實作實際的 Sequelize 查詢（依 SellerID/PageID/IsActive + 語系）
-  const data = [
-    {
-      ProductID: 2001,
-      SellerID: 123,
-      ProductImg: 'https://cdn.example.com/p/2001.png',
-      Price: money(1990),
-      Stock: 50,
-      IsActive: 1,
-      LanguageCode: lang,
-      ProductName: 'ACME 經典組合',
-      ProductDescription: '人氣暢銷，限時優惠'
-    }
-  ]
+  if (mock) {
+    const list = readMock('product.json').list.map((p) => ({
+      ...p,
+      LanguageCode: lang
+    }))
+    return res.json(list)
+  }
+  const data = []
   return res.json(data)
 })
 
@@ -43,17 +39,17 @@ router.get('/:ProductID', async (req, res) => {
   const lang = req.query.lang || 'zh-TW'
   const id = Number(req.params.ProductID)
   // TODO: 這裡請組員實作實際的 Sequelize 查詢（指定 Product 與對應語系內容）
-  const data = {
-    ProductID: id,
-    SellerID: 123,
-    ProductImg: `https://cdn.example.com/p/${id}.png`,
-    Price: money(1990),
-    Stock: 50,
-    IsActive: 1,
-    LanguageCode: lang,
-    ProductName: 'ACME 經典組合',
-    ProductDescription: '人氣暢銷，限時優惠'
+  if (mock) {
+    const base = readMock('product.json').detail
+    const data = {
+      ...base,
+      ProductID: id,
+      ProductImg: `https://cdn.example.com/p/${id}.png`,
+      LanguageCode: lang
+    }
+    return res.json(data)
   }
+  const data = {}
   return res.json(data)
 })
 

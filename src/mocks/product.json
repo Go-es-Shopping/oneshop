@@ -1,0 +1,26 @@
+{
+  "list": [
+    {
+      "ProductID": 2001,
+      "SellerID": 123,
+      "ProductImg": "https://cdn.example.com/p/2001.png",
+      "Price": "1990.00",
+      "Stock": 50,
+      "IsActive": 1,
+      "LanguageCode": "zh-TW",
+      "ProductName": "ACME 經典組合",
+      "ProductDescription": "人氣暢銷，限時優惠"
+    }
+  ],
+  "detail": {
+    "ProductID": 2001,
+    "SellerID": 123,
+    "ProductImg": "https://cdn.example.com/p/2001.png",
+    "Price": "1990.00",
+    "Stock": 50,
+    "IsActive": 1,
+    "LanguageCode": "zh-TW",
+    "ProductName": "ACME 經典組合",
+    "ProductDescription": "人氣暢銷，限時優惠"
+  }
+}

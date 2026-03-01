@@ -1,6 +1,7 @@
 // 模組對應資料表：StorePage, PageContent, PageProduct
 const express = require('express')
 const sequelize = require('../config/database')
+const { readMock } = require('../src/mocks/utils')
 
 const router = express.Router()
 
@@ -18,21 +19,15 @@ router.get('/pages', async (req, res) => {
   const mock = await useMock()
   const lang = req.query.lang || 'zh-TW'
   // TODO: 這裡請組員實作實際的 Sequelize 查詢（StorePage join PageContent by LanguageCode）
-  const data = [
-    {
-      PageID: 10,
-      SellerID: 123,
-      TemplateName: 'OnePageV1',
-      IsPublished: 1,
-      PageUrl: 'acme',
-      PageContent: {
-        LanguageCode: lang,
-        PageTitle: 'ACME 一頁購物',
-        PageDescription: '精選商品與限時優惠',
-        CTA_Text: '立即下單'
-      }
-    }
-  ]
+  if (mock) {
+    const mockData = readMock('storepage.json').pages
+    const data = mockData.map((p) => ({
+      ...p,
+      PageContent: { ...p.PageContent, LanguageCode: lang }
+    }))
+    return res.json(data)
+  }
+  const data = []
   return res.json(data)
 })
 
@@ -41,30 +36,17 @@ router.get('/pages/:PageID', async (req, res) => {
   const lang = req.query.lang || 'zh-TW'
   const pageId = Number(req.params.PageID)
   // TODO: 這裡請組員實作實際的 Sequelize 查詢（單一 Page 與 PageContent、PageProduct 關聯）
-  const data = {
-    PageID: pageId,
-    SellerID: 123,
-    TemplateName: 'OnePageV1',
-    IsPublished: 1,
-    PageUrl: 'acme',
-    PageContent: {
-      PageContentID: 501,
+  if (mock) {
+    const base = readMock('storepage.json').page
+    const data = {
+      ...base,
       PageID: pageId,
-      LanguageCode: lang,
-      PageTitle: 'ACME 一頁購物',
-      PageDescription: '精選商品與限時優惠',
-      CTA_Text: '立即下單'
-    },
-    PageProducts: [
-      {
-        PageProductID: 9001,
-        PageID: pageId,
-        ProductID: 2001,
-        DisplayOrder: 1,
-        isFeatured: 1
-      }
-    ]
+      PageContent: { ...base.PageContent, PageID: pageId, LanguageCode: lang },
+      PageProducts: base.PageProducts.map((pp) => ({ ...pp, PageID: pageId }))
+    }
+    return res.json(data)
   }
+  const data = {}
   return res.json(data)
 })
 
