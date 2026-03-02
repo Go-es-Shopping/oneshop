@@ -74,23 +74,36 @@
 ### Store 模組（頁面佈置）
 查詢賣家所有頁面（含語系摘要）
 - Method: GET
-- Endpoint: /store/pages
+- Endpoint: /api/store/pages
 - Query Parameters: SellerID, IsPublished（0/1）, lang（例如 zh-TW）
 - Response JSON 範例
 ```json
 [
   {
-    "PageID": 10,
+    "PageID": 1,
     "SellerID": 123,
     "TemplateName": "OnePageV1",
     "IsPublished": 1,
     "PageUrl": "acme",
+    "CreatedAt": "2026-03-02",
+    "UpdatedAt": "2026-03-02",
     "PageContent": {
       "LanguageCode": "zh-TW",
       "PageTitle": "ACME 一頁購物",
       "PageDescription": "精選商品與限時優惠",
       "CTA_Text": "立即下單"
-    }
+    },
+    "PageProducts": [
+      {
+        "PageProductID": 9001,
+        "PageID": 1,
+        "ProductID": 2001,
+        "DisplayOrder": 1,
+        "isFeatured": 1,
+        "CreatedAt": "2026-03-02",
+        "UpdatedAt": "2026-03-02"
+      }
+    ]
   }
 ]
 ```
@@ -100,19 +113,21 @@
 
 取得單一頁面（依語系回傳內容）
 - Method: GET
-- Endpoint: /store/pages/{PageID}
+- Endpoint: /api/store/pages/{PageID}
 - Query Parameters: lang（例如 zh-TW）
 - Response JSON 範例
 ```json
 {
-  "PageID": 10,
+  "PageID": 1,
   "SellerID": 123,
   "TemplateName": "OnePageV1",
   "IsPublished": 1,
   "PageUrl": "acme",
+  "CreatedAt": "2026-03-02",
+  "UpdatedAt": "2026-03-02",
   "PageContent": {
     "PageContentID": 501,
-    "PageID": 10,
+    "PageID": 1,
     "LanguageCode": "zh-TW",
     "PageTitle": "ACME 一頁購物",
     "PageDescription": "精選商品與限時優惠",
@@ -121,10 +136,12 @@
   "PageProducts": [
     {
       "PageProductID": 9001,
-      "PageID": 10,
+      "PageID": 1,
       "ProductID": 2001,
       "DisplayOrder": 1,
-      "isFeatured": 1
+      "isFeatured": 1,
+      "CreatedAt": "2026-03-02",
+      "UpdatedAt": "2026-03-02"
     }
   ]
 }
