@@ -4,14 +4,17 @@ require('dotenv').config()
 const sequelize = require('./config/database')
 
 const app = express()
+console.log('目前 FORCE_MOCK 的值是:', process.env.FORCE_MOCK);
 app.use(cors())
 app.use(express.json())
+
 
 // 1. 路由引入
 const authRoutes = require('./routes/auth')
 const productRoutes = require('./routes/product')
 const storeRoutes = require('./routes/store')
 const orderRoutes = require('./routes/order')
+const adminRoutes = require('./routes/adminRoutes')
 
 // 2. 路由掛載
 app.use('/api/auth', authRoutes)
@@ -19,6 +22,7 @@ app.use('/api/products', productRoutes)
 app.use('/api/store', storeRoutes)
 app.use('/api/orders', orderRoutes)
 app.use('/api/seller', require('./routes/sellerRoutes'));
+app.use('/api/admin', adminRoutes)
 
 // 3. 健康檢查 (放在這裡確保 API 層級沒問題)
 app.get('/health', (req, res) => {
