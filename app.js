@@ -18,6 +18,7 @@ app.use('/api/auth', authRoutes)
 app.use('/api/products', productRoutes)
 app.use('/api/store', storeRoutes)
 app.use('/api/orders', orderRoutes)
+app.use('/api/seller', require('./routes/sellerRoutes'));
 
 // 3. 健康檢查 (放在這裡確保 API 層級沒問題)
 app.get('/health', (req, res) => {
