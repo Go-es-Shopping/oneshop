@@ -6,6 +6,8 @@ const sequelize = require('./config/database')
 const app = express()
 app.use(cors())
 app.use(express.json())
+// 設定靜態檔案資料夾，這樣連上網址才能看到前端網頁
+app.use(express.static('public'));
 
 // 1. 路由引入
 const authRoutes = require('./routes/auth')
