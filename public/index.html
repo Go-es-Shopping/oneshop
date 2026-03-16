@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>店鋪設置與整合｜Go Shop 後台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Noto Sans TC', 'sans-serif'] },
+          boxShadow: {
+            'soft': '0 2px 12px rgba(0,0,0,0.06)',
+            'soft-lg': '0 4px 20px rgba(0,0,0,0.08)',
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    body { font-family: 'Noto Sans TC', sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
+  <div class="flex flex-col min-h-screen">
+    <!-- Topbar：與 Go Shop 一致的漸層與視覺 -->
+    <header class="flex-shrink-0 bg-gradient-to-r from-slate-200 via-slate-100 to-blue-100/80 backdrop-blur-sm">
+      <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <a href="#" class="flex items-center gap-2">
+            <span class="text-xl font-bold text-slate-800 tracking-tight">Go Shop</span>
+          </a>
+          <nav class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-slate-300 flex items-center justify-center text-slate-600 text-sm font-medium">管</div>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <div class="flex flex-1">
+      <!-- Sidebar：淺色、圓角、清晰層次 -->
+      <aside class="hidden lg:flex flex-col w-64 flex-shrink-0 bg-white/90 border-r border-slate-100">
+        <div class="p-4 border-b border-slate-100">
+          <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wider">店鋪設置與整合</h2>
+        </div>
+        <nav class="p-3 space-y-1 flex-1">
+          <a href="#domain" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-slate-900 bg-slate-100 font-medium transition" data-section="domain">
+            <span class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600 text-sm">🌐</span>
+            網域管理
+          </a>
+          <a href="#wizard" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition font-medium" data-section="wizard">
+            <span class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600 text-sm">📦</span>
+            金物流開通嚮導
+          </a>
+          <a href="#permissions" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition font-medium" data-section="permissions">
+            <span class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600 text-sm">👥</span>
+            多權限管理
+          </a>
+        </nav>
+      </aside>
+
+      <!-- Main content -->
+      <main class="flex-1 overflow-auto">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10 space-y-10">
+          <!-- 頁面標題 -->
+          <div>
+            <h1 class="text-2xl sm:text-3xl font-bold text-slate-900">店鋪設置與整合</h1>
+            <p class="mt-1 text-slate-600">管理自訂網域、金流與物流 API，以及店鋪成員權限。</p>
+          </div>
+
+          <!-- 網域管理 -->
+          <section id="domain" class="bg-white rounded-2xl shadow-soft overflow-hidden">
+            <div class="p-6 sm:p-8">
+              <h2 class="text-lg font-bold text-slate-900 mb-1">網域管理</h2>
+              <p class="text-sm text-slate-600 mb-6">綁定自訂網域，讓顧客透過您的專屬網址進入賣場。</p>
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-slate-700 mb-2">自訂網域</label>
+                  <div class="flex flex-col sm:flex-row gap-3">
+                    <input
+                      type="text"
+                      placeholder="shop.yourdomain.com"
+                      class="flex-1 px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800 placeholder-slate-400 transition"
+                    />
+                    <button type="button" class="px-5 py-3 rounded-xl bg-slate-800 text-white font-medium shadow-soft hover:bg-slate-900 transition whitespace-nowrap">
+                      驗證並綁定
+                    </button>
+                  </div>
+                </div>
+                <p class="text-xs text-slate-500">
+                  請在您的 DNS 設定中新增 CNAME 紀錄，將上述網域指向 <code class="bg-slate-100 px-1.5 py-0.5 rounded">go-shop.com</code>。
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- 金物流開通嚮導 -->
+          <section id="wizard" class="bg-white rounded-2xl shadow-soft overflow-hidden">
+            <div class="p-6 sm:p-8">
+              <h2 class="text-lg font-bold text-slate-900 mb-1">金物流開通嚮導</h2>
+              <p class="text-sm text-slate-600 mb-6">依步驟完成 LINE Pay、信用卡與超商取貨的 API 接通。</p>
+
+              <!-- 步驟指示 -->
+              <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-2">
+                  <span class="w-8 h-8 rounded-full bg-slate-800 text-white flex items-center justify-center text-sm font-bold step-dot" data-step="1">1</span>
+                  <span class="text-sm font-medium text-slate-700 hidden sm:inline">LINE Pay</span>
+                </div>
+                <div class="flex-1 h-0.5 bg-slate-200 mx-2 max-w-[60px] sm:max-w-[80px]"></div>
+                <div class="flex items-center gap-2">
+                  <span class="w-8 h-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-sm font-bold step-dot" data-step="2">2</span>
+                  <span class="text-sm font-medium text-slate-500 hidden sm:inline">信用卡</span>
+                </div>
+                <div class="flex-1 h-0.5 bg-slate-200 mx-2 max-w-[60px] sm:max-w-[80px]"></div>
+                <div class="flex items-center gap-2">
+                  <span class="w-8 h-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-sm font-bold step-dot" data-step="3">3</span>
+                  <span class="text-sm font-medium text-slate-500 hidden sm:inline">超商取貨</span>
+                </div>
+              </div>
+
+              <!-- 步驟內容 -->
+              <div id="wizard-step-1" class="wizard-step space-y-4">
+                <h3 class="font-semibold text-slate-800">STEP 1：LINE Pay 串接</h3>
+                <p class="text-sm text-slate-600">請至 LINE Pay 商家後台取得 Channel ID 與 Channel Secret，並填寫於下方。</p>
+                <div class="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Channel ID</label>
+                    <input type="text" placeholder="請輸入 Channel ID" class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800 placeholder-slate-400" />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Channel Secret</label>
+                    <input type="password" placeholder="請輸入 Channel Secret" class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800 placeholder-slate-400" />
+                  </div>
+                </div>
+              </div>
+              <div id="wizard-step-2" class="wizard-step hidden space-y-4">
+                <h3 class="font-semibold text-slate-800">STEP 2：信用卡金流串接</h3>
+                <p class="text-sm text-slate-600">選擇您的信用卡收單銀行並填寫 API 金鑰（支援綠界、藍新等）。</p>
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">收單機構</label>
+                    <select class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800">
+                      <option>請選擇</option>
+                      <option>綠界 ECPay</option>
+                      <option>藍新 NewebPay</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Merchant ID / API Key</label>
+                    <input type="text" placeholder="請輸入金鑰" class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800 placeholder-slate-400" />
+                  </div>
+                </div>
+              </div>
+              <div id="wizard-step-3" class="wizard-step hidden space-y-4">
+                <h3 class="font-semibold text-slate-800">STEP 3：超商取貨物流</h3>
+                <p class="text-sm text-slate-600">設定 7-11、全家、萊爾富等超商取貨的物流 API。</p>
+                <div class="space-y-3">
+                  <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 bg-slate-50/30 hover:bg-slate-50/60 cursor-pointer transition">
+                    <input type="checkbox" class="rounded border-slate-300 text-slate-700 focus:ring-slate-400" />
+                    <span class="font-medium text-slate-800">7-ELEVEN 交貨便</span>
+                  </label>
+                  <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 bg-slate-50/30 hover:bg-slate-50/60 cursor-pointer transition">
+                    <input type="checkbox" class="rounded border-slate-300 text-slate-700 focus:ring-slate-400" />
+                    <span class="font-medium text-slate-800">全家 店到店</span>
+                  </label>
+                  <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 bg-slate-50/30 hover:bg-slate-50/60 cursor-pointer transition">
+                    <input type="checkbox" class="rounded border-slate-300 text-slate-700 focus:ring-slate-400" />
+                    <span class="font-medium text-slate-800">萊爾富 店到店</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="mt-8 flex flex-wrap items-center justify-between gap-4">
+                <button type="button" id="wizard-prev" class="px-5 py-3 rounded-xl bg-slate-100 text-slate-700 font-medium hover:bg-slate-200 transition" disabled>
+                  上一步
+                </button>
+                <button type="button" id="wizard-next" class="px-5 py-3 rounded-xl bg-slate-800 text-white font-medium shadow-soft hover:bg-slate-900 transition">
+                  下一步
+                </button>
+                <button type="button" id="wizard-done" class="hidden px-5 py-3 rounded-xl bg-slate-800 text-white font-medium shadow-soft hover:bg-slate-900 transition">
+                  完成設定
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- 多權限管理 -->
+          <section id="permissions" class="bg-white rounded-2xl shadow-soft overflow-hidden">
+            <div class="p-6 sm:p-8">
+              <h2 class="text-lg font-bold text-slate-900 mb-1">多權限管理</h2>
+              <p class="text-sm text-slate-600 mb-6">區分「店長」與「小幫手」的查看與編輯權限，保障店鋪安全。</p>
+
+              <div class="space-y-6">
+                <!-- 店長 -->
+                <div class="p-5 sm:p-6 rounded-2xl bg-slate-50/80 border border-slate-100">
+                  <div class="flex items-center gap-3 mb-4">
+                    <span class="w-10 h-10 rounded-xl bg-slate-200 flex items-center justify-center text-slate-600 text-lg">👑</span>
+                    <div>
+                      <h3 class="font-bold text-slate-900">店長</h3>
+                      <p class="text-xs text-slate-500">擁有完整權限，可管理店鋪設定與成員</p>
+                    </div>
+                  </div>
+                  <div class="flex flex-wrap gap-3">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-200/80 text-slate-700 text-sm font-medium">✓ 查看所有訂單與報表</span>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-200/80 text-slate-700 text-sm font-medium">✓ 編輯商品與庫存</span>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-200/80 text-slate-700 text-sm font-medium">✓ 店鋪設置與網域</span>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-200/80 text-slate-700 text-sm font-medium">✓ 金物流與權限管理</span>
+                  </div>
+                </div>
+
+                <!-- 小幫手 -->
+                <div class="p-5 sm:p-6 rounded-2xl bg-slate-50/80 border border-slate-100">
+                  <div class="flex items-center gap-3 mb-4">
+                    <span class="w-10 h-10 rounded-xl bg-slate-200 flex items-center justify-center text-slate-600 text-lg">🛒</span>
+                    <div>
+                      <h3 class="font-bold text-slate-900">小幫手</h3>
+                      <p class="text-xs text-slate-500">點選權限標籤可自由勾選或取消，未勾選的項目小幫手將無法使用</p>
+                    </div>
+                  </div>
+                  <div class="flex flex-wrap gap-3">
+                    <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-100/80 text-slate-500 text-sm font-medium cursor-pointer transition has-[:checked]:bg-slate-200/80 has-[:checked]:text-slate-700 has-[:checked]:border-slate-200 hover:bg-slate-100 has-[:checked]:hover:bg-slate-200/90">
+                      <input type="checkbox" name="assistant-permission" value="orders" class="assistant-permission-cb peer sr-only rounded border-slate-300 text-slate-700 focus:ring-slate-400" checked />
+                      <span class="hidden peer-checked:inline text-slate-700">✓</span>
+                      <span>查看訂單與出貨</span>
+                    </label>
+                    <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-100/80 text-slate-500 text-sm font-medium cursor-pointer transition has-[:checked]:bg-slate-200/80 has-[:checked]:text-slate-700 has-[:checked]:border-slate-200 hover:bg-slate-100 has-[:checked]:hover:bg-slate-200/90">
+                      <input type="checkbox" name="assistant-permission" value="inventory" class="assistant-permission-cb peer sr-only rounded border-slate-300 text-slate-700 focus:ring-slate-400" checked />
+                      <span class="hidden peer-checked:inline text-slate-700">✓</span>
+                      <span>編輯商品與庫存</span>
+                    </label>
+                    <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-100/80 text-slate-500 text-sm font-medium cursor-pointer transition has-[:checked]:bg-slate-200/80 has-[:checked]:text-slate-700 has-[:checked]:border-slate-200 hover:bg-slate-100 has-[:checked]:hover:bg-slate-200/90">
+                      <input type="checkbox" name="assistant-permission" value="delete-product" class="assistant-permission-cb peer sr-only rounded border-slate-300 text-slate-700 focus:ring-slate-400" />
+                      <span class="hidden peer-checked:inline text-slate-700">✓</span>
+                      <span>刪除商品</span>
+                    </label>
+                    <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-100/80 text-slate-500 text-sm font-medium cursor-pointer transition has-[:checked]:bg-slate-200/80 has-[:checked]:text-slate-700 has-[:checked]:border-slate-200 hover:bg-slate-100 has-[:checked]:hover:bg-slate-200/90">
+                      <input type="checkbox" name="assistant-permission" value="reports" class="assistant-permission-cb peer sr-only rounded border-slate-300 text-slate-700 focus:ring-slate-400" />
+                      <span class="hidden peer-checked:inline text-slate-700">✓</span>
+                      <span>查看報表</span>
+                    </label>
+                  </div>
+                  <p class="mt-3 text-xs text-slate-500">以下權限僅店長可擁有，無法開放給小幫手：店鋪設置與網域、金物流與權限管理</p>
+                  <button type="button" id="save-assistant-permissions-btn" class="mt-4 px-4 py-2 rounded-xl bg-slate-800 text-white text-sm font-medium shadow-soft hover:bg-slate-900 transition">儲存小幫手權限設定</button>
+                </div>
+
+                <div class="pt-2">
+                  <button type="button" id="invite-assistant-btn" class="px-5 py-3 rounded-xl bg-slate-100 text-slate-700 font-medium hover:bg-slate-200 transition">
+                    邀請小幫手
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 一鍵開店（頁面底部） -->
+          <div class="flex justify-center pt-4 pb-8">
+            <a href="#" class="inline-flex items-center justify-center px-8 py-4 rounded-xl text-base font-medium text-slate-800 bg-white/90 hover:bg-white border border-slate-200 shadow-soft hover:shadow-soft-lg transition">一鍵開店</a>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- 邀請小幫手彈窗 -->
+  <div id="invite-assistant-modal" class="fixed inset-0 z-50 hidden" aria-hidden="true">
+    <div id="invite-assistant-overlay" class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+      <div id="invite-assistant-dialog" class="relative w-full max-w-md bg-white rounded-2xl shadow-soft-lg border border-slate-100 overflow-hidden" role="dialog" aria-labelledby="invite-modal-title" aria-modal="true">
+        <div class="p-6 sm:p-8">
+          <div class="flex items-start justify-between gap-4 mb-6">
+            <div>
+              <h2 id="invite-modal-title" class="text-lg font-bold text-slate-900">邀請小幫手</h2>
+              <p class="mt-1 text-sm text-slate-600">輸入對方 Email，系統將寄送邀請連結，對方接受後即可以「小幫手」身分進入此店鋪。</p>
+            </div>
+            <button type="button" id="invite-assistant-close" class="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition" aria-label="關閉">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+          <form id="invite-assistant-form" class="space-y-4">
+            <div>
+              <label for="invite-email" class="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
+              <input type="email" id="invite-email" required placeholder="example@email.com" class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800 placeholder-slate-400 transition" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1.5">開放給此小幫手的權限</label>
+              <p class="text-xs text-slate-500 mb-3">點選權限標籤可自由勾選或取消，邀請時將依店鋪預設帶入，可在此調整</p>
+              <div class="flex flex-wrap gap-3">
+                <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-100/80 text-slate-500 text-sm font-medium cursor-pointer transition has-[:checked]:bg-slate-200/80 has-[:checked]:text-slate-700 has-[:checked]:border-slate-200 hover:bg-slate-100 has-[:checked]:hover:bg-slate-200/90">
+                  <input type="checkbox" name="invite-permission" value="orders" class="invite-permission-cb peer sr-only rounded border-slate-300 text-slate-700 focus:ring-slate-400" checked />
+                  <span class="hidden peer-checked:inline text-slate-700">✓</span>
+                  <span>查看訂單與出貨</span>
+                </label>
+                <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-100/80 text-slate-500 text-sm font-medium cursor-pointer transition has-[:checked]:bg-slate-200/80 has-[:checked]:text-slate-700 has-[:checked]:border-slate-200 hover:bg-slate-100 has-[:checked]:hover:bg-slate-200/90">
+                  <input type="checkbox" name="invite-permission" value="inventory" class="invite-permission-cb peer sr-only rounded border-slate-300 text-slate-700 focus:ring-slate-400" checked />
+                  <span class="hidden peer-checked:inline text-slate-700">✓</span>
+                  <span>編輯商品與庫存</span>
+                </label>
+                <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-100/80 text-slate-500 text-sm font-medium cursor-pointer transition has-[:checked]:bg-slate-200/80 has-[:checked]:text-slate-700 has-[:checked]:border-slate-200 hover:bg-slate-100 has-[:checked]:hover:bg-slate-200/90">
+                  <input type="checkbox" name="invite-permission" value="delete-product" class="invite-permission-cb peer sr-only rounded border-slate-300 text-slate-700 focus:ring-slate-400" />
+                  <span class="hidden peer-checked:inline text-slate-700">✓</span>
+                  <span>刪除商品</span>
+                </label>
+                <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-100/80 text-slate-500 text-sm font-medium cursor-pointer transition has-[:checked]:bg-slate-200/80 has-[:checked]:text-slate-700 has-[:checked]:border-slate-200 hover:bg-slate-100 has-[:checked]:hover:bg-slate-200/90">
+                  <input type="checkbox" name="invite-permission" value="reports" class="invite-permission-cb peer sr-only rounded border-slate-300 text-slate-700 focus:ring-slate-400" />
+                  <span class="hidden peer-checked:inline text-slate-700">✓</span>
+                  <span>查看報表</span>
+                </label>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-3 pt-2">
+              <button type="button" id="invite-assistant-cancel" class="px-5 py-3 rounded-xl bg-slate-100 text-slate-700 font-medium hover:bg-slate-200 transition">取消</button>
+              <button type="submit" class="px-5 py-3 rounded-xl bg-slate-800 text-white font-medium shadow-soft hover:bg-slate-900 transition">傳送邀請</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 金物流嚮導步驟切換
+    (function () {
+      var currentStep = 1;
+      var totalSteps = 3;
+      var stepDots = document.querySelectorAll('.step-dot');
+      var stepPanels = document.querySelectorAll('.wizard-step');
+      var prevBtn = document.getElementById('wizard-prev');
+      var nextBtn = document.getElementById('wizard-next');
+      var doneBtn = document.getElementById('wizard-done');
+
+      function updateStepLabels() {
+        var labels = ['LINE Pay', '信用卡', '超商取貨'];
+        stepDots.forEach(function (dot, i) {
+          var step = i + 1;
+          dot.classList.remove('bg-slate-800', 'text-white', 'bg-slate-200', 'text-slate-500');
+          if (step <= currentStep) {
+            dot.classList.add('bg-slate-800', 'text-white');
+          } else {
+            dot.classList.add('bg-slate-200', 'text-slate-500');
+          }
+          var labelSpan = dot.parentElement.querySelector('.hidden');
+          if (labelSpan) labelSpan.textContent = labels[i];
+          if (labelSpan && step === currentStep) labelSpan.classList.replace('text-slate-500', 'text-slate-700');
+          else if (labelSpan && step > currentStep) labelSpan.classList.replace('text-slate-700', 'text-slate-500');
+        });
+      }
+
+      function showStep(step) {
+        currentStep = step;
+        stepPanels.forEach(function (panel, i) {
+          panel.classList.toggle('hidden', i + 1 !== step);
+        });
+        prevBtn.disabled = step <= 1;
+        nextBtn.classList.toggle('hidden', step >= totalSteps);
+        doneBtn.classList.toggle('hidden', step < totalSteps);
+        updateStepLabels();
+      }
+
+      prevBtn.addEventListener('click', function () {
+        if (currentStep > 1) showStep(currentStep - 1);
+      });
+      nextBtn.addEventListener('click', function () {
+        if (currentStep < totalSteps) showStep(currentStep + 1);
+      });
+      doneBtn.addEventListener('click', function () {
+        alert('金物流設定已儲存（此為示範頁面）');
+      });
+
+      stepDots.forEach(function (dot) {
+        dot.addEventListener('click', function () {
+          var step = parseInt(dot.getAttribute('data-step'), 10);
+          showStep(step);
+        });
+      });
+    })();
+
+    // Sidebar 錨點高亮與平滑捲動
+    document.querySelectorAll('.sidebar-link').forEach(function (link) {
+      link.addEventListener('click', function (e) {
+        var href = link.getAttribute('href');
+        if (href && href.startsWith('#')) {
+          e.preventDefault();
+          var id = href.slice(1);
+          var el = document.getElementById(id);
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          document.querySelectorAll('.sidebar-link').forEach(function (l) {
+            l.classList.remove('bg-slate-100', 'text-slate-900');
+            l.classList.add('text-slate-700');
+          });
+          link.classList.add('bg-slate-100', 'text-slate-900');
+          link.classList.remove('text-slate-700');
+        }
+      });
+    });
+    // 依 hash 設定側邊欄選中
+    if (window.location.hash) {
+      var section = window.location.hash.slice(1);
+      document.querySelectorAll('.sidebar-link').forEach(function (l) {
+        if (l.getAttribute('data-section') === section) {
+          l.classList.add('bg-slate-100', 'text-slate-900');
+          l.classList.remove('text-slate-700');
+        } else {
+          l.classList.remove('bg-slate-100', 'text-slate-900');
+          l.classList.add('text-slate-700');
+        }
+      });
+    }
+
+    // 邀請小幫手彈窗
+    (function () {
+      var modal = document.getElementById('invite-assistant-modal');
+      var overlay = document.getElementById('invite-assistant-overlay');
+      var dialog = document.getElementById('invite-assistant-dialog');
+      var openBtn = document.getElementById('invite-assistant-btn');
+      var closeBtn = document.getElementById('invite-assistant-close');
+      var cancelBtn = document.getElementById('invite-assistant-cancel');
+      var form = document.getElementById('invite-assistant-form');
+      var emailInput = document.getElementById('invite-email');
+
+      function syncInvitePermissionsFromDefaults() {
+        document.querySelectorAll('.assistant-permission-cb').forEach(function (cb) {
+          var inviteCb = document.querySelector('.invite-permission-cb[value="' + cb.value + '"]');
+          if (inviteCb) inviteCb.checked = cb.checked;
+        });
+      }
+      function openModal() {
+        syncInvitePermissionsFromDefaults();
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        emailInput.focus();
+      }
+      function closeModal() {
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+      }
+
+      openBtn.addEventListener('click', openModal);
+      closeBtn.addEventListener('click', closeModal);
+      cancelBtn.addEventListener('click', closeModal);
+      overlay.addEventListener('click', closeModal);
+      dialog.addEventListener('click', function (e) { e.stopPropagation(); });
+      modal.addEventListener('click', function (e) {
+        if (e.target === modal) closeModal();
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
+      });
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var email = emailInput.value.trim();
+        if (!email) return;
+        var perms = [];
+        document.querySelectorAll('.invite-permission-cb:checked').forEach(function (cb) {
+          var labels = { orders: '查看訂單與出貨', inventory: '編輯商品與庫存', 'delete-product': '刪除商品', reports: '查看報表' };
+          perms.push(labels[cb.value] || cb.value);
+        });
+        var msg = '已寄送邀請信至：' + email;
+        if (perms.length) msg += '\n開放權限：' + perms.join('、');
+        else msg += '\n（未勾選任何權限）';
+        alert(msg + '\n（此為示範頁面）');
+        emailInput.value = '';
+        closeModal();
+      });
+
+      document.getElementById('save-assistant-permissions-btn').addEventListener('click', function () {
+        var perms = [];
+        document.querySelectorAll('.assistant-permission-cb:checked').forEach(function (cb) {
+          var labels = { orders: '查看訂單與出貨', inventory: '編輯商品與庫存', 'delete-product': '刪除商品', reports: '查看報表' };
+          perms.push(labels[cb.value] || cb.value);
+        });
+        alert('小幫手權限已儲存。目前開放：' + (perms.length ? perms.join('、') : '無') + '（此為示範頁面）');
+      });
+    })();
+  </script>
+</body>
+</html>
