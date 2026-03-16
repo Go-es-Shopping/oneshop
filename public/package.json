@@ -1,0 +1,10 @@
+{
+  "name": "store-settings",
+  "version": "1.0.0",
+  "description": "Go Shop 店鋪設置與整合後台（HTML + Tailwind CDN）。",
+  "private": true,
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "devDependencies": {}
+}
