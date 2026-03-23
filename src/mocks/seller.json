@@ -5,5 +5,7 @@
   "Email": "owner@acme.com",
   "Phone": "+886912345678",
   "PlanType": 1,
-  "Status": 1
+  "Status": 1,
+  "CreatedAt": "2026-03-02T10:00:00Z",
+  "UpdatedAt": "2026-03-02T10:00:00Z"
 }
