@@ -19,7 +19,7 @@
 ### Auth 模組（賣家帳戶）
 登入
 - Method: POST
-- Endpoint: /auth/login
+- Endpoint: /api/auth/login
 - Query Parameters: 無
 - Response JSON 範例
 ```json
@@ -38,8 +38,7 @@
    - Status：0=審核中；1=營運中；2=停權；3=已關閉
 
 - Method: GET
-- Method: GET
-- Endpoint: /auth/me
+- Endpoint: /api/auth/me
 - Query Parameters: 無
 - Response JSON 範例
 ```json
@@ -64,7 +63,7 @@
 
 登出
 - Method: POST
-- Endpoint: /auth/logout
+- Endpoint: /api/auth/logout
 - Query Parameters: 無
 - Response JSON 範例
 ```json
@@ -74,13 +73,13 @@
 ### Store 模組（頁面佈置）
 查詢賣家所有頁面（含語系摘要）
 - Method: GET
-- Endpoint: /store/pages
+- Endpoint: /api/store/pages
 - Query Parameters: SellerID, IsPublished（0/1）, lang（例如 zh-TW）
 - Response JSON 範例
 ```json
 [
   {
-    "PageID": 10,
+    "PageID": 1,
     "SellerID": 123,
     "TemplateName": "OnePageV1",
     "IsPublished": 1,
@@ -100,19 +99,19 @@
 
 取得單一頁面（依語系回傳內容）
 - Method: GET
-- Endpoint: /store/pages/{PageID}
+- Endpoint: /api/store/pages/{PageID}
 - Query Parameters: lang（例如 zh-TW）
 - Response JSON 範例
 ```json
 {
-  "PageID": 10,
+  "PageID": 1,
   "SellerID": 123,
   "TemplateName": "OnePageV1",
   "IsPublished": 1,
   "PageUrl": "acme",
   "PageContent": {
     "PageContentID": 501,
-    "PageID": 10,
+    "PageID": 1,
     "LanguageCode": "zh-TW",
     "PageTitle": "ACME 一頁購物",
     "PageDescription": "精選商品與限時優惠",
@@ -121,7 +120,7 @@
   "PageProducts": [
     {
       "PageProductID": 9001,
-      "PageID": 10,
+      "PageID": 1,
       "ProductID": 2001,
       "DisplayOrder": 1,
       "isFeatured": 1
@@ -137,7 +136,7 @@
 ### Product 模組（商品與多語系）
 查詢商品列表（可依頁面與上架狀態，支援語系）
 - Method: GET
-- Endpoint: /products
+- Endpoint: /api/products
 - Query Parameters: SellerID, PageID, IsActive, lang
 - Response JSON 範例
 ```json
@@ -161,7 +160,7 @@
 
 取得單一商品（依語系回傳名稱與描述）
 - Method: GET
-- Endpoint: /products/{ProductID}
+- Endpoint: /api/products/{ProductID}
 - Query Parameters: lang
 - Response JSON 範例
 ```json
@@ -184,7 +183,7 @@
 ### Order 模組（交易訂單）
 建立訂單（單頁結帳流程）
 - Method: POST
-- Endpoint: /orders
+- Endpoint: /api/orders
 - Query Parameters: 無
 - Response JSON 範例
 ```json
@@ -219,7 +218,7 @@
 
 查詢訂單詳情（含物流與付款摘要）
 - Method: GET
-- Endpoint: /orders/{OrderID}
+- Endpoint: /api/orders/{OrderID}
 - Query Parameters: 無
 - Response JSON 範例
 ```json
@@ -266,7 +265,7 @@
 
 查詢訂單列表（賣家後台）
 - Method: GET
-- Endpoint: /orders
+- Endpoint: /api/orders
 - Query Parameters: SellerID, OrderStatus, PaymentStatus
 - Response JSON 範例
 ```json

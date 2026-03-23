@@ -16,38 +16,36 @@ async function useMock() {
 }
 
 router.get('/pages', async (req, res) => {
-  const mock = await useMock()
-  const lang = req.query.lang || 'zh-TW'
+  const Mock = await useMock()
+  const Lang = req.query.lang || 'zh-TW'
   // TODO: 這裡請組員實作實際的 Sequelize 查詢（StorePage join PageContent by LanguageCode）
-  if (mock) {
-    const mockData = readMock('storepage.json').pages
-    const data = mockData.map((p) => ({
+  if (Mock) {
+    const MockData = readMock('storepage.json').pages
+    const Data = MockData.map((p) => ({
       ...p,
-      PageContent: { ...p.PageContent, LanguageCode: lang }
+      PageContent: { ...p.PageContent, LanguageCode: Lang }
     }))
-    return res.json(data)
+    return res.json(Data)
   }
-  const data = []
-  return res.json(data)
+  return res.json([])
 })
 
 router.get('/pages/:PageID', async (req, res) => {
-  const mock = await useMock()
-  const lang = req.query.lang || 'zh-TW'
-  const pageId = Number(req.params.PageID)
+  const Mock = await useMock()
+  const Lang = req.query.lang || 'zh-TW'
+  const PageID = Number(req.params.PageID)
   // TODO: 這裡請組員實作實際的 Sequelize 查詢（單一 Page 與 PageContent、PageProduct 關聯）
-  if (mock) {
-    const base = readMock('storepage.json').page
-    const data = {
-      ...base,
-      PageID: pageId,
-      PageContent: { ...base.PageContent, PageID: pageId, LanguageCode: lang },
-      PageProducts: base.PageProducts.map((pp) => ({ ...pp, PageID: pageId }))
+  if (Mock) {
+    const Base = readMock('storepage.json').page
+    const Data = {
+      ...Base,
+      PageID: PageID,
+      PageContent: { ...Base.PageContent, PageID: PageID, LanguageCode: Lang },
+      PageProducts: Base.PageProducts.map((pp) => ({ ...pp, PageID: PageID }))
     }
-    return res.json(data)
+    return res.json(Data)
   }
-  const data = {}
-  return res.json(data)
+  return res.json({})
 })
 
 module.exports = router

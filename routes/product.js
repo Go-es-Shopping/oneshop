@@ -20,34 +20,33 @@ async function useMock() {
 }
 
 router.get('/', async (req, res) => {
-  const mock = await useMock()
-  const lang = req.query.lang || 'zh-TW'
+  const Mock = await useMock()
+  const Lang = req.query.lang || 'zh-TW'
   // TODO: 這裡請組員實作實際的 Sequelize 查詢（依 SellerID/PageID/IsActive + 語系）
-  if (mock) {
-    const list = readMock('product.json').list.map((p) => ({
+  if (Mock) {
+    const List = readMock('product.json').list.map((p) => ({
       ...p,
-      LanguageCode: lang
+      LanguageCode: Lang
     }))
-    return res.json(list)
+    return res.json(List)
   }
-  const data = []
-  return res.json(data)
+  return res.json([])
 })
 
 router.get('/:ProductID', async (req, res) => {
-  const mock = await useMock()
-  const lang = req.query.lang || 'zh-TW'
-  const id = Number(req.params.ProductID)
+  const Mock = await useMock()
+  const Lang = req.query.lang || 'zh-TW'
+  const ProductID = Number(req.params.ProductID)
   // TODO: 這裡請組員實作實際的 Sequelize 查詢（指定 Product 與對應語系內容）
-  if (mock) {
-    const base = readMock('product.json').detail
-    const data = {
-      ...base,
-      ProductID: id,
-      ProductImg: `https://cdn.example.com/p/${id}.png`,
-      LanguageCode: lang
+  if (Mock) {
+    const Base = readMock('product.json').detail
+    const Data = {
+      ...Base,
+      ProductID: ProductID,
+      ProductImg: `https://cdn.example.com/p/${ProductID}.png`,
+      LanguageCode: Lang
     }
-    return res.json(data)
+    return res.json(Data)
   }
   return res.json({})
 })

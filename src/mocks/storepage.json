@@ -1,40 +1,63 @@
 {
   "pages": [
     {
-      "PageID": 10,
+      "PageID": 1,
       "SellerID": 123,
       "TemplateName": "OnePageV1",
       "IsPublished": 1,
       "PageUrl": "acme",
+      "CreatedAt": "2026-03-02T10:00:00Z",
+      "UpdatedAt": "2026-03-02T10:00:00Z",
       "PageContent": {
+        "PageContentID": 501,
+        "PageID": 1,
         "LanguageCode": "zh-TW",
         "PageTitle": "ACME 一頁購物",
         "PageDescription": "精選商品與限時優惠",
-        "CTA_Text": "立即下單"
-      }
+        "CTA_Text": "立即下單",
+        "CreatedAt": "2026-03-02T10:00:00Z",
+        "UpdatedAt": "2026-03-02T10:00:00Z"
+      },
+      "PageProducts": [
+        {
+          "PageProductID": 9001,
+          "PageID": 1,
+          "ProductID": 2001,
+          "DisplayOrder": 1,
+          "isFeatured": 1,
+          "CreatedAt": "2026-03-02T10:00:00Z",
+          "UpdatedAt": "2026-03-02T10:00:00Z"
+        }
+      ]
     }
   ],
   "page": {
-    "PageID": 10,
+    "PageID": 1,
     "SellerID": 123,
     "TemplateName": "OnePageV1",
     "IsPublished": 1,
     "PageUrl": "acme",
+    "CreatedAt": "2026-03-02T10:00:00Z",
+    "UpdatedAt": "2026-03-02T10:00:00Z",
     "PageContent": {
       "PageContentID": 501,
-      "PageID": 10,
+      "PageID": 1,
       "LanguageCode": "zh-TW",
       "PageTitle": "ACME 一頁購物",
       "PageDescription": "精選商品與限時優惠",
-      "CTA_Text": "立即下單"
+      "CTA_Text": "立即下單",
+      "CreatedAt": "2026-03-02T10:00:00Z",
+      "UpdatedAt": "2026-03-02T10:00:00Z"
     },
     "PageProducts": [
       {
         "PageProductID": 9001,
-        "PageID": 10,
+        "PageID": 1,
         "ProductID": 2001,
         "DisplayOrder": 1,
-        "isFeatured": 1
+        "isFeatured": 1,
+        "CreatedAt": "2026-03-02T10:00:00Z",
+        "UpdatedAt": "2026-03-02T10:00:00Z"
       }
     ]
   }
