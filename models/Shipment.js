@@ -15,21 +15,21 @@ const Shipment = sequelize.define('Shipment', {
     allowNull: false,
     field: 'OrderID'
   },
-  // 運送方式 (如：黑貓、店到店)，使用 WSTRING 支援 nvarchar
+  // 運送方式 (如：黑貓、店到店)，使用 STRING 支援 nvarchar
   ShippingMethod: {
-    type: DataTypes.WSTRING(50),
+    type: DataTypes.STRING(50),
     allowNull: false,
     field: 'ShippingMethod'
   },
-  // 物流單號，使用 WSTRING 支援 nvarchar
+  // 物流單號，使用 STRING 支援 nvarchar
   TrackingNumber: {
-    type: DataTypes.WSTRING(100),
+    type: DataTypes.STRING(100),
     allowNull: false,
     field: 'TrackingNumber'
   },
-  // 物流狀態 (如：待出貨、已出貨)，使用 WSTRING 支援 nvarchar
+  // 物流狀態 (如：待出貨、已出貨)，使用 STRING 支援 nvarchar
   ShipmentStatus: {
-    type: DataTypes.WSTRING(30),
+    type: DataTypes.STRING(30),
     allowNull: false,
     field: 'ShipmentStatus'
   },

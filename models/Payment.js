@@ -15,15 +15,15 @@ const Payment = sequelize.define('Payment', {
     allowNull: false,
     field: 'OrderID'
   },
-  // 付款方式 (如：信用卡、匯款)，使用 WSTRING 支援 nvarchar
+  // 付款方式 (如：信用卡、匯款)，使用 STRING 支援 nvarchar
   PaymentMethod: {
-    type: DataTypes.WSTRING(50),
+    type: DataTypes.STRING(50),
     allowNull: false,
     field: 'PaymentMethod'
   },
-  // 付款狀態 (如：待支付、已支付)，使用 WSTRING 支援 nvarchar
+  // 付款狀態 (如：待支付、已支付)，使用 STRING 支援 nvarchar
   PaymentStatus: {
-    type: DataTypes.WSTRING(50),
+    type: DataTypes.STRING(50),
     allowNull: false,
     field: 'PaymentStatus'
   },

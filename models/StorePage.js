@@ -25,9 +25,9 @@ const StorePage = sequelize.define('StorePage', {
     allowNull: false,
     field: 'IsPublished'
   },
-  // 修正：必須使用 WSTRING 對應 nvarchar
+  // 修正：必須使用 STRING 對應 nvarchar
   PageUrl: { 
-    type: DataTypes.WSTRING(100), // WSTRING = nvarchar
+    type: DataTypes.STRING(100), // STRING = nvarchar (Sequelize 預設)
     allowNull: false,
     field: 'PageUrl'
   },

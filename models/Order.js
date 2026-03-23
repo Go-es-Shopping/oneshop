@@ -17,31 +17,31 @@ const Order = sequelize.define('Order', {
   },
   // 買家姓名，支援中文 (nvarchar)
   BuyerName: {
-    type: DataTypes.WSTRING(100),
+    type: DataTypes.STRING(100),
     allowNull: false,
     field: 'BuyerName'
   },
   // 買家電話
   BuyerPhone: {
-    type: DataTypes.WSTRING(20),
+    type: DataTypes.STRING(20),
     allowNull: false,
     field: 'BuyerPhone'
   },
   // 買家信箱
   BuyerEmail: {
-    type: DataTypes.WSTRING(255),
+    type: DataTypes.STRING(255),
     allowNull: false,
     field: 'BuyerEmail'
   },
   // 收件地址，支援中文 (nvarchar)
   BuyerAddress: {
-    type: DataTypes.WSTRING(300),
+    type: DataTypes.STRING(300),
     allowNull: false,
     field: 'BuyerAddress'
   },
   // 訂單狀態 (如：待處理、已完成)
   OrderStatus: {
-    type: DataTypes.WSTRING(30),
+    type: DataTypes.STRING(30),
     allowNull: false,
     field: 'OrderStatus'
   },
