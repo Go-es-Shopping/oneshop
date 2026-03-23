@@ -30,11 +30,15 @@ PageContent.belongsTo(Product, { foreignKey: 'ProductID' })
 Seller.hasMany(Order, { foreignKey: 'SellerID' })
 Order.belongsTo(Seller, { foreignKey: 'SellerID' })
 
-Order.hasMany(Orderdetail, { foreignKey: 'OrderID' })
+// --- 修改這部分 ---
+// 1. 讓訂單可以透過 .Items 抓到明細 (對應規格書 Items 欄位)
+Order.hasMany(Orderdetail, { foreignKey: 'OrderID', as: 'Items' })
 Orderdetail.belongsTo(Order, { foreignKey: 'OrderID' })
 
+// 2. 讓明細可以抓到商品資訊 (選用，方便後續查詢)
 Product.hasMany(Orderdetail, { foreignKey: 'ProductID' })
-Orderdetail.belongsTo(Product, { foreignKey: 'ProductID' })
+Orderdetail.belongsTo(Product, { foreignKey: 'ProductID', as: 'Product' })
+// -----------------
 
 Order.hasOne(Shipment, { foreignKey: 'OrderID' })
 Shipment.belongsTo(Order, { foreignKey: 'OrderID' })

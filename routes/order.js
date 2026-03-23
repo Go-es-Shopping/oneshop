@@ -1,14 +1,10 @@
-// 模組對應資料表：Order, Orderdetail, Payment, Shipment
 const express = require('express')
 const sequelize = require('../config/database')
 const { readMock } = require('../src/mocks/utils')
-
+const orderController = require('../controllers/orderController');
 const router = express.Router()
 
-function money(n) {
-  return Number(n).toFixed(2)
-}
-
+// 判斷是否使用 Mock 的機制
 async function useMock() {
   if (process.env.FORCE_MOCK === 'true') return true
   try {
@@ -19,50 +15,40 @@ async function useMock() {
   }
 }
 
+// 1. 建立訂單 (POST /)
 router.post('/', async (req, res) => {
   const mock = await useMock()
-  const body = req.body || {}
-  const orderId = 70001
-  // TODO: 這裡請組員實作實際的 Sequelize 交易流程（建立 Order、Orderdetail、Payment/Shipment）
   if (mock) {
     const base = readMock('order.json').created
-    const data = {
-      ...base,
-      OrderID: orderId,
-      SellerID: body.SellerID || base.SellerID,
-      BuyerName: body.BuyerName || base.BuyerName,
-      BuyerPhone: body.BuyerPhone || base.BuyerPhone,
-      BuyerEmail: body.BuyerEmail || base.BuyerEmail,
-      BuyerAddress: body.BuyerAddress || base.BuyerAddress
-    }
-    return res.status(201).json(data)
+    return res.status(201).json({ ...base, OrderID: 70001 })
   }
-  const data = {}
-  return res.status(201).json(data)
-})
+  // 呼叫大腦：執行實際的建立與扣庫存邏輯
+  return orderController.createOrder(req, res);
+});
 
+// 2. 查詢單筆訂單詳情 (GET /:OrderID)
 router.get('/:OrderID', async (req, res) => {
   const mock = await useMock()
-  const id = Number(req.params.OrderID)
-  // TODO: 這裡請組員實作實際的 Sequelize 查詢（Order join Orderdetail/Payment/Shipment）
   if (mock) {
     const base = readMock('order.json').detail
-    const data = { ...base, OrderID: id, Shipment: { ...base.Shipment, OrderID: id }, Payment: { ...base.Payment, OrderID: id }, Items: base.Items.map(i => ({ ...i, OrderID: id })) }
-    return res.json(data)
+    return res.json({ ...base, OrderID: req.params.OrderID });
   }
-  const data = {}
-  return res.json(data)
-})
+  // 呼叫大腦：執行資料庫 JOIN 查詢
+  return orderController.getOrderDetail(req, res);
+});
 
+// 3. 查詢訂單列表 (GET /)
 router.get('/', async (req, res) => {
   const mock = await useMock()
-  // TODO: 這裡請組員實作實際的 Sequelize 查詢（賣家後台列表、可依狀態過濾/分頁）
   if (mock) {
-    const list = readMock('order.json').list
-    return res.json(list)
+    return res.json(readMock('order.json').list);
   }
-  const data = []
-  return res.json(data)
-})
+  // 呼叫大腦：從資料庫抓取賣家的訂單清單
+  return orderController.getSellerOrders(req, res);
+});
 
-module.exports = router
+// 4. 更新訂單狀態 (PATCH /:OrderID/status)
+// 這個功能通常不需要 Mock，直接對接 Controller
+router.patch('/:OrderID/status', orderController.updateStatus);
+
+module.exports = router;
