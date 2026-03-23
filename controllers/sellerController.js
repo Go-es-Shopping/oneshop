@@ -3,6 +3,7 @@ const Seller = require('../models/Seller')
 const { readMock } = require('../src/mocks/utils')
 
 async function useMock() {
+  // 優先判定 Mock，不執行資料庫檢查以解決連線超時問題
   if (process.env.FORCE_MOCK === 'true') return true
   try {
     await sequelize.authenticate()
@@ -25,35 +26,38 @@ function shapeSeller(s) {
 }
 
 exports.login = async (req, res) => {
-  const mock = await useMock()
-  if (mock) {
-    const seller = readMock('seller.json')
-    return res.json({ ...seller, AccessToken: 'JWT_TOKEN' })
+  const Mock = await useMock()
+  const { Email, Password } = req.body || {}
+  
+  if (Mock) {
+    const SellerData = readMock('seller.json')
+    return res.json({ ...SellerData, AccessToken: 'JWT_TOKEN' })
   }
-  const { email, password } = req.body || {}
-  if (!email || !password) {
+
+  if (!Email || !Password) {
     return res.status(400).json({ message: '缺少必填欄位' })
   }
-  const seller = await Seller.findOne({ where: { Email: email } }).catch(() => null)
-  if (!seller || password !== '123456') {
+
+  const SellerRow = await Seller.findOne({ where: { Email: Email } }).catch(() => null)
+  if (!SellerRow || Password !== '123456') {
     return res.status(401).json({ message: '登入失敗，帳號或密碼錯誤' })
   }
-  return res.json({ ...shapeSeller(seller), AccessToken: 'JWT_TOKEN' })
+  return res.json({ ...shapeSeller(SellerRow), AccessToken: 'JWT_TOKEN' })
 }
 
 exports.getProfile = async (req, res) => {
-  const mock = await useMock()
-  if (mock) {
-    const seller = readMock('seller.json')
-    return res.json(seller)
+  const Mock = await useMock()
+  if (Mock) {
+    const SellerData = readMock('seller.json')
+    return res.json(SellerData)
   }
-  const email = req.query.Email || req.body?.Email
-  if (!email) {
+  const Email = req.query.Email || req.body?.Email
+  if (!Email) {
     return res.status(400).json({ message: '缺少查詢條件' })
   }
-  const seller = await Seller.findOne({ where: { Email: email } }).catch(() => null)
-  if (!seller) {
+  const SellerRow = await Seller.findOne({ where: { Email: Email } }).catch(() => null)
+  if (!SellerRow) {
     return res.status(404).json({ message: '查無資料' })
   }
-  return res.json(shapeSeller(seller))
+  return res.json(shapeSeller(SellerRow))
 }
