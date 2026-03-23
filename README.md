@@ -84,12 +84,25 @@
     "TemplateName": "OnePageV1",
     "IsPublished": 1,
     "PageUrl": "acme",
+    "CreatedAt": "2026-03-02",
+    "UpdatedAt": "2026-03-02",
     "PageContent": {
       "LanguageCode": "zh-TW",
       "PageTitle": "ACME 一頁購物",
       "PageDescription": "精選商品與限時優惠",
       "CTA_Text": "立即下單"
-    }
+    },
+    "PageProducts": [
+      {
+        "PageProductID": 9001,
+        "PageID": 1,
+        "ProductID": 2001,
+        "DisplayOrder": 1,
+        "isFeatured": 1,
+        "CreatedAt": "2026-03-02",
+        "UpdatedAt": "2026-03-02"
+      }
+    ]
   }
 ]
 ```
@@ -109,6 +122,8 @@
   "TemplateName": "OnePageV1",
   "IsPublished": 1,
   "PageUrl": "acme",
+  "CreatedAt": "2026-03-02",
+  "UpdatedAt": "2026-03-02",
   "PageContent": {
     "PageContentID": 501,
     "PageID": 1,
@@ -123,7 +138,9 @@
       "PageID": 1,
       "ProductID": 2001,
       "DisplayOrder": 1,
-      "isFeatured": 1
+      "isFeatured": 1,
+      "CreatedAt": "2026-03-02",
+      "UpdatedAt": "2026-03-02"
     }
   ]
 }

@@ -6,6 +6,7 @@ const { readMock } = require('../src/mocks/utils')
 const router = express.Router()
 
 async function useMock() {
+  // 優先判定 Mock，不執行資料庫檢查以解決連線超時問題
   if (process.env.FORCE_MOCK === 'true') return true
   try {
     await sequelize.authenticate()
@@ -18,15 +19,26 @@ async function useMock() {
 router.get('/pages', async (req, res) => {
   const Mock = await useMock()
   const Lang = req.query.lang || 'zh-TW'
-  // TODO: 這裡請組員實作實際的 Sequelize 查詢（StorePage join PageContent by LanguageCode）
+  
   if (Mock) {
     const MockData = readMock('storepage.json').pages
     const Data = MockData.map((p) => ({
       ...p,
-      PageContent: { ...p.PageContent, LanguageCode: Lang }
+      PageContent: { ...(p.PageContent || {}), LanguageCode: Lang },
+      PageProducts: Array.isArray(p.PageProducts) ? p.PageProducts : []
     }))
     return res.json(Data)
   }
+
+  // TODO: 使用 Sequelize 查詢列表：
+  // const { StorePage, PageContent, PageProduct, Product } = require('../models')
+  // const pages = await StorePage.findAll({
+  //   include: [
+  //     { model: PageContent, where: { LanguageCode: Lang }, required: false },
+  //     { model: PageProduct, include: [{ model: Product }], required: false }
+  //   ]
+  // })
+  // return res.json(pages)
   return res.json([])
 })
 
@@ -34,17 +46,31 @@ router.get('/pages/:PageID', async (req, res) => {
   const Mock = await useMock()
   const Lang = req.query.lang || 'zh-TW'
   const PageID = Number(req.params.PageID)
-  // TODO: 這裡請組員實作實際的 Sequelize 查詢（單一 Page 與 PageContent、PageProduct 關聯）
+
   if (Mock) {
-    const Base = readMock('storepage.json').page
+    const { pages, page: template } = readMock('storepage.json')
+    const found = (pages || []).find((p) => Number(p.PageID) === PageID)
+    const base = found || template
     const Data = {
-      ...Base,
+      ...base,
       PageID: PageID,
-      PageContent: { ...Base.PageContent, PageID: PageID, LanguageCode: Lang },
-      PageProducts: Base.PageProducts.map((pp) => ({ ...pp, PageID: PageID }))
+      PageContent: { ...(base.PageContent || {}), PageID: PageID, LanguageCode: Lang },
+      PageProducts: Array.isArray(base.PageProducts)
+        ? base.PageProducts.map((pp) => ({ ...pp, PageID: PageID }))
+        : []
     }
     return res.json(Data)
   }
+
+  // TODO: 使用 Sequelize 查詢單筆：
+  // const { StorePage, PageContent, PageProduct, Product } = require('../models')
+  // const one = await StorePage.findByPk(PageID, {
+  //   include: [
+  //     { model: PageContent, where: { LanguageCode: Lang }, required: false },
+  //     { model: PageProduct, include: [{ model: Product }], required: false }
+  //   ]
+  // })
+  // return res.json(one ?? {})
   return res.json({})
 })
 

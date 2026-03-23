@@ -7,6 +7,8 @@ const app = express()
 console.log('目前 FORCE_MOCK 的值是:', process.env.FORCE_MOCK);
 app.use(cors())
 app.use(express.json())
+// 設定靜態檔案資料夾，這樣連上網址才能看到前端網頁
+app.use(express.static('public'));
 
 
 // 1. 路由引入
