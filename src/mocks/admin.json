@@ -1,0 +1,6 @@
+{
+  "AdminID": 1,
+  "AdminName": "SuperAdmin",
+  "Email": "admin@example.com",
+  "Role": "SuperUser"
+}
