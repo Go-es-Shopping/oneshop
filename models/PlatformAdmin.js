@@ -9,28 +9,27 @@ const PlatformAdmin = sequelize.define('PlatformAdmin', {
     primaryKey: true,
     field: 'AdminID'
   },
-  // 管理員名稱，使用 WSTRING 支援 nvarchar 中文名
+  // 管理員真實姓名，使用 STRING 支援 nvarchar
   AdminName: {
-    type: DataTypes.WSTRING(100),
+    type: DataTypes.STRING(100),
     allowNull: false,
     field: 'AdminName'
   },
-  // 電子郵件
+  // 信箱
   Email: {
-    type: DataTypes.WSTRING(255),
+    type: DataTypes.STRING(255),
     allowNull: false,
-    unique: true, // 管理員信箱通常不可重複
     field: 'Email'
   },
-  // 密碼雜湊值
+  // 經過雜湊處理的密碼
   PasswordHash: {
-    type: DataTypes.WSTRING(255),
+    type: DataTypes.STRING(255),
     allowNull: false,
     field: 'PasswordHash'
   },
-  // 角色權限 (如：超級管理員、客服)，支援中文
+  // 角色權限 (如：Admin, CustomerService)，使用 STRING 支援 nvarchar
   Role: {
-    type: DataTypes.WSTRING(50),
+    type: DataTypes.STRING(50),
     allowNull: false,
     field: 'Role'
   },

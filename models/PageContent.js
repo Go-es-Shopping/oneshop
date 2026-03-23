@@ -23,37 +23,37 @@ const PageContent = sequelize.define('PageContent', {
   },
   // 語言代碼 (如：zh-TW, en-US)
   LanguageCode: {
-    type: DataTypes.WSTRING(10),
+    type: DataTypes.STRING(10),
     allowNull: false,
     field: 'LanguageCode'
   },
   // 頁面大標題
   PageTitle: {
-    type: DataTypes.WSTRING(200),
+    type: DataTypes.STRING(200),
     allowNull: true, // 根據你的圖片，此欄位勾選了允許 Null
     field: 'PageTitle'
   },
   // 頁面詳細描述 (nvarchar(MAX))
   PageDescription: {
-    type: DataTypes.WSTRING, // 不設長度對應 MAX
+    type: DataTypes.STRING, // 不設長度對應 MAX
     allowNull: true,
     field: 'PageDescription'
   },
   // 商品顯示名稱
   ProductName: {
-    type: DataTypes.WSTRING(200),
+    type: DataTypes.STRING(200),
     allowNull: false,
     field: 'ProductName'
   },
   // 商品詳細描述 (nvarchar(MAX))
   ProductDescription: {
-    type: DataTypes.WSTRING,
+    type: DataTypes.STRING,
     allowNull: true,
     field: 'ProductDescription'
   },
   // 行動呼籲文字 (如：立即購買、加入購物車)
   CTA_Text: {
-    type: DataTypes.WSTRING(100),
+    type: DataTypes.STRING(100),
     allowNull: false,
     field: 'CTA_Text'
   },

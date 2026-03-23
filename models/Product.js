@@ -15,10 +15,10 @@ const Product = sequelize.define('Product', {
     allowNull: false,
     field: 'SellerID'
   },
-  // 商品圖片，nvarchar(MAX) 對應 WSTRING，支援長網址與 Unicode
+  // 商品圖路徑 (可能很長，使用 STRING 支援 nvarchar(MAX))
   ProductImg: {
-    type: DataTypes.WSTRING, 
-    allowNull: false,
+    type: DataTypes.STRING, 
+    allowNull: true,
     field: 'ProductImg'
   },
   // 商品價格，精確度對應 decimal(18,2)

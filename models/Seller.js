@@ -8,33 +8,41 @@ const Seller = sequelize.define('Seller', {
     primaryKey: true,
     field: 'SellerID'
   },
+  // 賣家真實姓名，使用 STRING 支援 nvarchar
   SellerName: {
-    type: DataTypes.WSTRING(100),
+    type: DataTypes.STRING(100),
     allowNull: false,
     field: 'SellerName'
   },
+  // 店鋪名稱，使用 STRING 支援 nvarchar
   StoreName: {
-    type: DataTypes.WSTRING(100),
+    type: DataTypes.STRING(100),
     allowNull: false,
     field: 'StoreName'
   },
+  // 信箱
   Email: {
     type: DataTypes.STRING(255),
     allowNull: false,
     unique: true,
     field: 'Email'
   },
+  // 經過雜湊處理的密碼
   PasswordHash: {
     type: DataTypes.STRING(255),
     allowNull: false,
     field: 'PasswordHash'
   },
+  // 連絡電話
   Phone: {
     type: DataTypes.STRING(20),
+    allowNull: false,
     field: 'Phone'
   },
+  // 方案類型 (如：Free, Advanced)，使用 STRING 支援 nvarchar
   PlanType: {
     type: DataTypes.STRING(20),
+    allowNull: false,
     field: 'PlanType'
   },
   Status: {
