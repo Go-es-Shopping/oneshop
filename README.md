@@ -2,6 +2,8 @@
 ## 資料庫關聯圖 (Database Schema)
 ![資料庫圖表](./images/Shopping-db-diagram.jpg)
 ## API規格書
+👉 [點此查看路由清單](./API_LIST.md)
+
 #### 技術開發規範
 1. 命名規範：全專案 API 欄位強制對齊資料庫大寫命名（例：SellerID, ProductID）。
 2. 多語系支援：所有查詢 API 均支援 ?lang= 參數切換語系（預設為 zh-TW）。
