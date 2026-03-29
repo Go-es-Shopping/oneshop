@@ -39,27 +39,21 @@ const Product = sequelize.define('Product', {
     allowNull: false,
     field: 'IsActive'
   },
-  // --- 日期雙重保險開始 ---
-  // 對應 DB 的 CreatedAt 與 (getdate()) 預設值
+  // --- 日期欄位修正：讓資料庫 DEFAULT GETDATE() 接管 ---
   CreatedAt: {
     type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW, // 程式層級保險
+    allowNull: true,
     field: 'CreatedAt'
   },
-  // 對應 DB 的 UpdatedAt 與 (getdate()) 預設值
   UpdatedAt: {
     type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW, // 程式層級保險
+    allowNull: true,
     field: 'UpdatedAt'
   }
 }, {
   tableName: 'Product',
-  // 開啟自動時間管理，確保更新商品資訊時 UpdatedAt 會跳動
-  timestamps: true,
-  createdAt: 'CreatedAt',
-  updatedAt: 'UpdatedAt'
+  // 由資料庫 DEFAULT GETDATE() 接管日期，避免格式轉換錯誤
+  timestamps: false
 });
 
 module.exports = Product;

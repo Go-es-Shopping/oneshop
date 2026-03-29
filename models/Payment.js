@@ -27,13 +27,10 @@ const Payment = sequelize.define('Payment', {
     allowNull: false,
     field: 'PaymentStatus'
   },
-  // 付款日期雙重保險：
-  // 1. 程式層級：新增資料時若未帶入時間，Sequelize 會自動填入 NOW
-  // 2. 資料庫層級：對應你設定的 (getdate()) 預設值
+  // 付款日期修正：讓資料庫 DEFAULT GETDATE() 接管
   PaidAt: {
     type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW, 
+    allowNull: true,
     field: 'PaidAt'
   }
 }, {

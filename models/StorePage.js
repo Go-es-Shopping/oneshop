@@ -31,28 +31,22 @@ const StorePage = sequelize.define('StorePage', {
     allowNull: false,
     field: 'PageUrl'
   },
-  // --- 日期雙重保險開始 ---
+  // --- 日期欄位修正：讓資料庫 DEFAULT GETDATE() 接管 ---
   CreatedAt: {
     type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW, // 程式層級的 getdate()
+    allowNull: true,
     field: 'CreatedAt'
   },
   UpdatedAt: {
     type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW,
+    allowNull: true,
     field: 'UpdatedAt'
   }
 }, {
   tableName: 'StorePage', // 鎖定表名，防止變複數
   
-  // 修正：開啟 timestamps (最佳實踐)
-  timestamps: true, 
-  
-  // 修正：手動指定 Sequelize 預設的小寫名稱對應到你資料庫的大寫欄位
-  createdAt: 'CreatedAt', // Sequelize 內部叫 createdAt，對應 DB 的 CreatedAt
-  updatedAt: 'UpdatedAt', // Sequelize 內部叫 updatedAt，對應 DB 的 UpdatedAt
+  // 修正：由資料庫 DEFAULT GETDATE() 接管日期，避免格式轉換錯誤
+  timestamps: false, 
 });
 
 module.exports = StorePage;

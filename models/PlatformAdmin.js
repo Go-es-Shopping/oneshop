@@ -33,18 +33,14 @@ const PlatformAdmin = sequelize.define('PlatformAdmin', {
     allowNull: false,
     field: 'Role'
   },
-  // --- 日期雙重保險開始 ---
-  // 對應 DB 的 CreatedAt 與 (getdate()) 預設值
+  // --- 日期欄位修正：讓資料庫 DEFAULT GETDATE() 接管 ---
   CreatedAt: {
     type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW, // 程式層級保險
+    allowNull: true,
     field: 'CreatedAt'
   }
 }, {
   tableName: 'PlatformAdmin',
-  // 注意：這張表 DB 裡只有 CreatedAt 欄位，沒有 UpdatedAt，
-  // 所以我們設 timestamps: false，避免 Sequelize 自動去找 UpdatedAt 欄位。
   timestamps: false 
 });
 

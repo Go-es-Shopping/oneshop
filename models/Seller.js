@@ -51,24 +51,20 @@ const Seller = sequelize.define('Seller', {
     defaultValue: 1,
     field: 'Status'
   },
-  // --- 日期雙重保險開始 ---
+  // --- 日期欄位修正：讓資料庫 DEFAULT GETDATE() 接管 ---
   CreatedAt: {
     type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW,
+    allowNull: true,
     field: 'CreatedAt'
   },
   UpdatedAt: {
     type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW,
+    allowNull: true,
     field: 'UpdatedAt'
   }
 }, {
   tableName: 'Seller',
-  timestamps: true,
-  createdAt: 'CreatedAt',
-  updatedAt: 'UpdatedAt'
+  timestamps: false // 由資料庫 DEFAULT GETDATE() 接管日期
 });
 
 module.exports = Seller;
