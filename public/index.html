@@ -23,6 +23,14 @@
   </script>
   <style>
     body { font-family: 'Noto Sans TC', sans-serif; }
+
+    /* Go Shop 品牌標題：僅調整英文字型，不影響中文與顏色 */
+    .brand-logo {
+      font-family: 'Aptos Display', 'Aptos', system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans TC', sans-serif;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
@@ -31,15 +39,51 @@
     <header class="flex-shrink-0 bg-gradient-to-r from-slate-200 via-slate-100 to-blue-100/80 backdrop-blur-sm">
       <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
-          <a href="#" class="flex items-center gap-2">
-            <span class="text-xl font-bold text-slate-800 tracking-tight">Go Shop</span>
-          </a>
+          <div class="flex items-center gap-2">
+            <button type="button" id="mobile-menu-btn" class="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-xl hover:bg-white/60 transition text-slate-700" aria-label="開啟選單" aria-controls="mobile-sidebar" aria-expanded="false">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+              </svg>
+            </button>
+            <a href="#" class="flex items-center gap-2">
+              <span class="text-xl font-bold text-slate-800 tracking-tight brand-logo">Go Shop</span>
+            </a>
+          </div>
           <nav class="flex items-center gap-3">
             <div class="w-9 h-9 rounded-full bg-slate-300 flex items-center justify-center text-slate-600 text-sm font-medium">管</div>
           </nav>
         </div>
       </div>
     </header>
+
+    <!-- Mobile / Tablet Sidebar Drawer：< lg 使用三條線開啟 -->
+    <div id="mobile-sidebar" class="fixed inset-0 z-40 lg:hidden hidden" aria-hidden="true">
+      <div id="mobile-sidebar-overlay" class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
+      <div class="absolute inset-y-0 left-0 w-[86%] max-w-xs bg-white border-r border-slate-100 shadow-soft-lg transform transition-transform duration-200 translate-x-0">
+        <div class="flex items-center justify-between p-4 border-b border-slate-100">
+          <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wider">店鋪設置與整合</h2>
+          <button type="button" id="mobile-sidebar-close" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition" aria-label="關閉選單">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        <nav class="p-3 space-y-1">
+          <a href="#domain" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-slate-900 bg-slate-100 font-medium transition" data-section="domain">
+            <span class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600 text-sm">🌐</span>
+            網域管理
+          </a>
+          <a href="#wizard" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition font-medium" data-section="wizard">
+            <span class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600 text-sm">📦</span>
+            金物流開通嚮導
+          </a>
+          <a href="#permissions" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition font-medium" data-section="permissions">
+            <span class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600 text-sm">👥</span>
+            多權限管理
+          </a>
+        </nav>
+      </div>
+    </div>
 
     <div class="flex flex-1">
       <!-- Sidebar：淺色、圓角、清晰層次 -->
@@ -125,15 +169,15 @@
               <!-- 步驟內容 -->
               <div id="wizard-step-1" class="wizard-step space-y-4">
                 <h3 class="font-semibold text-slate-800">STEP 1：LINE Pay 串接</h3>
-                <p class="text-sm text-slate-600">請至 LINE Pay 商家後台取得 Channel ID 與 Channel Secret，並填寫於下方。</p>
+                <p class="text-sm text-slate-600">請至 LINE Pay 商家後台取得 Channel ID 與 Channel Secret Key，並填寫於下方。</p>
                 <div class="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1.5">Channel ID</label>
                     <input type="text" placeholder="請輸入 Channel ID" class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800 placeholder-slate-400" />
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Channel Secret</label>
-                    <input type="password" placeholder="請輸入 Channel Secret" class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800 placeholder-slate-400" />
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Channel Secret Key</label>
+                    <input type="password" placeholder="請輸入 Channel Secret Key" class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800 placeholder-slate-400" />
                   </div>
                 </div>
               </div>
@@ -322,6 +366,47 @@
   </div>
 
   <script>
+    // Mobile / Tablet Sidebar Drawer：< lg 使用三條線
+    (function () {
+      var btn = document.getElementById('mobile-menu-btn');
+      var panel = document.getElementById('mobile-sidebar');
+      var overlay = document.getElementById('mobile-sidebar-overlay');
+      var closeBtn = document.getElementById('mobile-sidebar-close');
+      if (!btn || !panel || !overlay || !closeBtn) return;
+
+      function open() {
+        panel.classList.remove('hidden');
+        panel.setAttribute('aria-hidden', 'false');
+        btn.setAttribute('aria-expanded', 'true');
+        document.body.style.overflow = 'hidden';
+      }
+      function close() {
+        panel.classList.add('hidden');
+        panel.setAttribute('aria-hidden', 'true');
+        btn.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+      }
+
+      btn.addEventListener('click', open);
+      overlay.addEventListener('click', close);
+      closeBtn.addEventListener('click', close);
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && !panel.classList.contains('hidden')) close();
+      });
+
+      // 點選選單後自動收起（僅在 <lg 生效）
+      panel.querySelectorAll('a.sidebar-link').forEach(function (a) {
+        a.addEventListener('click', function () {
+          if (window.innerWidth < 1024) close();
+        });
+      });
+
+      // 旋轉/縮放切換時：lg 以上自動關閉抽屜，避免卡住 body overflow
+      window.addEventListener('resize', function () {
+        if (window.innerWidth >= 1024 && !panel.classList.contains('hidden')) close();
+      });
+    })();
+
     // 金物流嚮導步驟切換
     (function () {
       var currentStep = 1;
@@ -454,6 +539,7 @@
         e.preventDefault();
         var email = emailInput.value.trim();
         if (!email) return;
+        // 發送邀請信
         var perms = [];
         document.querySelectorAll('.invite-permission-cb:checked').forEach(function (cb) {
           var labels = { orders: '查看訂單與出貨', inventory: '編輯商品與庫存', 'delete-product': '刪除商品', reports: '查看報表' };
