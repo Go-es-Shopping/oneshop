@@ -172,28 +172,31 @@
             <p class="mt-1 text-slate-600">管理自訂網域、金流與物流 API，以及店鋪成員權限。</p>
           </div>
 
-          <!-- 網域管理 -->
+          <!-- 店家網址設定 -->
           <section id="domain" class="reveal-on-scroll bg-white rounded-2xl shadow-soft overflow-hidden">
             <div class="p-6 sm:p-8">
-              <h2 class="text-lg font-bold text-slate-900 mb-1">網域管理</h2>
-              <p class="text-sm text-slate-600 mb-6">綁定自訂網域，讓顧客透過您的專屬網址進入賣場。</p>
+              <h2 class="text-lg font-bold text-slate-900 mb-1">店家網址設定</h2>
+              <p class="text-sm text-slate-600 mb-6">設定店家 ID，顧客可透過固定網域加上店家 ID 進入賣場。</p>
               <div class="space-y-4">
                 <div>
-                  <label class="block text-sm font-medium text-slate-700 mb-2">自訂網域</label>
+                  <label class="block text-sm font-medium text-slate-700 mb-2">店家 ID</label>
                   <div class="flex flex-col sm:flex-row gap-3">
                     <input
                       id="custom-domain-input"
                       type="text"
-                      placeholder="shop.yourdomain.com"
+                      placeholder="例如：my-shop"
                       class="flex-1 px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800 placeholder-slate-400 transition"
                     />
                     <button type="button" id="verify-domain-btn" class="px-5 py-3 rounded-xl bg-slate-800 text-white font-medium shadow-soft hover:bg-slate-900 transition whitespace-nowrap">
-                      驗證並綁定
+                      驗證店家網址
                     </button>
+                    <span id="store-id-verify-status" class="hidden sm:inline-flex items-center justify-center w-11 h-11 text-base font-bold" aria-live="polite"></span>
                   </div>
+                  <p class="mt-2 text-xs text-slate-500">提示：店家 ID 只能輸入小寫英文與數字（3~30 字元）。</p>
+                  <div id="store-id-error-box" class="hidden mt-2 px-3 py-2 rounded-lg border border-red-200 bg-red-50 text-red-600 text-xs"></div>
                 </div>
-                <p class="text-xs text-slate-500">
-                  請在您的 DNS 設定中新增 CNAME 紀錄，將上述網域指向 <code class="bg-slate-100 px-1.5 py-0.5 rounded">go-shop.com</code>。
+                <p id="store-url-preview-row" class="hidden text-xs text-slate-500">
+                  預覽網址：<span id="store-url-preview"><code class="bg-slate-100 px-1.5 py-0.5 rounded">固定網域/請輸入店家ID</code></span>
                 </p>
               </div>
             </div>
@@ -584,31 +587,69 @@
       });
     })();
 
-    // 網域驗證：顯示成功/失敗確認視窗（示範用）
+    // 店家網址驗證：顯示成功/失敗確認視窗（示範用）
     (function () {
       var domainInput = document.getElementById('custom-domain-input');
       var verifyBtn = document.getElementById('verify-domain-btn');
-      if (!domainInput || !verifyBtn) return;
+      var preview = document.getElementById('store-url-preview');
+      var previewRow = document.getElementById('store-url-preview-row');
+      var statusIcon = document.getElementById('store-id-verify-status');
+      var errorBox = document.getElementById('store-id-error-box');
+      if (!domainInput || !verifyBtn || !preview || !previewRow || !statusIcon || !errorBox) return;
 
-      function isValidDomain(domain) {
-        var value = domain.trim().toLowerCase();
-        // 基本網域格式檢查（示範用，非 DNS 完整驗證）
-        var domainRegex = /^(?!-)(?:[a-z0-9-]{1,63}\.)+[a-z]{2,63}$/;
-        return domainRegex.test(value);
+      function normalizeStoreId(value) {
+        return value.trim().toLowerCase();
       }
 
+      function isValidStoreId(storeId) {
+        // 3~30 字元，僅允許小寫英文與數字
+        var storeIdRegex = /^[a-z0-9]{3,30}$/;
+        return storeIdRegex.test(storeId);
+      }
+
+      function setStatus(state) {
+        statusIcon.classList.remove('hidden', 'text-green-600', 'text-red-600');
+        if (state === 'success') {
+          statusIcon.textContent = '✓';
+          statusIcon.classList.add('text-green-600');
+        } else if (state === 'error') {
+          statusIcon.textContent = '✕';
+          statusIcon.classList.add('text-red-600');
+        } else {
+          statusIcon.textContent = '';
+          statusIcon.classList.add('hidden');
+        }
+      }
+
+      domainInput.addEventListener('input', function () {
+        previewRow.classList.add('hidden');
+        errorBox.classList.add('hidden');
+        errorBox.textContent = '';
+        setStatus('none');
+      });
+
       verifyBtn.addEventListener('click', function () {
-        var domain = domainInput.value.trim();
-        if (!domain) {
-          alert('驗證失敗：請先輸入要綁定的網域。');
+        var storeId = normalizeStoreId(domainInput.value);
+        if (!storeId) {
+          previewRow.classList.add('hidden');
+          errorBox.textContent = '請先輸入店家 ID。';
+          errorBox.classList.remove('hidden');
+          setStatus('error');
           domainInput.focus();
           return;
         }
 
-        if (isValidDomain(domain)) {
-          alert('驗證成功：' + domain + ' 已可綁定至此店鋪。（此為示範頁面）');
+        if (isValidStoreId(storeId)) {
+          preview.innerHTML = '<code class="bg-slate-100 px-1.5 py-0.5 rounded">固定網域/' + storeId + '</code>';
+          previewRow.classList.remove('hidden');
+          errorBox.classList.add('hidden');
+          errorBox.textContent = '';
+          setStatus('success');
         } else {
-          alert('驗證失敗：網域格式不正確，請確認後再試一次。');
+          previewRow.classList.add('hidden');
+          errorBox.textContent = '店家 ID 僅可使用小寫英文與數字，長度需為 3 到 30 字元。';
+          errorBox.classList.remove('hidden');
+          setStatus('error');
           domainInput.focus();
         }
       });
