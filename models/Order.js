@@ -57,6 +57,11 @@ const Order = sequelize.define('Order', {
     allowNull: false,
     field: 'PaymentStatus'
   },
+  UTM_Source: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+    field: 'UTM_Source'
+  },
   // --- 日期雙重保險開始 ---
   CreatedAt: {
     type: DataTypes.DATE,

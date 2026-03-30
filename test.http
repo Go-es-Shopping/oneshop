@@ -1,0 +1,21 @@
+POST http://localhost:3000/api/checkout/calculate
+Content-Type: application/json
+
+{
+  "cartItems": [
+    { "productId": -1, "quantity": 1 }
+  ]
+}
+
+### 測試追蹤 API
+POST http://localhost:3000/api/track/view
+Content-Type: application/json
+
+{
+  "productId": 2001,
+  "pageType": "Product",
+  "referrer": "facebook.com"
+}
+
+### 測試後台分析
+GET http://localhost:3000/api/admin/analytics

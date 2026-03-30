@@ -17,6 +17,8 @@ const productRoutes = require('./routes/product')
 const storeRoutes = require('./routes/store')
 const orderRoutes = require('./routes/order')
 const adminRoutes = require('./routes/adminRoutes')
+const checkoutRoutes = require('./routes/checkoutRoutes')
+const analyticsRoutes = require('./routes/analyticsRoutes')
 
 // 2. 路由掛載
 app.use('/api/auth', authRoutes)
@@ -25,6 +27,8 @@ app.use('/api/store', storeRoutes)
 app.use('/api/orders', orderRoutes)
 app.use('/api/seller', require('./routes/sellerRoutes'));
 app.use('/api/admin', adminRoutes)
+app.use('/api/checkout', checkoutRoutes)
+app.use('/api/track', analyticsRoutes)
 
 // 3. 健康檢查 (放在這裡確保 API 層級沒問題)
 app.get('/health', (req, res) => {

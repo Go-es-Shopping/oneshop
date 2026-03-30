@@ -33,7 +33,8 @@ router.post('/', async (req, res) => {
       BuyerName: body.BuyerName || base.BuyerName,
       BuyerPhone: body.BuyerPhone || base.BuyerPhone,
       BuyerEmail: body.BuyerEmail || base.BuyerEmail,
-      BuyerAddress: body.BuyerAddress || base.BuyerAddress
+      BuyerAddress: body.BuyerAddress || base.BuyerAddress,
+      UTM_Source: body.utm_source || null
     }
     return res.status(201).json(data)
   }

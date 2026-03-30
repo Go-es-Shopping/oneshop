@@ -8,6 +8,7 @@ const Orderdetail = require('./Orderdetail')
 const Payment = require('./Payment')
 const Shipment = require('./Shipment')
 const PlatformAdmin = require('./PlatformAdmin')
+const PageVisit = require('./PageVisit')
 
 Seller.hasMany(StorePage, { foreignKey: 'SellerID' })
 StorePage.belongsTo(Seller, { foreignKey: 'SellerID' })
@@ -52,5 +53,6 @@ module.exports = {
   Orderdetail,
   Payment,
   Shipment,
-  PlatformAdmin
+  PlatformAdmin,
+  PageVisit
 }
