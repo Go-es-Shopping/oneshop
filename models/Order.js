@@ -57,6 +57,18 @@ const Order = sequelize.define('Order', {
     allowNull: false,
     field: 'PaymentStatus'
   },
+  // 來源 UTM 標籤 (例如：Facebook, Google)
+  UTM_Source: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+    field: 'UTM_Source'
+  },
+  // 瀏覽器 Session ID，用於串接 PageVisit 轉換路徑
+  SessionID: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+    field: 'SessionID'
+  },
   // --- 日期欄位修正：讓資料庫 DEFAULT GETDATE() 接管 ---
   CreatedAt: {
     type: DataTypes.DATE,

@@ -5,7 +5,7 @@ const orderController = {
   createOrder: async (req, res) => {
     const t = await sequelize.transaction();
     try {
-      const { SellerID, BuyerName, BuyerPhone, BuyerEmail, BuyerAddress, items } = req.body;
+      const { SellerID, BuyerName, BuyerPhone, BuyerEmail, BuyerAddress, items, UTM_Source, SessionID } = req.body;
       if (!items || items.length === 0) throw new Error("Quantity 必須大於 0");
 
       let totalAmount = 0;
@@ -31,7 +31,9 @@ const orderController = {
         SellerID, BuyerName, BuyerPhone, BuyerEmail, BuyerAddress,
         TotalAmount: totalAmount,
         OrderStatus: 0,
-        PaymentStatus: 0
+        PaymentStatus: 0,
+        UTM_Source: UTM_Source || null,
+        SessionID: SessionID || null
       }, { transaction: t });
 
       const finalDetails = details.map(d => ({ ...d, OrderID: newOrder.OrderID }));

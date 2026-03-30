@@ -20,7 +20,18 @@ router.post('/', async (req, res) => {
   const mock = await useMock()
   if (mock) {
     const base = readMock('order.json').created
-    return res.status(201).json({ ...base, OrderID: 70001 })
+    const body = req.body || {}
+    const data = {
+      ...base,
+      OrderID: 70001,
+      SellerID: body.SellerID || base.SellerID,
+      BuyerName: body.BuyerName || base.BuyerName,
+      BuyerPhone: body.BuyerPhone || base.BuyerPhone,
+      BuyerEmail: body.BuyerEmail || base.BuyerEmail,
+      BuyerAddress: body.BuyerAddress || base.BuyerAddress,
+      UTM_Source: body.UTM_Source || null
+    }
+    return res.status(201).json(data)
   }
   // 呼叫大腦：執行實際的建立與扣庫存邏輯
   return orderController.createOrder(req, res);

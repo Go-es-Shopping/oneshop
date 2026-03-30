@@ -298,3 +298,78 @@
   }
 ]
 ```
+
+### Checkout 模組（購物車與結帳計算）
+計算購物車金額（含折扣與運費）
+- Method: POST
+- Endpoint: /api/checkout/calculate
+- Query Parameters: 無
+- Request JSON 範例
+```json
+{
+  "CartItems": [
+    { "ProductID": 2001, "Quantity": 2 }
+  ]
+}
+```
+- Response JSON 範例
+```json
+{
+  "Items": [
+    {
+      "ProductID": 2001,
+      "ProductName": "ACME 經典組合",
+      "Price": 1990.00,
+      "Quantity": 2,
+      "ItemSubtotal": 3980.00
+    }
+  ],
+  "Subtotal": 3980.00,
+  "Discount": 100,
+  "ShippingFee": 0,
+  "TotalAmount": 3880.00
+}
+```
+
+### Analytics 模組（流量與轉換追蹤）
+紀錄瀏覽行為
+- Method: POST
+- Endpoint: /api/track/view
+- Query Parameters: 無
+- Request JSON 範例
+```json
+{
+  "ProductID": 2001,
+  "PageType": "Product",
+  "Referrer": "https://google.com",
+  "SessionID": "sess_123456789",
+  "Metadata": {
+    "Note": "OpenAI 意圖分析預留欄位"
+  }
+}
+```
+- Response JSON 範例
+```json
+{ "status": "success" }
+```
+- 欄位說明
+  - Metadata: 預留欄位，供未來 OpenAI 智慧分析使用。
+  - SessionID: 用於追蹤從瀏覽到下單的完整路徑。
+
+營運數據統計（轉換率分析）
+- Method: GET
+- Endpoint: /api/admin/analytics
+- Query Parameters: 無
+- Response JSON 範例
+```json
+{
+  "TotalVisits": 1500,
+  "CompletedOrders": 45,
+  "ConversionRate": "3.00%",
+  "UTMStats": [
+    { "UTM_Source": "Facebook", "OrderCount": 20 },
+    { "UTM_Source": "Google", "OrderCount": 15 }
+  ]
+}
+```
+

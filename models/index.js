@@ -8,6 +8,7 @@ const Orderdetail = require('./Orderdetail')
 const Payment = require('./Payment')
 const Shipment = require('./Shipment')
 const PlatformAdmin = require('./PlatformAdmin')
+const PageVisit = require('./PageVisit')
 
 Seller.hasMany(StorePage, { foreignKey: 'SellerID' })
 StorePage.belongsTo(Seller, { foreignKey: 'SellerID' })
@@ -46,6 +47,12 @@ Shipment.belongsTo(Order, { foreignKey: 'OrderID' })
 Order.hasOne(Payment, { foreignKey: 'OrderID' })
 Payment.belongsTo(Order, { foreignKey: 'OrderID' })
 
+// 建立 PageVisit 與 Order 的關聯 (透過 SessionID)
+// 這樣未來可以透過 SessionID 追蹤從瀏覽到下單的完整路徑
+// 注意：為了避免 MSSQL 因為 SessionID 不是 Unique Key 而報錯，我們關閉資料庫層級的 Foreign Key 約束
+PageVisit.hasMany(Order, { foreignKey: 'SessionID', sourceKey: 'SessionID', constraints: false })
+Order.belongsTo(PageVisit, { foreignKey: 'SessionID', targetKey: 'SessionID', constraints: false })
+
 module.exports = {
   Seller,
   StorePage,
@@ -56,5 +63,6 @@ module.exports = {
   Orderdetail,
   Payment,
   Shipment,
-  PlatformAdmin
+  PlatformAdmin,
+  PageVisit
 }
