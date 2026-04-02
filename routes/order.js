@@ -47,8 +47,13 @@ router.get('/', async (req, res) => {
   return orderController.getSellerOrders(req, res);
 });
 
-// 4. 更新訂單狀態 (PATCH /:OrderID/status)
-// 這個功能通常不需要 Mock，直接對接 Controller
-router.patch('/:OrderID/status', orderController.updateStatus);
+// 4. 更新訂單狀態 (PATCH /:id/status)
+router.patch('/:id/status', orderController.updateStatus);
+
+// 5. 結帳 (POST /checkout)
+router.post('/checkout', orderController.createOrder);
 
 module.exports = router;
+// 在其他路由下方新增這行
+// 網址會長這樣：PATCH /api/orders/123/status
+router.patch('/:id/status', orderController.updateStatus);

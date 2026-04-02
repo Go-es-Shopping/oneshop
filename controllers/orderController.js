@@ -12,31 +12,47 @@ const orderController = {
       const details = [];
 
       for (const item of items) {
+        // 1. 檢查庫存：從資料庫抓取最新庫存並比對
         const product = await Product.findByPk(item.ProductID, { transaction: t });
         if (!product) throw new Error(`找不到商品 ID: ${item.ProductID}`);
         if (product.Stock < item.Quantity) throw new Error(`${product.ProductName} 庫存不足`);
 
-        product.Stock -= item.Quantity;
-        await product.save({ transaction: t });
-
+        // 2. 計算金額：累加 totalAmount，使用資料庫的 Price 以防竄改
         totalAmount += product.Price * item.Quantity;
+
+        // 3. 準備明細：將 ProductID、Quantity 和當時的 Price 暫存入陣列
         details.push({
           ProductID: item.ProductID,
           Quantity: item.Quantity,
           UnitPrice: product.Price
         });
+
+        // 4. 執行庫存扣除 (Update Stock)：在交易 (transaction) 中執行
+        product.Stock -= item.Quantity;
+        await product.save({ transaction: t });
       }
 
+      // 5. 建立主訂單 (Create Order)
       const newOrder = await Order.create({
-        SellerID, BuyerName, BuyerPhone, BuyerEmail, BuyerAddress,
-        TotalAmount: totalAmount,
-        OrderStatus: 0,
-        PaymentStatus: 0
+        SellerID, 
+        BuyerName, 
+        BuyerPhone, 
+        BuyerEmail, 
+        BuyerAddress,
+        TotalAmount: totalAmount, // 使用後端計算出的總額
+        OrderStatus: 0,           // 預設狀態 (例如 0 代表 Pending)
+        PaymentStatus: 0          // 預設付款狀態
       }, { transaction: t });
 
+      // 6. 批量建立訂單明細 (Bulk Create Details)
+      // 將步驟一準備好的明細陣列，每一筆都加上 newOrder.OrderID
       const finalDetails = details.map(d => ({ ...d, OrderID: newOrder.OrderID }));
+      
+      // 使用 Orderdetail.bulkCreate 一次性寫入所有明細，並帶入 transaction
       await Orderdetail.bulkCreate(finalDetails, { transaction: t });
 
+      // 7. 提交事務 (Commit)
+      // 只有當以上所有步驟都成功時，才會真正將更動寫入資料庫
       await t.commit();
       res.status(201).json({ 
         Success: true, 
@@ -45,8 +61,37 @@ const orderController = {
         Items: finalDetails 
       });
     } catch (error) {
+      // 8. 回滾事務 (Rollback)
+      // 如果過程中發生任何錯誤，撤銷所有已執行的資料庫更動（例如已扣除的庫存）
       await t.rollback();
       res.status(400).json({ Success: false, Error: error.message });
+    }
+  },
+
+  // 更新訂單狀態
+  updateStatus: async (req, res) => {
+    try {
+      const { id } = req.params; // 從網址取得 OrderID
+      const { status } = req.body; // 從前端傳來的 JSON 取得新狀態
+
+      // 1. 找到該筆訂單
+      const order = await Order.findByPk(id);
+      if (!order) {
+        return res.status(404).json({ success: false, message: '找不到該訂單' });
+      }
+
+      // 2. 更新狀態文字
+      order.OrderStatus = status;
+      await order.save();
+
+      res.status(200).json({
+        success: true,
+        message: '訂單狀態更新成功',
+        data: { OrderID: id, NewStatus: status }
+      });
+    } catch (error) {
+      console.error('更新狀態出錯:', error);
+      res.status(500).json({ success: false, message: error.message });
     }
   },
 
@@ -80,19 +125,6 @@ const orderController = {
       });
       if (!order) return res.status(404).json({ Success: false, Message: "找不到該訂單" });
       res.json(order);
-    } catch (error) {
-      res.status(500).json({ Success: false, Error: error.message });
-    }
-  },
-
-  // 4. 更新狀態 (PATCH /api/orders/:OrderID/status)
-  updateStatus: async (req, res) => {
-    try {
-      const { OrderStatus } = req.body;
-      if (OrderStatus === undefined) throw new Error("缺少 OrderStatus 參數");
-      
-      await Order.update({ OrderStatus }, { where: { OrderID: req.params.OrderID } });
-      res.json({ Success: true, Message: '狀態更新成功' });
     } catch (error) {
       res.status(500).json({ Success: false, Error: error.message });
     }
