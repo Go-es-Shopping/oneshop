@@ -54,6 +54,3 @@ router.patch('/:id/status', orderController.updateStatus);
 router.post('/checkout', orderController.createOrder);
 
 module.exports = router;
-// 在其他路由下方新增這行
-// 網址會長這樣：PATCH /api/orders/123/status
-router.patch('/:id/status', orderController.updateStatus);
