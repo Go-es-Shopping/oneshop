@@ -26,6 +26,10 @@ router.post('/', async (req, res) => {
   return orderController.createOrder(req, res);
 });
 
+// 6. 匯出訂單 (GET /export)
+// 注意：這個路由要放在 /:OrderID 這種動態路由的上方，才不會被誤認成 ID
+router.get('/export', orderController.exportOrders);
+
 // 2. 查詢單筆訂單詳情 (GET /:OrderID)
 router.get('/:OrderID', async (req, res) => {
   const mock = await useMock()

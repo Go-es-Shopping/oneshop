@@ -1,3 +1,4 @@
+const ExcelJS = require('exceljs');
 const { Order, Orderdetail, Product, Shipment, Payment, sequelize } = require('../models');
 
 const orderController = {
@@ -93,6 +94,37 @@ const orderController = {
       console.error('更新狀態出錯:', error);
       res.status(500).json({ success: false, message: error.message });
     }
+  },
+
+  // 匯出訂單 Excel 
+  exportOrders: async (req, res) => { 
+      try { 
+          const orders = await Order.findAll(); // 抓取所有訂單 
+          const workbook = new ExcelJS.Workbook(); 
+          const worksheet = workbook.addWorksheet('訂單清單'); 
+  
+          // 設定 Excel 表頭 
+          worksheet.columns = [ 
+              { header: '訂單編號', key: 'OrderID', width: 10 }, 
+              { header: '買家姓名', key: 'BuyerName', width: 20 }, 
+              { header: '買家電話', key: 'BuyerPhone', width: 15 }, 
+              { header: '收件地址', key: 'BuyerAddress', width: 30 }, 
+              { header: '總金額', key: 'TotalAmount', width: 15 }, 
+              { header: '狀態', key: 'OrderStatus', width: 15 } 
+          ]; 
+  
+          // 填入資料 
+          orders.forEach(order => worksheet.addRow(order.get({ plain: true }))); 
+  
+          // 設定瀏覽器下載回應 
+          res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'); 
+          res.setHeader('Content-Disposition', 'attachment; filename=orders.xlsx'); 
+  
+          await workbook.xlsx.write(res); 
+          res.end(); 
+      } catch (error) { 
+          res.status(500).send(error.message); 
+      } 
   },
 
   // 2. 查詢賣家訂單清單 (GET /api/orders)
