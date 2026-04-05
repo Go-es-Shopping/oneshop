@@ -340,11 +340,16 @@
 ```json
 {
   "ProductID": 2001,
+  "SellerID": 123,
   "PageType": "Product",
   "Referrer": "https://google.com",
   "SessionID": "sess_123456789",
   "Metadata": {
-    "Note": "OpenAI 意圖分析預留欄位"
+    "device_type": "Mobile",
+    "ai_insights": {
+      "intent_note": "OpenAI 意圖分析預留欄位"
+    }
+  } 
   }
 }
 ```
@@ -364,6 +369,7 @@
 ```json
 {
   "TotalVisits": 1500,
+  "TotalRevenue": 89550.00,
   "CompletedOrders": 45,
   "ConversionRate": "3.00%",
   "UTMStats": [

@@ -14,6 +14,15 @@ const PageVisit = sequelize.define('PageVisit', {
     allowNull: true,
     field: 'ProductID'
   },
+  // models/PageVisit.js 裡面
+SellerID: {
+  type: DataTypes.INTEGER,
+  allowNull: true, // 既然你設了 FK，通常這裡不能為空
+  references: {
+    model: 'Seller', // 對應資料庫的表名
+    key: 'SellerID'
+  }
+},
   // 頁面類型 (例如 'Home', 'Product')
   PageType: {
     type: DataTypes.STRING(50),
@@ -22,19 +31,19 @@ const PageVisit = sequelize.define('PageVisit', {
   },
   // 來源網址 (Referrer)
   Referrer: {
-    type: DataTypes.STRING(500),
+    type: DataTypes.TEXT,
     allowNull: true,
     field: 'Referrer'
   },
   // IP 位址
   IPAddress: {
-    type: DataTypes.STRING(45),
+    type: DataTypes.STRING(50),
     allowNull: true,
     field: 'IPAddress'
   },
   // 使用者代理 (UserAgent)
   UserAgent: {
-    type: DataTypes.STRING(500),
+    type: DataTypes.TEXT,
     allowNull: true,
     field: 'UserAgent'
   },

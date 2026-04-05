@@ -9,7 +9,8 @@ const {
   Order,
   Orderdetail,
   Payment,
-  Shipment
+  Shipment,
+  PageVisit,
 } = require('./models');
 
 async function seed() {
@@ -123,6 +124,55 @@ async function seed() {
       CreatedAt: sequelize.literal('GETDATE()'),
       UpdatedAt: sequelize.literal('GETDATE()')
     });
+    console.log('📈 正在產生 PageVisit 流量數據...');
+//PageVisit
+console.log('📈 正在產生 PageVisit 具備 AI 洞察的流量數據...');
+
+// 第一筆：來自 FB 廣告的高意圖購買者 (手機用戶)
+await PageVisit.create({
+  ProductID: product1.ProductID,
+  SellerID: seller.SellerID,
+  PageType: 'Product',
+  Referrer: 'https://m.facebook.com/ads',
+  IPAddress: '114.32.10.5',
+  UserAgent: 'iPhone / Safari',
+  SessionID: 'sess_abc123',
+  // 🚀 AI 擴充欄位展示：分析出高購買意圖
+  Metadata: JSON.stringify({ 
+    utm_source: 'fb_campaign_summer', 
+    device: 'Mobile', 
+    stay_duration: '120s',
+    ai_insights: {
+      intent_score: 0.92,
+      user_segment: '高潛力買家',
+      suggested_action: '發送限時折扣券'
+    }
+  }),
+  CreatedAt: sequelize.literal('GETDATE()')
+});
+
+// 第二筆：來自 Google 搜尋的探索型用戶 (電腦用戶)
+await PageVisit.create({
+  ProductID: product1.ProductID,
+  SellerID: seller.SellerID,
+  PageType: 'Product',
+  Referrer: 'https://www.google.com.tw',
+  IPAddress: '192.168.1.100',
+  UserAgent: 'Mozilla/5.0 Chrome/120.0.0.0',
+  SessionID: 'sess_xyz789',
+  // 🚀 AI 擴充欄位展示：分析出一般興趣
+  Metadata: JSON.stringify({ 
+    utm_source: 'organic_search', 
+    device: 'Desktop', 
+    stay_duration: '15s',
+    ai_insights: {
+      intent_score: 0.35,
+      user_segment: '一般訪客',
+      suggested_action: '展示熱門商品推薦'
+    }
+  }),
+  CreatedAt: sequelize.literal('GETDATE()')
+});
 
     // Order 1: 未支付
     const order1 = await Order.create({

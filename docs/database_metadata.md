@@ -94,6 +94,8 @@
 | OrderStatus | nvarchar(30)     | 否        | 訂單處理狀態（0=處理中；1=待出貨；2=已出貨；3=已送達；4=完成取貨；5=已取消） |
 | TotalAmount | decimal(12,2)    | 否        | 訂單總金額（含優惠折扣與運費）                                       |
 | PaymentStatus| int             | 否        | 支付狀態（0=未付款；1=已付款；2=退款中；3=已退款；4=失敗）           |
+| UTM_Source | nvarchar(100)    | 是        | 廣告來源標籤（由 PageVisit 自動帶入，用於廣告成效分析）                                       |
+| SessionID | nvarchar(100)    | 是        | 關聯至 PageVisit.SessionID，用於計算成交轉換率 (Conversion Rate)                                       |
 | CreatedAt   | datetime         | 否        | 建立時間                                                             |
 | UpdatedAt   | datetime         | 否        | 更新時間                                                             |
 
@@ -127,3 +129,18 @@
 | ProductID    | int             | 否        | 對應商品                                       |
 | Quantity     | int             | 否        | 購買數量（下單時必須大於 0）                   |
 | UnitPrice    | decimal(12,2)   | 否        | 成交單價（凍結當下價格，避免後續調價影響訂單） |
+
+## PageVisit
+
+| 欄位名稱     | 資料型態       | 可為 Null | 說明                                           |
+|--------------|-----------------|-----------|------------------------------------------------|
+| VisitID  | int             | 否        | 瀏覽紀錄主鍵 (Identity)                                   |
+| ProductID    | int             | 是        | 被瀏覽的商品 (FK)                                       |
+| SellerID     | int             | 是        | 所屬賣家 (FK)，用於賣家後台流量統計與多租戶隔離|
+| PageType    | nvarchar(50)   | 否        | 頁面類型（例：Product 商品頁、StoreHome 店鋪首頁）|
+| Referrer    | nvarchar(MAX)   | 是        | 來源網址（例：Google 搜尋、Facebook 廣告來源 URL）|
+| IPAddress     | nvarchar(50)   |是        | 訪客 IP 位址，用於基礎地理位置分析與防詐欺過濾 |
+| UserAgent     | nvarchar(MAX)   | 是        | 訪客裝置資訊（解析瀏覽器、作業系統版本以優化前端渲染） |
+| SessionID     | nvarchar(100)   | 是        | 唯一工作階段 ID，用於追蹤從瀏覽到購買的完整轉換路徑 (Conversion Path) |
+| Metadatas     | nvarchar(MAX)   | 是        | AI 數據擴展接口：JSON 格式儲存非結構化數據（如 UTM 標籤、OpenAI 意圖預分析結果） |
+| CreatedAt     | datetime   | 否        | 瀏覽發生的精確時間 |

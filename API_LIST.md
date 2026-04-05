@@ -19,6 +19,6 @@
 | **賣家中心** | POST | `/api/seller/login` | `Seller` | 賣家中心登入 |
 | | GET | `/api/seller/me` | `Seller` | 賣家中心取得個人資料 (瀏覽器可測) |
 | **後台管理** | POST | `/api/admin/login` | `PlatformAdmin` | 平台管理員登入 |
-| | GET | `/api/admin/analytics` | `PageVisit`, `Order` | 營運數據分析 (含轉換率、UTM 來源分布) |
+| | GET | `/api/admin/analytics` | `PageVisit`, `Order`, `Product` | 營運數據分析 (含轉換率、UTM 來源分布，瀏覽器可測) |
 | **購物與結帳** | POST | `/api/checkout/calculate` | `Product` | 購物車金額計算 (含庫存檢查、滿額折扣) |
-| **數據追蹤** | POST | `/api/track/view` | `PageVisit` | 瀏覽紀錄追蹤 (支援商品 ID、來源網址、SessionID 與 Metadata 擴充) |
+| **數據追蹤** | POST | `/api/track/view` | `PageVisit` , `Product` , `Seller` | 瀏覽紀錄追蹤 (支援商品 ID、來源網址、SessionID 與 Metadata 擴充) |
