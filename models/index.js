@@ -1,3 +1,4 @@
+const sequelize = require('../config/database')
 const Seller = require('./Seller')
 const StorePage = require('./StorePage')
 const PageContent = require('./PageContent')
@@ -69,7 +70,8 @@ PageVisit.belongsTo(Product, { foreignKey: 'ProductID' })
 PageVisit.hasMany(Order, { foreignKey: 'SessionID', sourceKey: 'SessionID', constraints: false })
 Order.belongsTo(PageVisit, { foreignKey: 'SessionID', targetKey: 'SessionID', constraints: false })
 
-module.exports = {
+const db = {
+  sequelize,
   Seller,
   StorePage,
   PageContent,
@@ -77,8 +79,11 @@ module.exports = {
   Product,
   Order,
   Orderdetail,
+  OrderDetail: Orderdetail,
   Payment,
   Shipment,
   PlatformAdmin,
   PageVisit
 }
+
+module.exports = db

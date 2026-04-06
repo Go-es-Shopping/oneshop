@@ -53,7 +53,8 @@ async function seed() {
       SellerName: '測試賣家A',
       StoreName: '阿米一頁購',
       Email: 'seller@test.com',
-      PasswordHash: 'hashed_password_here',
+      //  這一串就是 "123456" 的 Bcrypt 加密結果
+      PasswordHash: '$2b$10$92IXMTstB5S6uL7mCTYzS.Ew53sSL.77V.9KInw9N/m.N.7uE.Ega',
       Phone: '+886912345678',
       PlanType: '1',
       Status: 1,

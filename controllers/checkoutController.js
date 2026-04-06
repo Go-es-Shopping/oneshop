@@ -1,5 +1,4 @@
-const { Product } = require('../models/index');
-const sequelize = require('../config/database');
+const db = require('../models');
 const { readMock } = require('../src/mocks/utils');
 
 /**
@@ -8,8 +7,11 @@ const { readMock } = require('../src/mocks/utils');
 async function useMock() {
   if (process.env.FORCE_MOCK === 'true') return true;
   try {
-    await sequelize.authenticate();
-    return false;
+    if (db.sequelize) {
+      await db.sequelize.authenticate();
+      return false;
+    }
+    return true;
   } catch {
     return true;
   }
@@ -81,8 +83,9 @@ exports.calculate = async (req, res) => {
   }
 
   try {
+    const ProductModel = db.Product;
     const productIds = CartItems.map(item => item.ProductID);
-    const products = await Product.findAll({
+    const products = await ProductModel.findAll({
       where: { ProductID: productIds }
     });
 
@@ -135,3 +138,90 @@ exports.calculate = async (req, res) => {
     return res.status(500).json({ message: '計算失敗', error: error.message });
   }
 };
+
+/**
+ * 🚀 結帳並建立訂單 (遷移自 orderController)
+ */
+exports.checkout = async (req, res) => {
+  const sequelizeInstance = db.sequelize;
+  const OrderModel = db.Order;
+  const OrderDetailModel = db.Orderdetail || db.OrderDetail; 
+  const ProductModel = db.Product;
+
+  let t;
+  try {
+    if (!sequelizeInstance) {
+      throw new Error("資料庫連線實例未定義，請檢查 models/index.js");
+    }
+
+    // --- 🚀 開始資料庫交易 ---
+    t = await sequelizeInstance.transaction();
+
+    const body = req.body || {};
+    
+    // 支援雙命名 (PascalCase / camelCase) 與 購物車欄位兼容性
+    const SellerID = body.SellerID !== undefined ? body.SellerID : body.sellerId;
+    const BuyerName = body.BuyerName !== undefined ? body.BuyerName : body.buyerName;
+    const BuyerPhone = body.BuyerPhone !== undefined ? body.BuyerPhone : body.buyerPhone;
+    const BuyerEmail = body.BuyerEmail !== undefined ? body.BuyerEmail : body.buyerEmail;
+    const BuyerAddress = body.BuyerAddress !== undefined ? body.BuyerAddress : body.buyerAddress;
+    const rawItems = body.items || body.Items || body.CartItems || body.cartItems || [];
+    const UTM_Source = body.UTM_Source !== undefined ? body.UTM_Source : body.utm_source;
+    const SessionID = body.SessionID !== undefined ? body.SessionID : body.sessionId;
+
+    if (!rawItems || rawItems.length === 0) throw new Error("購物車項目不可為空");
+
+    let totalAmount = 0;
+    const details = [];
+
+    // --- 📦 處理庫存檢查與扣除 ---
+    for (const item of rawItems) {
+      const ProductID = item.ProductID !== undefined ? item.ProductID : item.productId;
+      const Quantity = item.Quantity !== undefined ? item.Quantity : item.quantity;
+
+      if (!ProductID) throw new Error("商品 ID 缺失");
+      
+      const product = await ProductModel.findByPk(ProductID, { transaction: t });
+      if (!product) throw new Error(`找不到商品 ID: ${ProductID}`);
+      if (product.Stock < Quantity) throw new Error(`${product.ProductName || '商品'} 庫存不足`);
+
+      // 執行扣庫存
+      product.Stock -= Quantity;
+      await product.save({ transaction: t });
+
+      const price = parseFloat(product.Price || 0);
+      totalAmount += price * Quantity;
+      
+      details.push({ ProductID, Quantity, UnitPrice: price });
+    }
+
+    // --- 📝 建立訂單主檔 ---
+    const newOrder = await OrderModel.create({
+      SellerID, BuyerName, BuyerPhone, BuyerEmail, BuyerAddress,
+      TotalAmount: totalAmount,
+      OrderStatus: 0,
+      PaymentStatus: 0,
+      UTM_Source,
+      SessionID
+    }, { transaction: t });
+
+    // --- 📑 建立訂單明細 ---
+    const finalDetails = details.map(d => ({ ...d, OrderID: newOrder.OrderID }));
+    await OrderDetailModel.bulkCreate(finalDetails, { transaction: t });
+
+    // --- ✅ 提交所有變更 ---
+    await t.commit();
+
+    res.status(201).json({ 
+      Success: true, 
+      OrderID: newOrder.OrderID, 
+      TotalAmount: totalAmount 
+    });
+
+  } catch (error) {
+    if (t) await t.rollback();
+    console.error('🔴 結帳失敗:', error);
+    res.status(500).json({ Success: false, error: error.message });
+  }
+};
+
