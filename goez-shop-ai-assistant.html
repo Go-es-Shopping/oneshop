@@ -252,6 +252,59 @@
       display: flex; flex-direction: column; gap: 8px;
       min-width: 0;
     }
+    .text-gen__right .img-upload-zone {
+      position: relative;
+      height: 140px; /* 保持原本高度 */
+    }
+    /* 修正：文案生成器專用的上傳框佈局 */
+    .text-gen__right .img-upload-zone {
+      display: flex;            /* 啟用彈性佈局 */
+      flex-direction: column;   /* 垂直排列 */
+      align-items: center;      /* 水平置中 */
+      justify-content: center;  /* 垂直置中 */
+      gap: 8px;                 /* 元素之間的間距 */
+      height: 140px;
+      position: relative;
+      padding: 10px;
+    }
+
+    /* 修正內部的元素，取消 absolute 定位 */
+    .text-gen__right .upload-zone__icon-wrap,
+    .text-gen__right .upload-zone__title,
+    .text-gen__right .upload-zone__btn {
+      position: static;         /* 取消絕對定位，回到自然流向 */
+      inset: auto;              /* 清除位移 */
+      margin: 0;                /* 清除邊距 */
+    }
+
+    /* 調整小框框裡的圖示大小 */
+    .text-gen__right .upload-zone__icon-wrap {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .text-gen__right .upload-zone__icon-wrap img {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* 調整小框框裡的文字大小 */
+    .text-gen__right .upload-zone__title {
+      font-size: var(--fs-14);
+      font-weight: 500;
+      color: var(--c-gray-800);
+    }
+
+    /* 調整按鈕大小 */
+    .text-gen__right .upload-zone__btn {
+      width: 98px;
+      height: 32px;
+      font-size: var(--fs-12);
+    }
+    /* 確保上傳後圖片能填滿容器 */
     .img-upload-zone {
       background: var(--c-gray-50);
       border: 2px dashed var(--c-gray-300);
@@ -710,8 +763,11 @@
           <div class="text-gen__right">
             <label class="field__label">商品圖片（選填）</label>
             <div class="img-upload-zone" id="thumbUpload" role="button" tabindex="0" aria-label="上傳商品圖片">
-              <img src="https://www.figma.com/api/mcp/asset/525a328e-5556-4911-aaa5-653bb72c26fe" alt="上傳圖示" />
-              <p class="img-upload-zone__hint">上傳商品照片<br>幫助 AI 了解外觀</p>
+              <div class="upload-zone__icon-wrap" style="top: 15px; width: 40px; height: 40px; left: calc(50% - 20px);">
+                <img src="https://www.figma.com/api/mcp/asset/525a328e-5556-4911-aaa5-653bb72c26fe" alt="上傳圖示" style="width: 20px; height: 20px;" />
+              </div>
+              <p class="upload-zone__title" style="top: 60px; font-size: var(--fs-14);">上傳商品照片</p>
+              <button class="upload-zone__btn" style="top: 90px; width: 80px; height: 32px; font-size: var(--fs-12);">選擇檔案</button>
             </div>
           </div>
         </div>
