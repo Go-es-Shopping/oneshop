@@ -244,19 +244,36 @@
                 </div>
                 <div id="wizard-step-2" class="wizard-step hidden space-y-4">
                   <h3 class="font-semibold text-slate-800">STEP 2：信用卡金流串接</h3>
-                  <p class="text-sm text-slate-600">選擇您的信用卡收單銀行並填寫 API 金鑰（支援綠界、藍新等）。</p>
+                  <p class="text-sm text-slate-600">選擇您的信用卡收單銀行並填寫 API 金鑰（目前支援藍新 NewebPay）。</p>
                   <div class="space-y-4">
                     <div>
                       <label class="block text-sm font-medium text-slate-700 mb-1.5">收單機構</label>
-                      <select class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800">
+                      <select id="acquirer-select" class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800">
                         <option>請選擇</option>
-                        <option>綠界 ECPay</option>
                         <option>藍新 NewebPay</option>
                       </select>
                     </div>
                     <div>
                       <label class="block text-sm font-medium text-slate-700 mb-1.5">Merchant ID / API Key</label>
                       <input type="text" placeholder="請輸入金鑰" class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800 placeholder-slate-400" />
+                    </div>
+                    <div id="newebpay-fields" class="hidden p-4 rounded-xl border border-blue-100 bg-blue-50/40 space-y-3">
+                      <p class="text-sm font-semibold text-blue-900">藍新 NewebPay 設定</p>
+                      <div class="grid sm:grid-cols-2 gap-3">
+                        <div>
+                          <label class="block text-sm font-medium text-slate-700 mb-1.5">MerchantID</label>
+                          <input type="text" placeholder="例如：MS123456789" class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white/70 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800 placeholder-slate-400" />
+                        </div>
+                        <div>
+                          <label class="block text-sm font-medium text-slate-700 mb-1.5">HashKey</label>
+                          <input type="password" placeholder="請輸入 HashKey" class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white/70 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800 placeholder-slate-400" />
+                        </div>
+                      </div>
+                      <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1.5">HashIV</label>
+                        <input type="password" placeholder="請輸入 HashIV" class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white/70 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800 placeholder-slate-400" />
+                      </div>
+                      <p class="text-xs text-slate-500">提示：此頁為示範介面，正式串接時請由後端安全儲存金流金鑰。</p>
                     </div>
                   </div>
                 </div>
@@ -653,6 +670,21 @@
           domainInput.focus();
         }
       });
+    })();
+
+    // 收單機構切換：選擇藍新時顯示專用設定欄位
+    (function () {
+      var acquirerSelect = document.getElementById('acquirer-select');
+      var newebpayFields = document.getElementById('newebpay-fields');
+      if (!acquirerSelect || !newebpayFields) return;
+
+      function toggleNewebpayFields() {
+        var selected = acquirerSelect.value;
+        newebpayFields.classList.toggle('hidden', selected !== '藍新 NewebPay');
+      }
+
+      acquirerSelect.addEventListener('change', toggleNewebpayFields);
+      toggleNewebpayFields();
     })();
 
     // Sidebar 錨點高亮與平滑捲動
