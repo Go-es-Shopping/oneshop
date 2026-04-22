@@ -398,12 +398,13 @@
     }
 
     /* ── Right panel: mobile preview ─────────────── */
+  
     .preview-col {
       background: var(--c-white);
       border-left: 1px solid var(--c-gray-200);
-      width: 384px; flex-shrink: 0;
-      min-height: 1625px;
-      position: relative;
+      width: 384px;
+      flex-shrink: 0;
+      position: relative; /* 作為 sticky 的參考範圍 */
     }
     .preview-col__heading {
       position: absolute; top: 32px; left: 50%; transform: translateX(-50%);
@@ -419,17 +420,25 @@
       letter-spacing: -.08px; color: var(--c-gray-500);
       text-align: center; white-space: nowrap;
     }
+    .preview-container {
+      position: sticky;
+      top: 32px; /* 距離頂部的高度 */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
 
     /* Phone shell */
     .phone {
-      position: sticky; top: 106.5px; left: 51.5px;
-      width: 280px; height: 580px;
+      width: 280px;
+      height: 580px;
       background: var(--c-gray-800);
       border-radius: var(--r-40);
       box-shadow: var(--sh-xl);
       padding: 12px;
-      display: flex; flex-direction: column;
-      margin-left: 52px;
+      display: flex;
+      flex-direction: column;
     }
     .phone__screen {
       background: #f5f7fa;
@@ -491,7 +500,12 @@
       font-size: var(--fs-8); font-weight: 400; line-height: 12px;
       letter-spacing: .206px; color: var(--c-indigo);
     }
-    .p-skeletons { position: relative; height: 26px; }
+    .p-skeletons {
+      position: relative;
+      height: auto; /* 從 26px 改為 auto */
+      min-height: 26px;
+      transition: all 0.3s ease;
+    }
     .p-skeleton {
       position: absolute; background: var(--c-gray-200);
       height: 6px; border-radius: 4px;
@@ -531,12 +545,15 @@
     }
 
     .live-badge {
-      position: sticky; bottom: 40px; margin-left: 162px;
-      background: var(--c-green); border-radius: var(--r-full);
+      background: var(--c-green);
+      border-radius: var(--r-full);
       box-shadow: var(--sh-lg);
-      height: 25px; width: 58px; padding: 4px 12px;
-      display: flex; align-items: center; gap: 6px;
-      z-index: 10;
+      height: 25px;
+      width: fit-content;
+      padding: 4px 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
     .live-badge__dot {
       width: 6px; height: 6px; border-radius: var(--r-full);
@@ -780,52 +797,51 @@
     </main>
 
     <aside class="preview-col" aria-label="即時預覽">
-      <div class="preview-col__heading">
-        <h2 class="preview-col__title">即時預覽</h2>
-        <p class="preview-col__subtitle">即時商店檢視</p>
-      </div>
-
-      <div class="phone" aria-label="手機預覽畫面">
-        <div class="phone__screen">
-          <div class="phone__content">
-
-            <div class="p-group">
-              <label class="p-label">產品關鍵字</label>
-              <div class="p-input" id="phoneKeywordPreview">無線耳機...</div>
-              <button class="p-btn" aria-label="魔法生成">魔法生成</button>
-            </div>
-
-            <div class="p-card" id="phoneCopyCard">
-              <div class="p-card__header">
-                <span class="p-card__title">AI 文案</span>
-                <div class="p-card__badge">
-                  <div class="p-card__badge-dot"></div>
-                  <span class="p-card__badge-text" id="phoneBadgeText">輸入中</span>
+      <div class="preview-container"> <div class="preview-col__heading" style="position:static; transform:none;">
+          <h2 class="preview-col__title">即時預覽</h2>
+          <p class="preview-col__subtitle">即時商店檢視</p>
+        </div>
+    
+        <div class="phone" aria-label="手機預覽畫面">
+          <div class="phone__screen">
+            <div class="phone__content">
+              <div class="p-group">
+                <label class="p-label">產品關鍵字</label>
+                <div class="p-input" id="phoneKeywordPreview">無線耳機...</div>
+                <button class="p-btn" aria-label="魔法生成">魔法生成</button>
+              </div>
+    
+              <div class="p-card" id="phoneCopyCard">
+                <div class="p-card__header">
+                  <span class="p-card__title">AI 文案</span>
+                  <div class="p-card__badge">
+                    <div class="p-card__badge-dot"></div>
+                    <span class="p-card__badge-text" id="phoneBadgeText">輸入中</span>
+                  </div>
+                </div>
+                <div class="p-skeletons" id="phoneSkeletons">
+                  <div class="p-skeleton p-skeleton--1"></div>
+                  <div class="p-skeleton p-skeleton--2"></div>
+                  <div class="p-skeleton p-skeleton--3"></div>
                 </div>
               </div>
-              <div class="p-skeletons" id="phoneSkeletons">
-                <div class="p-skeleton p-skeleton--1"></div>
-                <div class="p-skeleton p-skeleton--2"></div>
-                <div class="p-skeleton p-skeleton--3"></div>
+    
+              <div class="p-visual">
+                <span class="p-visual__title">視覺優化</span>
+                <div class="p-visual__img" id="phoneVisualImg"></div>
+                <div class="p-visual__footer">
+                  <span class="p-visual__label">場景合成</span>
+                  <span class="p-visual__pct">+24%</span>
+                </div>
               </div>
             </div>
-
-            <div class="p-visual">
-              <span class="p-visual__title">視覺優化</span>
-              <div class="p-visual__img" id="phoneVisualImg"></div>
-              <div class="p-visual__footer">
-                <span class="p-visual__label">場景合成</span>
-                <span class="p-visual__pct">+24%</span>
-              </div>
-            </div>
-
           </div>
         </div>
-      </div>
-
-      <div class="live-badge" aria-label="即時狀態">
-        <div class="live-badge__dot"></div>
-        <span class="live-badge__text">即時</span>
+    
+        <div class="live-badge" aria-label="即時狀態">
+          <div class="live-badge__dot"></div>
+          <span class="live-badge__text">即時</span>
+        </div>
       </div>
     </aside>
 
