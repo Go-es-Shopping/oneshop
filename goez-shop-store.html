@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Goez Shop – 視覺編輯器</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@500&display=swap" rel="stylesheet" />
+  <style>
+    /* ════════════════════════════════════════
+        Design Tokens
+    ════════════════════════════════════════ */
+    :root {
+      --c-white:       #ffffff;
+      --c-black:       #000000;
+      --c-gray-50:     #f9fafb;
+      --c-gray-100:    #f3f4f6;
+      --c-gray-200:    #e5e7eb;
+      --c-gray-300:    #d1d5dc;
+      --c-gray-400:    #99a1af;
+      --c-gray-500:    #6a7282;
+      --c-gray-600:    #45556c;
+      --c-gray-700:    #364153;
+      --c-gray-800:    #101828;
+      --c-navy:        #1d293d;
+      --c-slate:       #64748b;
+      --c-slate-100:   #f1f5f9;
+      --c-slate-200:   #e2e8f0;
+      --c-slate-300:   #cbd5e1;
+      --c-slate-400:   #90a1b9;
+      --c-slate-600:   #62748e;
+      --c-blue:        #2b7fff;
+      --c-dark-text:   #0f172b;
+
+      --sp-4:   4px;  --sp-6:   6px;  --sp-8:   8px;
+      --sp-10:  10px; --sp-12:  12px; --sp-16:  16px;
+      --sp-18:  18px; --sp-20:  20px; --sp-24:  24px;
+      --sp-32:  32px; --sp-48:  48px; --sp-64:  64px;
+      --sp-80:  80px; --sp-96:  96px; --sp-120: 120px;
+
+      --fs-10: 10px; --fs-12: 12px; --fs-14: 14px;
+      --fs-16: 16px; --fs-18: 18px; --fs-20: 20px;
+      --fs-24: 24px; --fs-64: 64px;
+
+      --r-8:  8px;  --r-10: 10px; --r-12: 12px;
+      --r-14: 14px; --r-16: 16px; --r-24: 24px; --r-full: 9999px;
+
+      --sh-sm:   0px 1px 3px rgba(0,0,0,.1), 0px 1px 2px rgba(0,0,0,.1);
+      --sh-md:   0px 4px 6px rgba(0,0,0,.1), 0px 2px 4px rgba(0,0,0,.1);
+      --sh-lg:   0px 10px 15px rgba(0,0,0,.1), 0px 4px 6px rgba(0,0,0,.1);
+      --sh-xl:   0px 25px 50px rgba(0,0,0,.25);
+      --sh-btn:  0px 20px 25px #e2e8f0, 0px 8px 10px #e2e8f0;
+      --sh-card: 0px 1px 3px rgba(0,0,0,.1), 0px 1px 2px -1px rgba(0,0,0,.1);
+      --sh-inset: inset 0 2px 4px rgba(0,0,0,.05);
+    }
+
+    /* ════════════════════════════════════════
+        Reset
+    ════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter','Noto Sans JP','Noto Sans TC',sans-serif; background: var(--c-white); -webkit-font-smoothing: antialiased; }
+    img { display: block; max-width: 100%; }
+    a { text-decoration: none; color: inherit; }
+    button { cursor: pointer; font-family: inherit; border: none; background: none; }
+
+    /* ════════════════════════════════════════
+        Hero Banner
+    ════════════════════════════════════════ */
+    .hero {
+      position: relative;
+      width: 100%;
+      height: 174px;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 60px var(--sp-120) 34px;
+    }
+    .hero__bg { position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none; }
+    .hero__title {
+      position: relative; z-index:1;
+      font-size: var(--fs-64); font-weight:700; line-height:1.1;
+      letter-spacing:-1.6px; color:var(--c-white); text-align:center; width:100%;
+    }
+
+    /* ════════════════════════════════════════
+        Editor Shell
+    ════════════════════════════════════════ */
+    .editor { background:var(--c-gray-100); width:100%; }
+    .editor__card {
+      background:var(--c-white);
+      box-shadow: var(--sh-xl);
+      display:flex; flex-direction:column;
+      overflow:hidden; width:100%;
+    }
+
+    /* ── Top Bar ─────────────────────────────── */
+    .topbar {
+      background:var(--c-white);
+      border-bottom:1px solid var(--c-gray-100);
+      box-shadow:var(--sh-sm);
+      height:80px; flex-shrink:0;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 var(--sp-32); padding-bottom:1px;
+      position:relative;
+    }
+    .topbar__left { display:flex;align-items:center;gap:var(--sp-32);height:40px; }
+    .topbar__brand { display:flex;align-items:center;gap:var(--sp-12); }
+    .topbar__logo-box {
+      background:var(--c-navy); width:40px;height:40px; border-radius:14px;
+      box-shadow:var(--sh-lg); display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    }
+    .topbar__logo-box img { width:22px;height:22px;object-fit:contain; }
+    .topbar__title { font-size:var(--fs-20);font-weight:900;line-height:28px;letter-spacing:-0.95px;color:var(--c-dark-text);white-space:nowrap; }
+    .topbar__divider { background:var(--c-gray-100);width:1px;height:32px;flex-shrink:0; }
+    .topbar__nav-desktop { display:flex;align-items:center;gap:var(--sp-8);height:38px;width:204px;flex-shrink:0; }
+    .topbar__nav-tab {
+      background:var(--c-gray-50); border:1px solid var(--c-slate-100); border-radius:14px;
+      height:38px; width:90px; display:flex;align-items:center;justify-content:center;
+      font-size:var(--fs-14);font-weight:700;line-height:20px;letter-spacing:-0.15px;
+      color:var(--c-slate-600);white-space:nowrap;
+    }
+    .topbar__nav-link {
+      display:flex;align-items:center;gap:4px; flex:1 0 0;
+      font-size:var(--fs-14);font-weight:700;line-height:20px;letter-spacing:-0.15px;
+      color:var(--c-slate-400);white-space:nowrap; padding:0 6px;
+    }
+    .topbar__nav-link img { width:14px;height:14px; }
+    .topbar__right { display:flex;align-items:center;gap:var(--sp-24);height:44px; }
+    .topbar__icons { display:flex;align-items:center;gap:var(--sp-16); }
+    .topbar__icons img { width:20px;height:20px;object-fit:contain; }
+    .topbar__actions { display:flex;align-items:center;gap:var(--sp-12); }
+    .btn-draft {
+      background:var(--c-white); border:2px solid var(--c-slate-100); border-radius:14px;
+      box-shadow:var(--sh-sm); height:44px; padding:0 16px 0 44px;
+      font-size:var(--fs-14);font-weight:700;line-height:20px;letter-spacing:-0.15px;
+      color:var(--c-gray-600);white-space:nowrap;position:relative;display:flex;align-items:center;
+    }
+    .btn-publish {
+      background:var(--c-navy); border-radius:14px; box-shadow:var(--sh-btn);
+      height:40px; width:120px; padding:0 16px 0 44px;
+      font-size:var(--fs-14);font-weight:700;line-height:20px;letter-spacing:-0.15px;
+      color:var(--c-white);white-space:nowrap;position:relative;display:flex;align-items:center;justify-content:center;
+    }
+    .btn-icon { position:absolute;left:20px;top:50%;transform:translateY(-50%);width:16px;height:16px; }
+    .btn-icon img { width:16px;height:16px;object-fit:contain; }
+
+    /* Hamburger */
+    .hamburger {
+      display:none; flex-direction:column;align-items:center;justify-content:center;
+      gap:5px; width:36px;height:36px; padding:6px; border-radius:8px;
+    }
+    .hamburger__bar { display:block;width:22px;height:2px;background:var(--c-navy);border-radius:2px;transition:transform .25s,opacity .25s; }
+    .hamburger[aria-expanded="true"] .hamburger__bar:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+    .hamburger[aria-expanded="true"] .hamburger__bar:nth-child(2) { opacity:0; }
+    .hamburger[aria-expanded="true"] .hamburger__bar:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+
+    /* Mobile menu dropdown */
+    .mobile-menu {
+      display:none; flex-direction:column; width:100%;
+      background:var(--c-white); border-top:1px solid var(--c-gray-100);
+      overflow:hidden; max-height:0; transition:max-height .3s ease;
+    }
+    .mobile-menu.is-open { max-height:220px; }
+    .mobile-menu a { display:block;padding:12px var(--sp-16);font-size:var(--fs-14);font-weight:600;color:var(--c-gray-700);border-bottom:1px solid var(--c-gray-100); }
+
+    /* ── Editor Body ───────────────────────── */
+    .editor__body { display:flex;align-items:flex-start;overflow:hidden;width:100%; }
+
+    /* ── Left Panel ────────────────────────── */
+    .panel-store {
+      background:var(--c-white); border-right:1px solid var(--c-gray-200);
+      width:320px; height:1140px; flex-shrink:0;
+      display:flex; flex-direction:column; overflow:hidden;
+    }
+    .panel-store__hdr {
+      border-bottom:1px solid var(--c-gray-200); height:53px; padding:var(--sp-16);
+      padding-bottom:1px; flex-shrink:0; display:flex; align-items:flex-start;
+    }
+    .sec-title { display:flex;align-items:center;gap:8px; }
+    .sec-title img { width:16px;height:16px;object-fit:contain; }
+    .sec-title span { font-size:var(--fs-14);font-weight:600;line-height:20px;letter-spacing:-0.15px;color:var(--c-gray-800);white-space:nowrap; }
+    .panel-store__body { flex:1 0 0;padding:var(--sp-16);overflow-y:auto;display:flex;flex-direction:column;gap:var(--sp-24); }
+
+    .lbl-section { display:flex;align-items:center;gap:6px;margin-bottom:var(--sp-16); }
+    .lbl-section img { width:14px;height:14px;object-fit:contain; }
+    .lbl-section span { font-size:var(--fs-12);font-weight:600;line-height:16px;letter-spacing:.6px;color:var(--c-gray-500);text-transform:uppercase;white-space:nowrap; }
+
+    .field { display:flex;flex-direction:column;gap:var(--sp-4); }
+    .field__lbl { font-size:var(--fs-12);font-weight:500;line-height:16px;color:var(--c-gray-700);white-space:nowrap;padding-top:1px; }
+    .field__input { border:1px solid var(--c-gray-300);border-radius:var(--r-10);height:38px;padding:8px var(--sp-12);font-size:var(--fs-14);font-weight:400;color:rgba(10,10,10,.5);white-space:nowrap;overflow:hidden; }
+    .field__textarea { border:1px solid var(--c-gray-300);border-radius:var(--r-10);height:78px;padding:8px var(--sp-12);font-size:var(--fs-14);font-weight:400;line-height:20px;color:rgba(10,10,10,.5); }
+    .field__logo { background:var(--c-gray-50);border:2px dashed var(--c-gray-200);border-radius:14px;height:161px;overflow:hidden;padding:2px; }
+    .field__logo img { width:100%;height:100%;object-fit:cover; }
+
+    .btn-add {
+      background:var(--c-slate);border-radius:14px;box-shadow:var(--sh-md);
+      height:48px;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;
+      font-size:var(--fs-16);font-weight:500;line-height:24px;letter-spacing:-.31px;color:var(--c-white);
+    }
+    .btn-add img { width:16px;height:16px;object-fit:contain; }
+
+    .assets-hdr { display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-16); }
+    .assets-hdr__mgr { font-size:var(--fs-10);font-weight:500;line-height:15px;letter-spacing:.72px;color:var(--c-blue);text-transform:uppercase; }
+    .assets-grid { display:grid;grid-template-columns:repeat(3,90px);gap:8px; }
+    .assets-grid__cell { border:1px solid var(--c-gray-100);border-radius:var(--r-10);width:90px;height:90px;overflow:hidden;padding:1px; }
+    .assets-grid__cell img { width:100%;height:100%;object-fit:cover; }
+    .assets-grid__add { border:2px dashed var(--c-gray-200);border-radius:var(--r-10);width:90px;height:90px;display:flex;align-items:center;justify-content:center; }
+    .assets-grid__add img { width:16px;height:16px;object-fit:contain; }
+
+    /* ── Center Preview ─────────────────────── */
+    .panel-preview {
+      background:#f9fafb; flex:1 0 0; min-width:0;
+      height:1140px; display:flex;flex-direction:column;
+      align-items:center; overflow:hidden;
+    }
+    .preview-scroll { flex:1 0 0;width:100%;overflow-y:auto;display:flex;align-items:flex-start;justify-content:center;padding:30px var(--sp-48) 0; }
+    .preview-frame {
+      background:var(--c-white); border:1px solid var(--c-gray-200); border-radius:var(--r-16);
+      box-shadow:var(--sh-xl); width:575px; flex-shrink:0;
+      display:flex; flex-direction:column; overflow:hidden;
+    }
+
+    /* Store nav */
+    .s-nav {
+      background:var(--c-white); border-bottom:1px solid var(--c-gray-100);
+      height:81px; padding:0 var(--sp-48); padding-bottom:1px;
+      display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
+    }
+    .s-nav__brand { display:flex;align-items:center;gap:var(--sp-16); }
+    .s-nav__logo { width:40px;height:40px;border-radius:var(--r-10);box-shadow:var(--sh-sm);overflow:hidden;flex-shrink:0; }
+    .s-nav__logo img { width:100%;height:100%;object-fit:cover; }
+    .s-nav__name { font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-20);font-weight:700;line-height:28px;letter-spacing:-.5px;color:var(--c-gray-800);white-space:nowrap; }
+    .s-nav__right { display:flex;align-items:center;gap:var(--sp-48); }
+    .s-nav__links { display:flex;align-items:center;gap:var(--sp-16); }
+    .s-nav__link { font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-14);font-weight:500;line-height:20px;color:#4a5565;white-space:nowrap; }
+    .s-nav__icons { display:flex;align-items:center;width:80px; }
+    .s-nav__icon { width:36px;height:36px;border-radius:var(--r-full);display:flex;align-items:center;justify-content:center;position:relative; }
+    .s-nav__icon img { width:20px;height:20px;object-fit:contain; }
+    .s-nav__badge { position:absolute;top:4px;left:16px;background:var(--c-slate);border-radius:var(--r-full);width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-10);font-weight:500;line-height:15px;color:var(--c-white); }
+
+    /* Store header */
+    .s-header { background:var(--c-white);padding:var(--sp-64) var(--sp-48) 0;display:flex;flex-direction:column;gap:var(--sp-16);flex-shrink:0; }
+    .s-header__sub { font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-18);font-weight:400;line-height:29.25px;color:var(--c-gray-500);text-align:center; }
+    .s-header__cta { display:flex;align-items:center;justify-content:center; }
+    .s-header__btn { background:var(--c-slate);border-radius:var(--r-full);box-shadow:var(--sh-lg);height:48px;width:128px;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-16);font-weight:500;line-height:24px;color:var(--c-white);white-space:nowrap; }
+
+    /* Store products */
+    .s-products { padding:var(--sp-64) var(--sp-48) 0;display:flex;flex-direction:column;gap:var(--sp-32);flex-shrink:0; }
+    .s-products__hdr { display:flex;align-items:center;justify-content:space-between;height:32px; }
+    .s-products__title-wrap { display:flex;align-items:center;gap:8px; }
+    .s-products__title-wrap img { width:20px;height:20px;object-fit:contain; }
+    .s-products__title { font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-24);font-weight:700;line-height:32px;color:var(--c-gray-800);white-space:nowrap; }
+    .s-products__more { font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-14);font-weight:500;line-height:20px;color:var(--c-slate);white-space:nowrap; }
+    .s-products__grid { display:flex;gap:24px; }
+
+    .prod-card { background:var(--c-white);border:1px solid var(--c-gray-100);border-radius:24px;box-shadow:var(--sh-card);width:123.5px;overflow:hidden;display:flex;flex-direction:column; }
+    .prod-card__img { background:var(--c-gray-100);height:121.5px;overflow:hidden; }
+    .prod-card__img img { width:100%;height:100%;object-fit:cover; }
+    .prod-card__body { padding:var(--sp-20);display:flex;flex-direction:column;gap:8px; }
+    .prod-card__meta { display:flex;align-items:center;justify-content:space-between; }
+    .prod-card__tag { background:var(--c-gray-50);border-radius:var(--r-full);padding:0 8px;font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-10);font-weight:700;line-height:15px;letter-spacing:.5px;color:var(--c-gray-400);text-transform:uppercase; }
+    .prod-card__stock { font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-12);font-weight:400;line-height:16px;color:var(--c-gray-400); }
+    .prod-card__name { font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-18);font-weight:700;line-height:27px;color:var(--c-gray-800);overflow:hidden;height:27px; }
+    .prod-card__footer { display:flex;align-items:center;justify-content:space-between;height:40px; }
+    .prod-card__price { font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-18);font-weight:900;line-height:28px;color:var(--c-slate);white-space:nowrap; }
+    .prod-card__add { background:var(--c-slate);border-radius:14px;box-shadow:var(--sh-lg);width:36px;height:36px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+    .prod-card__add img { width:16px;height:16px;object-fit:contain; }
+
+    /* Store footer */
+    .s-footer { background:var(--c-slate);border-radius:48px 48px 0 0;padding:var(--sp-64) var(--sp-48);display:flex;flex-direction:column;gap:var(--sp-48);margin-top:var(--sp-64);flex-shrink:0; }
+    .s-footer__top { display:flex;gap:var(--sp-48); }
+    .s-footer__about { display:flex;flex-direction:column;gap:var(--sp-16);width:157px;flex-shrink:0; }
+    .s-footer__brand { font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-20);font-weight:700;line-height:28px;color:var(--c-white);white-space:nowrap; }
+    .s-footer__desc { font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-14);font-weight:400;line-height:22.75px;color:rgba(255,255,255,.7);width:154px; }
+    .s-footer__col { display:flex;flex-direction:column;gap:var(--sp-12); }
+    .s-footer__col-title { font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-16);font-weight:700;line-height:24px;color:var(--c-white);padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.2); }
+    .s-footer__link { display:flex;align-items:center;gap:8px;height:24px;font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-16);font-weight:500;line-height:24px;color:rgba(255,255,255,.7); }
+    .s-footer__link::before { content:'';display:inline-block;width:4px;height:4px;border-radius:var(--r-full);background:rgba(255,255,255,.3);flex-shrink:0; }
+    .s-footer__contact { display:flex;flex-direction:column;gap:var(--sp-12); }
+    .s-footer__contact-row { display:flex;align-items:center;gap:var(--sp-12);height:36px; }
+    .s-footer__contact-icon { background:rgba(255,255,255,.1);border-radius:14px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+    .s-footer__contact-icon img { width:16px;height:16px;object-fit:contain; }
+    .s-footer__contact-text { font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-14);font-weight:500;line-height:20px;color:rgba(255,255,255,.7);white-space:nowrap; }
+    .s-footer__bottom { border-top:1px solid rgba(255,255,255,.1);padding-top:var(--sp-32);font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-10);font-weight:400;line-height:15px;color:rgba(255,255,255,.4);text-align:center; }
+
+    /* Preview bar */
+    .preview-bar {
+      background:rgba(255,255,255,.8); border-top:1px solid var(--c-gray-100); border-bottom:1px solid var(--c-gray-100);
+      height:56px; padding:0 var(--sp-32); padding-bottom:1px;
+      display:flex; align-items:center; justify-content:space-between;
+      flex-shrink:0; width:100%;
+    }
+    .preview-bar__toggle { background:rgba(243,244,246,.5);border:1px solid var(--c-gray-100);border-radius:14px;height:38px;display:flex;align-items:center;padding:5px;gap:4px; }
+    .preview-bar__btn { height:28px;border-radius:var(--r-10);display:flex;align-items:center;gap:8px;padding:0 6px;font-size:var(--fs-12);font-weight:700;line-height:16px;color:var(--c-black);white-space:nowrap; }
+    .preview-bar__btn--on { background:var(--c-white);box-shadow:var(--sh-sm); }
+    .preview-bar__btn--off { font-weight:500;color:var(--c-gray-400); }
+    .preview-bar__btn img { width:16px;height:16px;object-fit:contain; }
+    .preview-bar__status { font-size:var(--fs-10);font-weight:900;line-height:15px;letter-spacing:1.12px;color:var(--c-gray-300);text-transform:uppercase;white-space:nowrap;display:flex;align-items:center;gap:8px; }
+    .preview-bar__dot { width:4px;height:4px;border-radius:var(--r-full);background:var(--c-gray-300);flex-shrink:0; }
+
+    /* ── Right Panel ────────────────────────── */
+    .panel-design {
+      background:var(--c-white); border-left:1px solid var(--c-gray-200);
+      width:320px; height:1140px; flex-shrink:0;
+      display:flex; flex-direction:column; overflow:hidden; position:relative;
+    }
+    .panel-design__hdr {
+      border-bottom:1px solid var(--c-gray-200);height:56px;padding:var(--sp-16);
+      display:flex;align-items:center;flex-shrink:0;
+    }
+    .panel-design__body { flex:1 0 0;overflow-y:auto;padding:var(--sp-24);display:flex;flex-direction:column;gap:var(--sp-16); }
+
+    .d-label { font-size:var(--fs-12);font-weight:600;line-height:16px;letter-spacing:.6px;color:var(--c-gray-500);text-transform:uppercase;white-space:nowrap;display:flex;align-items:center;gap:6px; }
+    .d-label img { width:14px;height:14px;object-fit:contain; }
+
+    .color-theme { background:var(--c-gray-50);border:2px solid var(--c-gray-50);border-radius:var(--r-16);padding:18px 18px 2px;display:flex;flex-direction:column;gap:var(--sp-12); }
+    .color-theme--sel { background:var(--c-white);border-color:var(--c-slate);box-shadow:0 20px 25px rgba(0,0,0,.1),0 8px 10px rgba(0,0,0,.1); }
+    .color-theme__hdr { display:flex;align-items:center;justify-content:space-between; }
+    .color-theme__name { font-size:var(--fs-12);font-weight:700;line-height:16px;color:var(--c-gray-500);white-space:nowrap; }
+    .color-theme--sel .color-theme__name { color:var(--c-gray-800); }
+    .color-theme__dot { width:8px;height:8px;border-radius:var(--r-full);background:var(--c-slate); }
+    .swatches { display:flex;gap:6px;height:40px; }
+    .sw { flex:1 0 0;height:40px;border-radius:var(--r-10);box-shadow:var(--sh-inset); }
+    .sw-s1{background:#64748b;} .sw-s2{background:#94a3b8;} .sw-s3{background:#cbd5e1;} .sw-s4{background:#f1f5f9;}
+    .sw-g1{background:#869489;} .sw-g2{background:#a3ad9e;} .sw-g3{background:#c2c9bd;} .sw-g4{background:#e8ebe4;}
+    .sw-t1{background:#b38b7d;} .sw-t2{background:#d1b4a6;} .sw-t3{background:#e5d3c8;} .sw-t4{background:#f5efea;}
+    .sw-n1{background:#a8a29e;} .sw-n2{background:#d6d3d1;} .sw-n3{background:#e7e5e4;} .sw-n4{background:#f5f5f4;}
+
+    .font-opt { background:var(--c-gray-50);border:2px solid var(--c-gray-50);border-radius:14px;height:48px;padding:2px 18px;display:flex;align-items:center;justify-content:space-between; }
+    .font-opt--sel { background:var(--c-white);border-color:var(--c-slate);box-shadow:var(--sh-md); }
+    .font-opt__name { font-size:var(--fs-14);font-weight:500;line-height:20px;color:var(--c-gray-800);white-space:nowrap; }
+    .font-opt--off .font-opt__name { color:var(--c-gray-500); }
+    .font-opt--serif .font-opt__name { font-family:'Noto Serif TC',serif; }
+    .font-opt__dot { width:6px;height:6px;border-radius:var(--r-full);background:var(--c-slate); }
+
+    /* ════════════════════════════════════════
+        Site Footer
+    ════════════════════════════════════════ */
+    .site-footer { position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:0 var(--sp-120) var(--sp-120);width:100%; }
+    .site-footer__bg { position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none; }
+    .site-footer__inner { position:relative;z-index:1;display:flex;flex:1 0 0;align-items:flex-start;justify-content:space-between;border-top:1px solid rgba(255,255,255,.15);padding:var(--sp-80) 0;min-width:0; }
+    .site-footer__brand { font-size:var(--fs-24);font-weight:600;line-height:1.2;letter-spacing:-.48px;color:var(--c-white);white-space:nowrap;flex-shrink:0; }
+    .site-footer__nav { display:flex;gap:var(--sp-96);align-items:flex-start;flex-shrink:0; }
+    .site-footer__col { display:flex;flex-direction:column;gap:8px;align-items:flex-start;width:130px; }
+    .site-footer__col-hdr { padding-bottom:var(--sp-16);width:100%; }
+    .site-footer__col-title { font-size:var(--fs-16);font-weight:700;line-height:1.45;letter-spacing:-.08px;color:var(--c-white);white-space:nowrap; }
+    .site-footer__link { font-size:var(--fs-16);font-weight:400;line-height:1.45;letter-spacing:-.08px;color:rgba(255,255,255,.6);width:100%; }
+
+    /* ════════════════════════════════════════
+        Responsive
+    ════════════════════════════════════════ */
+    @media (max-width: 1024px) {
+      .hero { height:auto;min-height:120px;padding:48px var(--sp-48) 28px; }
+      .hero__title { font-size:40px; }
+
+      .topbar { height:auto;min-height:60px;padding:0 var(--sp-16);flex-wrap:wrap; }
+      .topbar__left { width:100%;justify-content:space-between;padding:10px 0; }
+      .topbar__title { font-size:var(--fs-14); }
+      .topbar__divider { display:none; }
+      .topbar__nav-desktop { display:none; }
+      .topbar__right { display:none; }
+      .hamburger { display:flex; }
+      .mobile-menu { display:flex; }
+
+      .editor__body { flex-direction:column; }
+      .panel-store, .panel-design { width:100%;height:auto;border:none;border-bottom:1px solid var(--c-gray-200); }
+      .panel-store { height:auto; }
+      .panel-design { height:auto; }
+      .panel-preview { height:auto; }
+      .preview-scroll { padding:var(--sp-16); }
+      .preview-frame { width:100%;max-width:575px; }
+
+      .site-footer { padding:0 var(--sp-48) var(--sp-80); }
+      .site-footer__nav { gap:var(--sp-48); }
+      .site-footer__col { width:110px; }
+    }
+
+    @media (max-width: 768px) {
+      .hero { padding:40px 24px 24px; }
+      .hero__title { font-size:28px; }
+
+      .s-nav { padding:0 var(--sp-24); }
+      .s-nav__links { gap:8px; }
+      .s-footer__top { flex-direction:column;gap:var(--sp-24); }
+
+      .site-footer { padding:0 24px var(--sp-64); }
+      .site-footer__inner { flex-direction:column;gap:40px; }
+      .site-footer__nav { flex-wrap:wrap;gap:var(--sp-32); }
+      .site-footer__col { width:calc(50% - 16px); }
+    }
+  </style>
+</head>
+<body>
+<div class="page" style="display:flex;flex-direction:column;align-items:center;width:100%;">
+
+  <div class="hero" aria-hidden="true" role="presentation">
+    <img class="hero__bg" src="https://www.figma.com/api/mcp/asset/237b6db2-7a2e-4772-8450-4dbfbd69afed" alt="" />
+    <h1 class="hero__title">Goez Shop</h1>
+  </div>
+
+  <div class="editor" style="width:100%;">
+    <div class="editor__card">
+
+      <header class="topbar">
+        <div class="topbar__left">
+          <div class="topbar__brand">
+            <div class="topbar__logo-box">
+              <img src="https://www.figma.com/api/mcp/asset/b1bc8e20-5f7c-415f-ac0e-3cf55bb7be42" alt="Goez Shop" />
+            </div>
+            <span class="topbar__title">建立屬於自己的賣場</span>
+          </div>
+          <div class="topbar__divider" aria-hidden="true"></div>
+          <nav class="topbar__nav-desktop" aria-label="編輯器功能">
+            <div class="topbar__nav-tab">預覽編輯</div>
+            <a href="#" class="topbar__nav-link">
+              數據中心
+              <img src="https://www.figma.com/api/mcp/asset/a0053575-0836-4083-beea-36416573f747" alt="" aria-hidden="true" />
+            </a>
+          </nav>
+          <button class="hamburger" id="menuToggle" aria-expanded="false" aria-controls="mobileMenu" aria-label="開啟/關閉選單">
+            <span class="hamburger__bar"></span>
+            <span class="hamburger__bar"></span>
+            <span class="hamburger__bar"></span>
+          </button>
+        </div>
+        <div class="topbar__right">
+          <div class="topbar__icons" aria-hidden="true">
+            <img src="https://www.figma.com/api/mcp/asset/e1a6b61e-7823-4340-ad54-f2d4edad6e21" alt="通知" />
+            <img src="https://www.figma.com/api/mcp/asset/003b37e9-a3a6-47cd-a6b4-d96ddc92ef63" alt="設定" />
+            <img src="https://www.figma.com/api/mcp/asset/5ca26beb-1b6b-457e-8ff5-04be72f9d3b3" alt="用戶" style="width:20px;height:20px;object-fit:contain;" />
+          </div>
+          <div class="topbar__actions">
+            <button class="btn-draft">
+              <span class="btn-icon"><img src="https://www.figma.com/api/mcp/asset/aac99495-7a94-4e48-99f4-cf135c7048d3" alt="" aria-hidden="true" /></span>
+              儲存草稿
+            </button>
+            <button class="btn-publish">
+              <span class="btn-icon"><img src="https://www.figma.com/api/mcp/asset/777c44b6-b741-4f38-b8c2-9fbd4282b761" alt="" aria-hidden="true" /></span>
+              正式發布
+            </button>
+          </div>
+        </div>
+        <nav class="mobile-menu" id="mobileMenu" aria-label="行動導覽">
+          <a href="#">預覽編輯</a>
+          <a href="#">數據中心</a>
+          <a href="#">儲存草稿</a>
+          <a href="#">正式發布</a>
+        </nav>
+      </header>
+
+      <div class="editor__body">
+
+        <aside class="panel-store" aria-label="店鋪管理">
+          <div class="panel-store__hdr">
+            <div class="sec-title">
+              <img src="https://www.figma.com/api/mcp/asset/867fc24d-dfa8-4310-ada4-eaffd8d3a4e9" alt="" aria-hidden="true" />
+              <span>店鋪管理</span>
+            </div>
+          </div>
+          <div class="panel-store__body">
+            <section>
+              <div class="lbl-section">
+                <img src="https://www.figma.com/api/mcp/asset/3e028bc2-a13e-4af2-9559-399974748912" alt="" aria-hidden="true" />
+                <span>店鋪基本資訊</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:12px;">
+                <div class="field">
+                  <label class="field__lbl">店鋪名稱</label>
+                  <div class="field__input">風格生活選物</div>
+                </div>
+                <div class="field">
+                  <label class="field__lbl">店鋪簡介</label>
+                  <div class="field__textarea">請輸入店鋪簡介...</div>
+                </div>
+                <div class="field">
+                  <label class="field__lbl">店鋪商標</label>
+                  <div class="field__logo">
+                    <img src="https://www.figma.com/api/mcp/asset/efe1bd34-8246-45c7-b57a-7d78c0d294fd" alt="店鋪商標" />
+                  </div>
+                </div>
+              </div>
+            </section>
+            <section>
+              <div class="lbl-section">
+                <img src="https://www.figma.com/api/mcp/asset/00761fe8-43e7-4ecc-9b51-9e51caf23a02" alt="" aria-hidden="true" />
+                <span>商品管理</span>
+              </div>
+              <button class="btn-add">
+                <img src="https://www.figma.com/api/mcp/asset/a4f46d2e-b89c-4f37-921e-a628855411c2" alt="" aria-hidden="true" />
+                新增商品
+              </button>
+            </section>
+            <section>
+              <div class="assets-hdr">
+                <div class="lbl-section" style="margin-bottom:0;">
+                  <img src="https://www.figma.com/api/mcp/asset/f8c1dbf4-f8b9-4e97-a884-6cbd698ca4b6" alt="" aria-hidden="true" />
+                  <span>最近資源</span>
+                </div>
+                <button class="assets-hdr__mgr">管理全部</button>
+              </div>
+              <div class="assets-grid" style="margin-top:16px;">
+                <div class="assets-grid__cell"><img src="https://www.figma.com/api/mcp/asset/efe1bd34-8246-45c7-b57a-7d78c0d294fd" alt="資源 1" /></div>
+                <div class="assets-grid__cell"><img src="https://www.figma.com/api/mcp/asset/26c20d9e-ad72-4946-9ccf-4c3cef6dba26" alt="資源 2" /></div>
+                <div class="assets-grid__cell"><img src="https://www.figma.com/api/mcp/asset/89357b69-ecb1-4a87-bfbd-110b042e099f" alt="資源 3" /></div>
+                <div class="assets-grid__cell"><img src="https://www.figma.com/api/mcp/asset/1b8b1ff3-88b4-469d-9ce7-55c683c590c1" alt="資源 4" /></div>
+                <div class="assets-grid__cell"><img src="https://www.figma.com/api/mcp/asset/1a562e05-a8b1-42bb-beb7-c50c36cdcfe5" alt="資源 5" /></div>
+                <div class="assets-grid__add" role="button" aria-label="新增資源">
+                  <img src="https://www.figma.com/api/mcp/asset/65345ba3-43fc-4ff5-88e3-c9c962637688" alt="新增" />
+                </div>
+              </div>
+            </section>
+          </div>
+        </aside>
+
+        <div class="panel-preview">
+          
+          <div class="preview-bar">
+            <div class="preview-bar__toggle">
+              <button class="preview-bar__btn preview-bar__btn--on">
+                <img src="https://www.figma.com/api/mcp/asset/8bb9f8d6-58f8-4992-ad5e-2d683e0a21fc" alt="" aria-hidden="true" />
+                桌面版
+              </button>
+              <button class="preview-bar__btn preview-bar__btn--off">
+                <img src="https://www.figma.com/api/mcp/asset/71cd39b6-92f9-4dd6-b840-d5f094c31c23" alt="" aria-hidden="true" />
+                行動版
+              </button>
+            </div>
+            <div class="preview-bar__status" aria-live="polite">
+              Auto-syncing <span class="preview-bar__dot"></span>
+            </div>
+          </div>
+
+          <div class="preview-scroll">
+            <div class="preview-frame">
+              <nav class="s-nav" aria-label="賣場導覽">
+                <div class="s-nav__brand">
+                  <div class="s-nav__logo">
+                    <img src="https://www.figma.com/api/mcp/asset/efe1bd34-8246-45c7-b57a-7d78c0d294fd" alt="風格生活選物標誌" />
+                  </div>
+                  <span class="s-nav__name">風格生活選物</span>
+                </div>
+                <div class="s-nav__right">
+                  <div class="s-nav__links">
+                    <a href="#" class="s-nav__link">首頁</a>
+                    <a href="#" class="s-nav__link">所有商品</a>
+                    <a href="#" class="s-nav__link">關於我們</a>
+                  </div>
+                  <div class="s-nav__icons">
+                    <button class="s-nav__icon" aria-label="搜尋">
+                      <img src="https://www.figma.com/api/mcp/asset/95b8a160-42c0-4224-ba7c-c4caafb2d4ec" alt="" aria-hidden="true" />
+                    </button>
+                    <button class="s-nav__icon" aria-label="購物車 (2)">
+                      <img src="https://www.figma.com/api/mcp/asset/379f1147-3f8c-41f9-a83f-95ed22f0e82c" alt="" aria-hidden="true" />
+                      <span class="s-nav__badge">2</span>
+                    </button>
+                  </div>
+                </div>
+              </nav>
+              <div class="s-header">
+                <p class="s-header__sub">為您挑選來自世界各地的質感生活好物，讓日常充滿美感。</p>
+                <div class="s-header__cta">
+                  <button class="s-header__btn">立即選購</button>
+                </div>
+              </div>
+              <section class="s-products" aria-label="熱門商品">
+                <div class="s-products__hdr">
+                  <div class="s-products__title-wrap">
+                    <img src="https://www.figma.com/api/mcp/asset/bd9e3c84-674f-454a-8710-8674301d5cf1" alt="" aria-hidden="true" />
+                    <h2 class="s-products__title">熱門商品</h2>
+                  </div>
+                  <a href="#" class="s-products__more">查看更多</a>
+                </div>
+                <div class="s-products__grid">
+                  <article class="prod-card">
+                    <div class="prod-card__img"></div>
+                    <div class="prod-card__body">
+                      <div class="prod-card__meta">
+                        <span class="prod-card__tag">居家生活</span>
+                        <span class="prod-card__stock">剩餘 15</span>
+                      </div>
+                      <h3 class="prod-card__name">質感陶瓷花瓶</h3>
+                      <div class="prod-card__footer">
+                        <span class="prod-card__price">$890</span>
+                        <button class="prod-card__add" aria-label="加入購物車">
+                          <img src="https://www.figma.com/api/mcp/asset/e1fd778b-bd49-416b-afda-bc508ce01019" alt="" aria-hidden="true" />
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                  <article class="prod-card">
+                    <div class="prod-card__img">
+                      <img src="https://www.figma.com/api/mcp/asset/1a562e05-a8b1-42bb-beb7-c50c36cdcfe5" alt="無線降噪耳機" />
+                    </div>
+                    <div class="prod-card__body">
+                      <div class="prod-card__meta">
+                        <span class="prod-card__tag">科技配件</span>
+                        <span class="prod-card__stock">剩餘 8</span>
+                      </div>
+                      <h3 class="prod-card__name">無線降噪耳機</h3>
+                      <div class="prod-card__footer">
+                        <span class="prod-card__price">$5,490</span>
+                        <button class="prod-card__add" aria-label="加入購物車">
+                          <img src="https://www.figma.com/api/mcp/asset/e1fd778b-bd49-416b-afda-bc508ce01019" alt="" aria-hidden="true" />
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                </div>
+              </section>
+              <footer class="s-footer">
+                <div class="s-footer__top">
+                  <div class="s-footer__about">
+                    <span class="s-footer__brand">風格生活選物</span>
+                    <p class="s-footer__desc">為您挑選來自世界各地的質感生活好物，讓日常充滿美感。</p>
+                  </div>
+                  <nav class="s-footer__col" aria-label="快速連結">
+                    <span class="s-footer__col-title">快速連結</span>
+                    <a href="#" class="s-footer__link">最新商品</a>
+                    <a href="#" class="s-footer__link">會員中心</a>
+                    <a href="#" class="s-footer__link">隱私條款</a>
+                  </nav>
+                  <address class="s-footer__contact" style="font-style:normal;">
+                    <span class="s-footer__col-title" style="display:block;margin-bottom:12px;">聯絡我們</span>
+                    <div class="s-footer__contact-row">
+                      <div class="s-footer__contact-icon">
+                        <img src="https://www.figma.com/api/mcp/asset/bd9e3c84-674f-454a-8710-8674301d5cf1" alt="" aria-hidden="true" />
+                      </div>
+                      <span class="s-footer__contact-text">service@shop.com</span>
+                    </div>
+                    <div class="s-footer__contact-row">
+                      <div class="s-footer__contact-icon">
+                        <img src="https://www.figma.com/api/mcp/asset/e1fd778b-bd49-416b-afda-bc508ce01019" alt="" aria-hidden="true" />
+                      </div>
+                      <span class="s-footer__contact-text">0800-000-000</span>
+                    </div>
+                  </address>
+                </div>
+                <div class="s-footer__bottom">
+                  © 2026 風格生活選物. All rights reserved. Powered by Figma Make.
+                </div>
+              </footer>
+            </div></div></div><aside class="panel-design" aria-label="設計系統">
+          <div class="panel-design__hdr">
+            <div class="sec-title">
+              <img src="https://www.figma.com/api/mcp/asset/affc6ae1-db34-4245-b02e-053844c61cba" alt="" aria-hidden="true" />
+              <span>設計系統</span>
+            </div>
+          </div>
+          <div class="panel-design__body">
+            <div class="d-label">主題配色</div>
+            <div class="color-theme color-theme--sel" tabindex="0" role="radio" aria-checked="true">
+              <div class="color-theme__hdr">
+                <span class="color-theme__name">冷靜石板</span>
+                <div class="color-theme__dot"></div>
+              </div>
+              <div class="swatches">
+                <div class="sw sw-s1"></div><div class="sw sw-s2"></div>
+                <div class="sw sw-s3"></div><div class="sw sw-s4"></div>
+              </div>
+            </div>
+            <div class="color-theme" tabindex="0" role="radio" aria-checked="false">
+              <div class="color-theme__hdr"><span class="color-theme__name">鼠尾草綠</span></div>
+              <div class="swatches">
+                <div class="sw sw-g1"></div><div class="sw sw-g2"></div>
+                <div class="sw sw-g3"></div><div class="sw sw-g4"></div>
+              </div>
+            </div>
+            <div class="color-theme" tabindex="0" role="radio" aria-checked="false">
+              <div class="color-theme__hdr"><span class="color-theme__name">陶土橘</span></div>
+              <div class="swatches">
+                <div class="sw sw-t1"></div><div class="sw sw-t2"></div>
+                <div class="sw sw-t3"></div><div class="sw sw-t4"></div>
+              </div>
+            </div>
+            <div class="color-theme" tabindex="0" role="radio" aria-checked="false">
+              <div class="color-theme__hdr"><span class="color-theme__name">北歐沙色</span></div>
+              <div class="swatches">
+                <div class="sw sw-n1"></div><div class="sw sw-n2"></div>
+                <div class="sw sw-n3"></div><div class="sw sw-n4"></div>
+              </div>
+            </div>
+            <div class="d-label" style="margin-top:8px;">
+              <img src="https://www.figma.com/api/mcp/asset/affc6ae1-db34-4245-b02e-053844c61cba" alt="" aria-hidden="true" />
+              字體設定
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div class="font-opt font-opt--sel" tabindex="0" role="radio" aria-checked="true">
+                <span class="font-opt__name">現代黑體</span>
+                <div class="font-opt__dot"></div>
+              </div>
+              <div class="font-opt font-opt--off font-opt--serif" tabindex="0" role="radio" aria-checked="false">
+                <span class="font-opt__name">經典明體</span>
+              </div>
+              <div class="font-opt font-opt--off" tabindex="0" role="radio" aria-checked="false">
+                <span class="font-opt__name">溫潤圓體</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+      </div></div></div><footer class="site-footer" aria-label="網站頁腳">
+    <img class="site-footer__bg" src="https://www.figma.com/api/mcp/asset/039ae755-5335-4be3-94d0-1955bdb391e7" alt="" aria-hidden="true" />
+    <div class="site-footer__inner">
+      <p class="site-footer__brand">Namedly</p>
+      <nav class="site-footer__nav" aria-label="頁腳導覽">
+        <div class="site-footer__col">
+          <div class="site-footer__col-hdr"><span class="site-footer__col-title">Platform</span></div>
+          <a href="#" class="site-footer__link">Individuals</a>
+          <a href="#" class="site-footer__link">Teams</a>
+          <a href="#" class="site-footer__link">Admins</a>
+          <a href="#" class="site-footer__link">Developers</a>
+        </div>
+        <div class="site-footer__col">
+          <div class="site-footer__col-hdr"><span class="site-footer__col-title">Features</span></div>
+          <a href="#" class="site-footer__link">Core features</a>
+          <a href="#" class="site-footer__link">Pro experience</a>
+          <a href="#" class="site-footer__link">Integrations</a>
+        </div>
+        <div class="site-footer__col">
+          <div class="site-footer__col-hdr"><span class="site-footer__col-title">Learn more</span></div>
+          <a href="#" class="site-footer__link">Blog</a>
+          <a href="#" class="site-footer__link">Case studies</a>
+          <a href="#" class="site-footer__link">Customer stories</a>
+          <a href="#" class="site-footer__link">Best practices</a>
+        </div>
+        <div class="site-footer__col">
+          <div class="site-footer__col-hdr"><span class="site-footer__col-title">Support</span></div>
+          <a href="#" class="site-footer__link">Contact</a>
+          <a href="#" class="site-footer__link">Support</a>
+          <a href="#" class="site-footer__link">Legal</a>
+        </div>
+      </nav>
+    </div>
+  </footer>
+
+</div><script>
+  const btn = document.getElementById('menuToggle');
+  const menu = document.getElementById('mobileMenu');
+  btn.addEventListener('click', () => {
+    const open = btn.getAttribute('aria-expanded') === 'true';
+    btn.setAttribute('aria-expanded', String(!open));
+    menu.classList.toggle('is-open', !open);
+  });
+</script>
+</body>
+</html>
