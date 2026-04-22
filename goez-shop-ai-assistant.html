@@ -8,39 +8,38 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet" />
   <style>
-    /* ════════════════════════════════════════════
+    /* ══════════════════════════════════════════════
        Design Tokens
-    ════════════════════════════════════════════ */
+    ══════════════════════════════════════════════ */
     :root {
       /* Colors */
-      --c-white:      #ffffff;
-      --c-black:      #000000;
-      --c-gray-50:    #f9fafb;
-      --c-gray-100:   #f3f4f6;
-      --c-gray-200:   #e5e7eb;
-      --c-gray-300:   #d1d5dc;
-      --c-gray-400:   #99a1af;
-      --c-gray-500:   #6a7282;
-      --c-gray-600:   #4a5565;
-      --c-gray-700:   #364153;
-      --c-gray-800:   #101828;
-      --c-slate-800:  #1e2939;
-      --c-indigo:     #6366f1;
-      --c-green:      #00c950;
-      --c-green-dot:  #05df72;
-      --c-green-pos:  #00a63e;
+      --c-white:       #ffffff;
+      --c-black:       #000000;
+      --c-gray-50:     #f9fafb;
+      --c-gray-100:    #f3f4f6;
+      --c-gray-200:    #e5e7eb;
+      --c-gray-300:    #d1d5dc;
+      --c-gray-400:    #99a1af;
+      --c-gray-500:    #6a7282;
+      --c-gray-600:    #4a5565;
+      --c-gray-700:    #364153;
+      --c-gray-800:    #101828;
+      --c-slate-800:   #1e2939;
+      --c-indigo:      #6366f1;
+      --c-green:       #00c950;
+      --c-green-dot:   #05df72;
+      --c-green-pos:   #00a63e;
 
       /* Gradients */
       --grad-indigo: linear-gradient(90deg,#6366f1 0%,#6163f0 9.09%,#5f61ef 18.18%,#5d5eee 27.27%,#5b5bed 36.36%,#5958ec 45.45%,#5855eb 54.55%,#5652e9 63.64%,#544fe8 72.73%,#524ce7 81.82%,#5149e6 90.91%,#4f46e5 100%);
       --grad-dark:   linear-gradient(127.73deg,#101828 0%,#1e2939 100%);
-      --grad-preview: linear-gradient(143.13deg,#f3f4f6 0%,#e5e7eb 100%);
+      --grad-light:  linear-gradient(143.13deg,#f3f4f6 0%,#e5e7eb 100%);
 
       /* Spacing */
-      --sp-4:   4px;   --sp-6:   6px;   --sp-8:   8px;
-      --sp-12:  12px;  --sp-13:  13px;  --sp-16:  16px;
-      --sp-20:  20px;  --sp-24:  24px;  --sp-32:  32px;
-      --sp-33:  33px;  --sp-48:  48px;  --sp-64:  64px;
-      --sp-120: 120px;
+      --sp-4:   4px;  --sp-6:  6px;   --sp-8:  8px;
+      --sp-12: 12px;  --sp-16: 16px;  --sp-20: 20px;
+      --sp-24: 24px;  --sp-32: 32px;  --sp-33: 33px;
+      --sp-48: 48px;  --sp-64: 64px;  --sp-120:120px;
 
       /* Font sizes */
       --fs-8:  8px;  --fs-9:  9px;  --fs-10: 10px;
@@ -49,36 +48,40 @@
       --fs-24: 24px;
 
       /* Radii */
-      --r-4:  4px;  --r-8:  8px;  --r-10: 10px;
-      --r-12: 12px; --r-14: 14px; --r-16: 16px;
-      --r-32: 32px; --r-40: 40px; --r-full: 9999px;
+      --r-10: 10px; --r-12: 12px; --r-14: 14px;
+      --r-16: 16px; --r-32: 32px; --r-40: 40px;
+      --r-full: 9999px;
 
       /* Shadows */
-      --sh-sm:  0 1px 3px rgba(0,0,0,.1), 0 1px 2px rgba(0,0,0,.1);
-      --sh-lg:  0 10px 15px rgba(0,0,0,.1), 0 4px 6px rgba(0,0,0,.1);
-      --sh-xl:  0 25px 50px rgba(0,0,0,.25);
+      --sh-sm: 0 1px 3px rgba(0,0,0,.1), 0 1px 2px rgba(0,0,0,.1);
+      --sh-lg: 0 10px 15px rgba(0,0,0,.1), 0 4px 6px rgba(0,0,0,.1);
+      --sh-xl: 0 25px 50px rgba(0,0,0,.25);
     }
 
-    /* ════════════════════════════════════════════
+    /* ══════════════════════════════════════════════
        Reset
-    ════════════════════════════════════════════ */
+    ══════════════════════════════════════════════ */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
-    body { font-family: 'Inter','Noto Sans JP',sans-serif; background: var(--c-white); -webkit-font-smoothing: antialiased; color: var(--c-gray-800); }
+    body {
+      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+      background: var(--c-white);
+      -webkit-font-smoothing: antialiased;
+      color: var(--c-gray-800);
+    }
     img { display: block; max-width: 100%; }
     a { text-decoration: none; color: inherit; }
     ul, ol { list-style: none; }
     button { cursor: pointer; font-family: inherit; border: none; background: none; }
-    p, h1, h2, h3, h4 { margin: 0; }
 
-    /* ════════════════════════════════════════════
+    /* ══════════════════════════════════════════════
        Page
-    ════════════════════════════════════════════ */
+    ══════════════════════════════════════════════ */
     .page { display: flex; flex-direction: column; align-items: center; width: 100%; }
 
-    /* ════════════════════════════════════════════
+    /* ══════════════════════════════════════════════
        Navbar
-    ════════════════════════════════════════════ */
+    ══════════════════════════════════════════════ */
     .navbar {
       position: relative; width: 100%;
       display: flex; align-items: center; justify-content: space-between;
@@ -97,8 +100,7 @@
     }
     .navbar__actions {
       position: relative; z-index: 1;
-      display: flex; flex-wrap: wrap;
-      gap: var(--sp-16); align-items: flex-end;
+      display: flex; gap: 16px; align-items: center;
     }
     .navbar__btn--primary {
       background: var(--c-white); color: var(--c-black);
@@ -140,12 +142,13 @@
     .navbar__mobile-menu a {
       display: block; padding: 14px 24px;
       font-size: var(--fs-16); font-weight: 500;
-      color: var(--c-white); border-bottom: 1px solid rgba(255,255,255,.1);
+      color: var(--c-white);
+      border-bottom: 1px solid rgba(255,255,255,.1);
     }
 
-    /* ════════════════════════════════════════════
-       App body
-    ════════════════════════════════════════════ */
+    /* ══════════════════════════════════════════════
+       App layout
+    ══════════════════════════════════════════════ */
     .app {
       background: var(--c-gray-50);
       width: 100%;
@@ -153,14 +156,11 @@
       align-items: flex-start;
     }
 
-    /* ── Left / editor column ─────────────────── */
+    /* ── Left / editor column ───────────────────── */
     .editor {
-      flex: 1016 0 0;
-      min-width: 0;
+      flex: 1016 0 0; min-width: 0;
       padding: var(--sp-32);
-      display: flex;
-      flex-direction: column;
-      gap: var(--sp-32);
+      display: flex; flex-direction: column; gap: var(--sp-32);
     }
 
     .editor__heading { display: flex; flex-direction: column; gap: var(--sp-8); }
@@ -187,7 +187,7 @@
       letter-spacing: -.44px; color: var(--c-gray-800); white-space: nowrap;
     }
 
-    /* Form fields */
+    /* Field */
     .field { display: flex; flex-direction: column; gap: var(--sp-8); }
     .field__label {
       font-size: var(--fs-14); font-weight: 500; line-height: 21px;
@@ -207,54 +207,80 @@
       background: var(--c-gray-50);
       border: 1px solid var(--c-gray-200);
       border-radius: var(--r-14);
-      height: 122px; padding: 12px 16px;
+      padding: 12px 16px;
       font-size: var(--fs-16); font-weight: 400;
       line-height: 24px; letter-spacing: -.31px;
-      color: var(--c-gray-400);
-      overflow: hidden;
+      color: var(--c-gray-400); overflow: hidden;
     }
-    .field__textarea--tall { height: 98px; }
+    .field__textarea--h122 { height: 122px; }
+    .field__textarea--h98  { height: 98px; }
 
-    /* Gradient buttons */
-    .btn--indigo {
+    /* Indigo gradient button */
+    .btn-indigo {
       background: var(--grad-indigo);
       border-radius: var(--r-14);
       box-shadow: var(--sh-sm);
       height: 52px;
       display: flex; align-items: center; justify-content: center;
-      gap: var(--sp-8);
+      gap: 8px;
       font-size: var(--fs-16); font-weight: 500;
       line-height: 24px; letter-spacing: -.31px;
       color: var(--c-white); white-space: nowrap;
+      width: 100%;
     }
-    .btn--indigo--sm { height: 48px; }
-    .btn--indigo img { width: 18px; height: 18px; object-fit: contain; }
+    .btn-indigo--h48 { height: 48px; }
+    .btn-indigo img { width: 18px; height: 18px; object-fit: contain; }
 
-    /* ── Card 1: AI text generator ─────────────── */
-    .ai-text__fields { display: flex; flex-direction: column; gap: var(--sp-20); }
-
-    /* ── Card 2: AI image generate ─────────────── */
-    .ai-image__panels {
-      display: flex; gap: 24px;
-      align-items: flex-start;
+    /* ── Card 1: AI Text Generator ────────────────── */
+    .text-gen__body {
+      display: flex; gap: 24px; align-items: flex-start;
     }
-    .ai-image__left {
+    .text-gen__left {
+      flex: 0 0 582.664px; /* matches Figma w=582.664 */
+      display: flex; flex-direction: column; gap: 16px;
+      min-width: 0;
+    }
+    .text-gen__right {
+      flex: 0 0 279.336px; /* matches Figma w=279.336 */
+      display: flex; flex-direction: column; gap: 8px;
+      min-width: 0;
+    }
+    .img-upload-zone {
+      background: var(--c-gray-50);
+      border: 2px dashed var(--c-gray-300);
+      border-radius: var(--r-14);
+      height: 140px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 8px;
+      padding: 36px 2px;
+    }
+    .img-upload-zone img { width: 24px; height: 24px; object-fit: contain; }
+    .img-upload-zone__hint {
+      font-size: var(--fs-12); font-weight: 500;
+      line-height: 18px; color: var(--c-gray-500);
+      text-align: center;
+    }
+
+    /* ── Card 2: AI Generate Image ─────────────────── */
+    .ai-gen__panels { display: flex; gap: 24px; align-items: flex-start; }
+    .ai-gen__left {
       width: 431px; flex-shrink: 0;
-      display: flex; flex-direction: column; gap: var(--sp-16);
+      display: flex; flex-direction: column; gap: 16px;
     }
-    .ai-image__right {
+    .ai-gen__right {
       background: var(--c-gray-50);
       border-radius: var(--r-16);
       width: 431px; flex-shrink: 0;
       padding: 24px;
-      display: flex; flex-direction: column; gap: var(--sp-12);
+      display: flex; flex-direction: column; gap: 12px;
       height: 316px;
     }
-    .ai-image__preview-label {
+    .ai-gen__preview-label {
       font-size: var(--fs-13); font-weight: 400; line-height: 19.5px;
       letter-spacing: -.08px; color: var(--c-gray-600);
     }
-    .ai-image__preview-box {
+    .ai-gen__preview-box {
       flex: 1 0 0;
       background: var(--c-white);
       border: 2px dashed var(--c-gray-300);
@@ -262,19 +288,17 @@
       display: flex; align-items: center; justify-content: center;
       flex-direction: column; gap: 8px;
     }
-    .ai-image__preview-box img { width: 48px; height: 48px; object-fit: contain; }
-    .ai-image__preview-hint {
+    .ai-gen__preview-box img { width: 48px; height: 48px; object-fit: contain; }
+    .ai-gen__preview-hint {
       font-size: var(--fs-13); font-weight: 400; line-height: 19.5px;
       letter-spacing: -.08px; color: var(--c-gray-400); text-align: center;
     }
 
-    /* ── Card 3: AI retouch ─────────────────────── */
-    .ai-retouch__panels {
-      display: flex; gap: 24px; align-items: flex-start;
-    }
-    .ai-retouch__left {
+    /* ── Card 3: AI Retouch ─────────────────────────── */
+    .retouch__panels { display: flex; gap: 24px; align-items: flex-start; }
+    .retouch__left {
       width: 431px; flex-shrink: 0;
-      display: flex; flex-direction: column; gap: var(--sp-16);
+      display: flex; flex-direction: column; gap: 16px;
     }
 
     /* Upload zone */
@@ -287,33 +311,27 @@
       flex-shrink: 0;
     }
     .upload-zone__icon-wrap {
-      position: absolute;
-      top: 32px; left: calc(50% - 32px);
+      position: absolute; top: 32px; left: calc(50% - 32px);
       width: 64px; height: 64px;
-      background: var(--c-white);
-      border-radius: var(--r-16);
+      background: var(--c-white); border-radius: var(--r-16);
       box-shadow: var(--sh-sm);
       display: flex; align-items: center; justify-content: center;
     }
     .upload-zone__icon-wrap img { width: 32px; height: 32px; object-fit: contain; }
     .upload-zone__title {
-      position: absolute; top: 112px; left: 0; right: 0;
-      text-align: center;
+      position: absolute; top: 112px; left: 0; right: 0; text-align: center;
       font-size: var(--fs-16); font-weight: 500; line-height: 24px;
       letter-spacing: -.31px; color: var(--c-gray-800);
     }
     .upload-zone__subtitle {
-      position: absolute; top: 144px; left: 0; right: 0;
-      text-align: center;
+      position: absolute; top: 144px; left: 0; right: 0; text-align: center;
       font-size: var(--fs-13); font-weight: 400; line-height: 19.5px;
       letter-spacing: -.08px; color: var(--c-gray-500);
     }
     .upload-zone__btn {
-      position: absolute;
-      top: 179.5px; left: calc(50% - 49px);
+      position: absolute; top: 179.5px; left: calc(50% - 49px);
       width: 98px; height: 39px;
-      background: var(--c-white);
-      border: 1px solid var(--c-gray-300);
+      background: var(--c-white); border: 1px solid var(--c-gray-300);
       border-radius: var(--r-10);
       font-size: var(--fs-14); font-weight: 500;
       line-height: 21px; letter-spacing: -.15px;
@@ -321,29 +339,24 @@
       display: flex; align-items: center; justify-content: center;
     }
     .upload-zone__hint {
-      position: absolute; top: 230.5px; left: 0; right: 0;
-      text-align: center;
+      position: absolute; top: 230.5px; left: 0; right: 0; text-align: center;
       font-size: var(--fs-12); font-weight: 400; line-height: 18px;
       color: var(--c-gray-400);
     }
 
-    /* Dark preview panel (retouch) */
+    /* Dark result panel */
     .dark-panel {
       background: var(--grad-dark);
       border-radius: var(--r-16);
       width: 431px; flex-shrink: 0;
       padding: 24px 24px 0;
-      display: flex; flex-direction: column; gap: var(--sp-16);
+      display: flex; flex-direction: column; gap: 16px;
       height: 557px;
     }
-    .dark-panel__status {
-      display: flex; align-items: center; gap: 8px; height: 19.5px;
-    }
+    .dark-panel__status { display: flex; align-items: center; gap: 8px; }
     .dark-panel__dot {
-      width: 8px; height: 8px;
-      border-radius: var(--r-full);
-      background: var(--c-green-dot);
-      opacity: .87; flex-shrink: 0;
+      width: 8px; height: 8px; border-radius: var(--r-full);
+      background: var(--c-green-dot); opacity: .58; flex-shrink: 0;
     }
     .dark-panel__status-text {
       font-size: var(--fs-13); font-weight: 400; line-height: 19.5px;
@@ -355,12 +368,10 @@
       border-radius: var(--r-14);
       height: 383px;
       display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
+      flex-shrink: 0; overflow: hidden;
     }
     .dark-panel__image-box img { width: 48px; height: 48px; object-fit: contain; }
-    .dark-panel__stats {
-      display: flex; flex-direction: column; gap: 8px;
-    }
+    .dark-panel__stats { display: flex; flex-direction: column; gap: 8px; }
     .dark-panel__stat-row {
       display: flex; align-items: center; justify-content: space-between;
       height: 19.5px;
@@ -374,15 +385,14 @@
       letter-spacing: -.08px; color: var(--c-white);
     }
 
-    /* ── Right column: mobile preview ─────────── */
+    /* ── Right panel: mobile preview ─────────────── */
     .preview-col {
       background: var(--c-white);
       border-left: 1px solid var(--c-gray-200);
       width: 384px; flex-shrink: 0;
-      min-height: 1587px;
+      min-height: 1625px;
       position: relative;
     }
-
     .preview-col__heading {
       position: absolute; top: 32px; left: 50%; transform: translateX(-50%);
       display: flex; flex-direction: column; gap: 4px; align-items: center;
@@ -400,13 +410,12 @@
 
     /* Phone shell */
     .phone {
-      position: absolute;
-      top: 106.5px; left: 51.5px;
+      position: absolute; top: 106.5px; left: 51.5px;
       width: 280px; height: 580px;
       background: var(--c-gray-800);
       border-radius: var(--r-40);
       box-shadow: var(--sh-xl);
-      padding: 12px 12px 0;
+      padding: 12px;
       display: flex; flex-direction: column;
     }
     .phone__screen {
@@ -422,7 +431,7 @@
     }
 
     /* Phone – keyword group */
-    .p-field-group { display: flex; flex-direction: column; gap: 8px; }
+    .p-group { display: flex; flex-direction: column; gap: 8px; }
     .p-label {
       font-size: var(--fs-9); font-weight: 400; line-height: 13.5px;
       letter-spacing: .167px; color: var(--c-gray-600);
@@ -462,13 +471,12 @@
       font-size: var(--fs-10); font-weight: 400; line-height: 15px;
       letter-spacing: .117px; color: var(--c-gray-800);
     }
-    .p-card__status { display: flex; align-items: center; gap: 4px; }
-    .p-card__status-dot {
-      width: 4px; height: 4px;
-      border-radius: var(--r-full);
+    .p-card__badge { display: flex; align-items: center; gap: 4px; }
+    .p-card__badge-dot {
+      width: 4px; height: 4px; border-radius: var(--r-full);
       background: var(--c-indigo); flex-shrink: 0;
     }
-    .p-card__status-text {
+    .p-card__badge-text {
       font-size: var(--fs-8); font-weight: 400; line-height: 12px;
       letter-spacing: .206px; color: var(--c-indigo);
     }
@@ -495,7 +503,7 @@
       letter-spacing: .117px; color: var(--c-gray-800);
     }
     .p-visual__img {
-      background: linear-gradient(143.13deg,#f3f4f6 0%,#e5e7eb 100%);
+      background: var(--grad-light);
       border-radius: var(--r-10); flex: 1 0 0; height: 148.5px;
     }
     .p-visual__footer {
@@ -513,29 +521,24 @@
 
     /* Live badge */
     .live-badge {
-      position: absolute;
-      top: 677.75px; left: 162.5px;
-      background: var(--c-green);
-      border-radius: var(--r-full);
+      position: absolute; top: 677.75px; left: 162.5px;
+      background: var(--c-green); border-radius: var(--r-full);
       box-shadow: var(--sh-lg);
-      height: 25px; width: 58px;
-      padding: 4px 12px;
+      height: 25px; width: 58px; padding: 4px 12px;
       display: flex; align-items: center; gap: 6px;
     }
     .live-badge__dot {
-      width: 6px; height: 6px;
-      border-radius: var(--r-full);
-      background: var(--c-white);
-      opacity: .87; flex-shrink: 0;
+      width: 6px; height: 6px; border-radius: var(--r-full);
+      background: var(--c-white); opacity: .58; flex-shrink: 0;
     }
     .live-badge__text {
       font-size: var(--fs-11); font-weight: 400; line-height: 16.5px;
       letter-spacing: .065px; color: var(--c-white); white-space: nowrap;
     }
 
-    /* ════════════════════════════════════════════
+    /* ══════════════════════════════════════════════
        Site Footer
-    ════════════════════════════════════════════ */
+    ══════════════════════════════════════════════ */
     .site-footer {
       position: relative; width: 100%; overflow: hidden;
       display: flex; align-items: center; justify-content: center;
@@ -561,10 +564,10 @@
     .site-footer__nav {
       display: flex; align-items: flex-start;
       justify-content: space-between;
-      flex-shrink: 0; width: 808px;
+      width: 808px; flex-shrink: 0;
     }
     .footer-col { display: flex; flex-direction: column; gap: 8px; width: 130px; }
-    .footer-col__header { padding-bottom: 16px; }
+    .footer-col__hdr { padding-bottom: 16px; }
     .footer-col__title {
       font-size: var(--fs-16); font-weight: 700; line-height: 1.45;
       letter-spacing: -.08px; color: var(--c-white); white-space: nowrap;
@@ -574,9 +577,9 @@
       letter-spacing: -.08px; color: rgba(255,255,255,.6);
     }
 
-    /* ════════════════════════════════════════════
+    /* ══════════════════════════════════════════════
        Responsive
-    ════════════════════════════════════════════ */
+    ══════════════════════════════════════════════ */
     @media (max-width: 1024px) {
       .navbar { padding: 20px 32px; }
       .navbar__actions { display: none; }
@@ -590,14 +593,22 @@
         border-left: none; border-top: 1px solid var(--c-gray-200);
         padding-bottom: 48px;
       }
-      .preview-col__heading { position: static; transform: none; padding: 32px 0 0; display: flex; }
+      .preview-col__heading {
+        position: static; transform: none;
+        padding: 32px 0 0; align-items: center;
+      }
       .phone { position: static; margin: 24px auto 0; }
-      .live-badge { position: static; margin: 20px auto 0; display: flex; width: fit-content; }
+      .live-badge {
+        position: static; margin: 20px auto 0;
+        display: flex; width: fit-content;
+      }
 
-      .ai-image__panels { flex-direction: column; }
-      .ai-image__left, .ai-image__right { width: 100%; }
-      .ai-retouch__panels { flex-direction: column; }
-      .ai-retouch__left, .dark-panel { width: 100%; }
+      .text-gen__body { flex-direction: column; }
+      .text-gen__left, .text-gen__right { flex: none; width: 100%; }
+      .ai-gen__panels { flex-direction: column; }
+      .ai-gen__left, .ai-gen__right { width: 100%; }
+      .retouch__panels { flex-direction: column; }
+      .retouch__left, .dark-panel { width: 100%; }
       .dark-panel { height: auto; }
 
       .site-footer { padding: 0 48px 80px; }
@@ -609,12 +620,10 @@
       .navbar { padding: 16px 24px; }
       .editor { padding: 24px 16px; gap: 24px; }
       .card { padding: 20px; }
-      .field__textarea { white-space: normal; }
-      .phone { width: 250px; height: 520px; }
       .site-footer { padding: 0 24px 64px; }
       .site-footer__inner { flex-direction: column; gap: 40px; }
-      .site-footer__nav { width: 100%; }
-      .footer-col { width: calc(50% - 16px); }
+      .site-footer__nav { width: 100%; flex-wrap: wrap; gap: 24px; }
+      .footer-col { width: calc(50% - 12px); }
     }
   </style>
 </head>
@@ -627,7 +636,7 @@
     <nav>
       <div class="navbar">
         <img class="navbar__bg"
-             src="https://www.figma.com/api/mcp/asset/7cc83198-7c19-460a-96ce-d277474d1a19"
+             src="https://www.figma.com/api/mcp/asset/e3ab4d4c-7f19-4465-8557-65cad340e8ac"
              alt="" aria-hidden="true" />
         <a class="navbar__brand" href="#">Goez Shop</a>
         <div class="navbar__actions">
@@ -636,7 +645,7 @@
         </div>
         <button class="navbar__hamburger" id="menuToggle"
                 aria-expanded="false" aria-controls="mobileMenu"
-                aria-label="開啟/關閉導覽選單">
+                aria-label="開啟/關閉選單">
           <span class="navbar__hamburger-bar"></span>
           <span class="navbar__hamburger-bar"></span>
           <span class="navbar__hamburger-bar"></span>
@@ -649,10 +658,10 @@
     </nav>
   </header>
 
-  <!-- ════ App Body ════ -->
+  <!-- ════ App body ════ -->
   <div class="app" style="width:100%;">
 
-    <!-- LEFT: Editor panels -->
+    <!-- LEFT: Editor -->
     <main class="editor">
 
       <!-- Page heading -->
@@ -661,32 +670,43 @@
         <p class="editor__subtitle">使用 AI 工具優化您的產品內容</p>
       </div>
 
-      <!-- Card 1: AI Text Generator -->
+      <!-- ─── Card 1: AI 文案魔法生成器 ─── -->
       <article class="card" aria-label="AI 文案魔法生成器">
         <h2 class="card__title">AI 文案魔法生成器</h2>
-        <div class="ai-text__fields">
-          <div class="field">
-            <label class="field__label" for="kw">產品關鍵字</label>
-            <div class="field__input" id="kw" role="textbox" aria-readonly="true">
-              例如：無線耳機、降噪、藍牙 5.0
+        <div class="text-gen__body">
+          <!-- Left: keyword + button -->
+          <div class="text-gen__left">
+            <div class="field">
+              <label class="field__label" for="keywords">產品關鍵字</label>
+              <div class="field__input" id="keywords" role="textbox" aria-readonly="true">
+                例如：無線耳機、降噪、藍牙 5.0
+              </div>
+            </div>
+            <button class="btn-indigo" aria-label="使用 AI 魔法生成文案">
+              <img src="https://www.figma.com/api/mcp/asset/89f5e432-57a7-46f5-ae26-16a2272e3300" alt="" aria-hidden="true" />
+              ✨ 魔法生成
+            </button>
+          </div>
+          <!-- Right: optional image upload -->
+          <div class="text-gen__right">
+            <label class="field__label">商品圖片（選填）</label>
+            <div class="img-upload-zone" role="button" tabindex="0" aria-label="上傳商品圖片">
+              <img src="https://www.figma.com/api/mcp/asset/525a328e-5556-4911-aaa5-653bb72c26fe" alt="上傳圖示" />
+              <p class="img-upload-zone__hint">上傳商品照片<br>幫助 AI 了解外觀</p>
             </div>
           </div>
-          <button class="btn--indigo" aria-label="使用 AI 魔法生成文案">
-            <img src="https://www.figma.com/api/mcp/asset/a70329c3-4f61-42a8-a421-14c0b3d0a072" alt="" aria-hidden="true" />
-            ✨ 魔法生成
-          </button>
         </div>
       </article>
 
-      <!-- Card 2: AI Generate Image -->
+      <!-- ─── Card 2: AI 生成圖片 ─── -->
       <article class="card" aria-label="AI 生成圖片">
         <h2 class="card__title">AI 生成圖片</h2>
-        <div class="ai-image__panels">
+        <div class="ai-gen__panels">
           <!-- Left: form -->
-          <div class="ai-image__left">
+          <div class="ai-gen__left">
             <div class="field">
               <label class="field__label" for="img-desc">圖片描述</label>
-              <div class="field__textarea" id="img-desc" role="textbox" aria-readonly="true">
+              <div class="field__textarea field__textarea--h122" id="img-desc" role="textbox" aria-readonly="true">
                 例如：一個白色背景的藍牙耳機，側面視角，專業攝影，高解析度
               </div>
             </div>
@@ -696,52 +716,48 @@
                 例如：簡約、現代、高級、溫馨
               </div>
             </div>
-            <button class="btn--indigo btn--indigo--sm" aria-label="AI 生成圖片">
-              <img src="https://www.figma.com/api/mcp/asset/a70329c3-4f61-42a8-a421-14c0b3d0a072" alt="" aria-hidden="true" />
+            <button class="btn-indigo btn-indigo--h48" aria-label="AI 生成圖片">
+              <img src="https://www.figma.com/api/mcp/asset/89f5e432-57a7-46f5-ae26-16a2272e3300" alt="" aria-hidden="true" />
               生成圖片
             </button>
           </div>
           <!-- Right: preview -->
-          <div class="ai-image__right">
-            <p class="ai-image__preview-label">生成預覽</p>
-            <div class="ai-image__preview-box">
-              <img src="https://www.figma.com/api/mcp/asset/3a5bb175-0350-479f-a32c-7e5ca59a322f" alt="圖片預覽佔位圖示" />
-              <p class="ai-image__preview-hint">圖片將顯示於此</p>
+          <div class="ai-gen__right">
+            <p class="ai-gen__preview-label">生成預覽</p>
+            <div class="ai-gen__preview-box">
+              <img src="https://www.figma.com/api/mcp/asset/abe9a416-9b0d-4305-9364-5541df43f08d" alt="圖片預覽佔位圖示" />
+              <p class="ai-gen__preview-hint">圖片將顯示於此</p>
             </div>
           </div>
         </div>
       </article>
 
-      <!-- Card 3: AI Retouch -->
+      <!-- ─── Card 3: AI 修圖 ─── -->
       <article class="card" aria-label="AI 修圖">
         <h2 class="card__title">AI 修圖</h2>
-        <div class="ai-retouch__panels">
-          <!-- Left: upload + form -->
-          <div class="ai-retouch__left">
-            <!-- Upload zone -->
-            <div class="upload-zone" role="button" tabindex="0" aria-label="上傳圖片區域">
+        <div class="retouch__panels">
+          <!-- Left: upload + description -->
+          <div class="retouch__left">
+            <div class="upload-zone" role="button" tabindex="0" aria-label="上傳要修改的圖片">
               <div class="upload-zone__icon-wrap">
-                <img src="https://www.figma.com/api/mcp/asset/81bc204b-40b4-49f8-b20d-1bdca44e6af2" alt="上傳圖示" />
+                <img src="https://www.figma.com/api/mcp/asset/11c90714-6cc5-4667-a6a6-8fea2debf60d" alt="上傳圖示" />
               </div>
               <p class="upload-zone__title">上傳要修改的圖片</p>
               <p class="upload-zone__subtitle">拖曳圖片至此或點擊選擇</p>
               <button class="upload-zone__btn">選擇檔案</button>
               <p class="upload-zone__hint">支援 JPG、PNG，最大 5MB</p>
             </div>
-            <!-- Description field -->
             <div class="field">
               <label class="field__label" for="edit-desc">修改說明</label>
-              <div class="field__textarea field__textarea--tall" id="edit-desc" role="textbox" aria-readonly="true">
+              <div class="field__textarea field__textarea--h98" id="edit-desc" role="textbox" aria-readonly="true">
                 例如：模糊背景、將背景改為純白色、移除背景、調整亮度
               </div>
             </div>
-            <!-- Submit button -->
-            <button class="btn--indigo btn--indigo--sm" aria-label="開始 AI 修圖">
-              <img src="https://www.figma.com/api/mcp/asset/a70329c3-4f61-42a8-a421-14c0b3d0a072" alt="" aria-hidden="true" />
+            <button class="btn-indigo btn-indigo--h48" aria-label="開始 AI 修圖">
+              <img src="https://www.figma.com/api/mcp/asset/89f5e432-57a7-46f5-ae26-16a2272e3300" alt="" aria-hidden="true" />
               開始修圖
             </button>
           </div>
-
           <!-- Right: dark result panel -->
           <div class="dark-panel" aria-label="修圖結果預覽">
             <div class="dark-panel__status">
@@ -749,7 +765,7 @@
               <span class="dark-panel__status-text">修圖結果預覽</span>
             </div>
             <div class="dark-panel__image-box">
-              <img src="https://www.figma.com/api/mcp/asset/8157b44b-532f-49a4-ade2-c1efd3636aa6" alt="修圖結果佔位圖示" />
+              <img src="https://www.figma.com/api/mcp/asset/bbcd1057-42eb-4cf4-8e37-e5c331be565c" alt="修圖結果佔位圖示" />
             </div>
             <div class="dark-panel__stats">
               <div class="dark-panel__stat-row">
@@ -772,9 +788,9 @@
     </main>
 
     <!-- RIGHT: Mobile preview -->
-    <aside class="preview-col" aria-label="行動預覽">
+    <aside class="preview-col" aria-label="即時預覽">
       <div class="preview-col__heading">
-        <h2 class="preview-col__title">行動預覽</h2>
+        <h2 class="preview-col__title">即時預覽</h2>
         <p class="preview-col__subtitle">即時商店檢視</p>
       </div>
 
@@ -784,7 +800,7 @@
           <div class="phone__content">
 
             <!-- Keyword field group -->
-            <div class="p-field-group">
+            <div class="p-group">
               <label class="p-label">產品關鍵字</label>
               <div class="p-input">無線耳機...</div>
               <button class="p-btn" aria-label="魔法生成">魔法生成</button>
@@ -794,9 +810,9 @@
             <div class="p-card">
               <div class="p-card__header">
                 <span class="p-card__title">AI 文案</span>
-                <div class="p-card__status">
-                  <div class="p-card__status-dot"></div>
-                  <span class="p-card__status-text">輸入中</span>
+                <div class="p-card__badge">
+                  <div class="p-card__badge-dot"></div>
+                  <span class="p-card__badge-text">輸入中</span>
                 </div>
               </div>
               <div class="p-skeletons">
@@ -806,7 +822,7 @@
               </div>
             </div>
 
-            <!-- Visual card -->
+            <!-- Visual optimisation card -->
             <div class="p-visual">
               <span class="p-visual__title">視覺優化</span>
               <div class="p-visual__img"></div>
@@ -832,33 +848,33 @@
   <!-- ════ Site Footer ════ -->
   <footer class="site-footer" aria-label="網站頁腳">
     <img class="site-footer__bg"
-         src="https://www.figma.com/api/mcp/asset/bb4cd1fc-6895-46dd-87a3-87a34ebd8012"
+         src="https://www.figma.com/api/mcp/asset/60da861e-a7b0-41df-9d63-83ffd8ca8b2c"
          alt="" aria-hidden="true" />
     <div class="site-footer__inner">
       <p class="site-footer__brand">Namedly</p>
       <nav class="site-footer__nav" aria-label="頁腳導覽">
         <div class="footer-col">
-          <div class="footer-col__header"><span class="footer-col__title">Platform</span></div>
+          <div class="footer-col__hdr"><span class="footer-col__title">Platform</span></div>
           <a href="#" class="footer-col__link">Individuals</a>
           <a href="#" class="footer-col__link">Teams</a>
           <a href="#" class="footer-col__link">Admins</a>
           <a href="#" class="footer-col__link">Developers</a>
         </div>
         <div class="footer-col">
-          <div class="footer-col__header"><span class="footer-col__title">Features</span></div>
+          <div class="footer-col__hdr"><span class="footer-col__title">Features</span></div>
           <a href="#" class="footer-col__link">Core features</a>
           <a href="#" class="footer-col__link">Pro experience</a>
           <a href="#" class="footer-col__link">Integrations</a>
         </div>
         <div class="footer-col">
-          <div class="footer-col__header"><span class="footer-col__title">Learn more</span></div>
+          <div class="footer-col__hdr"><span class="footer-col__title">Learn more</span></div>
           <a href="#" class="footer-col__link">Blog</a>
           <a href="#" class="footer-col__link">Case studies</a>
           <a href="#" class="footer-col__link">Customer stories</a>
           <a href="#" class="footer-col__link">Best practices</a>
         </div>
         <div class="footer-col">
-          <div class="footer-col__header"><span class="footer-col__title">Support</span></div>
+          <div class="footer-col__hdr"><span class="footer-col__title">Support</span></div>
           <a href="#" class="footer-col__link">Contact</a>
           <a href="#" class="footer-col__link">Support</a>
           <a href="#" class="footer-col__link">Legal</a>
@@ -870,7 +886,7 @@
 </div><!-- /page -->
 
 <script>
-  const btn = document.getElementById('menuToggle');
+  const btn  = document.getElementById('menuToggle');
   const menu = document.getElementById('mobileMenu');
   btn.addEventListener('click', () => {
     const open = btn.getAttribute('aria-expanded') === 'true';
