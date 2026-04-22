@@ -200,9 +200,15 @@
       height: 50px; padding: 12px 16px;
       display: flex; align-items: center;
       font-size: var(--fs-16); font-weight: 400;
-      letter-spacing: -.31px; color: var(--c-gray-400);
-      white-space: nowrap; overflow: hidden;
+      letter-spacing: -.31px; color: var(--c-gray-800);
+      outline: none;
     }
+    /* Placeholder behavior for contenteditable */
+    .field__input:empty::before {
+      content: attr(data-placeholder);
+      color: var(--c-gray-400);
+    }
+
     .field__textarea {
       background: var(--c-gray-50);
       border: 1px solid var(--c-gray-200);
@@ -227,8 +233,9 @@
       line-height: 24px; letter-spacing: -.31px;
       color: var(--c-white); white-space: nowrap;
       width: 100%;
+      transition: opacity 0.2s;
     }
-    .btn-indigo--h48 { height: 48px; }
+    .btn-indigo:active { opacity: 0.8; }
     .btn-indigo img { width: 18px; height: 18px; object-fit: contain; }
 
     /* ── Card 1: AI Text Generator ────────────────── */
@@ -236,12 +243,12 @@
       display: flex; gap: 24px; align-items: flex-start;
     }
     .text-gen__left {
-      flex: 0 0 582.664px; /* matches Figma w=582.664 */
+      flex: 0 0 582.664px;
       display: flex; flex-direction: column; gap: 16px;
       min-width: 0;
     }
     .text-gen__right {
-      flex: 0 0 279.336px; /* matches Figma w=279.336 */
+      flex: 0 0 279.336px;
       display: flex; flex-direction: column; gap: 8px;
       min-width: 0;
     }
@@ -253,7 +260,10 @@
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
       gap: 8px;
-      padding: 36px 2px;
+      padding: 2px;
+      cursor: pointer;
+      overflow: hidden;
+      position: relative;
     }
     .img-upload-zone img { width: 24px; height: 24px; object-fit: contain; }
     .img-upload-zone__hint {
@@ -301,7 +311,6 @@
       display: flex; flex-direction: column; gap: 16px;
     }
 
-    /* Upload zone */
     .upload-zone {
       background: var(--c-gray-50);
       border: 2px dashed var(--c-gray-300);
@@ -309,6 +318,7 @@
       height: 284.5px;
       position: relative;
       flex-shrink: 0;
+      cursor: pointer;
     }
     .upload-zone__icon-wrap {
       position: absolute; top: 32px; left: calc(50% - 32px);
@@ -344,7 +354,6 @@
       color: var(--c-gray-400);
     }
 
-    /* Dark result panel */
     .dark-panel {
       background: var(--grad-dark);
       border-radius: var(--r-16);
@@ -357,7 +366,10 @@
     .dark-panel__dot {
       width: 8px; height: 8px; border-radius: var(--r-full);
       background: var(--c-green-dot); opacity: .58; flex-shrink: 0;
+      animation: pulse 2s infinite ease-in-out;
     }
+    @keyframes pulse { 0%{opacity:0.3} 50%{opacity:1} 100%{opacity:0.3} }
+
     .dark-panel__status-text {
       font-size: var(--fs-13); font-weight: 400; line-height: 19.5px;
       letter-spacing: -.08px; color: var(--c-white); white-space: nowrap;
@@ -410,13 +422,14 @@
 
     /* Phone shell */
     .phone {
-      position: absolute; top: 106.5px; left: 51.5px;
+      position: sticky; top: 106.5px; left: 51.5px;
       width: 280px; height: 580px;
       background: var(--c-gray-800);
       border-radius: var(--r-40);
       box-shadow: var(--sh-xl);
       padding: 12px;
       display: flex; flex-direction: column;
+      margin-left: 52px;
     }
     .phone__screen {
       background: #f5f7fa;
@@ -430,7 +443,6 @@
       display: flex; flex-direction: column; gap: 16px;
     }
 
-    /* Phone – keyword group */
     .p-group { display: flex; flex-direction: column; gap: 8px; }
     .p-label {
       font-size: var(--fs-9); font-weight: 400; line-height: 13.5px;
@@ -455,12 +467,11 @@
       display: flex; align-items: center; justify-content: center;
     }
 
-    /* Phone – AI copy card */
     .p-card {
       background: var(--c-white);
       border: 1px solid var(--c-gray-200);
       border-radius: var(--r-14);
-      padding: 13px 13px 1px;
+      padding: 13px 13px 10px;
       display: flex; flex-direction: column; gap: 8px;
     }
     .p-card__header {
@@ -480,7 +491,7 @@
       font-size: var(--fs-8); font-weight: 400; line-height: 12px;
       letter-spacing: .206px; color: var(--c-indigo);
     }
-    .p-skeletons { position: relative; height: 26px; margin-bottom: 8px; }
+    .p-skeletons { position: relative; height: 26px; }
     .p-skeleton {
       position: absolute; background: var(--c-gray-200);
       height: 6px; border-radius: 4px;
@@ -489,12 +500,11 @@
     .p-skeleton--2 { width: 158.4px; top: 10px; left: 0; }
     .p-skeleton--3 { width: 118.8px; top: 20px; left: 0; }
 
-    /* Phone – visual card */
     .p-visual {
       background: var(--c-white);
       border: 1px solid var(--c-gray-200);
       border-radius: var(--r-14);
-      padding: 13px 13px 1px;
+      padding: 13px 13px 10px;
       display: flex; flex-direction: column; gap: 8px;
       height: 217.5px;
     }
@@ -505,6 +515,7 @@
     .p-visual__img {
       background: var(--grad-light);
       border-radius: var(--r-10); flex: 1 0 0; height: 148.5px;
+      background-size: cover; background-position: center;
     }
     .p-visual__footer {
       display: flex; align-items: center; justify-content: space-between;
@@ -519,13 +530,13 @@
       letter-spacing: .206px; color: var(--c-green-pos);
     }
 
-    /* Live badge */
     .live-badge {
-      position: absolute; top: 677.75px; left: 162.5px;
+      position: sticky; bottom: 40px; margin-left: 162px;
       background: var(--c-green); border-radius: var(--r-full);
       box-shadow: var(--sh-lg);
       height: 25px; width: 58px; padding: 4px 12px;
       display: flex; align-items: center; gap: 6px;
+      z-index: 10;
     }
     .live-badge__dot {
       width: 6px; height: 6px; border-radius: var(--r-full);
@@ -631,7 +642,6 @@
 
 <div class="page">
 
-  <!-- ════ Navbar ════ -->
   <header style="width:100%;position:relative;">
     <nav>
       <div class="navbar">
@@ -658,39 +668,31 @@
     </nav>
   </header>
 
-  <!-- ════ App body ════ -->
   <div class="app" style="width:100%;">
 
-    <!-- LEFT: Editor -->
     <main class="editor">
 
-      <!-- Page heading -->
       <div class="editor__heading">
         <h1 class="editor__title">AI 商店助手</h1>
         <p class="editor__subtitle">使用 AI 工具優化您的產品內容</p>
       </div>
 
-      <!-- ─── Card 1: AI 文案魔法生成器 ─── -->
       <article class="card" aria-label="AI 文案魔法生成器">
         <h2 class="card__title">AI 文案魔法生成器</h2>
         <div class="text-gen__body">
-          <!-- Left: keyword + button -->
           <div class="text-gen__left">
             <div class="field">
               <label class="field__label" for="keywords">產品關鍵字</label>
-              <div class="field__input" id="keywords" role="textbox" aria-readonly="true">
-                例如：無線耳機、降噪、藍牙 5.0
-              </div>
+              <div class="field__input" id="keywords" role="textbox" contenteditable="true" data-placeholder="例如：無線耳機、降噪、藍牙 5.0"></div>
             </div>
             <button class="btn-indigo" aria-label="使用 AI 魔法生成文案">
               <img src="https://www.figma.com/api/mcp/asset/89f5e432-57a7-46f5-ae26-16a2272e3300" alt="" aria-hidden="true" />
               ✨ 魔法生成
             </button>
           </div>
-          <!-- Right: optional image upload -->
           <div class="text-gen__right">
             <label class="field__label">商品圖片（選填）</label>
-            <div class="img-upload-zone" role="button" tabindex="0" aria-label="上傳商品圖片">
+            <div class="img-upload-zone" id="thumbUpload" role="button" tabindex="0" aria-label="上傳商品圖片">
               <img src="https://www.figma.com/api/mcp/asset/525a328e-5556-4911-aaa5-653bb72c26fe" alt="上傳圖示" />
               <p class="img-upload-zone__hint">上傳商品照片<br>幫助 AI 了解外觀</p>
             </div>
@@ -698,30 +700,25 @@
         </div>
       </article>
 
-      <!-- ─── Card 2: AI 生成圖片 ─── -->
       <article class="card" aria-label="AI 生成圖片">
         <h2 class="card__title">AI 生成圖片</h2>
         <div class="ai-gen__panels">
-          <!-- Left: form -->
           <div class="ai-gen__left">
             <div class="field">
               <label class="field__label" for="img-desc">圖片描述</label>
-              <div class="field__textarea field__textarea--h122" id="img-desc" role="textbox" aria-readonly="true">
-                例如：一個白色背景的藍牙耳機，側面視角，專業攝影，高解析度
-              </div>
+              <div class="field__input" id="keywords" role="textbox" contenteditable="true" data-placeholder="例如：一個白色的藍牙耳機，側面視角，高解析"></div>
+
             </div>
             <div class="field">
               <label class="field__label" for="img-style">風格形容詞</label>
-              <div class="field__input" id="img-style" role="textbox" aria-readonly="true">
-                例如：簡約、現代、高級、溫馨
-              </div>
+              <div class="field__input" id="keywords" role="textbox" contenteditable="true" data-placeholder="例如：簡約、現代、高級、溫馨"></div>
+
             </div>
             <button class="btn-indigo btn-indigo--h48" aria-label="AI 生成圖片">
               <img src="https://www.figma.com/api/mcp/asset/89f5e432-57a7-46f5-ae26-16a2272e3300" alt="" aria-hidden="true" />
               生成圖片
             </button>
           </div>
-          <!-- Right: preview -->
           <div class="ai-gen__right">
             <p class="ai-gen__preview-label">生成預覽</p>
             <div class="ai-gen__preview-box">
@@ -732,13 +729,11 @@
         </div>
       </article>
 
-      <!-- ─── Card 3: AI 修圖 ─── -->
       <article class="card" aria-label="AI 修圖">
         <h2 class="card__title">AI 修圖</h2>
         <div class="retouch__panels">
-          <!-- Left: upload + description -->
           <div class="retouch__left">
-            <div class="upload-zone" role="button" tabindex="0" aria-label="上傳要修改的圖片">
+            <div class="upload-zone" id="mainUpload" role="button" tabindex="0" aria-label="上傳要修改的圖片">
               <div class="upload-zone__icon-wrap">
                 <img src="https://www.figma.com/api/mcp/asset/11c90714-6cc5-4667-a6a6-8fea2debf60d" alt="上傳圖示" />
               </div>
@@ -749,28 +744,25 @@
             </div>
             <div class="field">
               <label class="field__label" for="edit-desc">修改說明</label>
-              <div class="field__textarea field__textarea--h98" id="edit-desc" role="textbox" aria-readonly="true">
-                例如：模糊背景、將背景改為純白色、移除背景、調整亮度
-              </div>
+              <div class="field__input" id="keywords" role="textbox" contenteditable="true" data-placeholder="例如：模糊背景、將背景改為純白色、移除背景"></div>
             </div>
             <button class="btn-indigo btn-indigo--h48" aria-label="開始 AI 修圖">
               <img src="https://www.figma.com/api/mcp/asset/89f5e432-57a7-46f5-ae26-16a2272e3300" alt="" aria-hidden="true" />
               開始修圖
             </button>
           </div>
-          <!-- Right: dark result panel -->
           <div class="dark-panel" aria-label="修圖結果預覽">
             <div class="dark-panel__status">
               <div class="dark-panel__dot"></div>
               <span class="dark-panel__status-text">修圖結果預覽</span>
             </div>
-            <div class="dark-panel__image-box">
+            <div class="dark-panel__image-box" id="retouchResultBox">
               <img src="https://www.figma.com/api/mcp/asset/bbcd1057-42eb-4cf4-8e37-e5c331be565c" alt="修圖結果佔位圖示" />
             </div>
             <div class="dark-panel__stats">
               <div class="dark-panel__stat-row">
                 <span class="dark-panel__stat-label">處理狀態</span>
-                <span class="dark-panel__stat-value">等待上傳</span>
+                <span class="dark-panel__stat-value" id="statusVal">等待上傳</span>
               </div>
               <div class="dark-panel__stat-row">
                 <span class="dark-panel__stat-label">修改項目</span>
@@ -778,7 +770,7 @@
               </div>
               <div class="dark-panel__stat-row">
                 <span class="dark-panel__stat-label">完成度</span>
-                <span class="dark-panel__stat-value">0%</span>
+                <span class="dark-panel__stat-value" id="progressVal">0%</span>
               </div>
             </div>
           </div>
@@ -787,45 +779,40 @@
 
     </main>
 
-    <!-- RIGHT: Mobile preview -->
     <aside class="preview-col" aria-label="即時預覽">
       <div class="preview-col__heading">
         <h2 class="preview-col__title">即時預覽</h2>
         <p class="preview-col__subtitle">即時商店檢視</p>
       </div>
 
-      <!-- Phone shell -->
       <div class="phone" aria-label="手機預覽畫面">
         <div class="phone__screen">
           <div class="phone__content">
 
-            <!-- Keyword field group -->
             <div class="p-group">
               <label class="p-label">產品關鍵字</label>
-              <div class="p-input">無線耳機...</div>
+              <div class="p-input" id="phoneKeywordPreview">無線耳機...</div>
               <button class="p-btn" aria-label="魔法生成">魔法生成</button>
             </div>
 
-            <!-- AI copy card -->
-            <div class="p-card">
+            <div class="p-card" id="phoneCopyCard">
               <div class="p-card__header">
                 <span class="p-card__title">AI 文案</span>
                 <div class="p-card__badge">
                   <div class="p-card__badge-dot"></div>
-                  <span class="p-card__badge-text">輸入中</span>
+                  <span class="p-card__badge-text" id="phoneBadgeText">輸入中</span>
                 </div>
               </div>
-              <div class="p-skeletons">
+              <div class="p-skeletons" id="phoneSkeletons">
                 <div class="p-skeleton p-skeleton--1"></div>
                 <div class="p-skeleton p-skeleton--2"></div>
                 <div class="p-skeleton p-skeleton--3"></div>
               </div>
             </div>
 
-            <!-- Visual optimisation card -->
             <div class="p-visual">
               <span class="p-visual__title">視覺優化</span>
-              <div class="p-visual__img"></div>
+              <div class="p-visual__img" id="phoneVisualImg"></div>
               <div class="p-visual__footer">
                 <span class="p-visual__label">場景合成</span>
                 <span class="p-visual__pct">+24%</span>
@@ -836,16 +823,14 @@
         </div>
       </div>
 
-      <!-- Live badge -->
       <div class="live-badge" aria-label="即時狀態">
         <div class="live-badge__dot"></div>
         <span class="live-badge__text">即時</span>
       </div>
     </aside>
 
-  </div><!-- /app -->
+  </div>
 
-  <!-- ════ Site Footer ════ -->
   <footer class="site-footer" aria-label="網站頁腳">
     <img class="site-footer__bg"
          src="https://www.figma.com/api/mcp/asset/60da861e-a7b0-41df-9d63-83ffd8ca8b2c"
@@ -883,15 +868,90 @@
     </div>
   </footer>
 
-</div><!-- /page -->
+</div>
 
 <script>
-  const btn  = document.getElementById('menuToggle');
-  const menu = document.getElementById('mobileMenu');
-  btn.addEventListener('click', () => {
-    const open = btn.getAttribute('aria-expanded') === 'true';
-    btn.setAttribute('aria-expanded', String(!open));
-    menu.classList.toggle('is-open', !open);
+  // ─── Mobile Menu Logic ───
+  const menuBtn  = document.getElementById('menuToggle');
+  const mobileMenu = document.getElementById('mobileMenu');
+  menuBtn.addEventListener('click', () => {
+    const open = menuBtn.getAttribute('aria-expanded') === 'true';
+    menuBtn.setAttribute('aria-expanded', String(!open));
+    mobileMenu.classList.toggle('is-open', !open);
+  });
+
+  // ─── Core Interaction Logic ───
+  const keywordInput = document.getElementById('keywords');
+  const phoneKeywordPreview = document.getElementById('phoneKeywordPreview');
+  const magicGenBtn = document.querySelector('button[aria-label="使用 AI 魔法生成文案"]');
+  const phoneSkeletons = document.getElementById('phoneSkeletons');
+  const phoneBadgeText = document.getElementById('phoneBadgeText');
+
+  // 1. 同步輸入至手機預覽
+  keywordInput.addEventListener('input', () => {
+    phoneKeywordPreview.textContent = keywordInput.innerText || "無線耳機...";
+  });
+
+  // 2. 模擬 AI 文案生成
+  magicGenBtn.addEventListener('click', async () => {
+    const text = keywordInput.innerText.trim();
+    if(!text) return alert("請先輸入產品關鍵字");
+
+    // UI 載入狀態
+    magicGenBtn.style.opacity = "0.6";
+    magicGenBtn.innerHTML = "✨ 運算中...";
+    phoneBadgeText.textContent = "運算中...";
+    phoneBadgeText.style.color = "#6366f1";
+
+    // 模擬 2 秒延遲
+    await new Promise(r => setTimeout(r, 2000));
+
+    // 渲染結果
+    const resultText = `這款「${text}」將改變您的生活。憑藉獨家技術，我們在 ${text} 領域實現了前所未有的突破，是您追求完美的唯一選擇。`;
+    phoneSkeletons.innerHTML = `<p style="font-size: 9px; color: #4a5565; line-height: 1.4;">${resultText}</p>`;
+    
+    // 恢復狀態
+    magicGenBtn.style.opacity = "1";
+    magicGenBtn.innerHTML = '<img src="https://www.figma.com/api/mcp/asset/89f5e432-57a7-46f5-ae26-16a2272e3300" /> ✨ 魔法生成';
+    phoneBadgeText.textContent = "已完成";
+  });
+
+  // 3. 圖片上傳預覽
+  const setupUpload = (zoneId, onImageLoad) => {
+    const zone = document.getElementById(zoneId);
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'file';
+    hiddenInput.accept = 'image/*';
+
+    zone.addEventListener('click', () => hiddenInput.click());
+    hiddenInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => onImageLoad(event.target.result, zone);
+        reader.readAsDataURL(file);
+      }
+    });
+  };
+
+  // 處理側邊小圖上傳
+  setupUpload('thumbUpload', (url, zone) => {
+    zone.innerHTML = `<img src="${url}" style="width:100%; height:100%; object-fit:cover;" />`;
+    document.getElementById('phoneVisualImg').style.backgroundImage = `url(${url})`;
+  });
+
+  // 處理底部大圖上傳
+  setupUpload('mainUpload', (url, zone) => {
+    const iconWrap = zone.querySelector('.upload-zone__icon-wrap');
+    if(iconWrap) iconWrap.style.display = 'none';
+    zone.style.backgroundImage = `url(${url})`;
+    zone.style.backgroundSize = 'cover';
+    zone.style.backgroundPosition = 'center';
+    
+    // 更新狀態面板
+    document.getElementById('statusVal').textContent = "處理中...";
+    document.getElementById('progressVal').textContent = "100%";
+    document.getElementById('retouchResultBox').innerHTML = `<img src="${url}" style="width:100%; height:100%; object-fit:cover;" />`;
   });
 </script>
 </body>
