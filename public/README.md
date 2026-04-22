@@ -1,6 +1,6 @@
-# 店鋪設置與整合｜Go Shop 後台
+# 店鋪設置與整合｜Goez Shop 後台
 
-使用 **HTML + Tailwind CSS（CDN）** 建立的後台管理頁面，風格與 Go Shop Figma 設計一致。
+使用 **HTML + Tailwind CSS（CDN）** 建立的後台管理頁面，風格與 Goez Shop Figma 設計一致。
 
 ## 專案結構
 
