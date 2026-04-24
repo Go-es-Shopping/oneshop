@@ -589,48 +589,31 @@
       letter-spacing:-0.08px;line-height:1.45;display:block;
     }
 
-    /* ── Real input / textarea ──────────────────────────────────────── */
-    .field__real-input {
-      border: 1px solid var(--c-border-field);
-      border-radius: var(--r-10);
-      height: 38px;
-      padding: 8px 12px;
-      width: 100%;
-      font-family: 'Inter','Noto Sans TC',sans-serif;
-      font-weight: 400;
-      font-size: var(--fs-14);
-      color: var(--c-text-body);
-      letter-spacing: -0.15px;
-      background: var(--c-white);
+    /* ── Contenteditable fields ─────────────────────────────────────── */
+    .field__input[contenteditable],
+    .field__textarea[contenteditable] {
       outline: none;
+      cursor: text;
+      color: var(--c-text-body);
       transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
-    .field__real-input::placeholder { color: var(--c-placeholder); }
-    .field__real-input:focus {
+    .field__input[contenteditable]:empty::before,
+    .field__textarea[contenteditable]:empty::before {
+      content: attr(data-placeholder);
+      color: var(--c-placeholder);
+      pointer-events: none;
+    }
+    .field__input[contenteditable]:focus,
+    .field__textarea[contenteditable]:focus {
       border-color: var(--c-accent);
       box-shadow: 0 0 0 3px rgba(101,136,166,0.15);
     }
-    .field__real-textarea {
-      border: 1px solid var(--c-border-field);
-      border-radius: var(--r-10);
-      padding: 8px 12px;
-      width: 100%;
+    .field__textarea[contenteditable] {
+      height: auto;
       min-height: 78px;
-      resize: vertical;
-      font-family: 'Inter','Noto Sans TC',sans-serif;
-      font-weight: 400;
-      font-size: var(--fs-14);
-      color: var(--c-text-body);
-      letter-spacing: -0.15px;
-      line-height: 20px;
-      background: var(--c-white);
-      outline: none;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-    .field__real-textarea::placeholder { color: var(--c-placeholder); }
-    .field__real-textarea:focus {
-      border-color: var(--c-accent);
-      box-shadow: 0 0 0 3px rgba(101,136,166,0.15);
+      align-items: flex-start;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
     /* ── Logo upload area ────────────────────────────────────────────── */
     .field__logo-area { position: relative; cursor: pointer; }
@@ -1061,26 +1044,24 @@
               </div>
               <div style="display:flex;flex-direction:column;gap:12px">
                 <div class="field">
-                  <label class="field__label" for="store-name-input">店鋪名稱</label>
-                  <input
+                  <label class="field__label">店鋪名稱</label>
+                  <div
+                    class="field__input"
                     id="store-name-input"
-                    class="field__real-input"
-                    type="text"
-                    value="風格生活選物"
-                    placeholder="請輸入店鋪名稱..."
-                    maxlength="30"
-                    autocomplete="off"
-                  />
+                    role="textbox"
+                    contenteditable="true"
+                    data-placeholder="請輸入店鋪名稱..."
+                  >風格生活選物</div>
                 </div>
                 <div class="field">
-                  <label class="field__label" for="store-desc-input">店鋪簡介</label>
-                  <textarea
+                  <label class="field__label">店鋪簡介</label>
+                  <div
+                    class="field__textarea"
                     id="store-desc-input"
-                    class="field__real-textarea"
-                    placeholder="請輸入店鋪簡介..."
-                    maxlength="120"
-                    rows="3"
-                  >為您挑選來自世界各地的質感生活好物，讓日常充滿美感。</textarea>
+                    role="textbox"
+                    contenteditable="true"
+                    data-placeholder="請輸入店鋪簡介..."
+                  >為您挑選來自世界各地的質感生活好物，讓日常充滿美感。</div>
                 </div>
                 <div class="field">
                   <label class="field__label">店鋪商標</label>
@@ -1533,8 +1514,8 @@
     [previewDescDesktop, previewDescMobile, previewFooterDesc, previewFooterDescM].forEach(function(el){ if(el) el.textContent = v; });
   }
 
-  if(nameInput) nameInput.addEventListener('input', function(){ syncName(this.value); });
-  if(descInput) descInput.addEventListener('input', function(){ syncDesc(this.value); });
+  if(nameInput) nameInput.addEventListener('input', function(){ syncName(this.textContent.trim()); });
+  if(descInput) descInput.addEventListener('input', function(){ syncDesc(this.textContent.trim()); });
 
   // ── Logo upload ───────────────────────────────────────────────────
   var logoDropZone   = document.getElementById('logo-drop-zone');
