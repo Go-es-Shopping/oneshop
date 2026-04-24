@@ -3,70 +3,72 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Goez Shop – 視覺編輯器</title>
+  <title>Goez Shop — 視覺編輯器</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@500&display=swap" rel="stylesheet" />
   <style>
-    /* ════════════════════════════════════════
-        Design Tokens
-    ════════════════════════════════════════ */
+    /* ═══════════════════════════════════
+       DESIGN TOKENS
+    ═══════════════════════════════════ */
     :root {
-      --c-white:       #ffffff;
-      --c-black:       #000000;
-      --c-gray-50:     #f9fafb;
-      --c-gray-100:    #f3f4f6;
-      --c-gray-200:    #e5e7eb;
-      --c-gray-300:    #d1d5dc;
-      --c-gray-400:    #99a1af;
-      --c-gray-500:    #6a7282;
-      --c-gray-600:    #45556c;
-      --c-gray-700:    #364153;
-      --c-gray-800:    #101828;
-      --c-navy:        #1d293d;
-      --c-slate:       #64748b;
-      --c-slate-100:   #f1f5f9;
-      --c-slate-200:   #e2e8f0;
-      --c-slate-300:   #cbd5e1;
-      --c-slate-400:   #90a1b9;
-      --c-slate-600:   #62748e;
-      --c-blue:        #2b7fff;
-      --c-dark-text:   #0f172b;
+      --c-white:          #ffffff;
+      --c-black:          #0a0a0a;
+      --c-bg-page:        #f3f4f6;
+      --c-bg-light:       #f9fafb;
+      --c-bg-subtle:      #f8fafc;
+      --c-border:         #e5e7eb;
+      --c-border-light:   #f3f4f6;
+      --c-border-input:   #f1f5f9;
+      --c-border-field:   #d1d5dc;
+      --c-accent:         #6588A6;
+      --c-brand-dark:     #1d293d;
+      --c-blue:           #2b7fff;
+      --c-text-hero:      #0f172b;
+      --c-text-heading:   #101828;
+      --c-text-body:      #364153;
+      --c-text-muted:     #6a7282;
+      --c-text-faint:     #99a1af;
+      --c-text-nav:       #4a5565;
+      --c-text-slate:     #45556c;
+      --c-text-gray:      #64748b;
+      --c-placeholder:    rgba(10,10,10,0.5);
 
-      --sp-4:   4px;  --sp-6:   6px;  --sp-8:   8px;
-      --sp-10:  10px; --sp-12:  12px; --sp-16:  16px;
-      --sp-18:  18px; --sp-20:  20px; --sp-24:  24px;
-      --sp-32:  32px; --sp-48:  48px; --sp-64:  64px;
-      --sp-80:  80px; --sp-96:  96px; --sp-120: 120px;
+      --sp-4:  4px;  --sp-8:  8px;  --sp-12: 12px; --sp-16: 16px;
+      --sp-20: 20px; --sp-24: 24px; --sp-32: 32px; --sp-48: 48px;
+      --sp-64: 64px; --sp-80: 80px; --sp-96: 96px; --sp-120:120px;
 
-      --fs-10: 10px; --fs-12: 12px; --fs-14: 14px;
-      --fs-16: 16px; --fs-18: 18px; --fs-20: 20px;
-      --fs-24: 24px; --fs-64: 64px;
+      --fs-10: 10px; --fs-12: 12px; --fs-14: 14px; --fs-16: 16px;
+      --fs-18: 18px; --fs-20: 20px; --fs-24: 24px; --fs-64: 64px;
 
-      --r-8:  8px;  --r-10: 10px; --r-12: 12px;
-      --r-14: 14px; --r-16: 16px; --r-24: 24px; --r-full: 9999px;
+      --r-10: 10px; --r-14: 14px; --r-16: 16px;
+      --r-24: 24px; --r-48: 48px; --r-full: 9999px;
 
-      --sh-sm:   0px 1px 3px rgba(0,0,0,.1), 0px 1px 2px rgba(0,0,0,.1);
-      --sh-md:   0px 4px 6px rgba(0,0,0,.1), 0px 2px 4px rgba(0,0,0,.1);
-      --sh-lg:   0px 10px 15px rgba(0,0,0,.1), 0px 4px 6px rgba(0,0,0,.1);
-      --sh-xl:   0px 25px 50px rgba(0,0,0,.25);
-      --sh-btn:  0px 20px 25px #e2e8f0, 0px 8px 10px #e2e8f0;
-      --sh-card: 0px 1px 3px rgba(0,0,0,.1), 0px 1px 2px -1px rgba(0,0,0,.1);
-      --sh-inset: inset 0 2px 4px rgba(0,0,0,.05);
+      --shadow-sm:     0 1px 2px rgba(0,0,0,.1);
+      --shadow-md:     0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.1);
+      --shadow-card:   0 1px 3px rgba(0,0,0,.1),0 1px 2px -1px rgba(0,0,0,.1);
+      --shadow-btn:    0 10px 15px rgba(0,0,0,.1),0 4px 6px rgba(0,0,0,.1);
+      --shadow-brand:  0 10px 15px rgba(0,0,0,.1),0 4px 6px rgba(0,0,0,.1);
+      --shadow-editor: 0 25px 50px -12px rgba(0,0,0,.25);
+      --shadow-preview:0 25px 50px rgba(0,0,0,.25);
+      --shadow-pub:    0 8px 10px 0 #e2e8f0;
+      --shadow-add:    0 4px 6px rgba(0,0,0,.1),0 2px 4px rgba(0,0,0,.1);
     }
 
-    /* ════════════════════════════════════════
-        Reset
-    ════════════════════════════════════════ */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter','Noto Sans JP','Noto Sans TC',sans-serif; background: var(--c-white); -webkit-font-smoothing: antialiased; }
-    img { display: block; max-width: 100%; }
-    a { text-decoration: none; color: inherit; }
-    button { cursor: pointer; font-family: inherit; border: none; background: none; }
+    /* ═══════════════════════════════════
+       RESET
+    ═══════════════════════════════════ */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:16px}
+    body{font-family:'Inter','Noto Sans TC',sans-serif;background:var(--c-white);color:var(--c-text-heading);min-width:320px}
+    img{display:block;max-width:100%}
+    button{cursor:pointer;border:none;background:none;font:inherit;padding:0}
+    a{text-decoration:none;color:inherit}
+    ul,ol{list-style:none}
 
-    /* ════════════════════════════════════════
-        Hero Banner
-    ════════════════════════════════════════ */
+    /* ═══════════════════════════════════
+       HERO BANNER
+    ═══════════════════════════════════ */
     .hero {
       position: relative;
       width: 100%;
@@ -82,666 +84,1594 @@
       position: relative; z-index:1;
       font-size: var(--fs-64); font-weight:700; line-height:1.1;
       letter-spacing:-1.6px; color:var(--c-white); text-align:center; width:100%;
+      text-decoration: none;
+      transition: opacity 0.2s ease;
+      display: block;
+    }
+    .hero__title:hover { opacity: 0.8; }
+
+    /* ═══════════════════════════════════
+       EDITOR SHELL
+    ═══════════════════════════════════ */
+    .editor-shell{background:var(--c-bg-page);width:100%;display:flex;}
+    .editor{background:var(--c-white);width:100%;box-shadow:var(--shadow-editor);display:flex;flex-direction:column}
+
+    /* Top bar */
+    .editor__topbar{
+      background:var(--c-white);border-bottom:1px solid var(--c-border-light);
+      box-shadow:var(--shadow-md);height:80px;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:0 32px;flex-shrink:0;
+    }
+    .editor__topbar-left{display:flex;align-items:center;gap:32px;height:40px}
+    .editor__brand{display:flex;align-items:center;gap:12px}
+    .editor__brand-icon{
+      background:var(--c-brand-dark);border-radius:var(--r-14);
+      box-shadow:var(--shadow-brand);width:40px;height:40px;
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    }
+    .editor__brand-icon img{width:22px;height:22px}
+    .editor__brand-name{
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:900;
+      font-size:var(--fs-20);color:var(--c-text-hero);
+      letter-spacing:-0.95px;line-height:28px;white-space:nowrap;
+    }
+    .editor__divider{width:1px;height:32px;background:var(--c-bg-page);flex-shrink:0}
+    .editor__preview-btn{
+      background:var(--c-bg-subtle);border:1px solid var(--c-border-input);
+      border-radius:var(--r-14);height:38px;padding:0 16px;
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:700;
+      font-size:var(--fs-14);color:var(--c-accent);letter-spacing:-0.15px;
+      line-height:20px;white-space:nowrap;display:flex;align-items:center;justify-content:center;
+    }
+    .editor__topbar-right{display:flex;align-items:center;gap:12px}
+    .btn-draft{
+      background:var(--c-white);border:2px solid var(--c-border-input);
+      border-radius:var(--r-14);box-shadow:var(--shadow-sm);
+      height:40px;width:120px;
+      display:flex;align-items:center;justify-content:center;gap:8px;
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:700;
+      font-size:var(--fs-14);color:var(--c-text-slate);
+      letter-spacing:-0.15px;white-space:nowrap;
+    }
+    .btn-draft img{width:16px;height:16px;flex-shrink:0}
+    .btn-publish{
+      background:var(--c-accent);border-radius:var(--r-14);
+      box-shadow:var(--shadow-pub);height:40px;width:120px;
+      display:flex;align-items:center;justify-content:center;gap:8px;
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:700;
+      font-size:var(--fs-14);color:var(--c-white);
+      letter-spacing:-0.15px;white-space:nowrap;
+    }
+    .btn-publish img{width:16px;height:16px;flex-shrink:0}
+
+    /* Hamburger — hidden desktop */
+    .editor__hamburger{
+      display:none;flex-direction:column;gap:5px;
+      padding:6px;background:none;border:none;cursor:pointer;
+    }
+    .editor__hamburger-line{
+      display:block;width:22px;height:2px;
+      background:var(--c-text-heading);border-radius:2px;
+      transition:transform .3s,opacity .3s;
+    }
+    .editor__hamburger[aria-expanded="true"] .editor__hamburger-line:nth-child(1){transform:translateY(7px) rotate(45deg)}
+    .editor__hamburger[aria-expanded="true"] .editor__hamburger-line:nth-child(2){opacity:0}
+    .editor__hamburger[aria-expanded="true"] .editor__hamburger-line:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+    /* Mobile dropdown */
+    .editor__mobile-nav{
+      display:none;flex-direction:column;
+      max-height:0;overflow:hidden;
+      transition:max-height .35s ease;
+      background:var(--c-white);border-bottom:1px solid var(--c-border-light);
+    }
+    .editor__mobile-nav.is-open{max-height:240px}
+    .editor__mobile-nav-link{
+      display:block;padding:14px 24px;
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:600;
+      font-size:var(--fs-14);color:var(--c-text-heading);
+      border-bottom:1px solid var(--c-border-light);
+    }
+    .editor__mobile-nav-link:last-child{border-bottom:none}
+
+    /* 3-col layout */
+    .editor__body{display:flex;flex:1;min-height:1140px}
+
+    /* ═══════════════════════════════════
+       LEFT SIDEBAR
+    ═══════════════════════════════════ */
+    .sidebar-left{
+      background:var(--c-white);border-right:1px solid var(--c-border);
+      width:320px;flex-shrink:0;display:flex;flex-direction:column;overflow:hidden;
+    }
+    .sidebar-left__head{
+      border-bottom:1px solid var(--c-border);
+      height:53px;padding:16px 16px 0;flex-shrink:0;
+    }
+    .sidebar-left__head-row{display:flex;align-items:center;gap:8px;height:20px}
+    .sidebar-left__head-row img{width:16px;height:16px}
+    .sidebar-left__head-title{
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:600;
+      font-size:var(--fs-14);color:var(--c-text-heading);
+      letter-spacing:-0.15px;line-height:20px;
+    }
+    .sidebar-left__scroll{
+      padding:16px;display:flex;flex-direction:column;
+      gap:24px;overflow-y:auto;flex:1;
     }
 
-    /* ════════════════════════════════════════
-        Editor Shell
-    ════════════════════════════════════════ */
-    .editor { background:var(--c-gray-100); width:100%; }
-    .editor__card {
-      background:var(--c-white);
-      box-shadow: var(--sh-xl);
-      display:flex; flex-direction:column;
-      overflow:hidden; width:100%;
+    .section-label{display:flex;align-items:center;height:16px;gap:8px}
+    .section-label img{width:14px;height:14px}
+    .section-label__text{
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:600;
+      font-size:var(--fs-12);color:var(--c-text-muted);
+      letter-spacing:0.6px;text-transform:uppercase;line-height:16px;
     }
 
-    /* ── Top Bar ─────────────────────────────── */
-    .topbar {
+    .field{display:flex;flex-direction:column;gap:4px}
+    .field__label{
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:500;
+      font-size:var(--fs-12);color:var(--c-text-body);line-height:16px;
+    }
+    .field__input{
+      border:1px solid var(--c-border-field);border-radius:var(--r-10);
+      height:38px;padding:8px 12px;display:flex;align-items:center;overflow:hidden;
+    }
+    .field__input-text{
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:400;
+      font-size:var(--fs-14);color:var(--c-placeholder);
+      letter-spacing:-0.15px;white-space:nowrap;
+    }
+    .field__textarea{
+      border:1px solid var(--c-border-field);border-radius:var(--r-10);
+      height:78px;padding:8px 12px;display:flex;align-items:flex-start;overflow:hidden;
+    }
+    .field__textarea-text{
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:400;
+      font-size:var(--fs-14);color:var(--c-placeholder);
+      letter-spacing:-0.15px;line-height:20px;
+    }
+    .field__logo-area{
+      background:var(--c-bg-light);border:2px dashed var(--c-border);
+      border-radius:var(--r-14);height:161px;padding:2px;overflow:hidden;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .field__logo-area img{width:100%;height:100%;object-fit:cover;border-radius:12px}
+
+    .product-mgmt{display:flex;flex-direction:column;gap:16px}
+    .btn-add-product{
+      background:var(--c-accent);border-radius:var(--r-14);
+      box-shadow:var(--shadow-add);height:48px;width:100%;
+      display:flex;align-items:center;justify-content:center;gap:8px;
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:500;
+      font-size:var(--fs-16);color:var(--c-white);
+      letter-spacing:-0.31px;line-height:24px;
+    }
+    .btn-add-product img{width:16px;height:16px}
+
+    .recent-header{display:flex;align-items:center;justify-content:space-between;height:16px}
+    .recent-header__manage{
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:500;
+      font-size:var(--fs-10);color:var(--c-blue);
+      letter-spacing:0.72px;line-height:15px;
+    }
+    .assets-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+    .asset-thumb{border:1px solid var(--c-border-light);border-radius:var(--r-10);aspect-ratio:1;overflow:hidden;padding:1px}
+    .asset-thumb img{width:100%;height:100%;object-fit:cover;border-radius:9px}
+    .asset-add{
+      border:2px dashed var(--c-border);border-radius:var(--r-10);
+      aspect-ratio:1;display:flex;align-items:center;justify-content:center;cursor:pointer;
+    }
+    .asset-add img{width:16px;height:16px}
+
+    /* ═══════════════════════════════════
+       CENTER
+    ═══════════════════════════════════ */
+    .editor__center{background:var(--c-bg-light);flex:1;min-width:0;display:flex;flex-direction:column}
+    .center__toolbar{
+      background:rgba(255,255,255,.8);border-bottom:1px solid var(--c-border-light);
+      height:56px;display:flex;align-items:center;padding:0 32px;flex-shrink:0;
+    }
+    .viewport-toggle{
+      background:rgba(243,244,246,.5);border:1px solid var(--c-border-light);
+      border-radius:var(--r-14);height:38px;
+      display:flex;align-items:center;padding:5px;gap:4px;width:158px;
+    }
+    .viewport-btn{
+      height:28px;border-radius:var(--r-10);
+      display:flex;align-items:center;gap:8px;
+      padding:0 6px;cursor:pointer;flex:1;
+    }
+    .viewport-btn--active{background:var(--c-white);box-shadow:var(--shadow-md)}
+    .viewport-btn img{width:16px;height:16px;flex-shrink:0}
+    .viewport-btn__label{
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:700;
+      font-size:var(--fs-12);color:var(--c-black);line-height:16px;white-space:nowrap;
+    }
+    .viewport-btn__label--inactive{font-weight:500;color:var(--c-text-faint)}
+
+    .center__canvas{padding:0;display:flex;justify-content:stretch;align-items:flex-start;flex:1}
+
+    /* ── Store Preview ── */
+    .store-preview{
       background:var(--c-white);
-      border-bottom:1px solid var(--c-gray-100);
-      box-shadow:var(--sh-sm);
-      height:80px; flex-shrink:0;
-      display:flex; align-items:center; justify-content:space-between;
-      padding:0 var(--sp-32); padding-bottom:1px;
-      position:relative;
+      width:100%;overflow:hidden;display:flex;flex-direction:column;
     }
-    .topbar__left { display:flex;align-items:center;gap:var(--sp-32);height:40px; }
-    .topbar__brand { display:flex;align-items:center;gap:var(--sp-12); }
-    .topbar__logo-box {
-      background:var(--c-navy); width:40px;height:40px; border-radius:14px;
-      box-shadow:var(--sh-lg); display:flex;align-items:center;justify-content:center;flex-shrink:0;
+
+    /* Store Nav */
+    .store-nav{
+      background:var(--c-white);border-bottom:1px solid var(--c-border-light);
+      height:70px;display:flex;align-items:center;justify-content:space-between;
+      padding:0 32px;flex-shrink:0;
     }
-    .topbar__logo-box img { width:22px;height:22px;object-fit:contain; }
-    .topbar__title { font-size:var(--fs-20);font-weight:900;line-height:28px;letter-spacing:-0.95px;color:var(--c-dark-text);white-space:nowrap; }
-    .topbar__divider { background:var(--c-gray-100);width:1px;height:32px;flex-shrink:0; }
-    .topbar__nav-desktop { display:flex;align-items:center;gap:var(--sp-8);height:38px;width:204px;flex-shrink:0; }
-    .topbar__nav-tab {
-      background:var(--c-gray-50); border:1px solid var(--c-slate-100); border-radius:14px;
-      height:38px; width:90px; display:flex;align-items:center;justify-content:center;
-      font-size:var(--fs-14);font-weight:700;line-height:20px;letter-spacing:-0.15px;
-      color:var(--c-slate-600);white-space:nowrap;
+    .store-nav__brand{display:flex;align-items:center;gap:16px;height:40px;width:auto}
+    .store-nav__logo{
+      width:40px;height:40px;border-radius:var(--r-10);
+      box-shadow:var(--shadow-card);overflow:hidden;flex-shrink:0;
     }
-    .topbar__nav-link {
-      display:flex;align-items:center;gap:4px; flex:1 0 0;
-      font-size:var(--fs-14);font-weight:700;line-height:20px;letter-spacing:-0.15px;
-      color:var(--c-slate-400);white-space:nowrap; padding:0 6px;
+    .store-nav__logo img{width:100%;height:100%;object-fit:cover}
+    .store-nav__name{
+      font-family:'Noto Sans TC',sans-serif;font-weight:700;
+      font-size:var(--fs-20);color:var(--c-text-heading);
+      letter-spacing:-0.5px;line-height:28px;white-space:nowrap;
     }
-    .topbar__nav-link img { width:14px;height:14px; }
-    .topbar__right { display:flex;align-items:center;gap:var(--sp-24);height:44px; }
-    .topbar__icons { display:flex;align-items:center;gap:var(--sp-16); }
-    .topbar__icons img { width:20px;height:20px;object-fit:contain; }
-    .topbar__actions { display:flex;align-items:center;gap:var(--sp-12); }
+    .store-nav__right{display:flex;align-items:center;gap:32px;height:36px;width:auto}
+    .store-nav__links{display:flex;align-items:center;gap:16px;flex:1}
+    .store-nav__link{
+      font-family:'Noto Sans TC',sans-serif;font-weight:500;
+      font-size:var(--fs-14);color:var(--c-text-nav);line-height:20px;white-space:nowrap;
+    }
+    .store-nav__actions{display:flex;align-items:center;width:80px;position:relative}
+    .store-nav__action-btn{
+      width:36px;height:36px;border-radius:var(--r-full);
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    }
+    /* 將所有導覽列中的圖示統一設定大小 */
+    .store-nav__action-btn img {
+        width: 24px;
+        height: 24px;
+        display: block; /* 確保圖片正確對齊 */
+    }
+    .store-nav__cart-wrap{position:absolute;left:44px;top:0;width:36px;height:36px;border-radius:var(--r-full)}
+    .store-nav__cart-badge{
+      position:absolute;top:2px;left:18px;
+      background:var(--c-theme-accent, var(--c-accent));border-radius:var(--r-full);
+      width:16px;height:16px;display:flex;align-items:center;justify-content:center;
+      transition: background 0.3s ease;
+    }
+    .store-nav__cart-badge span{
+      font-family:'Noto Sans TC',sans-serif;font-weight:500;
+      font-size:var(--fs-10);color:var(--c-white);line-height:15px;
+    }
+
+    /* Store Hero */
+    .store-hero{
+      background:var(--c-white);padding:40px 32px 0;
+      display:flex;flex-direction:column;gap:16px;flex-shrink:0;
+    }
+    .store-hero__tagline{
+      font-family:'Noto Sans TC',sans-serif;font-weight:400;
+      font-size:var(--fs-18);color:var(--c-text-muted);
+      text-align:center;line-height:1.625;white-space:nowrap;
+    }
+    .store-hero__cta-wrap{display:flex;align-items:center;justify-content:center;height:56px}
+    .store-hero__cta-btn{
+      background:var(--c-theme-accent, var(--c-accent));border-radius:var(--r-full);
+      box-shadow:var(--shadow-btn);height:48px;width:128px;
+      font-family:'Noto Sans TC',sans-serif;font-weight:500;
+      font-size:var(--fs-16);color:var(--c-white);line-height:24px;
+      display:flex;align-items:center;justify-content:center;
+      transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    /* Products */
+    .store-products{padding:32px 32px 0;display:flex;flex-direction:column;gap:24px;flex-shrink:0}
+    .store-products__header{display:flex;align-items:center;justify-content:space-between;height:32px}
+    .store-products__heading{display:flex;align-items:center;gap:8px;width:124px}
+    .store-products__heading img{width:20px;height:20px}
+    .store-products__heading-text{
+      font-family:'Noto Sans TC',sans-serif;font-weight:700;
+      font-size:var(--fs-24);color:var(--c-text-heading);line-height:32px;white-space:nowrap;
+    }
+    .store-products__more{
+      font-family:'Noto Sans TC',sans-serif;font-weight:500;
+      font-size:var(--fs-14);color:var(--c-text-gray);line-height:20px;
+    }
+    .store-products__grid{display:flex;gap:16px}
+    .product-card{
+      background:var(--c-white);border:1px solid var(--c-border-light);
+      border-radius:var(--r-24);box-shadow:var(--shadow-card);
+      width:48%;overflow:hidden;display:flex;flex-direction:column;flex-shrink:0;
+    }
+    .product-card__image-area{background:var(--c-bg-page);height:160px;flex-shrink:0;overflow:hidden;position:relative}
+    .product-card__image-area img{width:100%;height:100%;object-fit:cover}
+    .product-card__image-area--empty::after{
+      content:'📷';
+      position:absolute;inset:0;
+      display:flex;align-items:center;justify-content:center;
+      font-size:32px;opacity:0.25;
+    }
+    .product-card__body{padding:20px;display:flex;flex-direction:column;gap:8px}
+    .product-card__meta{display:flex;align-items:center;justify-content:space-between;height:34px}
+    .product-card__tag{
+      background:var(--c-bg-light);border-radius:var(--r-full);
+      height:34px;min-width:50px;display:flex;align-items:center;padding:0 4px;
+    }
+    .product-card__tag-text{
+      font-family:'Noto Sans TC',sans-serif;font-weight:700;
+      font-size:var(--fs-10);color:var(--c-text-faint);
+      letter-spacing:0.5px;text-transform:uppercase;line-height:15px;
+    }
+    .product-card__stock{
+      font-family:'Noto Sans TC',sans-serif;font-weight:400;
+      font-size:var(--fs-12);color:var(--c-text-faint);line-height:16px;
+    }
+    .product-card__name{
+      font-family:'Noto Sans TC',sans-serif;font-weight:700;
+      font-size:var(--fs-18);color:var(--c-text-heading);
+      line-height:27px;height:27px;overflow:hidden;
+    }
+    .product-card__footer{display:flex;align-items:center;justify-content:space-between;height:40px}
+    .product-card__price{
+      font-family:'Noto Sans TC',sans-serif;font-weight:900;
+      font-size:var(--fs-18);color:var(--c-price, var(--c-accent));line-height:28px;
+      transition: color 0.3s ease;
+    }
+    .product-card__cart-btn{
+      background:var(--c-theme-accent, var(--c-accent));border-radius:var(--r-14);
+      box-shadow:var(--shadow-btn);width:36px;height:36px;
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;
+      transition: background 0.3s ease;
+    }
+    .product-card__cart-btn img {
+      width: 24px;
+      height: 24px;
+      /* 這裡如果有的話，請加上 background: transparent !important; */
+      background: transparent !important; 
+    }
+
+    /* Store Footer */
+    .store-footer{
+      background:var(--c-footer-bg, var(--c-accent));border-radius:48px 48px 0 0;
+      padding:64px 48px 40px;display:flex;flex-direction:column;
+      gap:32px;margin-top:32px;flex-shrink:0;
+      transition: background 0.3s ease;
+    }
+    .store-footer__cols{display:flex;gap:32px;flex-wrap:wrap;}
+    .store-footer__about{
+      flex:1;min-width:120px;
+      display:flex;flex-direction:column;gap:16px;
+    }
+    .store-footer__brand{
+      font-family:'Noto Sans TC',sans-serif;font-weight:700;
+      font-size:var(--fs-20);color:var(--c-white);line-height:28px;white-space:nowrap;
+    }
+    .store-footer__desc{
+      font-family:'Noto Sans TC',sans-serif;font-weight:400;
+      font-size:var(--fs-14);color:rgba(255,255,255,.7);
+      line-height:22.75px;width:154px;
+    }
+    .store-footer__links{
+      min-width:80px;
+      display:flex;flex-direction:column;
+    }
+    .store-footer__col-title{
+      font-family:'Noto Sans TC',sans-serif;font-weight:700;
+      font-size:var(--fs-16);color:var(--c-white);line-height:24px;
+      padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.2);
+      margin-bottom:16px;white-space:nowrap;
+    }
+    .store-footer__col-list{display:flex;flex-direction:column;gap:12px}
+    .store-footer__col-item{display:flex;align-items:center;gap:8px;height:24px}
+    .store-footer__col-dot{
+      width:4px;height:4px;background:rgba(255,255,255,.3);
+      border-radius:var(--r-full);flex-shrink:0;
+    }
+    .store-footer__col-link{
+      font-family:'Noto Sans TC',sans-serif;font-weight:500;
+      font-size:var(--fs-16);color:rgba(255,255,255,.7);
+      line-height:24px;white-space:nowrap;
+    }
+    .store-footer__contact{
+      min-width:120px;display:flex;flex-direction:column;
+    }
+    .store-footer__contact-items{display:flex;flex-direction:column;gap:12px;margin-top:16px}
+    .store-footer__contact-row{display:flex;align-items:center;gap:12px;height:36px}
+    .store-footer__contact-icon{
+      background:rgba(255,255,255,.1);border-radius:var(--r-14);
+      width:36px;height:36px;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    }
+    .store-footer__contact-icon img{width:36px;height:36px}
+    .store-footer__contact-email{
+      font-family:'Noto Sans TC',sans-serif;font-weight:500;
+      font-size:var(--fs-10);color:rgba(255,255,255,.7);line-height:20px;white-space:nowrap;
+    }
+    .store-footer__contact-phone{
+      font-family:'Noto Sans TC',sans-serif;font-weight:500;
+      font-size:var(--fs-14);color:rgba(255,255,255,.7);line-height:20px;white-space:nowrap;
+    }
+    .store-footer__bottom{
+      border-top:1px solid rgba(255,255,255,.1);padding-top:33px;text-align:center;
+    }
+    .store-footer__copyright{
+      font-family:'Noto Sans TC',sans-serif;font-weight:400;
+      font-size:var(--fs-10);color:rgba(255,255,255,.4);line-height:15px;
+    }
+
+    /* ═══════════════════════════════════
+       RIGHT SIDEBAR
+    ═══════════════════════════════════ */
+    .sidebar-right{
+      background:var(--c-white);border-left:1px solid var(--c-border);
+      width:320px;flex-shrink:0;display:flex;flex-direction:column;overflow:hidden;
+    }
+    .sidebar-right__head{
+      border-bottom:1px solid var(--c-border);height:56px;
+      padding:16px;display:flex;align-items:center;flex-shrink:0;
+    }
+    .sidebar-right__head-row{display:flex;align-items:center;gap:8px}
+    .sidebar-right__head-row img{width:16px;height:16px}
+    .sidebar-right__head-title{
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:600;
+      font-size:var(--fs-14);color:var(--c-text-heading);
+      letter-spacing:-0.15px;line-height:20px;
+    }
+    .sidebar-right__scroll{padding:24px;display:flex;flex-direction:column;overflow-y:auto}
+
+    .design-section{margin-bottom:24px}
+    .design-section-label{
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:600;
+      font-size:var(--fs-12);color:var(--c-text-muted);
+      letter-spacing:0.6px;text-transform:uppercase;line-height:16px;margin-bottom:16px;
+    }
+    .theme-options{position:relative;height:452px}
+    .theme-option{
+      position:absolute;background:var(--c-bg-light);border:2px solid var(--c-bg-light);
+      border-radius:var(--r-16);padding:18px;display:flex;flex-direction:column;
+      gap:12px;width:271px;cursor:pointer;height:104px;
+    }
+    .theme-option--0{top:-1px;left:-3px;gap:12.24px}
+    .theme-option--1{top:116px;left:0}
+    .theme-option--2{top:232px;left:0}
+    .theme-option--3{top:348px;left:0}
+    .theme-option__name{
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:700;
+      font-size:var(--fs-12);color:var(--c-text-muted);line-height:16px;
+    }
+    .theme-option__swatches{display:flex;gap:6px;height:40px}
+    .swatch{flex:1;border-radius:var(--r-10);box-shadow:inset 0 2px 4px rgba(0,0,0,.05)}
+
+    .font-section{margin-top:32px}
+    .font-section-head{display:flex;align-items:center;gap:8px;height:16px;margin-bottom:16px}
+    .font-section-head img{width:14px;height:14px}
+    .font-section-head__label{
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:600;
+      font-size:var(--fs-12);color:var(--c-text-muted);
+      letter-spacing:0.6px;text-transform:uppercase;line-height:16px;
+    }
+    .font-options{display:flex;flex-direction:column;gap:12px}
+    .font-option{
+      background:var(--c-bg-light);border-radius:var(--r-14);
+      height:48px;padding:0 16px;display:flex;align-items:center;cursor:pointer;
+    }
+    .font-option__name{font-size:var(--fs-14);color:var(--c-black);line-height:20px}
+    .font-option--gothic .font-option__name{font-family:'Noto Sans TC',sans-serif;font-weight:500}
+    .font-option--serif  .font-option__name{font-family:'Noto Serif TC',serif;font-weight:500}
+    .font-option--round  .font-option__name{font-family:'Noto Sans TC',sans-serif;font-weight:400}
+
+    /* ═══════════════════════════════════
+       PAGE FOOTER (Namedly)
+    ═══════════════════════════════════ */
+    .page-footer{position:relative;width:100%;overflow:hidden}
+    .page-footer__bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
+    .page-footer__inner{
+      position:relative;z-index:1;
+      border-top:1px solid rgba(255,255,255,.15);
+      display:flex;align-items:flex-start;justify-content:space-between;
+      padding:80px 60px 120px;
+    }
+    .page-footer__brand{
+      font-family:'Inter',sans-serif;font-weight:600;
+      font-size:var(--fs-24);color:var(--c-white);
+      letter-spacing:-0.48px;line-height:1.2;flex-shrink:0;
+    }
+    .page-footer__nav{display:flex;gap:96px;align-items:flex-start}
+    .page-footer__col{display:flex;flex-direction:column;gap:8px;width:130px}
+    .page-footer__col-head{
+      font-family:'Inter',sans-serif;font-weight:700;
+      font-size:var(--fs-16);color:var(--c-white);
+      letter-spacing:-0.08px;line-height:1.45;padding-bottom:16px;
+    }
+    .page-footer__col-link{
+      font-family:'Inter',sans-serif;font-weight:400;
+      font-size:var(--fs-16);color:rgba(255,255,255,.6);
+      letter-spacing:-0.08px;line-height:1.45;display:block;
+    }
+
+    /* ── Real input / textarea ──────────────────────────────────────── */
+    .field__real-input {
+      border: 1px solid var(--c-border-field);
+      border-radius: var(--r-10);
+      height: 38px;
+      padding: 8px 12px;
+      width: 100%;
+      font-family: 'Inter','Noto Sans TC',sans-serif;
+      font-weight: 400;
+      font-size: var(--fs-14);
+      color: var(--c-text-body);
+      letter-spacing: -0.15px;
+      background: var(--c-white);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .field__real-input::placeholder { color: var(--c-placeholder); }
+    .field__real-input:focus {
+      border-color: var(--c-accent);
+      box-shadow: 0 0 0 3px rgba(101,136,166,0.15);
+    }
+    .field__real-textarea {
+      border: 1px solid var(--c-border-field);
+      border-radius: var(--r-10);
+      padding: 8px 12px;
+      width: 100%;
+      min-height: 78px;
+      resize: vertical;
+      font-family: 'Inter','Noto Sans TC',sans-serif;
+      font-weight: 400;
+      font-size: var(--fs-14);
+      color: var(--c-text-body);
+      letter-spacing: -0.15px;
+      line-height: 20px;
+      background: var(--c-white);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .field__real-textarea::placeholder { color: var(--c-placeholder); }
+    .field__real-textarea:focus {
+      border-color: var(--c-accent);
+      box-shadow: 0 0 0 3px rgba(101,136,166,0.15);
+    }
+    /* ── Logo upload area ────────────────────────────────────────────── */
+    .field__logo-area { position: relative; cursor: pointer; }
+    .logo-upload-overlay {
+      position: absolute; inset: 2px;
+      border-radius: 12px;
+      background: rgba(0,0,0,0.45);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0;
+      transition: opacity 0.22s ease;
+      pointer-events: none;
+    }
+    .field__logo-area:hover .logo-upload-overlay { opacity: 1; }
+    .logo-upload-overlay__inner {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+    }
+    .logo-upload-overlay__inner span {
+      font-family: 'Inter','Noto Sans TC',sans-serif;
+      font-size: var(--fs-12); font-weight: 600;
+      color: #fff; letter-spacing: 0.5px;
+    }
+    /* ── Mobile preview frame ────────────────────────────────────────── */
+    .center__canvas--mobile {
+      justify-content: center;
+      padding: 24px 0;
+      background: var(--c-bg-page);
+    }
+    .mobile-frame {
+      width: 390px;
+      min-width: 390px;
+      background: var(--c-white);
+      border-radius: 40px;
+      box-shadow: 0 0 0 10px #1d293d, 0 30px 60px rgba(0,0,0,0.35);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    .mobile-frame::before {
+      content: '';
+      display: block;
+      height: 36px;
+      background: #1d293d;
+      flex-shrink: 0;
+    }
+    .mobile-frame::after {
+      content: '';
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 16px;
+      background: #0a0a0a;
+      border-radius: 20px;
+      z-index: 10;
+    }
+    .mobile-preview {
+      overflow-y: auto;
+      max-height: 780px;
+    }
+    .mobile-store-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--c-border-light);
+      position: sticky; top: 0; background: var(--c-white); z-index: 5;
+    }
+    .mobile-store-nav__brand { display: flex; align-items: center; gap: 10px; }
+    .mobile-store-nav__logo {
+      width: 32px; height: 32px; border-radius: 8px;
+      box-shadow: var(--shadow-card); overflow: hidden; flex-shrink: 0;
+    }
+    .mobile-store-nav__logo img { width: 100%; height: 100%; object-fit: cover; }
+    .mobile-store-nav__name {
+      font-weight: 700; font-size: 15px;
+      color: var(--c-text-heading); letter-spacing: -0.3px;
+    }
+    .mobile-store-nav__actions { display: flex; align-items: center; gap: 4px; }
+    .mobile-store-nav__btn {
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: var(--r-full); border: none; background: none; cursor: pointer;
+    }
+    .mobile-cart-badge-wrap { position: relative; }
+    .mobile-cart-badge {
+      position: absolute; top: 2px; right: 2px;
+      background: var(--c-theme-accent, var(--c-accent));
+      border-radius: 999px; width: 13px; height: 13px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 8px; font-weight: 700; color: white;
+      transition: background 0.3s ease;
+    }
+    .mobile-hero {
+      padding: 28px 20px 20px;
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+    }
+    .mobile-hero__tagline {
+      font-size: 13px; color: var(--c-text-muted); text-align: center; line-height: 1.7;
+    }
+    .mobile-hero__cta {
+      background: var(--c-theme-accent, var(--c-accent));
+      border-radius: 999px; height: 40px; padding: 0 28px;
+      font-size: 14px; font-weight: 500; color: white;
+      display: flex; align-items: center; justify-content: center;
+      border: none; cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .mobile-products { padding: 20px 20px 0; }
+    .mobile-products__header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .mobile-products__title { font-weight: 700; font-size: 18px; color: var(--c-text-heading); }
+    .mobile-products__more { font-size: 12px; color: var(--c-text-gray); }
+    .mobile-products__grid { display: flex; flex-direction: column; gap: 12px; }
+    .mobile-product-card {
+      background: var(--c-white);
+      border: 1px solid var(--c-border-light);
+      border-radius: 16px;
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      display: flex;
+    }
+    .mobile-product-card__img {
+      width: 90px; flex-shrink: 0;
+      background: var(--c-bg-light);
+    }
+    .mobile-product-card__img img { width: 100%; height: 100%; object-fit: cover; }
+    .mobile-product-card__img--empty { background: #f3f4f6; }
+    .mobile-product-card__body {
+      padding: 12px; flex: 1; display: flex; flex-direction: column; gap: 6px;
+    }
+    .mobile-product-card__tag {
+      display: inline-flex; align-items: center;
+      background: rgba(100,116,139,0.1);
+      border-radius: 999px; padding: 2px 8px;
+      font-size: 10px; color: var(--c-text-muted); width: fit-content;
+    }
+    .mobile-product-card__name { font-size: 13px; font-weight: 600; color: var(--c-text-heading); }
+    .mobile-product-card__footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+    .mobile-product-card__price {
+      font-size: 15px; font-weight: 700;
+      color: var(--c-theme-accent, var(--c-accent));
+      transition: color 0.3s ease;
+    }
+    .mobile-product-card__cart {
+      width: 28px; height: 28px;
+      background: var(--c-theme-accent, var(--c-accent));
+      border-radius: 999px; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.3s ease;
+    }
+    .mobile-footer {
+      margin-top: 24px;
+      background: #1d293d;
+      padding: 24px 20px 32px;
+    }
+    .mobile-footer__brand { font-size: 16px; font-weight: 700; color: white; margin-bottom: 8px; }
+    .mobile-footer__desc { font-size: 11px; color: rgba(255,255,255,0.55); line-height: 1.6; margin-bottom: 12px; }
+    .mobile-footer__copyright { font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 16px; }
+
+    /* ═══════════════════════════════════
+       ANIMATIONS & INTERACTIONS
+    ═══════════════════════════════════ */
+
+    /* Page load — hero */
+    .hero__title {
+      animation: heroIn 0.8s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    @keyframes heroIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Editor shell fade in */
+    .editor-shell {
+      animation: shellIn 0.7s cubic-bezier(0.22,1,0.36,1) 0.15s both;
+    }
+    @keyframes shellIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Scroll fade-in utility */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s cubic-bezier(0.22,1,0.36,1),
+                  transform 0.6s cubic-bezier(0.22,1,0.36,1);
+    }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+    .delay-1 { transition-delay: 0.1s; }
+    .delay-2 { transition-delay: 0.2s; }
+
+    /* Button interactions */
     .btn-draft {
-      background:var(--c-white); border:2px solid var(--c-slate-100); border-radius:14px;
-      box-shadow:var(--sh-sm); height:44px; padding:0 16px 0 44px;
-      font-size:var(--fs-14);font-weight:700;line-height:20px;letter-spacing:-0.15px;
-      color:var(--c-gray-600);white-space:nowrap;position:relative;display:flex;align-items:center;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
     }
+    .btn-draft:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+      background: var(--c-bg-light);
+    }
+    .btn-draft:active { transform: translateY(0); }
+
     .btn-publish {
-      background:var(--c-navy); border-radius:14px; box-shadow:var(--sh-btn);
-      height:40px; width:120px; padding:0 16px 0 44px;
-      font-size:var(--fs-14);font-weight:700;line-height:20px;letter-spacing:-0.15px;
-      color:var(--c-white);white-space:nowrap;position:relative;display:flex;align-items:center;justify-content:center;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
     }
-    .btn-icon { position:absolute;left:20px;top:50%;transform:translateY(-50%);width:16px;height:16px; }
-    .btn-icon img { width:16px;height:16px;object-fit:contain; }
-
-    /* Hamburger */
-    .hamburger {
-      display:none; flex-direction:column;align-items:center;justify-content:center;
-      gap:5px; width:36px;height:36px; padding:6px; border-radius:8px;
+    .btn-publish:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.08);
+      box-shadow: 0 8px 20px rgba(101,136,166,0.4);
     }
-    .hamburger__bar { display:block;width:22px;height:2px;background:var(--c-navy);border-radius:2px;transition:transform .25s,opacity .25s; }
-    .hamburger[aria-expanded="true"] .hamburger__bar:nth-child(1) { transform:translateY(7px) rotate(45deg); }
-    .hamburger[aria-expanded="true"] .hamburger__bar:nth-child(2) { opacity:0; }
-    .hamburger[aria-expanded="true"] .hamburger__bar:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+    .btn-publish:active { transform: translateY(0); }
 
-    /* Mobile menu dropdown */
-    .mobile-menu {
-      display:none; flex-direction:column; width:100%;
-      background:var(--c-white); border-top:1px solid var(--c-gray-100);
-      overflow:hidden; max-height:0; transition:max-height .3s ease;
+    .editor__preview-btn {
+      transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
     }
-    .mobile-menu.is-open { max-height:220px; }
-    .mobile-menu a { display:block;padding:12px var(--sp-16);font-size:var(--fs-14);font-weight:600;color:var(--c-gray-700);border-bottom:1px solid var(--c-gray-100); }
-
-    /* ── Editor Body ───────────────────────── */
-    .editor__body { display:flex;align-items:flex-start;overflow:hidden;width:100%; }
-
-    /* ── Left Panel ────────────────────────── */
-    .panel-store {
-      background:var(--c-white); border-right:1px solid var(--c-gray-200);
-      width:320px; height:1140px; flex-shrink:0;
-      display:flex; flex-direction:column; overflow:hidden;
-    }
-    .panel-store__hdr {
-      border-bottom:1px solid var(--c-gray-200); height:53px; padding:var(--sp-16);
-      padding-bottom:1px; flex-shrink:0; display:flex; align-items:flex-start;
-    }
-    .sec-title { display:flex;align-items:center;gap:8px; }
-    .sec-title img { width:16px;height:16px;object-fit:contain; }
-    .sec-title span { font-size:var(--fs-14);font-weight:600;line-height:20px;letter-spacing:-0.15px;color:var(--c-gray-800);white-space:nowrap; }
-    .panel-store__body { flex:1 0 0;padding:var(--sp-16);overflow-y:auto;display:flex;flex-direction:column;gap:var(--sp-24); }
-
-    .lbl-section { display:flex;align-items:center;gap:6px;margin-bottom:var(--sp-16); }
-    .lbl-section img { width:14px;height:14px;object-fit:contain; }
-    .lbl-section span { font-size:var(--fs-12);font-weight:600;line-height:16px;letter-spacing:.6px;color:var(--c-gray-500);text-transform:uppercase;white-space:nowrap; }
-
-    .field { display:flex;flex-direction:column;gap:var(--sp-4); }
-    .field__lbl { font-size:var(--fs-12);font-weight:500;line-height:16px;color:var(--c-gray-700);white-space:nowrap;padding-top:1px; }
-    .field__input { border:1px solid var(--c-gray-300);border-radius:var(--r-10);height:38px;padding:8px var(--sp-12);font-size:var(--fs-14);font-weight:400;color:rgba(10,10,10,.5);white-space:nowrap;overflow:hidden; }
-    .field__textarea { border:1px solid var(--c-gray-300);border-radius:var(--r-10);height:78px;padding:8px var(--sp-12);font-size:var(--fs-14);font-weight:400;line-height:20px;color:rgba(10,10,10,.5); }
-    .field__logo { background:var(--c-gray-50);border:2px dashed var(--c-gray-200);border-radius:14px;height:161px;overflow:hidden;padding:2px; }
-    .field__logo img { width:100%;height:100%;object-fit:cover; }
-
-    .btn-add {
-      background:var(--c-slate);border-radius:14px;box-shadow:var(--sh-md);
-      height:48px;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;
-      font-size:var(--fs-16);font-weight:500;line-height:24px;letter-spacing:-.31px;color:var(--c-white);
-    }
-    .btn-add img { width:16px;height:16px;object-fit:contain; }
-
-    .assets-hdr { display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-16); }
-    .assets-hdr__mgr { font-size:var(--fs-10);font-weight:500;line-height:15px;letter-spacing:.72px;color:var(--c-blue);text-transform:uppercase; }
-    .assets-grid { display:grid;grid-template-columns:repeat(3,90px);gap:8px; }
-    .assets-grid__cell { border:1px solid var(--c-gray-100);border-radius:var(--r-10);width:90px;height:90px;overflow:hidden;padding:1px; }
-    .assets-grid__cell img { width:100%;height:100%;object-fit:cover; }
-    .assets-grid__add { border:2px dashed var(--c-gray-200);border-radius:var(--r-10);width:90px;height:90px;display:flex;align-items:center;justify-content:center; }
-    .assets-grid__add img { width:16px;height:16px;object-fit:contain; }
-
-    /* ── Center Preview ─────────────────────── */
-    .panel-preview {
-      background:#f9fafb; flex:1 0 0; min-width:0;
-      height:1140px; display:flex;flex-direction:column;
-      align-items:center; overflow:hidden;
-    }
-    .preview-scroll { flex:1 0 0;width:100%;overflow-y:auto;display:flex;align-items:flex-start;justify-content:center;padding:30px var(--sp-48) 0; }
-    .preview-frame {
-      background:var(--c-white); border:1px solid var(--c-gray-200); border-radius:var(--r-16);
-      box-shadow:var(--sh-xl); width:575px; flex-shrink:0;
-      display:flex; flex-direction:column; overflow:hidden;
+    .editor__preview-btn:hover {
+      background: var(--c-accent);
+      color: var(--c-white);
+      transform: translateY(-1px);
     }
 
-    /* Store nav */
-    .s-nav {
-      background:var(--c-white); border-bottom:1px solid var(--c-gray-100);
-      height:81px; padding:0 var(--sp-48); padding-bottom:1px;
-      display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
+    /* Theme option hover */
+    .theme-option {
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
     }
-    .s-nav__brand { display:flex;align-items:center;gap:var(--sp-16); }
-    .s-nav__logo { width:40px;height:40px;border-radius:var(--r-10);box-shadow:var(--sh-sm);overflow:hidden;flex-shrink:0; }
-    .s-nav__logo img { width:100%;height:100%;object-fit:cover; }
-    .s-nav__name { font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-20);font-weight:700;line-height:28px;letter-spacing:-.5px;color:var(--c-gray-800);white-space:nowrap; }
-    .s-nav__right { display:flex;align-items:center;gap:var(--sp-48); }
-    .s-nav__links { display:flex;align-items:center;gap:var(--sp-16); }
-    .s-nav__link { font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-14);font-weight:500;line-height:20px;color:#4a5565;white-space:nowrap; }
-    .s-nav__icons { display:flex;align-items:center;width:80px; }
-    .s-nav__icon { width:36px;height:36px;border-radius:var(--r-full);display:flex;align-items:center;justify-content:center;position:relative; }
-    .s-nav__icon img { width:20px;height:20px;object-fit:contain; }
-    .s-nav__badge { position:absolute;top:4px;left:16px;background:var(--c-slate);border-radius:var(--r-full);width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-10);font-weight:500;line-height:15px;color:var(--c-white); }
-
-    /* Store header */
-    .s-header { background:var(--c-white);padding:var(--sp-64) var(--sp-48) 0;display:flex;flex-direction:column;gap:var(--sp-16);flex-shrink:0; }
-    .s-header__sub { font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-18);font-weight:400;line-height:29.25px;color:var(--c-gray-500);text-align:center; }
-    .s-header__cta { display:flex;align-items:center;justify-content:center; }
-    .s-header__btn { background:var(--c-slate);border-radius:var(--r-full);box-shadow:var(--sh-lg);height:48px;width:128px;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-16);font-weight:500;line-height:24px;color:var(--c-white);white-space:nowrap; }
-
-    /* Store products */
-    .s-products { padding:var(--sp-64) var(--sp-48) 0;display:flex;flex-direction:column;gap:var(--sp-32);flex-shrink:0; }
-    .s-products__hdr { display:flex;align-items:center;justify-content:space-between;height:32px; }
-    .s-products__title-wrap { display:flex;align-items:center;gap:8px; }
-    .s-products__title-wrap img { width:20px;height:20px;object-fit:contain; }
-    .s-products__title { font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-24);font-weight:700;line-height:32px;color:var(--c-gray-800);white-space:nowrap; }
-    .s-products__more { font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-14);font-weight:500;line-height:20px;color:var(--c-slate);white-space:nowrap; }
-    .s-products__grid { display:flex;gap:24px; }
-
-    .prod-card { background:var(--c-white);border:1px solid var(--c-gray-100);border-radius:24px;box-shadow:var(--sh-card);width:123.5px;overflow:hidden;display:flex;flex-direction:column; }
-    .prod-card__img { background:var(--c-gray-100);height:121.5px;overflow:hidden; }
-    .prod-card__img img { width:100%;height:100%;object-fit:cover; }
-    .prod-card__body { padding:var(--sp-20);display:flex;flex-direction:column;gap:8px; }
-    .prod-card__meta { display:flex;align-items:center;justify-content:space-between; }
-    .prod-card__tag { background:var(--c-gray-50);border-radius:var(--r-full);padding:0 8px;font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-10);font-weight:700;line-height:15px;letter-spacing:.5px;color:var(--c-gray-400);text-transform:uppercase; }
-    .prod-card__stock { font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-12);font-weight:400;line-height:16px;color:var(--c-gray-400); }
-    .prod-card__name { font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-18);font-weight:700;line-height:27px;color:var(--c-gray-800);overflow:hidden;height:27px; }
-    .prod-card__footer { display:flex;align-items:center;justify-content:space-between;height:40px; }
-    .prod-card__price { font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-18);font-weight:900;line-height:28px;color:var(--c-slate);white-space:nowrap; }
-    .prod-card__add { background:var(--c-slate);border-radius:14px;box-shadow:var(--sh-lg);width:36px;height:36px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
-    .prod-card__add img { width:16px;height:16px;object-fit:contain; }
-
-    /* Store footer */
-    .s-footer { background:var(--c-slate);border-radius:48px 48px 0 0;padding:var(--sp-64) var(--sp-48);display:flex;flex-direction:column;gap:var(--sp-48);margin-top:var(--sp-64);flex-shrink:0; }
-    .s-footer__top { display:flex;gap:var(--sp-48); }
-    .s-footer__about { display:flex;flex-direction:column;gap:var(--sp-16);width:157px;flex-shrink:0; }
-    .s-footer__brand { font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-20);font-weight:700;line-height:28px;color:var(--c-white);white-space:nowrap; }
-    .s-footer__desc { font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-14);font-weight:400;line-height:22.75px;color:rgba(255,255,255,.7);width:154px; }
-    .s-footer__col { display:flex;flex-direction:column;gap:var(--sp-12); }
-    .s-footer__col-title { font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-16);font-weight:700;line-height:24px;color:var(--c-white);padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.2); }
-    .s-footer__link { display:flex;align-items:center;gap:8px;height:24px;font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-16);font-weight:500;line-height:24px;color:rgba(255,255,255,.7); }
-    .s-footer__link::before { content:'';display:inline-block;width:4px;height:4px;border-radius:var(--r-full);background:rgba(255,255,255,.3);flex-shrink:0; }
-    .s-footer__contact { display:flex;flex-direction:column;gap:var(--sp-12); }
-    .s-footer__contact-row { display:flex;align-items:center;gap:var(--sp-12);height:36px; }
-    .s-footer__contact-icon { background:rgba(255,255,255,.1);border-radius:14px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
-    .s-footer__contact-icon img { width:16px;height:16px;object-fit:contain; }
-    .s-footer__contact-text { font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-14);font-weight:500;line-height:20px;color:rgba(255,255,255,.7);white-space:nowrap; }
-    .s-footer__bottom { border-top:1px solid rgba(255,255,255,.1);padding-top:var(--sp-32);font-family:'Noto Sans TC',sans-serif;font-size:var(--fs-10);font-weight:400;line-height:15px;color:rgba(255,255,255,.4);text-align:center; }
-
-    /* Preview bar */
-    .preview-bar {
-      background:rgba(255,255,255,.8); border-top:1px solid var(--c-gray-100); border-bottom:1px solid var(--c-gray-100);
-      height:56px; padding:0 var(--sp-32); padding-bottom:1px;
-      display:flex; align-items:center; justify-content:space-between;
-      flex-shrink:0; width:100%;
+    .theme-option:hover {
+      transform: translateX(4px);
+      border-color: var(--c-accent);
+      box-shadow: 0 4px 16px rgba(101,136,166,0.2);
     }
-    .preview-bar__toggle { background:rgba(243,244,246,.5);border:1px solid var(--c-gray-100);border-radius:14px;height:38px;display:flex;align-items:center;padding:5px;gap:4px; }
-    .preview-bar__btn { height:28px;border-radius:var(--r-10);display:flex;align-items:center;gap:8px;padding:0 6px;font-size:var(--fs-12);font-weight:700;line-height:16px;color:var(--c-black);white-space:nowrap; }
-    .preview-bar__btn--on { background:var(--c-white);box-shadow:var(--sh-sm); }
-    .preview-bar__btn--off { font-weight:500;color:var(--c-gray-400); }
-    .preview-bar__btn img { width:16px;height:16px;object-fit:contain; }
-    .preview-bar__status { font-size:var(--fs-10);font-weight:900;line-height:15px;letter-spacing:1.12px;color:var(--c-gray-300);text-transform:uppercase;white-space:nowrap;display:flex;align-items:center;gap:8px; }
-    .preview-bar__dot { width:4px;height:4px;border-radius:var(--r-full);background:var(--c-gray-300);flex-shrink:0; }
-
-    /* ── Right Panel ────────────────────────── */
-    .panel-design {
-      background:var(--c-white); border-left:1px solid var(--c-gray-200);
-      width:320px; height:1140px; flex-shrink:0;
-      display:flex; flex-direction:column; overflow:hidden; position:relative;
-    }
-    .panel-design__hdr {
-      border-bottom:1px solid var(--c-gray-200);height:56px;padding:var(--sp-16);
-      display:flex;align-items:center;flex-shrink:0;
-    }
-    .panel-design__body { flex:1 0 0;overflow-y:auto;padding:var(--sp-24);display:flex;flex-direction:column;gap:var(--sp-16); }
-
-    .d-label { font-size:var(--fs-12);font-weight:600;line-height:16px;letter-spacing:.6px;color:var(--c-gray-500);text-transform:uppercase;white-space:nowrap;display:flex;align-items:center;gap:6px; }
-    .d-label img { width:14px;height:14px;object-fit:contain; }
-
-    .color-theme { background:var(--c-gray-50);border:2px solid var(--c-gray-50);border-radius:var(--r-16);padding:18px 18px 2px;display:flex;flex-direction:column;gap:var(--sp-12); }
-    .color-theme--sel { background:var(--c-white);border-color:var(--c-slate);box-shadow:0 20px 25px rgba(0,0,0,.1),0 8px 10px rgba(0,0,0,.1); }
-    .color-theme__hdr { display:flex;align-items:center;justify-content:space-between; }
-    .color-theme__name { font-size:var(--fs-12);font-weight:700;line-height:16px;color:var(--c-gray-500);white-space:nowrap; }
-    .color-theme--sel .color-theme__name { color:var(--c-gray-800); }
-    .color-theme__dot { width:8px;height:8px;border-radius:var(--r-full);background:var(--c-slate); }
-    .swatches { display:flex;gap:6px;height:40px; }
-    .sw { flex:1 0 0;height:40px;border-radius:var(--r-10);box-shadow:var(--sh-inset); }
-    .sw-s1{background:#64748b;} .sw-s2{background:#94a3b8;} .sw-s3{background:#cbd5e1;} .sw-s4{background:#f1f5f9;}
-    .sw-g1{background:#869489;} .sw-g2{background:#a3ad9e;} .sw-g3{background:#c2c9bd;} .sw-g4{background:#e8ebe4;}
-    .sw-t1{background:#b38b7d;} .sw-t2{background:#d1b4a6;} .sw-t3{background:#e5d3c8;} .sw-t4{background:#f5efea;}
-    .sw-n1{background:#a8a29e;} .sw-n2{background:#d6d3d1;} .sw-n3{background:#e7e5e4;} .sw-n4{background:#f5f5f4;}
-
-    .font-opt { background:var(--c-gray-50);border:2px solid var(--c-gray-50);border-radius:14px;height:48px;padding:2px 18px;display:flex;align-items:center;justify-content:space-between; }
-    .font-opt--sel { background:var(--c-white);border-color:var(--c-slate);box-shadow:var(--sh-md); }
-    .font-opt__name { font-size:var(--fs-14);font-weight:500;line-height:20px;color:var(--c-gray-800);white-space:nowrap; }
-    .font-opt--off .font-opt__name { color:var(--c-gray-500); }
-    .font-opt--serif .font-opt__name { font-family:'Noto Serif TC',serif; }
-    .font-opt__dot { width:6px;height:6px;border-radius:var(--r-full);background:var(--c-slate); }
-
-    /* ════════════════════════════════════════
-        Site Footer
-    ════════════════════════════════════════ */
-    .site-footer { position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:0 var(--sp-120) var(--sp-120);width:100%; }
-    .site-footer__bg { position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none; }
-    .site-footer__inner { position:relative;z-index:1;display:flex;flex:1 0 0;align-items:flex-start;justify-content:space-between;border-top:1px solid rgba(255,255,255,.15);padding:var(--sp-80) 0;min-width:0; }
-    .site-footer__brand { font-size:var(--fs-24);font-weight:600;line-height:1.2;letter-spacing:-.48px;color:var(--c-white);white-space:nowrap;flex-shrink:0; }
-    .site-footer__nav { display:flex;gap:var(--sp-96);align-items:flex-start;flex-shrink:0; }
-    .site-footer__col { display:flex;flex-direction:column;gap:8px;align-items:flex-start;width:130px; }
-    .site-footer__col-hdr { padding-bottom:var(--sp-16);width:100%; }
-    .site-footer__col-title { font-size:var(--fs-16);font-weight:700;line-height:1.45;letter-spacing:-.08px;color:var(--c-white);white-space:nowrap; }
-    .site-footer__link { font-size:var(--fs-16);font-weight:400;line-height:1.45;letter-spacing:-.08px;color:rgba(255,255,255,.6);width:100%; }
-
-    /* ════════════════════════════════════════
-        Responsive
-    ════════════════════════════════════════ */
-    @media (max-width: 1024px) {
-      .hero { height:auto;min-height:120px;padding:48px var(--sp-48) 28px; }
-      .hero__title { font-size:40px; }
-
-      .topbar { height:auto;min-height:60px;padding:0 var(--sp-16);flex-wrap:wrap; }
-      .topbar__left { width:100%;justify-content:space-between;padding:10px 0; }
-      .topbar__title { font-size:var(--fs-14); }
-      .topbar__divider { display:none; }
-      .topbar__nav-desktop { display:none; }
-      .topbar__right { display:none; }
-      .hamburger { display:flex; }
-      .mobile-menu { display:flex; }
-
-      .editor__body { flex-direction:column; }
-      .panel-store, .panel-design { width:100%;height:auto;border:none;border-bottom:1px solid var(--c-gray-200); }
-      .panel-store { height:auto; }
-      .panel-design { height:auto; }
-      .panel-preview { height:auto; }
-      .preview-scroll { padding:var(--sp-16); }
-      .preview-frame { width:100%;max-width:575px; }
-
-      .site-footer { padding:0 var(--sp-48) var(--sp-80); }
-      .site-footer__nav { gap:var(--sp-48); }
-      .site-footer__col { width:110px; }
+    .theme-option.selected {
+      border-color: var(--c-accent);
+      background: #eef3f7;
     }
 
-    @media (max-width: 768px) {
-      .hero { padding:40px 24px 24px; }
-      .hero__title { font-size:28px; }
+    /* Font option hover */
+    .font-option {
+      transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+    .font-option:hover {
+      transform: translateX(4px);
+      background: #eef3f7;
+    }
+    .font-option.selected {
+      background: #e0eaf2;
+      box-shadow: inset 0 0 0 2px var(--c-accent);
+    }
 
-      .s-nav { padding:0 var(--sp-24); }
-      .s-nav__links { gap:8px; }
-      .s-footer__top { flex-direction:column;gap:var(--sp-24); }
+    /* Product card hover */
+    .product-card {
+      transition: transform 0.3s cubic-bezier(0.22,1,0.36,1),
+                  box-shadow 0.3s cubic-bezier(0.22,1,0.36,1);
+    }
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+    }
 
-      .site-footer { padding:0 24px var(--sp-64); }
-      .site-footer__inner { flex-direction:column;gap:40px; }
-      .site-footer__nav { flex-wrap:wrap;gap:var(--sp-32); }
-      .site-footer__col { width:calc(50% - 16px); }
+    /* Add product button */
+    .btn-add-product {
+      transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    }
+    .btn-add-product:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.07);
+      box-shadow: 0 8px 20px rgba(101,136,166,0.35);
+    }
+
+    /* Store CTA button */
+    .store-hero__cta-btn {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .store-hero__cta-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(101,136,166,0.4);
+    }
+
+    /* Asset thumb hover */
+    .asset-thumb {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .asset-thumb:hover {
+      transform: scale(1.06);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    /* Footer links */
+    .page-footer__col-link {
+      transition: color 0.2s ease, transform 0.2s ease;
+    }
+    .page-footer__col-link:hover {
+      color: rgba(255,255,255,0.95);
+      transform: translateX(4px);
+    }
+
+    /* ═══════════════════════════════════
+       RESPONSIVE — TABLET ≤ 1024px
+    ═══════════════════════════════════ */
+    @media (max-width:1024px){
+      .editor__hamburger{display:flex}
+      .editor__topbar{flex-wrap:wrap;height:auto;min-height:64px;padding:12px 20px;gap:12px}
+      .editor__topbar-left{flex:1;min-width:0}
+      .editor__topbar-right{display:none}
+      .editor__mobile-nav{display:flex}
+      .editor__preview-btn,.editor__divider{display:none}
+
+      .editor{width:100%}
+      .editor__body{flex-direction:column;min-height:auto}
+      .sidebar-left,.sidebar-right{width:100%;border-right:none;border-left:none;border-bottom:1px solid var(--c-border)}
+      .editor__center{width:100%}
+      .center__canvas{padding:0;justify-content:stretch}
+      .store-preview{width:100%}
+
+      .page-footer__inner{flex-direction:column;gap:48px;padding:60px 40px 80px}
+      .page-footer__nav{flex-wrap:wrap;gap:40px}
+
+      .hero{height:auto;min-height:120px;padding:40px 40px 30px}
+      .hero__title{font-size:42px}
+    }
+
+    /* ═══════════════════════════════════
+       RESPONSIVE — MOBILE ≤ 768px
+    ═══════════════════════════════════ */
+    @media (max-width:768px){
+      .editor__brand-name{font-size:15px}
+      .editor__topbar{padding:10px 16px;gap:8px}
+
+      .store-nav{height:auto;flex-wrap:wrap;padding:14px 16px;gap:12px}
+      .store-nav__brand{width:auto}
+      .store-nav__right{width:100%;justify-content:space-between;gap:16px}
+      .store-nav__links{gap:12px}
+
+      .store-products__grid{flex-direction:column;gap:16px}
+      .product-card{width:100%;max-width:280px}
+
+      .store-hero__tagline{white-space:normal;font-size:14px}
+
+      .store-footer__cols{height:auto;position:static;display:flex;flex-direction:column;gap:24px}
+      .store-footer__about,.store-footer__links,.store-footer__contact{position:static;width:100%}
+      .store-footer__contact-items{margin-top:0}
+      .store-footer{padding:40px 24px 32px}
+
+      .hero__title{font-size:30px}
+      .page-footer__inner{padding:40px 20px 60px}
+      .page-footer__nav{gap:24px}
+      .page-footer__col{width:100px}
+
+      .center__canvas{padding:0}
+      .store-preview{width:100%}
     }
   </style>
 </head>
 <body>
-<div class="page" style="display:flex;flex-direction:column;align-items:center;width:100%;">
+<div class="page">
 
-  <div class="hero" aria-hidden="true" role="presentation">
-    <img class="hero__bg" src="https://www.figma.com/api/mcp/asset/237b6db2-7a2e-4772-8450-4dbfbd69afed" alt="" />
-    <h1 class="hero__title">Goez Shop</h1>
-  </div>
+  <!-- HERO -->
+  <section class="hero" aria-label="Goez Shop 標題區">
+    <img class="hero__bg"
+      src="/Users/lc/Desktop/store/Background.svg"
+      alt="背景圖片" />
+    <a href="goez-shop-home.html" class="hero__title" style="cursor:pointer;" aria-label="返回首頁">Goez Shop</a>
+  </section>
 
-  <div class="editor" style="width:100%;">
-    <div class="editor__card">
+  <!-- EDITOR -->
+  <div class="editor-shell">
+    <div class="editor">
 
-      <header class="topbar">
-        <div class="topbar__left">
-          <div class="topbar__brand">
-            <div class="topbar__logo-box">
-              <img src="https://www.figma.com/api/mcp/asset/b1bc8e20-5f7c-415f-ac0e-3cf55bb7be42" alt="Goez Shop" />
+      <!-- Top Bar -->
+      <header class="editor__topbar">
+        <div class="editor__topbar-left">
+          <div class="editor__brand">
+            <div class="editor__brand-icon">
+              <img src="/Users/lc/Desktop/store/small-cart.svg" alt="品牌圖示" />
             </div>
-            <span class="topbar__title">建立屬於自己的賣場</span>
+            <span class="editor__brand-name">建立屬於自己的賣場</span>
           </div>
-          <div class="topbar__divider" aria-hidden="true"></div>
-          <nav class="topbar__nav-desktop" aria-label="編輯器功能">
-            <div class="topbar__nav-tab">預覽編輯</div>
-            <a href="#" class="topbar__nav-link">
-              數據中心
-              <img src="https://www.figma.com/api/mcp/asset/a0053575-0836-4083-beea-36416573f747" alt="" aria-hidden="true" />
-            </a>
-          </nav>
-          <button class="hamburger" id="menuToggle" aria-expanded="false" aria-controls="mobileMenu" aria-label="開啟/關閉選單">
-            <span class="hamburger__bar"></span>
-            <span class="hamburger__bar"></span>
-            <span class="hamburger__bar"></span>
+          <div class="editor__divider" aria-hidden="true"></div>
+          <button class="editor__preview-btn" type="button">預覽編輯</button>
+        </div>
+
+        <button class="editor__hamburger" type="button"
+          aria-expanded="false" aria-controls="editor-mobile-nav"
+          aria-label="開啟選單" id="hamburger-btn">
+          <span class="editor__hamburger-line"></span>
+          <span class="editor__hamburger-line"></span>
+          <span class="editor__hamburger-line"></span>
+        </button>
+
+        <div class="editor__topbar-right">
+          <button class="btn-draft" type="button">
+            <img src="/Users/lc/Desktop/store/save.svg" alt="儲存圖示" />
+            儲存草稿
+          </button>
+          <button class="btn-publish" type="button">
+            <img src="/Users/lc/Desktop/store/publish.svg" alt="發布圖示" />
+            正式發布
           </button>
         </div>
-        <div class="topbar__right">
-          <div class="topbar__icons" aria-hidden="true">
-            <img src="https://www.figma.com/api/mcp/asset/e1a6b61e-7823-4340-ad54-f2d4edad6e21" alt="通知" />
-            <img src="https://www.figma.com/api/mcp/asset/003b37e9-a3a6-47cd-a6b4-d96ddc92ef63" alt="設定" />
-            <img src="https://www.figma.com/api/mcp/asset/5ca26beb-1b6b-457e-8ff5-04be72f9d3b3" alt="用戶" style="width:20px;height:20px;object-fit:contain;" />
-          </div>
-          <div class="topbar__actions">
-            <button class="btn-draft">
-              <span class="btn-icon"><img src="https://www.figma.com/api/mcp/asset/aac99495-7a94-4e48-99f4-cf135c7048d3" alt="" aria-hidden="true" /></span>
-              儲存草稿
-            </button>
-            <button class="btn-publish">
-              <span class="btn-icon"><img src="https://www.figma.com/api/mcp/asset/777c44b6-b741-4f38-b8c2-9fbd4282b761" alt="" aria-hidden="true" /></span>
-              正式發布
-            </button>
-          </div>
-        </div>
-        <nav class="mobile-menu" id="mobileMenu" aria-label="行動導覽">
-          <a href="#">預覽編輯</a>
-          <a href="#">數據中心</a>
-          <a href="#">儲存草稿</a>
-          <a href="#">正式發布</a>
-        </nav>
       </header>
 
+      <!-- Mobile nav -->
+      <nav class="editor__mobile-nav" id="editor-mobile-nav" aria-label="行動選單">
+        <a class="editor__mobile-nav-link" href="#">儲存草稿</a>
+        <a class="editor__mobile-nav-link" href="#">正式發布</a>
+        <a class="editor__mobile-nav-link" href="#">預覽編輯</a>
+      </nav>
+
+      <!-- Body -->
       <div class="editor__body">
 
-        <aside class="panel-store" aria-label="店鋪管理">
-          <div class="panel-store__hdr">
-            <div class="sec-title">
-              <img src="https://www.figma.com/api/mcp/asset/867fc24d-dfa8-4310-ada4-eaffd8d3a4e9" alt="" aria-hidden="true" />
-              <span>店鋪管理</span>
+        <!-- LEFT SIDEBAR -->
+        <aside class="sidebar-left" aria-label="店鋪管理">
+          <div class="sidebar-left__head">
+            <div class="sidebar-left__head-row">
+              <img src="/Users/lc/Desktop/store/store-image.svg" alt="店鋪圖示" />
+              <span class="sidebar-left__head-title">店鋪管理</span>
             </div>
           </div>
-          <div class="panel-store__body">
-            <section>
-              <div class="lbl-section">
-                <img src="https://www.figma.com/api/mcp/asset/3e028bc2-a13e-4af2-9559-399974748912" alt="" aria-hidden="true" />
-                <span>店鋪基本資訊</span>
+          <div class="sidebar-left__scroll">
+
+            <!-- 店鋪基本資訊 -->
+            <section aria-label="店鋪基本資訊">
+              <div class="section-label" style="margin-bottom:16px">
+                <span class="section-label__text">店鋪基本資訊</span>
               </div>
-              <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="display:flex;flex-direction:column;gap:12px">
                 <div class="field">
-                  <label class="field__lbl">店鋪名稱</label>
-                  <div class="field__input">風格生活選物</div>
+                  <label class="field__label" for="store-name-input">店鋪名稱</label>
+                  <input
+                    id="store-name-input"
+                    class="field__real-input"
+                    type="text"
+                    value="風格生活選物"
+                    placeholder="請輸入店鋪名稱..."
+                    maxlength="30"
+                    autocomplete="off"
+                  />
                 </div>
                 <div class="field">
-                  <label class="field__lbl">店鋪簡介</label>
-                  <div class="field__textarea">請輸入店鋪簡介...</div>
+                  <label class="field__label" for="store-desc-input">店鋪簡介</label>
+                  <textarea
+                    id="store-desc-input"
+                    class="field__real-textarea"
+                    placeholder="請輸入店鋪簡介..."
+                    maxlength="120"
+                    rows="3"
+                  >為您挑選來自世界各地的質感生活好物，讓日常充滿美感。</textarea>
                 </div>
                 <div class="field">
-                  <label class="field__lbl">店鋪商標</label>
-                  <div class="field__logo">
-                    <img src="https://www.figma.com/api/mcp/asset/efe1bd34-8246-45c7-b57a-7d78c0d294fd" alt="店鋪商標" />
+                  <label class="field__label">店鋪商標</label>
+                  <div class="field__logo-area" id="logo-drop-zone">
+                    <img id="logo-preview-img" src="https://www.figma.com/api/mcp/asset/665605e6-519c-4fa0-8070-daa26e795351" alt="店鋪商標" />
+                    <div class="logo-upload-overlay" id="logo-upload-overlay">
+                      <div class="logo-upload-overlay__inner">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        <span>上傳商標</span>
+                      </div>
+                    </div>
                   </div>
+                  <input type="file" id="logo-file-input" accept="image/*" style="display:none" />
                 </div>
               </div>
             </section>
-            <section>
-              <div class="lbl-section">
-                <img src="https://www.figma.com/api/mcp/asset/00761fe8-43e7-4ecc-9b51-9e51caf23a02" alt="" aria-hidden="true" />
-                <span>商品管理</span>
+
+            <!-- 商品管理 -->
+            <section class="product-mgmt" aria-label="商品管理">
+              <div class="section-label">
+                <img src="/Users/lc/Desktop/store/plus2.svg" alt="商品圖示" />
+                <span class="section-label__text">商品管理</span>
               </div>
-              <button class="btn-add">
-                <img src="https://www.figma.com/api/mcp/asset/a4f46d2e-b89c-4f37-921e-a628855411c2" alt="" aria-hidden="true" />
+              <button class="btn-add-product" type="button">
+                <img src="/Users/lc/Desktop/store/plus.svg" alt="新增圖示" />
                 新增商品
               </button>
             </section>
-            <section>
-              <div class="assets-hdr">
-                <div class="lbl-section" style="margin-bottom:0;">
-                  <img src="https://www.figma.com/api/mcp/asset/f8c1dbf4-f8b9-4e97-a884-6cbd698ca4b6" alt="" aria-hidden="true" />
-                  <span>最近資源</span>
+
+            <!-- 最近資源 -->
+            <section aria-label="最近資源">
+              <div class="recent-header" style="margin-bottom:16px">
+                <div class="section-label">
+                  <img src="/Users/lc/Desktop/store/photo.svg" alt="資源圖示" />
+                  <span class="section-label__text">最近資源</span>
                 </div>
-                <button class="assets-hdr__mgr">管理全部</button>
+                <button class="recent-header__manage" type="button">管理全部</button>
               </div>
-              <div class="assets-grid" style="margin-top:16px;">
-                <div class="assets-grid__cell"><img src="https://www.figma.com/api/mcp/asset/efe1bd34-8246-45c7-b57a-7d78c0d294fd" alt="資源 1" /></div>
-                <div class="assets-grid__cell"><img src="https://www.figma.com/api/mcp/asset/26c20d9e-ad72-4946-9ccf-4c3cef6dba26" alt="資源 2" /></div>
-                <div class="assets-grid__cell"><img src="https://www.figma.com/api/mcp/asset/89357b69-ecb1-4a87-bfbd-110b042e099f" alt="資源 3" /></div>
-                <div class="assets-grid__cell"><img src="https://www.figma.com/api/mcp/asset/1b8b1ff3-88b4-469d-9ce7-55c683c590c1" alt="資源 4" /></div>
-                <div class="assets-grid__cell"><img src="https://www.figma.com/api/mcp/asset/1a562e05-a8b1-42bb-beb7-c50c36cdcfe5" alt="資源 5" /></div>
-                <div class="assets-grid__add" role="button" aria-label="新增資源">
-                  <img src="https://www.figma.com/api/mcp/asset/65345ba3-43fc-4ff5-88e3-c9c962637688" alt="新增" />
+              <div class="assets-grid">
+                <div class="asset-thumb"><img src="https://www.figma.com/api/mcp/asset/665605e6-519c-4fa0-8070-daa26e795351" alt="資源 1" /></div>
+                <div class="asset-thumb"><img src="https://www.figma.com/api/mcp/asset/cb4607e6-dd4c-491d-9fb8-56843a56186f" alt="資源 2" /></div>
+                <div class="asset-thumb"><img src="https://www.figma.com/api/mcp/asset/cad7f391-572a-4480-a92f-910eed4422fb" alt="資源 3" /></div>
+                <div class="asset-thumb"><img src="https://www.figma.com/api/mcp/asset/e3fb4fa0-f3f9-4abc-a40c-f1c773d60716" alt="資源 4" /></div>
+                <div class="asset-thumb"><img src="https://www.figma.com/api/mcp/asset/e82ad3df-e435-42b4-bb9a-b8ba4f48e757" alt="資源 5" /></div>
+                <div class="asset-add" role="button" tabindex="0" aria-label="新增資源">
+                  <img src="/Users/lc/Desktop/store/plus2.svg" alt="新增" />
                 </div>
               </div>
             </section>
+
           </div>
         </aside>
 
-        <div class="panel-preview">
-          
-          <div class="preview-bar">
-            <div class="preview-bar__toggle">
-              <button class="preview-bar__btn preview-bar__btn--on">
-                <img src="https://www.figma.com/api/mcp/asset/8bb9f8d6-58f8-4992-ad5e-2d683e0a21fc" alt="" aria-hidden="true" />
-                桌面版
+        <!-- CENTER -->
+        <main class="editor__center" aria-label="預覽畫面">
+          <div class="center__toolbar">
+            <div class="viewport-toggle" role="group" aria-label="視圖切換">
+              <button class="viewport-btn viewport-btn--active" type="button" aria-pressed="true">
+                <img src="/Users/lc/Desktop/store/computer.svg" alt="桌面版" />
+                <span class="viewport-btn__label">桌面版</span>
               </button>
-              <button class="preview-bar__btn preview-bar__btn--off">
-                <img src="https://www.figma.com/api/mcp/asset/71cd39b6-92f9-4dd6-b840-d5f094c31c23" alt="" aria-hidden="true" />
-                行動版
+              <button class="viewport-btn" type="button" aria-pressed="false">
+                <img src="/Users/lc/Desktop/store/smartphone.svg" alt="行動版" />
+                <span class="viewport-btn__label viewport-btn__label--inactive">行動版</span>
               </button>
-            </div>
-            <div class="preview-bar__status" aria-live="polite">
-              Auto-syncing <span class="preview-bar__dot"></span>
             </div>
           </div>
 
-          <div class="preview-scroll">
-            <div class="preview-frame">
-              <nav class="s-nav" aria-label="賣場導覽">
-                <div class="s-nav__brand">
-                  <div class="s-nav__logo">
-                    <img src="https://www.figma.com/api/mcp/asset/efe1bd34-8246-45c7-b57a-7d78c0d294fd" alt="風格生活選物標誌" />
+          <div class="center__canvas" id="preview-canvas">
+            <!-- DESKTOP PREVIEW -->
+            <article class="store-preview" id="desktop-preview">
+
+              <!-- Store navbar -->
+              <nav class="store-nav" aria-label="店鋪導覽">
+                <div class="store-nav__brand">
+                  <div class="store-nav__logo">
+                    <img id="preview-logo-desktop" src="https://www.figma.com/api/mcp/asset/665605e6-519c-4fa0-8070-daa26e795351" alt="風格生活選物商標" />
                   </div>
-                  <span class="s-nav__name">風格生活選物</span>
+                  <span class="store-nav__name" id="preview-name-desktop">風格生活選物</span>
                 </div>
-                <div class="s-nav__right">
-                  <div class="s-nav__links">
-                    <a href="#" class="s-nav__link">首頁</a>
-                    <a href="#" class="s-nav__link">所有商品</a>
-                    <a href="#" class="s-nav__link">關於我們</a>
+                <div class="store-nav__right">
+                  <div class="store-nav__links">
+                    <a class="store-nav__link" href="#">首頁</a>
+                    <a class="store-nav__link" href="#">所有商品</a>
+                    <a class="store-nav__link" href="#">關於我們</a>
                   </div>
-                  <div class="s-nav__icons">
-                    <button class="s-nav__icon" aria-label="搜尋">
-                      <img src="https://www.figma.com/api/mcp/asset/95b8a160-42c0-4224-ba7c-c4caafb2d4ec" alt="" aria-hidden="true" />
+                  <div class="store-nav__actions">
+                    <button class="store-nav__action-btn" type="button" aria-label="搜尋">
+                      <img src="/Users/lc/Desktop/store/search.svg" alt="搜尋" style="width:36px;height:36px" />
                     </button>
-                    <button class="s-nav__icon" aria-label="購物車 (2)">
-                      <img src="https://www.figma.com/api/mcp/asset/379f1147-3f8c-41f9-a83f-95ed22f0e82c" alt="" aria-hidden="true" />
-                      <span class="s-nav__badge">2</span>
-                    </button>
+                    <div class="store-nav__cart-wrap">
+                      <button class="store-nav__action-btn" type="button" aria-label="購物車">
+                        <img src="/Users/lc/Desktop/store/cart.svg" alt="購物車" style="width:36px;height:36px" />
+                      </button>
+                      <div class="store-nav__cart-badge" aria-label="購物車 2 件">
+                        <span>2</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </nav>
-              <div class="s-header">
-                <p class="s-header__sub">為您挑選來自世界各地的質感生活好物，讓日常充滿美感。</p>
-                <div class="s-header__cta">
-                  <button class="s-header__btn">立即選購</button>
+
+              <!-- Store hero -->
+              <div class="store-hero">
+                <p class="store-hero__tagline" id="preview-desc-desktop">為您挑選來自世界各地的質感生活好物，讓日常充滿美感。</p>
+                <div class="store-hero__cta-wrap">
+                  <button class="store-hero__cta-btn" type="button">立即選購</button>
                 </div>
               </div>
-              <section class="s-products" aria-label="熱門商品">
-                <div class="s-products__hdr">
-                  <div class="s-products__title-wrap">
-                    <img src="https://www.figma.com/api/mcp/asset/bd9e3c84-674f-454a-8710-8674301d5cf1" alt="" aria-hidden="true" />
-                    <h2 class="s-products__title">熱門商品</h2>
+
+              <!-- Hot products -->
+              <section class="store-products" aria-label="熱門商品">
+                <div class="store-products__header">
+                  <div class="store-products__heading">
+                    <img src="/Users/lc/Desktop/store/square.svg" alt="熱門圖示" />
+                    <span class="store-products__heading-text">熱門商品</span>
                   </div>
-                  <a href="#" class="s-products__more">查看更多</a>
+                  <button class="store-products__more" type="button">查看更多</button>
                 </div>
-                <div class="s-products__grid">
-                  <article class="prod-card">
-                    <div class="prod-card__img"></div>
-                    <div class="prod-card__body">
-                      <div class="prod-card__meta">
-                        <span class="prod-card__tag">居家生活</span>
-                        <span class="prod-card__stock">剩餘 15</span>
+                <div class="store-products__grid">
+
+                  <article class="product-card" aria-label="質感陶瓷花瓶">
+                    <div class="product-card__image-area product-card__image-area--empty"></div>
+                    <div class="product-card__body">
+                      <div class="product-card__meta">
+                        <div class="product-card__tag"><span class="product-card__tag-text">居家生活</span></div>
+                        <span class="product-card__stock">剩餘 15</span>
                       </div>
-                      <h3 class="prod-card__name">質感陶瓷花瓶</h3>
-                      <div class="prod-card__footer">
-                        <span class="prod-card__price">$890</span>
-                        <button class="prod-card__add" aria-label="加入購物車">
-                          <img src="https://www.figma.com/api/mcp/asset/e1fd778b-bd49-416b-afda-bc508ce01019" alt="" aria-hidden="true" />
+                      <div class="product-card__name">質感陶瓷花瓶</div>
+                      <div class="product-card__footer">
+                        <span class="product-card__price">$890</span>
+                        <button class="product-card__cart-btn" type="button" aria-label="加入購物車">
+                          <img src="/Users/lc/Desktop/store/shopping-cart.svg" alt="加入購物車" />
                         </button>
                       </div>
                     </div>
                   </article>
-                  <article class="prod-card">
-                    <div class="prod-card__img">
-                      <img src="https://www.figma.com/api/mcp/asset/1a562e05-a8b1-42bb-beb7-c50c36cdcfe5" alt="無線降噪耳機" />
+
+                  <article class="product-card" aria-label="無線降噪耳機">
+                    <div class="product-card__image-area">
+                      <img src="https://www.figma.com/api/mcp/asset/e82ad3df-e435-42b4-bb9a-b8ba4f48e757" alt="無線降噪耳機" />
                     </div>
-                    <div class="prod-card__body">
-                      <div class="prod-card__meta">
-                        <span class="prod-card__tag">科技配件</span>
-                        <span class="prod-card__stock">剩餘 8</span>
+                    <div class="product-card__body">
+                      <div class="product-card__meta">
+                        <div class="product-card__tag"><span class="product-card__tag-text">科技配件</span></div>
+                        <span class="product-card__stock">剩餘 8</span>
                       </div>
-                      <h3 class="prod-card__name">無線降噪耳機</h3>
-                      <div class="prod-card__footer">
-                        <span class="prod-card__price">$5,490</span>
-                        <button class="prod-card__add" aria-label="加入購物車">
-                          <img src="https://www.figma.com/api/mcp/asset/e1fd778b-bd49-416b-afda-bc508ce01019" alt="" aria-hidden="true" />
+                      <div class="product-card__name">無線降噪耳機</div>
+                      <div class="product-card__footer">
+                        <span class="product-card__price">$890</span>
+                        <button class="product-card__cart-btn" type="button" aria-label="加入購物車">
+                          <img src="/Users/lc/Desktop/store/shopping-cart.svg" alt="加入購物車" />
                         </button>
                       </div>
                     </div>
                   </article>
+
                 </div>
               </section>
-              <footer class="s-footer">
-                <div class="s-footer__top">
-                  <div class="s-footer__about">
-                    <span class="s-footer__brand">風格生活選物</span>
-                    <p class="s-footer__desc">為您挑選來自世界各地的質感生活好物，讓日常充滿美感。</p>
+
+              <!-- Store footer -->
+              <footer class="store-footer">
+                <div class="store-footer__cols">
+                  <div class="store-footer__about">
+                    <span class="store-footer__brand" id="preview-footer-brand">風格生活選物</span>
+                    <p class="store-footer__desc" id="preview-footer-desc">為您挑選來自世界各地的質感生活好物，讓日常充滿美感。</p>
                   </div>
-                  <nav class="s-footer__col" aria-label="快速連結">
-                    <span class="s-footer__col-title">快速連結</span>
-                    <a href="#" class="s-footer__link">最新商品</a>
-                    <a href="#" class="s-footer__link">會員中心</a>
-                    <a href="#" class="s-footer__link">隱私條款</a>
-                  </nav>
-                  <address class="s-footer__contact" style="font-style:normal;">
-                    <span class="s-footer__col-title" style="display:block;margin-bottom:12px;">聯絡我們</span>
-                    <div class="s-footer__contact-row">
-                      <div class="s-footer__contact-icon">
-                        <img src="https://www.figma.com/api/mcp/asset/bd9e3c84-674f-454a-8710-8674301d5cf1" alt="" aria-hidden="true" />
+                  <div class="store-footer__links">
+                    <div class="store-footer__col-title">快速連結</div>
+                    <ul class="store-footer__col-list">
+                      <li class="store-footer__col-item">
+                        <span class="store-footer__col-dot"></span>
+                        <a class="store-footer__col-link" href="#"> 最新商品</a>
+                      </li>
+                      <li class="store-footer__col-item">
+                        <span class="store-footer__col-dot"></span>
+                        <a class="store-footer__col-link" href="#"> 會員中心</a>
+                      </li>
+                      <li class="store-footer__col-item">
+                        <span class="store-footer__col-dot"></span>
+                        <a class="store-footer__col-link" href="#"> 隱私條款</a>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="store-footer__contact">
+                    <div class="store-footer__col-title">聯絡我們</div>
+                    <div class="store-footer__contact-items">
+                      <div class="store-footer__contact-row">
+                        <div class="store-footer__contact-icon">
+                          <img src="/Users/lc/Desktop/store/email.svg" alt="Email" />
+                        </div>
+                        <span class="store-footer__contact-email">service@shop.com</span>
                       </div>
-                      <span class="s-footer__contact-text">service@shop.com</span>
-                    </div>
-                    <div class="s-footer__contact-row">
-                      <div class="s-footer__contact-icon">
-                        <img src="https://www.figma.com/api/mcp/asset/e1fd778b-bd49-416b-afda-bc508ce01019" alt="" aria-hidden="true" />
+                      <div class="store-footer__contact-row">
+                        <div class="store-footer__contact-icon">
+                          <img src="/Users/lc/Desktop/store/phone.svg" alt="電話" />
+                        </div>
+                        <span class="store-footer__contact-phone">0800-000-000</span>
                       </div>
-                      <span class="s-footer__contact-text">0800-000-000</span>
                     </div>
-                  </address>
+                  </div>
                 </div>
-                <div class="s-footer__bottom">
-                  © 2026 風格生活選物. All rights reserved. Powered by Figma Make.
+                <div class="store-footer__bottom">
+                  <p class="store-footer__copyright">© 2026 風格生活選物. All rights reserved. Powered by Figma Make.</p>
                 </div>
               </footer>
-            </div></div></div><aside class="panel-design" aria-label="設計系統">
-          <div class="panel-design__hdr">
-            <div class="sec-title">
-              <img src="https://www.figma.com/api/mcp/asset/affc6ae1-db34-4245-b02e-053844c61cba" alt="" aria-hidden="true" />
-              <span>設計系統</span>
+
+            </article><!-- /desktop-preview -->
+
+            <!-- MOBILE PREVIEW -->
+            <div id="mobile-preview" style="display:none; width:100%; justify-content:center; padding:24px 0; background:var(--c-bg-page); flex:1;">
+              <div class="mobile-frame">
+                <div class="mobile-preview">
+                  <!-- Mobile nav -->
+                  <nav class="mobile-store-nav">
+                    <div class="mobile-store-nav__brand">
+                      <div class="mobile-store-nav__logo">
+                        <img id="preview-logo-mobile" src="https://www.figma.com/api/mcp/asset/665605e6-519c-4fa0-8070-daa26e795351" alt="商標" />
+                      </div>
+                      <span class="mobile-store-nav__name" id="preview-name-mobile">風格生活選物</span>
+                    </div>
+                    <div class="mobile-store-nav__actions">
+                      <button class="mobile-store-nav__btn" aria-label="搜尋">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                      </button>
+                      <div class="mobile-cart-badge-wrap">
+                        <button class="mobile-store-nav__btn" aria-label="購物車">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                        </button>
+                        <div class="mobile-cart-badge">2</div>
+                      </div>
+                    </div>
+                  </nav>
+                  <!-- Mobile hero -->
+                  <div class="mobile-hero">
+                    <p class="mobile-hero__tagline" id="preview-desc-mobile">為您挑選來自世界各地的質感生活好物，讓日常充滿美感。</p>
+                    <button class="mobile-hero__cta">立即選購</button>
+                  </div>
+                  <!-- Mobile products -->
+                  <div class="mobile-products">
+                    <div class="mobile-products__header">
+                      <span class="mobile-products__title">熱門商品</span>
+                      <span class="mobile-products__more">查看更多</span>
+                    </div>
+                    <div class="mobile-products__grid">
+                      <div class="mobile-product-card">
+                        <div class="mobile-product-card__img mobile-product-card__img--empty"></div>
+                        <div class="mobile-product-card__body">
+                          <span class="mobile-product-card__tag">居家生活</span>
+                          <div class="mobile-product-card__name">質感陶瓷花瓶</div>
+                          <div class="mobile-product-card__footer">
+                            <span class="mobile-product-card__price">$890</span>
+                            <button class="mobile-product-card__cart">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="mobile-product-card">
+                        <div class="mobile-product-card__img">
+                          <img src="https://www.figma.com/api/mcp/asset/e82ad3df-e435-42b4-bb9a-b8ba4f48e757" alt="無線降噪耳機" />
+                        </div>
+                        <div class="mobile-product-card__body">
+                          <span class="mobile-product-card__tag">科技配件</span>
+                          <div class="mobile-product-card__name">無線降噪耳機</div>
+                          <div class="mobile-product-card__footer">
+                            <span class="mobile-product-card__price">$890</span>
+                            <button class="mobile-product-card__cart">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Mobile footer -->
+                  <div class="mobile-footer">
+                    <div class="mobile-footer__brand" id="preview-footer-brand-mobile">風格生活選物</div>
+                    <div class="mobile-footer__desc" id="preview-footer-desc-mobile">為您挑選來自世界各地的質感生活好物，讓日常充滿美感。</div>
+                    <div class="mobile-footer__copyright">© 2026 風格生活選物. All rights reserved.</div>
+                  </div>
+                </div><!-- /mobile-preview scroll -->
+              </div><!-- /mobile-frame -->
+            </div><!-- /mobile-preview wrapper -->
+        </main>
+
+        <!-- RIGHT SIDEBAR -->
+        <aside class="sidebar-right" aria-label="設計系統">
+          <div class="sidebar-right__head">
+            <div class="sidebar-right__head-row">
+              <img src="/Users/lc/Desktop/store/color.svg" alt="設計系統圖示" />
+              <span class="sidebar-right__head-title">設計系統</span>
             </div>
           </div>
-          <div class="panel-design__body">
-            <div class="d-label">主題配色</div>
-            <div class="color-theme color-theme--sel" tabindex="0" role="radio" aria-checked="true">
-              <div class="color-theme__hdr">
-                <span class="color-theme__name">冷靜石板</span>
-                <div class="color-theme__dot"></div>
-              </div>
-              <div class="swatches">
-                <div class="sw sw-s1"></div><div class="sw sw-s2"></div>
-                <div class="sw sw-s3"></div><div class="sw sw-s4"></div>
-              </div>
-            </div>
-            <div class="color-theme" tabindex="0" role="radio" aria-checked="false">
-              <div class="color-theme__hdr"><span class="color-theme__name">鼠尾草綠</span></div>
-              <div class="swatches">
-                <div class="sw sw-g1"></div><div class="sw sw-g2"></div>
-                <div class="sw sw-g3"></div><div class="sw sw-g4"></div>
-              </div>
-            </div>
-            <div class="color-theme" tabindex="0" role="radio" aria-checked="false">
-              <div class="color-theme__hdr"><span class="color-theme__name">陶土橘</span></div>
-              <div class="swatches">
-                <div class="sw sw-t1"></div><div class="sw sw-t2"></div>
-                <div class="sw sw-t3"></div><div class="sw sw-t4"></div>
-              </div>
-            </div>
-            <div class="color-theme" tabindex="0" role="radio" aria-checked="false">
-              <div class="color-theme__hdr"><span class="color-theme__name">北歐沙色</span></div>
-              <div class="swatches">
-                <div class="sw sw-n1"></div><div class="sw sw-n2"></div>
-                <div class="sw sw-n3"></div><div class="sw sw-n4"></div>
-              </div>
-            </div>
-            <div class="d-label" style="margin-top:8px;">
-              <img src="https://www.figma.com/api/mcp/asset/affc6ae1-db34-4245-b02e-053844c61cba" alt="" aria-hidden="true" />
-              字體設定
-            </div>
-            <div style="display:flex;flex-direction:column;gap:12px;">
-              <div class="font-opt font-opt--sel" tabindex="0" role="radio" aria-checked="true">
-                <span class="font-opt__name">現代黑體</span>
-                <div class="font-opt__dot"></div>
-              </div>
-              <div class="font-opt font-opt--off font-opt--serif" tabindex="0" role="radio" aria-checked="false">
-                <span class="font-opt__name">經典明體</span>
-              </div>
-              <div class="font-opt font-opt--off" tabindex="0" role="radio" aria-checked="false">
-                <span class="font-opt__name">溫潤圓體</span>
+          <div class="sidebar-right__scroll">
+
+            <!-- 主題配色 -->
+            <div class="design-section">
+              <p class="design-section-label">主題配色</p>
+              <div class="theme-options">
+                <div class="theme-option theme-option--0">
+                  <span class="theme-option__name">冷靜石板</span>
+                  <div class="theme-option__swatches">
+                    <div class="swatch" style="background:#64748b"></div>
+                    <div class="swatch" style="background:#94a3b8"></div>
+                    <div class="swatch" style="background:#cbd5e1"></div>
+                    <div class="swatch" style="background:#f1f5f9"></div>
+                  </div>
+                </div>
+                <div class="theme-option theme-option--1">
+                  <span class="theme-option__name">鼠尾草綠</span>
+                  <div class="theme-option__swatches">
+                    <div class="swatch" style="background:#869489"></div>
+                    <div class="swatch" style="background:#a3ad9e"></div>
+                    <div class="swatch" style="background:#c2c9bd"></div>
+                    <div class="swatch" style="background:#e8ebe4"></div>
+                  </div>
+                </div>
+                <div class="theme-option theme-option--2">
+                  <span class="theme-option__name">陶土橘</span>
+                  <div class="theme-option__swatches">
+                    <div class="swatch" style="background:#b38b7d"></div>
+                    <div class="swatch" style="background:#d1b4a6"></div>
+                    <div class="swatch" style="background:#e5d3c8"></div>
+                    <div class="swatch" style="background:#f5efea"></div>
+                  </div>
+                </div>
+                <div class="theme-option theme-option--3">
+                  <span class="theme-option__name">北歐沙色</span>
+                  <div class="theme-option__swatches">
+                    <div class="swatch" style="background:#a8a29e"></div>
+                    <div class="swatch" style="background:#d6d3d1"></div>
+                    <div class="swatch" style="background:#e7e5e4"></div>
+                    <div class="swatch" style="background:#f5f5f4"></div>
+                  </div>
+                </div>
               </div>
             </div>
+
+            <!-- 字體設定 -->
+            <div class="font-section">
+              <div class="font-section-head">
+                <img src="/Users/lc/Desktop/store/text.svg" alt="字體圖示" />
+                <span class="font-section-head__label">字體設定</span>
+              </div>
+              <div class="font-options">
+                <div class="font-option font-option--gothic">
+                  <span class="font-option__name">現代黑體</span>
+                </div>
+                <div class="font-option font-option--serif">
+                  <span class="font-option__name">經典明體</span>
+                </div>
+                <div class="font-option font-option--round">
+                  <span class="font-option__name">溫潤圓體</span>
+                </div>
+              </div>
+            </div>
+
           </div>
         </aside>
 
-      </div></div></div><footer class="site-footer" aria-label="網站頁腳">
-    <img class="site-footer__bg" src="https://www.figma.com/api/mcp/asset/039ae755-5335-4be3-94d0-1955bdb391e7" alt="" aria-hidden="true" />
-    <div class="site-footer__inner">
-      <p class="site-footer__brand">Namedly</p>
-      <nav class="site-footer__nav" aria-label="頁腳導覽">
-        <div class="site-footer__col">
-          <div class="site-footer__col-hdr"><span class="site-footer__col-title">Platform</span></div>
-          <a href="#" class="site-footer__link">Individuals</a>
-          <a href="#" class="site-footer__link">Teams</a>
-          <a href="#" class="site-footer__link">Admins</a>
-          <a href="#" class="site-footer__link">Developers</a>
+      </div><!-- /editor__body -->
+    </div><!-- /editor -->
+  </div><!-- /editor-shell -->
+
+  <!-- PAGE FOOTER -->
+  <footer class="page-footer" aria-label="Namedly 頁腳">
+    <img class="page-footer__bg"
+      src="/Users/lc/Desktop/store/footer.svg"
+      alt="頁腳背景" />
+    <div class="page-footer__inner">
+      <div class="page-footer__brand">Namedly</div>
+      <nav class="page-footer__nav" aria-label="頁腳導覽">
+        <div class="page-footer__col">
+          <div class="page-footer__col-head">Platform</div>
+          <a class="page-footer__col-link" href="#">Individuals</a>
+          <a class="page-footer__col-link" href="#">Teams</a>
+          <a class="page-footer__col-link" href="#">Admins</a>
+          <a class="page-footer__col-link" href="#">Developers</a>
         </div>
-        <div class="site-footer__col">
-          <div class="site-footer__col-hdr"><span class="site-footer__col-title">Features</span></div>
-          <a href="#" class="site-footer__link">Core features</a>
-          <a href="#" class="site-footer__link">Pro experience</a>
-          <a href="#" class="site-footer__link">Integrations</a>
+        <div class="page-footer__col">
+          <div class="page-footer__col-head">Features</div>
+          <a class="page-footer__col-link" href="#">Core features</a>
+          <a class="page-footer__col-link" href="#">Pro experience</a>
+          <a class="page-footer__col-link" href="#">Integrations</a>
         </div>
-        <div class="site-footer__col">
-          <div class="site-footer__col-hdr"><span class="site-footer__col-title">Learn more</span></div>
-          <a href="#" class="site-footer__link">Blog</a>
-          <a href="#" class="site-footer__link">Case studies</a>
-          <a href="#" class="site-footer__link">Customer stories</a>
-          <a href="#" class="site-footer__link">Best practices</a>
+        <div class="page-footer__col">
+          <div class="page-footer__col-head">Learn more</div>
+          <a class="page-footer__col-link" href="#">Blog</a>
+          <a class="page-footer__col-link" href="#">Case studies</a>
+          <a class="page-footer__col-link" href="#">Customer stories</a>
+          <a class="page-footer__col-link" href="#">Best practices</a>
         </div>
-        <div class="site-footer__col">
-          <div class="site-footer__col-hdr"><span class="site-footer__col-title">Support</span></div>
-          <a href="#" class="site-footer__link">Contact</a>
-          <a href="#" class="site-footer__link">Support</a>
-          <a href="#" class="site-footer__link">Legal</a>
+        <div class="page-footer__col">
+          <div class="page-footer__col-head">Support</div>
+          <a class="page-footer__col-link" href="#">Contact</a>
+          <a class="page-footer__col-link" href="#">Support</a>
+          <a class="page-footer__col-link" href="#">Legal</a>
         </div>
       </nav>
     </div>
   </footer>
 
-</div><script>
-  const btn = document.getElementById('menuToggle');
-  const menu = document.getElementById('mobileMenu');
-  btn.addEventListener('click', () => {
-    const open = btn.getAttribute('aria-expanded') === 'true';
-    btn.setAttribute('aria-expanded', String(!open));
-    menu.classList.toggle('is-open', !open);
+</div><!-- /page -->
+
+<script>
+  // ── Hamburger nav ────────────────────────────────────────────────
+  (function(){
+    var btn=document.getElementById('hamburger-btn');
+    var nav=document.getElementById('editor-mobile-nav');
+    if(!btn||!nav)return;
+    btn.addEventListener('click',function(){
+      var open=btn.getAttribute('aria-expanded')==='true';
+      btn.setAttribute('aria-expanded',String(!open));
+      nav.classList.toggle('is-open',!open);
+    });
+  }());
+
+  // ── Scroll fade-in ───────────────────────────────────────────────
+  var animEls = document.querySelectorAll('.fade-in');
+  var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  animEls.forEach(function(el){ observer.observe(el); });
+
+  // ── Live name / desc sync ─────────────────────────────────────────
+  var nameInput = document.getElementById('store-name-input');
+  var descInput = document.getElementById('store-desc-input');
+
+  var previewNameDesktop   = document.getElementById('preview-name-desktop');
+  var previewDescDesktop   = document.getElementById('preview-desc-desktop');
+  var previewFooterBrand   = document.getElementById('preview-footer-brand');
+  var previewFooterDesc    = document.getElementById('preview-footer-desc');
+  var previewNameMobile    = document.getElementById('preview-name-mobile');
+  var previewDescMobile    = document.getElementById('preview-desc-mobile');
+  var previewFooterBrandM  = document.getElementById('preview-footer-brand-mobile');
+  var previewFooterDescM   = document.getElementById('preview-footer-desc-mobile');
+
+  function syncName(val) {
+    var v = val || '風格生活選物';
+    [previewNameDesktop, previewNameMobile, previewFooterBrand, previewFooterBrandM].forEach(function(el){ if(el) el.textContent = v; });
+  }
+  function syncDesc(val) {
+    var v = val || '';
+    [previewDescDesktop, previewDescMobile, previewFooterDesc, previewFooterDescM].forEach(function(el){ if(el) el.textContent = v; });
+  }
+
+  if(nameInput) nameInput.addEventListener('input', function(){ syncName(this.value); });
+  if(descInput) descInput.addEventListener('input', function(){ syncDesc(this.value); });
+
+  // ── Logo upload ───────────────────────────────────────────────────
+  var logoDropZone   = document.getElementById('logo-drop-zone');
+  var logoFileInput  = document.getElementById('logo-file-input');
+  var logoPreviewImg = document.getElementById('logo-preview-img');
+  var logoDesktop    = document.getElementById('preview-logo-desktop');
+  var logoMobile     = document.getElementById('preview-logo-mobile');
+
+  function applyLogo(src) {
+    [logoPreviewImg, logoDesktop, logoMobile].forEach(function(el){ if(el) el.src = src; });
+  }
+
+  if(logoDropZone) {
+    logoDropZone.addEventListener('click', function(){ if(logoFileInput) logoFileInput.click(); });
+    logoDropZone.addEventListener('dragover', function(e){ e.preventDefault(); logoDropZone.style.borderColor='var(--c-accent)'; });
+    logoDropZone.addEventListener('dragleave', function(){ logoDropZone.style.borderColor=''; });
+    logoDropZone.addEventListener('drop', function(e){
+      e.preventDefault();
+      logoDropZone.style.borderColor='';
+      var file = e.dataTransfer.files[0];
+      if(file && file.type.startsWith('image/')) readFile(file);
+    });
+  }
+  if(logoFileInput) {
+    logoFileInput.addEventListener('change', function(){
+      if(this.files[0]) readFile(this.files[0]);
+    });
+  }
+  function readFile(file) {
+    var reader = new FileReader();
+    reader.onload = function(e){ applyLogo(e.target.result); };
+    reader.readAsDataURL(file);
+  }
+
+  // ── Theme data ───────────────────────────────────────────────────
+  var themes = {
+    '冷靜石板': { '--c-theme-accent': '#64748b', '--c-footer-bg': '#64748b', '--c-price': '#64748b' },
+    '鼠尾草綠': { '--c-theme-accent': '#869489', '--c-footer-bg': '#869489', '--c-price': '#5a6e61' },
+    '陶土橘':   { '--c-theme-accent': '#b38b7d', '--c-footer-bg': '#b38b7d', '--c-price': '#8c5c4e' },
+    '北歐沙色': { '--c-theme-accent': '#a8a29e', '--c-footer-bg': '#a8a29e', '--c-price': '#78716c' }
+  };
+
+  // ── Theme selection ──────────────────────────────────────────────
+  var preview = document.querySelector('.store-preview');
+  var mobilePreviewEl = document.querySelector('.mobile-preview');
+  document.querySelectorAll('.theme-option').forEach(function(opt){
+    opt.addEventListener('click', function(){
+      document.querySelectorAll('.theme-option').forEach(function(o){ o.classList.remove('selected'); });
+      opt.classList.add('selected');
+      var name = opt.querySelector('.theme-option__name');
+      if(!name) return;
+      var vars = themes[name.textContent.trim()];
+      if(!vars) return;
+      // Apply to both desktop and mobile previews
+      [preview, mobilePreviewEl].forEach(function(el){
+        if(!el) return;
+        Object.keys(vars).forEach(function(key){ el.style.setProperty(key, vars[key]); });
+      });
+    });
+  });
+
+  // ── Font families ────────────────────────────────────────────────
+  var fontFamilies = {
+    'gothic': "'Noto Sans TC', sans-serif",
+    'serif':  "'Noto Serif TC', serif",
+    'round':  "'M PLUS Rounded 1c', 'Noto Sans TC', sans-serif"
+  };
+
+  // Inject M PLUS Rounded if needed
+  var roundFont = document.createElement('link');
+  roundFont.rel = 'stylesheet';
+  roundFont.href = 'https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap';
+  document.head.appendChild(roundFont);
+
+  // ── Font selection ───────────────────────────────────────────────
+  document.querySelectorAll('.font-option').forEach(function(opt){
+    opt.addEventListener('click', function(){
+      document.querySelectorAll('.font-option').forEach(function(o){ o.classList.remove('selected'); });
+      opt.classList.add('selected');
+
+      var key = null;
+      if(opt.classList.contains('font-option--gothic')) key = 'gothic';
+      else if(opt.classList.contains('font-option--serif')) key = 'serif';
+      else if(opt.classList.contains('font-option--round')) key = 'round';
+      if(!key) return;
+
+      var fontVal = fontFamilies[key];
+      // Apply to ALL text elements inside both previews
+      var targets = [
+        '.store-nav__name','.store-nav__link','.store-hero__tagline',
+        '.store-hero__cta-btn','.store-products__heading-text','.store-products__more',
+        '.product-card__name','.product-card__price','.product-card__tag-text',
+        '.store-footer__brand','.store-footer__desc','.store-footer__col-title',
+        '.store-footer__col-link','.store-footer__contact-email','.store-footer__contact-phone',
+        '.store-footer__copyright',
+        // mobile
+        '.mobile-store-nav__name','.mobile-hero__tagline','.mobile-hero__cta',
+        '.mobile-products__title','.mobile-product-card__name','.mobile-product-card__price',
+        '.mobile-product-card__tag','.mobile-footer__brand','.mobile-footer__desc','.mobile-footer__copyright'
+      ];
+      targets.forEach(function(sel){
+        document.querySelectorAll(sel).forEach(function(el){ el.style.fontFamily = fontVal; });
+      });
+    });
+  });
+
+  // ── Viewport toggle ───────────────────────────────────────────────
+  var desktopPreview = document.getElementById('desktop-preview');
+  var mobilePreviewWrapper = document.getElementById('mobile-preview');
+  var canvas = document.getElementById('preview-canvas');
+  var viewportBtns = document.querySelectorAll('.viewport-btn');
+
+  viewportBtns.forEach(function(btn, idx){
+    btn.addEventListener('click', function(){
+      viewportBtns.forEach(function(b){
+        b.classList.remove('viewport-btn--active');
+        b.setAttribute('aria-pressed','false');
+        var lbl = b.querySelector('.viewport-btn__label');
+        if(lbl) lbl.classList.add('viewport-btn__label--inactive');
+      });
+      btn.classList.add('viewport-btn--active');
+      btn.setAttribute('aria-pressed','true');
+      var lbl = btn.querySelector('.viewport-btn__label');
+      if(lbl) lbl.classList.remove('viewport-btn__label--inactive');
+
+      if(idx === 0) {
+        // Desktop
+        desktopPreview.style.display = '';
+        mobilePreviewWrapper.style.display = 'none';
+        canvas.classList.remove('center__canvas--mobile');
+      } else {
+        // Mobile
+        desktopPreview.style.display = 'none';
+        mobilePreviewWrapper.style.display = 'flex';
+        canvas.classList.add('center__canvas--mobile');
+      }
+    });
   });
 </script>
 </body>
