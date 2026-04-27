@@ -134,7 +134,7 @@
       letter-spacing: var(--ls-xs);
       white-space: nowrap;
       cursor: pointer;
-      border: none;
+      border: 2px solid transparent;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -461,6 +461,134 @@
       width: 100%;
     }
 
+    /* ─── Animations & Transitions ──────────────────────────────── */
+
+    /* Scroll fade-in */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .fade-in-left {
+      opacity: 0;
+      transform: translateX(-32px);
+      transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .fade-in-left.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .fade-in-right {
+      opacity: 0;
+      transform: translateX(32px);
+      transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .fade-in-right.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* Stagger delays */
+    .delay-1 { transition-delay: 0.1s; }
+    .delay-2 { transition-delay: 0.2s; }
+    .delay-3 { transition-delay: 0.3s; }
+    .delay-4 { transition-delay: 0.4s; }
+
+    /* Hero title animation on load */
+    .hero__title {
+      animation: heroTitleIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .hero__buttons {
+      animation: heroTitleIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+    }
+    @keyframes heroTitleIn {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Button hover effects */
+    .btn--primary {
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    .btn--primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(255,255,255,0.3);
+      background: #f0f0f0;
+    }
+    .btn--primary:active { transform: translateY(0); }
+
+    .btn--secondary {
+      transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+    }
+    .btn--secondary:hover {
+      transform: translateY(-2px);
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.4);
+    }
+    .btn--secondary:active { transform: translateY(0); }
+
+    .btn--dark {
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    .btn--dark:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      background: #222;
+    }
+    .btn--dark:active { transform: translateY(0); }
+
+    /* Gallery card hover */
+    .gallery-card {
+      cursor: pointer;
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                  box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .gallery-card:hover {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.12);
+    }
+    .gallery-card__img {
+      transition: opacity 0.35s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .gallery-card:hover .gallery-card__img {
+      opacity: 0.8;
+      transform: scale(1.06);
+    }
+    .gallery-card__label {
+      transition: letter-spacing 0.35s ease, color 0.35s ease;
+    }
+    .gallery-card:hover .gallery-card__label {
+      letter-spacing: 14px;
+      color: #000;
+    }
+
+    /* FAQ card hover */
+    .faq-card {
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+                  box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .faq-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+    }
+
+    /* Footer nav link hover */
+    .footer__nav-link {
+      transition: color 0.2s ease, transform 0.2s ease;
+      display: inline-block;
+    }
+    .footer__nav-link:hover {
+      color: rgba(255,255,255,0.95);
+      transform: translateX(4px);
+    }
+
     /* ─── Responsive: Tablet ─────────────────────────────────────── */
     @media (max-width: 1024px) {
       .hero {
@@ -538,7 +666,7 @@
     <!-- ── Feature Gallery ───────────────────────────── -->
     <section class="feature-gallery" aria-label="Feature gallery">
       <div class="feature-gallery__inner">
-        <div class="feature-gallery__content">
+        <div class="feature-gallery__content fade-in">
           <div class="feature-gallery__text">
             <h2 class="feature-gallery__heading">快來建立屬於自己的專屬賣場～</h2>
             <p class="feature-gallery__desc">
@@ -552,7 +680,7 @@
 
         <div class="image-gallery">
           <!-- Column 1 -->
-          <div class="image-gallery__col">
+          <div class="image-gallery__col fade-in-left delay-1">
             <div class="gallery-card">
               <img
                 class="gallery-card__img"
@@ -572,7 +700,7 @@
           </div>
 
           <!-- Column 2 (offset) -->
-          <div class="image-gallery__col image-gallery__col--offset">
+          <div class="image-gallery__col image-gallery__col--offset fade-in-right delay-2">
             <div class="gallery-card">
               <img
                 class="gallery-card__img"
@@ -596,14 +724,14 @@
 
     <!-- ── FAQ ───────────────────────────────────────── -->
     <section class="faq" aria-label="常見問題">
-      <div class="faq__header">
+      <div class="faq__header fade-in">
         <h2 class="faq__heading">常見問題</h2>
         <p class="faq__subtext">我們整理了大家在開店路上最常遇到的疑問。如果還有其他想了解的，隨時留言！</p>
       </div>
 
       <div class="faq__cards">
         <!-- Card 1 -->
-        <article class="faq-card">
+        <article class="faq-card fade-in-left delay-1">
           <div class="faq-card__header">
             <div class="faq-card__author">
               <div class="faq-card__avatar">
@@ -622,7 +750,7 @@
         </article>
 
         <!-- Card 2 -->
-        <article class="faq-card">
+        <article class="faq-card fade-in-right delay-2">
           <div class="faq-card__header">
             <div class="faq-card__author">
               <div class="faq-card__avatar">
@@ -703,8 +831,28 @@
 </div>
 
 <script>
-  // No hamburger nav in Figma design — no JS needed.
-  // Placeholder for any future minimal interactions.
+  // ── Scroll-triggered fade-in via Intersection Observer ──────────
+  const animatedEls = document.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target); // animate once
+      }
+    });
+  }, { threshold: 0.15 });
+
+  animatedEls.forEach(el => observer.observe(el));
+
+  // ── Parallax on Hero background ─────────────────────────────────
+  const heroBg = document.querySelector('.hero__bg');
+  if (heroBg) {
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      heroBg.style.transform = `translateY(${scrollY * 0.35}px)`;
+    }, { passive: true });
+  }
 </script>
 </body>
 </html>
