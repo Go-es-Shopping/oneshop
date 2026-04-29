@@ -5,8 +5,8 @@
 | **身份驗證** | POST | `/api/auth/login` | `Seller` | 賣家登入 (回傳 Token) |
 | | GET | `/api/auth/me` | `Seller` | 取得當前登入賣家資訊 |
 | | POST | `/api/auth/logout` | - | 登出 |
-| **商品管理** | GET | `/api/products/` | `Product`, `PageContent` | 取得商品列表 (支援 SellerID 篩選) (瀏覽器可測) |
-| | GET | `/api/products/:ProductID` | `Product`, `PageContent` | 取得單一商品詳情 (瀏覽器可測) |
+| **商品管理** | GET | `/api/products/` | `Product`, `PageContent`, `PageProduct`, `StorePage` | 取得商品列表 (支援 SellerID 篩選) (瀏覽器可測) |
+| | GET | `/api/products/:ProductID` | `Product`, `PageContent`, `PageProduct`, `StorePage` | 取得單一商品詳情 (瀏覽器可測) |
 | | POST | `/api/products/` | `Product` | 新增商品 |
 | | PUT | `/api/products/:ProductID` | `Product` | 更新商品資訊 |
 | | DELETE | `/api/products/:ProductID` | `Product` | 刪除商品 |

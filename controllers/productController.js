@@ -1,5 +1,5 @@
 const sequelize = require('../config/database')
-const { Product, PageContent } = require('../models')
+const {Product, PageContent, PageProduct, StorePage} = require('../models')
 const { readMock } = require('../src/mocks/utils')
 
 async function useMock() {
@@ -26,13 +26,19 @@ function toBoolBit(v) {
 }
 
 function flattenProduct(p, Lang) {
+  //  先確認 p 已經被 toJSON() 過了，或者我們手動處理它
+  const pageProduct = p.PageProduct; 
+  const storePage = pageProduct ? pageProduct.StorePage : null;
   const base = {
     ProductID: p.ProductID,
     SellerID: p.SellerID,
     ProductImg: p.ProductImg,
     Price: typeof p.Price === 'string' ? p.Price : dec2(p.Price),
     Stock: p.Stock,
-    IsActive: p.IsActive
+    IsActive: p.IsActive,
+    // 從 PageProduct -> StorePage 抓取店名，增加更嚴格的檢查，並確保只取資料值 (.get() 或直接取值)
+    ShopName: (storePage && storePage.PageTitle) ? String(storePage.PageTitle) : '風格生活選物',
+    ShopDescription: (storePage && storePage.PageDescription) ? String(storePage.PageDescription) : ''
   }
   const c = Array.isArray(p.PageContents) && p.PageContents.length ? p.PageContents[0] : null
   return {
@@ -57,22 +63,76 @@ async function listProducts(req, res) {
       return res.json(List)
     }
 
-    const where = {}
-    if (SellerID !== undefined) where.SellerID = SellerID
-    if (IsActive !== undefined) where.IsActive = IsActive
+    // 1. 抓取商品基本資訊，並在 include 時就把 PageTitle 撈出來
     const rows = await Product.findAll({
-      where,
+      where: SellerID !== undefined ? { SellerID } : {},
       include: [
         {
           model: PageContent,
           where: { LanguageCode: Lang },
           required: false,
-          attributes: ['LanguageCode', 'ProductName', 'ProductDescription']
+          // 🚀 關鍵修正：這裡必須加上 'PageTitle' 與 'PageDescription'
+          // 否則 row.PageContents[0] 裡面會找不到這兩個欄位
+          attributes: ['PageTitle', 'PageDescription', 'ProductName', 'ProductDescription']
+        },
+        {
+          model: PageProduct,
+          required: false,
+          attributes: ['PageID'] 
         }
       ]
     })
-    const data = rows.map(r => flattenProduct(r.toJSON(), Lang))
+
+    // 2. 整理輸出資料
+    const data = await Promise.all(rows.map(async (row) => {
+      const p = row.get({ plain: true });
+      const productContent = (p.PageContents && p.PageContents.length > 0) ? p.PageContents[0] : null;
+
+      // 預設店鋪資訊
+      let shopName = '風格生活選物'; 
+      let shopDesc = '';
+
+      if (productContent) {
+        // 🚀 邏輯修正：如果 seed.js 裡把店名寫在商品的這筆 PageContent 裡
+        if (productContent.PageTitle) {
+          shopName = productContent.PageTitle;
+          shopDesc = productContent.PageDescription || '';
+        } 
+        // 備援邏輯：如果商品筆沒寫店名，去抓該頁面 ProductID 為 NULL 的那筆（傳統店鋪介紹）
+        else if (p.PageProduct && p.PageProduct.PageID) {
+          const storeContent = await PageContent.findOne({
+            where: { 
+              PageID: p.PageProduct.PageID,
+              LanguageCode: Lang,
+              ProductID: null 
+            },
+            attributes: ['PageTitle', 'PageDescription'],
+            raw: true
+          });
+          if (storeContent) {
+            shopName = storeContent.PageTitle || shopName;
+            shopDesc = storeContent.PageDescription || shopDesc;
+          }
+        }
+      }
+
+      return {
+        ProductID: p.ProductID,
+        SellerID: p.SellerID,
+        ProductImg: p.ProductImg,
+        // 確保價格處理正確，避免顯示 [object Object]
+        Price: typeof p.Price === 'object' ? Number(p.Price).toFixed(2) : p.Price,
+        Stock: p.Stock,
+        IsActive: p.IsActive,
+        ShopName: shopName, 
+        ShopDescription: shopDesc,
+        ProductName: productContent ? productContent.ProductName : '未命名商品',
+        ProductDescription: productContent ? productContent.ProductDescription : ''
+      };
+    }));
+
     return res.json(data)
+
   } catch (err) {
     console.error('listProducts error:', err)
     return res.status(500).json({ error: 'Internal Server Error' })
@@ -101,6 +161,11 @@ async function getProduct(req, res) {
           where: { LanguageCode: Lang },
           required: false,
           attributes: ['LanguageCode', 'ProductName', 'ProductDescription']
+          },
+        // 單一查詢也要帶出店鋪資訊
+        {
+          model: PageProduct,
+          include: [{ model: StorePage, attributes: ['PageTitle', 'PageDescription'] }]
         }
       ]
     })
