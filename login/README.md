@@ -35,12 +35,3 @@
 - `POST /api/auth/send-verification`：寄送驗證信
 - `POST /api/auth/verify-email`：驗證信箱
 
-## 設計風格來源
-
-此專案沿用根目錄的規範：
-
-- `STYLE_GUIDE.md`
-- `base-template.html`
-
-若新增頁面，建議先依上述規範建立，確保與主專案一致。
-
