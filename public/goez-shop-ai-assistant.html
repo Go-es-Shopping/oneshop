@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Goez Shop – AI 商店助手</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ══════════════════════════════════════════════
+       Design Tokens
+    ══════════════════════════════════════════════ */
+    :root {
+      /* Colors */
+      --c-white:       #ffffff;
+      --c-black:       #000000;
+      --c-gray-50:     #f9fafb;
+      --c-gray-100:    #f3f4f6;
+      --c-gray-200:    #e5e7eb;
+      --c-gray-300:    #d1d5dc;
+      --c-gray-400:    #99a1af;
+      --c-gray-500:    #6a7282;
+      --c-gray-600:    #4a5565;
+      --c-gray-700:    #364153;
+      --c-gray-800:    #101828;
+      --c-slate-800:   #1e2939;
+      --c-indigo:      #6366f1;
+      --c-green:       #00c950;
+      --c-green-dot:   #05df72;
+      --c-green-pos:   #00a63e;
+
+      /* Gradients */
+      --grad-indigo: linear-gradient(90deg,#6366f1 0%,#6163f0 9.09%,#5f61ef 18.18%,#5d5eee 27.27%,#5b5bed 36.36%,#5958ec 45.45%,#5855eb 54.55%,#5652e9 63.64%,#544fe8 72.73%,#524ce7 81.82%,#5149e6 90.91%,#4f46e5 100%);
+      --grad-dark:   linear-gradient(127.73deg,#101828 0%,#1e2939 100%);
+      --grad-light:  linear-gradient(143.13deg,#f3f4f6 0%,#e5e7eb 100%);
+
+      /* Spacing */
+      --sp-4:   4px;  --sp-6:  6px;   --sp-8:  8px;
+      --sp-12: 12px;  --sp-16: 16px;  --sp-20: 20px;
+      --sp-24: 24px;  --sp-32: 32px;  --sp-33: 33px;
+      --sp-48: 48px;  --sp-64: 64px;  --sp-120:120px;
+
+      /* Font sizes */
+      --fs-8:  8px;  --fs-9:  9px;  --fs-10: 10px;
+      --fs-11: 11px; --fs-12: 12px; --fs-13: 13px;
+      --fs-14: 14px; --fs-16: 16px; --fs-18: 18px;
+      --fs-24: 24px;
+
+      /* Radii */
+      --r-10: 10px; --r-12: 12px; --r-14: 14px;
+      --r-16: 16px; --r-32: 32px; --r-40: 40px;
+      --r-full: 9999px;
+
+      /* Shadows */
+      --sh-sm: 0 1px 3px rgba(0,0,0,.1), 0 1px 2px rgba(0,0,0,.1);
+      --sh-lg: 0 10px 15px rgba(0,0,0,.1), 0 4px 6px rgba(0,0,0,.1);
+      --sh-xl: 0 25px 50px rgba(0,0,0,.25);
+    }
+
+    /* ══════════════════════════════════════════════
+       Reset
+    ══════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+      background: var(--c-white);
+      -webkit-font-smoothing: antialiased;
+      color: var(--c-gray-800);
+    }
+    img { display: block; max-width: 100%; }
+    a { text-decoration: none; color: inherit; }
+    ul, ol { list-style: none; }
+    button { cursor: pointer; font-family: inherit; border: none; background: none; }
+
+    /* ══════════════════════════════════════════════
+       Page
+    ══════════════════════════════════════════════ */
+    .page { display: flex; flex-direction: column; align-items: center; width: 100%; }
+
+    /* ══════════════════════════════════════════════
+       Navbar
+    ══════════════════════════════════════════════ */
+    .navbar {
+      position: relative; width: 100%;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 24px 64px;
+    }
+    .navbar__bg {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover; pointer-events: none;
+    }
+    .navbar__brand {
+      position: relative; z-index: 1;
+      font-size: var(--fs-24); font-weight: 800;
+      line-height: 1.45; letter-spacing: -0.48px;
+      color: var(--c-white);
+    }
+    .navbar__actions {
+      position: relative; z-index: 1;
+      display: flex; gap: 16px; align-items: center;
+    }
+    .navbar__btn--primary {
+      background: var(--c-white); color: var(--c-black);
+      border-radius: var(--r-12); padding: 12px 16px;
+      font-size: var(--fs-18); font-weight: 500;
+      line-height: 1.45; letter-spacing: -0.09px; white-space: nowrap;
+    }
+    .navbar__btn--secondary {
+      border: 2px solid rgba(255,255,255,.15);
+      border-radius: var(--r-12); padding: 12px 16px;
+      font-size: var(--fs-18); font-weight: 500;
+      line-height: 1.45; letter-spacing: -0.09px;
+      color: var(--c-white); white-space: nowrap;
+    }
+
+    /* Hamburger */
+    .navbar__hamburger {
+      display: none; position: relative; z-index: 1;
+      flex-direction: column; align-items: center; justify-content: center;
+      gap: 5px; width: 36px; height: 36px; padding: 6px; border-radius: 8px;
+    }
+    .navbar__hamburger-bar {
+      display: block; width: 22px; height: 2px;
+      background: var(--c-white); border-radius: 2px;
+      transition: transform .25s, opacity .25s;
+    }
+    .navbar__hamburger[aria-expanded="true"] .navbar__hamburger-bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .navbar__hamburger[aria-expanded="true"] .navbar__hamburger-bar:nth-child(2) { opacity: 0; }
+    .navbar__hamburger[aria-expanded="true"] .navbar__hamburger-bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .navbar__mobile-menu {
+      display: none; flex-direction: column;
+      position: absolute; top: 100%; left: 0; right: 0; z-index: 20;
+      background: rgba(16,24,40,.97);
+      max-height: 0; overflow: hidden;
+      transition: max-height .3s ease;
+    }
+    .navbar__mobile-menu.is-open { max-height: 200px; }
+    .navbar__mobile-menu a {
+      display: block; padding: 14px 24px;
+      font-size: var(--fs-16); font-weight: 500;
+      color: var(--c-white);
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+
+    /* ══════════════════════════════════════════════
+       App layout
+    ══════════════════════════════════════════════ */
+    .app {
+      background: var(--c-gray-50);
+      width: 100%;
+      display: flex;
+      align-items: flex-start;
+    }
+
+    /* ── Left / editor column ───────────────────── */
+    .editor {
+      flex: 1016 0 0; min-width: 0;
+      padding: var(--sp-32);
+      display: flex; flex-direction: column; gap: var(--sp-32);
+    }
+
+    .editor__heading { display: flex; flex-direction: column; gap: var(--sp-8); }
+    .editor__title {
+      font-size: var(--fs-24); font-weight: 600; line-height: 36px;
+      letter-spacing: .07px; color: var(--c-gray-800); white-space: nowrap;
+    }
+    .editor__subtitle {
+      font-size: var(--fs-16); font-weight: 400; line-height: 24px;
+      letter-spacing: -.31px; color: var(--c-gray-500); white-space: nowrap;
+    }
+
+    /* Card */
+    .card {
+      background: var(--c-white);
+      border: 1px solid var(--c-gray-100);
+      border-radius: var(--r-32);
+      box-shadow: var(--sh-sm);
+      padding: var(--sp-33);
+      display: flex; flex-direction: column; gap: var(--sp-24);
+    }
+    .card__title {
+      font-size: var(--fs-18); font-weight: 500; line-height: 27px;
+      letter-spacing: -.44px; color: var(--c-gray-800); white-space: nowrap;
+    }
+
+    /* Field */
+    .field { display: flex; flex-direction: column; gap: var(--sp-8); }
+    .field__label {
+      font-size: var(--fs-14); font-weight: 500; line-height: 21px;
+      letter-spacing: -.15px; color: var(--c-gray-700);
+    }
+    .field__input {
+      background: var(--c-gray-50);
+      border: 1px solid var(--c-gray-200);
+      border-radius: var(--r-14);
+      height: 50px; padding: 12px 16px;
+      display: flex; align-items: center;
+      font-size: var(--fs-16); font-weight: 400;
+      letter-spacing: -.31px; color: var(--c-gray-800);
+      outline: none;
+    }
+    /* Placeholder behavior for contenteditable */
+    .field__input:empty::before {
+      content: attr(data-placeholder);
+      color: var(--c-gray-400);
+    }
+
+    .field__textarea {
+      background: var(--c-gray-50);
+      border: 1px solid var(--c-gray-200);
+      border-radius: var(--r-14);
+      padding: 12px 16px;
+      font-size: var(--fs-16); font-weight: 400;
+      line-height: 24px; letter-spacing: -.31px;
+      color: var(--c-gray-400); overflow: hidden;
+    }
+    .field__textarea--h122 { height: 122px; }
+    .field__textarea--h98  { height: 98px; }
+
+    /* Indigo gradient button */
+    .btn-indigo {
+      background: var(--grad-indigo);
+      border-radius: var(--r-14);
+      box-shadow: var(--sh-sm);
+      height: 52px;
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px;
+      font-size: var(--fs-16); font-weight: 500;
+      line-height: 24px; letter-spacing: -.31px;
+      color: var(--c-white); white-space: nowrap;
+      width: 100%;
+      transition: opacity 0.2s;
+    }
+    .btn-indigo:active { opacity: 0.8; }
+    .btn-indigo img { width: 18px; height: 18px; object-fit: contain; }
+
+    /* ── Card 1: AI Text Generator ────────────────── */
+    .text-gen__body {
+      display: flex; gap: 24px; align-items: flex-start;
+    }
+    .text-gen__left {
+      flex: 0 0 582.664px;
+      display: flex; flex-direction: column; gap: 16px;
+      min-width: 0;
+    }
+    .text-gen__right {
+      flex: 0 0 279.336px;
+      display: flex; flex-direction: column; gap: 8px;
+      min-width: 0;
+    }
+    .text-gen__right .img-upload-zone {
+      position: relative;
+      height: 140px; /* 保持原本高度 */
+    }
+    /* 修正：文案生成器專用的上傳框佈局 */
+    .text-gen__right .img-upload-zone {
+      display: flex;            /* 啟用彈性佈局 */
+      flex-direction: column;   /* 垂直排列 */
+      align-items: center;      /* 水平置中 */
+      justify-content: center;  /* 垂直置中 */
+      gap: 8px;                 /* 元素之間的間距 */
+      height: 140px;
+      position: relative;
+      padding: 10px;
+    }
+
+    /* 修正內部的元素，取消 absolute 定位 */
+    .text-gen__right .upload-zone__icon-wrap,
+    .text-gen__right .upload-zone__title,
+    .text-gen__right .upload-zone__btn {
+      position: static;         /* 取消絕對定位，回到自然流向 */
+      inset: auto;              /* 清除位移 */
+      margin: 0;                /* 清除邊距 */
+    }
+
+    /* 調整小框框裡的圖示大小 */
+    .text-gen__right .upload-zone__icon-wrap {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .text-gen__right .upload-zone__icon-wrap img {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* 調整小框框裡的文字大小 */
+    .text-gen__right .upload-zone__title {
+      font-size: var(--fs-14);
+      font-weight: 500;
+      color: var(--c-gray-800);
+    }
+
+    /* 調整按鈕大小 */
+    .text-gen__right .upload-zone__btn {
+      width: 98px;
+      height: 32px;
+      font-size: var(--fs-12);
+    }
+    /* 確保上傳後圖片能填滿容器 */
+    .img-upload-zone {
+      background: var(--c-gray-50);
+      border: 2px dashed var(--c-gray-300);
+      border-radius: var(--r-14);
+      height: 140px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 8px;
+      padding: 2px;
+      cursor: pointer;
+      overflow: hidden;
+      position: relative;
+    }
+    .img-upload-zone img { width: 24px; height: 24px; object-fit: contain; }
+    .img-upload-zone__hint {
+      font-size: var(--fs-12); font-weight: 500;
+      line-height: 18px; color: var(--c-gray-500);
+      text-align: center;
+    }
+
+    /* ── Card 2: AI Generate Image ─────────────────── */
+    .ai-gen__panels { display: flex; gap: 24px; align-items: flex-start; }
+    .ai-gen__left {
+      width: 431px; flex-shrink: 0;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .ai-gen__right {
+      background: var(--c-gray-50);
+      border-radius: var(--r-16);
+      width: 431px; flex-shrink: 0;
+      padding: 24px;
+      display: flex; flex-direction: column; gap: 12px;
+      height: 316px;
+    }
+    .ai-gen__preview-label {
+      font-size: var(--fs-13); font-weight: 400; line-height: 19.5px;
+      letter-spacing: -.08px; color: var(--c-gray-600);
+    }
+    .ai-gen__preview-box {
+      flex: 1 0 0;
+      background: var(--c-white);
+      border: 2px dashed var(--c-gray-300);
+      border-radius: var(--r-14);
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 8px;
+    }
+    .ai-gen__preview-box img { width: 48px; height: 48px; object-fit: contain; }
+    .ai-gen__preview-hint {
+      font-size: var(--fs-13); font-weight: 400; line-height: 19.5px;
+      letter-spacing: -.08px; color: var(--c-gray-400); text-align: center;
+    }
+
+    /* ── Card 3: AI Retouch ─────────────────────────── */
+    .retouch__panels { display: flex; gap: 24px; align-items: flex-start; }
+    .retouch__left {
+      width: 431px; flex-shrink: 0;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+
+    .upload-zone {
+      background: var(--c-gray-50);
+      border: 2px dashed var(--c-gray-300);
+      border-radius: var(--r-16);
+      height: 284.5px;
+      position: relative;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .upload-zone__icon-wrap {
+      position: absolute; top: 32px; left: calc(50% - 32px);
+      width: 64px; height: 64px;
+      background: var(--c-white); border-radius: var(--r-16);
+      box-shadow: var(--sh-sm);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .upload-zone__icon-wrap img { width: 32px; height: 32px; object-fit: contain; }
+    .upload-zone__title {
+      position: absolute; top: 112px; left: 0; right: 0; text-align: center;
+      font-size: var(--fs-16); font-weight: 500; line-height: 24px;
+      letter-spacing: -.31px; color: var(--c-gray-800);
+    }
+    .upload-zone__subtitle {
+      position: absolute; top: 144px; left: 0; right: 0; text-align: center;
+      font-size: var(--fs-13); font-weight: 400; line-height: 19.5px;
+      letter-spacing: -.08px; color: var(--c-gray-500);
+    }
+    .upload-zone__btn {
+      position: absolute; top: 179.5px; left: calc(50% - 49px);
+      width: 98px; height: 39px;
+      background: var(--c-white); border: 1px solid var(--c-gray-300);
+      border-radius: var(--r-10);
+      font-size: var(--fs-14); font-weight: 500;
+      line-height: 21px; letter-spacing: -.15px;
+      color: var(--c-gray-700);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .upload-zone__hint {
+      position: absolute; top: 230.5px; left: 0; right: 0; text-align: center;
+      font-size: var(--fs-12); font-weight: 400; line-height: 18px;
+      color: var(--c-gray-400);
+    }
+
+    .dark-panel {
+      background: var(--grad-dark);
+      border-radius: var(--r-16);
+      width: 431px; flex-shrink: 0;
+      padding: 24px 24px 0;
+      display: flex; flex-direction: column; gap: 16px;
+      height: 557px;
+    }
+    .dark-panel__status { display: flex; align-items: center; gap: 8px; }
+    .dark-panel__dot {
+      width: 8px; height: 8px; border-radius: var(--r-full);
+      background: var(--c-green-dot); opacity: .58; flex-shrink: 0;
+      animation: pulse 2s infinite ease-in-out;
+    }
+    @keyframes pulse { 0%{opacity:0.3} 50%{opacity:1} 100%{opacity:0.3} }
+
+    .dark-panel__status-text {
+      font-size: var(--fs-13); font-weight: 400; line-height: 19.5px;
+      letter-spacing: -.08px; color: var(--c-white); white-space: nowrap;
+    }
+    .dark-panel__image-box {
+      background: rgba(30,41,57,.5);
+      border: 1px solid var(--c-gray-700);
+      border-radius: var(--r-14);
+      height: 383px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; overflow: hidden;
+    }
+    .dark-panel__image-box img { width: 48px; height: 48px; object-fit: contain; }
+    .dark-panel__stats { display: flex; flex-direction: column; gap: 8px; }
+    .dark-panel__stat-row {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 19.5px;
+    }
+    .dark-panel__stat-label {
+      font-size: var(--fs-13); font-weight: 400; line-height: 19.5px;
+      letter-spacing: -.08px; color: var(--c-gray-400);
+    }
+    .dark-panel__stat-value {
+      font-size: var(--fs-13); font-weight: 400; line-height: 19.5px;
+      letter-spacing: -.08px; color: var(--c-white);
+    }
+
+    /* ── Right panel: mobile preview ─────────────── */
+  
+    .preview-col {
+      background: var(--c-white);
+      border-left: 1px solid var(--c-gray-200);
+      width: 384px;
+      flex-shrink: 0;
+      position: relative; /* 作為 sticky 的參考範圍 */
+    }
+    .preview-col__heading {
+      position: absolute; top: 32px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; gap: 4px; align-items: center;
+    }
+    .preview-col__title {
+      font-size: var(--fs-18); font-weight: 500; line-height: 27px;
+      letter-spacing: -.44px; color: var(--c-gray-800);
+      text-align: center; white-space: nowrap;
+    }
+    .preview-col__subtitle {
+      font-size: var(--fs-13); font-weight: 400; line-height: 19.5px;
+      letter-spacing: -.08px; color: var(--c-gray-500);
+      text-align: center; white-space: nowrap;
+    }
+    .preview-container {
+      position: sticky;
+      top: 32px; /* 距離頂部的高度 */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    /* Phone shell */
+    .phone {
+      width: 280px;
+      height: 580px;
+      background: var(--c-gray-800);
+      border-radius: var(--r-40);
+      box-shadow: var(--sh-xl);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+    }
+    .phone__screen {
+      background: #f5f7fa;
+      border-radius: 32px;
+      flex: 1 0 0;
+      overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    .phone__content {
+      padding: 24px 16px 0;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+
+    .p-group { display: flex; flex-direction: column; gap: 8px; }
+    .p-label {
+      font-size: var(--fs-9); font-weight: 400; line-height: 13.5px;
+      letter-spacing: .167px; color: var(--c-gray-600);
+    }
+    .p-input {
+      background: var(--c-white);
+      border: 1px solid var(--c-gray-200);
+      border-radius: var(--r-10);
+      height: 33px; padding: 9px 13px 1px;
+      font-size: var(--fs-10); font-weight: 400;
+      line-height: 15px; letter-spacing: .117px;
+      color: var(--c-gray-400); white-space: nowrap; overflow: hidden;
+    }
+    .p-btn {
+      background: var(--grad-indigo);
+      border-radius: var(--r-10);
+      height: 35px; padding: 10px 16px;
+      font-size: var(--fs-10); font-weight: 400;
+      line-height: 15px; letter-spacing: .117px;
+      color: var(--c-white); text-align: center;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .p-card {
+      background: var(--c-white);
+      border: 1px solid var(--c-gray-200);
+      border-radius: var(--r-14);
+      padding: 13px 13px 10px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .p-card__header {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 15px;
+    }
+    .p-card__title {
+      font-size: var(--fs-10); font-weight: 400; line-height: 15px;
+      letter-spacing: .117px; color: var(--c-gray-800);
+    }
+    .p-card__badge { display: flex; align-items: center; gap: 4px; }
+    .p-card__badge-dot {
+      width: 4px; height: 4px; border-radius: var(--r-full);
+      background: var(--c-indigo); flex-shrink: 0;
+    }
+    .p-card__badge-text {
+      font-size: var(--fs-8); font-weight: 400; line-height: 12px;
+      letter-spacing: .206px; color: var(--c-indigo);
+    }
+    .p-skeletons {
+      position: relative;
+      height: auto; /* 從 26px 改為 auto */
+      min-height: 26px;
+      transition: all 0.3s ease;
+    }
+    .p-skeleton {
+      position: absolute; background: var(--c-gray-200);
+      height: 6px; border-radius: 4px;
+    }
+    .p-skeleton--1 { width: 198px; top: 0; left: 0; }
+    .p-skeleton--2 { width: 158.4px; top: 10px; left: 0; }
+    .p-skeleton--3 { width: 118.8px; top: 20px; left: 0; }
+
+    .p-visual {
+      background: var(--c-white);
+      border: 1px solid var(--c-gray-200);
+      border-radius: var(--r-14);
+      padding: 13px 13px 10px;
+      display: flex; flex-direction: column; gap: 8px;
+      height: 217.5px;
+    }
+    .p-visual__title {
+      font-size: var(--fs-10); font-weight: 400; line-height: 15px;
+      letter-spacing: .117px; color: var(--c-gray-800);
+    }
+    .p-visual__img {
+      background: var(--grad-light);
+      border-radius: var(--r-10); flex: 1 0 0; height: 148.5px;
+      background-size: cover; background-position: center;
+    }
+    .p-visual__footer {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 12px;
+    }
+    .p-visual__label {
+      font-size: var(--fs-8); font-weight: 400; line-height: 12px;
+      letter-spacing: .206px; color: var(--c-gray-500);
+    }
+    .p-visual__pct {
+      font-size: var(--fs-8); font-weight: 400; line-height: 12px;
+      letter-spacing: .206px; color: var(--c-green-pos);
+    }
+
+    .live-badge {
+      background: var(--c-green);
+      border-radius: var(--r-full);
+      box-shadow: var(--sh-lg);
+      height: 25px;
+      width: fit-content;
+      padding: 4px 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .live-badge__dot {
+      width: 6px; height: 6px; border-radius: var(--r-full);
+      background: var(--c-white); opacity: .58; flex-shrink: 0;
+    }
+    .live-badge__text {
+      font-size: var(--fs-11); font-weight: 400; line-height: 16.5px;
+      letter-spacing: .065px; color: var(--c-white); white-space: nowrap;
+    }
+
+    /* ══════════════════════════════════════════════
+       Site Footer
+    ══════════════════════════════════════════════ */
+    .site-footer {
+      position: relative; width: 100%; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 var(--sp-120) var(--sp-120);
+    }
+    .site-footer__bg {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover; pointer-events: none;
+    }
+    .site-footer__inner {
+      position: relative; z-index: 1;
+      display: flex; flex: 1 0 0;
+      align-items: flex-start; justify-content: space-between;
+      border-top: 1px solid rgba(255,255,255,.15);
+      padding: var(--sp-64) 0; min-width: 0;
+    }
+    .site-footer__brand {
+      font-size: var(--fs-24); font-weight: 600;
+      line-height: 1.2; letter-spacing: -.48px;
+      color: var(--c-white); white-space: nowrap; flex-shrink: 0;
+    }
+    .site-footer__nav {
+      display: flex; align-items: flex-start;
+      justify-content: space-between;
+      width: 808px; flex-shrink: 0;
+    }
+    .footer-col { display: flex; flex-direction: column; gap: 8px; width: 130px; }
+    .footer-col__hdr { padding-bottom: 16px; }
+    .footer-col__title {
+      font-size: var(--fs-16); font-weight: 700; line-height: 1.45;
+      letter-spacing: -.08px; color: var(--c-white); white-space: nowrap;
+    }
+    .footer-col__link {
+      font-size: var(--fs-16); font-weight: 400; line-height: 1.45;
+      letter-spacing: -.08px; color: rgba(255,255,255,.6);
+    }
+
+    /* ══════════════════════════════════════════════
+       Responsive
+    ══════════════════════════════════════════════ */
+    @media (max-width: 1024px) {
+      .navbar { padding: 20px 32px; }
+      .navbar__actions { display: none; }
+      .navbar__hamburger { display: flex; }
+      .navbar__mobile-menu { display: flex; }
+
+      .app { flex-direction: column; }
+      .editor { flex: none; width: 100%; }
+      .preview-col {
+        width: 100%; min-height: auto;
+        border-left: none; border-top: 1px solid var(--c-gray-200);
+        padding-bottom: 48px;
+      }
+      .preview-col__heading {
+        position: static; transform: none;
+        padding: 32px 0 0; align-items: center;
+      }
+      .phone { position: static; margin: 24px auto 0; }
+      .live-badge {
+        position: static; margin: 20px auto 0;
+        display: flex; width: fit-content;
+      }
+
+      .text-gen__body { flex-direction: column; }
+      .text-gen__left, .text-gen__right { flex: none; width: 100%; }
+      .ai-gen__panels { flex-direction: column; }
+      .ai-gen__left, .ai-gen__right { width: 100%; }
+      .retouch__panels { flex-direction: column; }
+      .retouch__left, .dark-panel { width: 100%; }
+      .dark-panel { height: auto; }
+
+      .site-footer { padding: 0 48px 80px; }
+      .site-footer__nav { flex-wrap: wrap; gap: 32px; width: auto; }
+      .footer-col { width: 120px; }
+    }
+
+    @media (max-width: 768px) {
+      .navbar { padding: 16px 24px; }
+      .editor { padding: 24px 16px; gap: 24px; }
+      .card { padding: 20px; }
+      .site-footer { padding: 0 24px 64px; }
+      .site-footer__inner { flex-direction: column; gap: 40px; }
+      .site-footer__nav { width: 100%; flex-wrap: wrap; gap: 24px; }
+      .footer-col { width: calc(50% - 12px); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <header style="width:100%;position:relative;">
+    <nav>
+      <div class="navbar">
+        <img class="navbar__bg"
+             src="https://www.figma.com/api/mcp/asset/e3ab4d4c-7f19-4465-8557-65cad340e8ac"
+             alt="" aria-hidden="true" />
+        <a class="navbar__brand" href="#">Goez Shop</a>
+        <div class="navbar__actions">
+          <button class="navbar__btn--primary">一鍵開店</button>
+          <button class="navbar__btn--secondary">認識我們</button>
+        </div>
+        <button class="navbar__hamburger" id="menuToggle"
+                aria-expanded="false" aria-controls="mobileMenu"
+                aria-label="開啟/關閉選單">
+          <span class="navbar__hamburger-bar"></span>
+          <span class="navbar__hamburger-bar"></span>
+          <span class="navbar__hamburger-bar"></span>
+        </button>
+      </div>
+      <div class="navbar__mobile-menu" id="mobileMenu" aria-label="行動導覽">
+        <a href="#">一鍵開店</a>
+        <a href="#">認識我們</a>
+      </div>
+    </nav>
+  </header>
+
+  <div class="app" style="width:100%;">
+
+    <main class="editor">
+
+      <div class="editor__heading">
+        <h1 class="editor__title">AI 商店助手</h1>
+        <p class="editor__subtitle">使用 AI 工具優化您的產品內容</p>
+      </div>
+
+      <article class="card" aria-label="AI 文案魔法生成器">
+        <h2 class="card__title">AI 文案魔法生成器</h2>
+        <div class="text-gen__body">
+          <div class="text-gen__left">
+            <div class="field">
+              <label class="field__label" for="keywords">產品關鍵字</label>
+              <div class="field__input" id="keywords" role="textbox" contenteditable="true" data-placeholder="例如：無線耳機、降噪、藍牙 5.0"></div>
+            </div>
+            <button class="btn-indigo" aria-label="使用 AI 魔法生成文案">
+              <img src="https://www.figma.com/api/mcp/asset/89f5e432-57a7-46f5-ae26-16a2272e3300" alt="" aria-hidden="true" />
+              ✨ 魔法生成
+            </button>
+          </div>
+          <div class="text-gen__right">
+            <label class="field__label">商品圖片（選填）</label>
+            <div class="img-upload-zone" id="thumbUpload" role="button" tabindex="0" aria-label="上傳商品圖片">
+              <div class="upload-zone__icon-wrap" style="top: 15px; width: 40px; height: 40px; left: calc(50% - 20px);">
+                <img src="https://www.figma.com/api/mcp/asset/525a328e-5556-4911-aaa5-653bb72c26fe" alt="上傳圖示" style="width: 20px; height: 20px;" />
+              </div>
+              <p class="upload-zone__title" style="top: 60px; font-size: var(--fs-14);">上傳商品照片</p>
+              <button class="upload-zone__btn" style="top: 90px; width: 80px; height: 32px; font-size: var(--fs-12);">選擇檔案</button>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" aria-label="AI 生成圖片">
+        <h2 class="card__title">AI 生成圖片</h2>
+        <div class="ai-gen__panels">
+          <div class="ai-gen__left">
+            <div class="field">
+              <label class="field__label" for="img-desc">圖片描述</label>
+              <div class="field__input" id="keywords" role="textbox" contenteditable="true" data-placeholder="例如：一個白色的藍牙耳機，側面視角，高解析"></div>
+
+            </div>
+            <div class="field">
+              <label class="field__label" for="img-style">風格形容詞</label>
+              <div class="field__input" id="keywords" role="textbox" contenteditable="true" data-placeholder="例如：簡約、現代、高級、溫馨"></div>
+
+            </div>
+            <button class="btn-indigo btn-indigo--h48" aria-label="AI 生成圖片">
+              <img src="https://www.figma.com/api/mcp/asset/89f5e432-57a7-46f5-ae26-16a2272e3300" alt="" aria-hidden="true" />
+              生成圖片
+            </button>
+          </div>
+          <div class="ai-gen__right">
+            <p class="ai-gen__preview-label">生成預覽</p>
+            <div class="ai-gen__preview-box">
+              <img src="https://www.figma.com/api/mcp/asset/abe9a416-9b0d-4305-9364-5541df43f08d" alt="圖片預覽佔位圖示" />
+              <p class="ai-gen__preview-hint">圖片將顯示於此</p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" aria-label="AI 修圖">
+        <h2 class="card__title">AI 修圖</h2>
+        <div class="retouch__panels">
+          <div class="retouch__left">
+            <div class="upload-zone" id="mainUpload" role="button" tabindex="0" aria-label="上傳要修改的圖片">
+              <div class="upload-zone__icon-wrap">
+                <img src="https://www.figma.com/api/mcp/asset/11c90714-6cc5-4667-a6a6-8fea2debf60d" alt="上傳圖示" />
+              </div>
+              <p class="upload-zone__title">上傳要修改的圖片</p>
+              <p class="upload-zone__subtitle">拖曳圖片至此或點擊選擇</p>
+              <button class="upload-zone__btn">選擇檔案</button>
+              <p class="upload-zone__hint">支援 JPG、PNG，最大 5MB</p>
+            </div>
+            <div class="field">
+              <label class="field__label" for="edit-desc">修改說明</label>
+              <div class="field__input" id="keywords" role="textbox" contenteditable="true" data-placeholder="例如：模糊背景、將背景改為純白色、移除背景"></div>
+            </div>
+            <button class="btn-indigo btn-indigo--h48" aria-label="開始 AI 修圖">
+              <img src="https://www.figma.com/api/mcp/asset/89f5e432-57a7-46f5-ae26-16a2272e3300" alt="" aria-hidden="true" />
+              開始修圖
+            </button>
+          </div>
+          <div class="dark-panel" aria-label="修圖結果預覽">
+            <div class="dark-panel__status">
+              <div class="dark-panel__dot"></div>
+              <span class="dark-panel__status-text">修圖結果預覽</span>
+            </div>
+            <div class="dark-panel__image-box" id="retouchResultBox">
+              <img src="https://www.figma.com/api/mcp/asset/bbcd1057-42eb-4cf4-8e37-e5c331be565c" alt="修圖結果佔位圖示" />
+            </div>
+            <div class="dark-panel__stats">
+              <div class="dark-panel__stat-row">
+                <span class="dark-panel__stat-label">處理狀態</span>
+                <span class="dark-panel__stat-value" id="statusVal">等待上傳</span>
+              </div>
+              <div class="dark-panel__stat-row">
+                <span class="dark-panel__stat-label">修改項目</span>
+                <span class="dark-panel__stat-value">-</span>
+              </div>
+              <div class="dark-panel__stat-row">
+                <span class="dark-panel__stat-label">完成度</span>
+                <span class="dark-panel__stat-value" id="progressVal">0%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+    </main>
+
+    <aside class="preview-col" aria-label="即時預覽">
+      <div class="preview-container"> <div class="preview-col__heading" style="position:static; transform:none;">
+          <h2 class="preview-col__title">即時預覽</h2>
+          <p class="preview-col__subtitle">即時商店檢視</p>
+        </div>
+    
+        <div class="phone" aria-label="手機預覽畫面">
+          <div class="phone__screen">
+            <div class="phone__content">
+              <div class="p-group">
+                <label class="p-label">產品關鍵字</label>
+                <div class="p-input" id="phoneKeywordPreview">無線耳機...</div>
+                <button class="p-btn" aria-label="魔法生成">魔法生成</button>
+              </div>
+    
+              <div class="p-card" id="phoneCopyCard">
+                <div class="p-card__header">
+                  <span class="p-card__title">AI 文案</span>
+                  <div class="p-card__badge">
+                    <div class="p-card__badge-dot"></div>
+                    <span class="p-card__badge-text" id="phoneBadgeText">輸入中</span>
+                  </div>
+                </div>
+                <div class="p-skeletons" id="phoneSkeletons">
+                  <div class="p-skeleton p-skeleton--1"></div>
+                  <div class="p-skeleton p-skeleton--2"></div>
+                  <div class="p-skeleton p-skeleton--3"></div>
+                </div>
+              </div>
+    
+              <div class="p-visual">
+                <span class="p-visual__title">視覺優化</span>
+                <div class="p-visual__img" id="phoneVisualImg"></div>
+                <div class="p-visual__footer">
+                  <span class="p-visual__label">場景合成</span>
+                  <span class="p-visual__pct">+24%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    
+        <div class="live-badge" aria-label="即時狀態">
+          <div class="live-badge__dot"></div>
+          <span class="live-badge__text">即時</span>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+  <footer class="site-footer" aria-label="網站頁腳">
+    <img class="site-footer__bg"
+         src="https://www.figma.com/api/mcp/asset/60da861e-a7b0-41df-9d63-83ffd8ca8b2c"
+         alt="" aria-hidden="true" />
+    <div class="site-footer__inner">
+      <p class="site-footer__brand">Namedly</p>
+      <nav class="site-footer__nav" aria-label="頁腳導覽">
+        <div class="footer-col">
+          <div class="footer-col__hdr"><span class="footer-col__title">Platform</span></div>
+          <a href="#" class="footer-col__link">Individuals</a>
+          <a href="#" class="footer-col__link">Teams</a>
+          <a href="#" class="footer-col__link">Admins</a>
+          <a href="#" class="footer-col__link">Developers</a>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col__hdr"><span class="footer-col__title">Features</span></div>
+          <a href="#" class="footer-col__link">Core features</a>
+          <a href="#" class="footer-col__link">Pro experience</a>
+          <a href="#" class="footer-col__link">Integrations</a>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col__hdr"><span class="footer-col__title">Learn more</span></div>
+          <a href="#" class="footer-col__link">Blog</a>
+          <a href="#" class="footer-col__link">Case studies</a>
+          <a href="#" class="footer-col__link">Customer stories</a>
+          <a href="#" class="footer-col__link">Best practices</a>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col__hdr"><span class="footer-col__title">Support</span></div>
+          <a href="#" class="footer-col__link">Contact</a>
+          <a href="#" class="footer-col__link">Support</a>
+          <a href="#" class="footer-col__link">Legal</a>
+        </div>
+      </nav>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  // ─── Mobile Menu Logic ───
+  const menuBtn  = document.getElementById('menuToggle');
+  const mobileMenu = document.getElementById('mobileMenu');
+  menuBtn.addEventListener('click', () => {
+    const open = menuBtn.getAttribute('aria-expanded') === 'true';
+    menuBtn.setAttribute('aria-expanded', String(!open));
+    mobileMenu.classList.toggle('is-open', !open);
+  });
+
+  // ─── Core Interaction Logic ───
+  const keywordInput = document.getElementById('keywords');
+  const phoneKeywordPreview = document.getElementById('phoneKeywordPreview');
+  const magicGenBtn = document.querySelector('button[aria-label="使用 AI 魔法生成文案"]');
+  const phoneSkeletons = document.getElementById('phoneSkeletons');
+  const phoneBadgeText = document.getElementById('phoneBadgeText');
+
+  // 1. 同步輸入至手機預覽
+  keywordInput.addEventListener('input', () => {
+    phoneKeywordPreview.textContent = keywordInput.innerText || "無線耳機...";
+  });
+
+  // 2. 模擬 AI 文案生成
+  magicGenBtn.addEventListener('click', async () => {
+    const text = keywordInput.innerText.trim();
+    if(!text) return alert("請先輸入產品關鍵字");
+
+    // UI 載入狀態
+    magicGenBtn.style.opacity = "0.6";
+    magicGenBtn.innerHTML = "✨ 運算中...";
+    phoneBadgeText.textContent = "運算中...";
+    phoneBadgeText.style.color = "#6366f1";
+
+    // 模擬 2 秒延遲
+    await new Promise(r => setTimeout(r, 2000));
+
+    // 渲染結果
+    const resultText = `這款「${text}」將改變您的生活。憑藉獨家技術，我們在 ${text} 領域實現了前所未有的突破，是您追求完美的唯一選擇。`;
+    phoneSkeletons.innerHTML = `<p style="font-size: 9px; color: #4a5565; line-height: 1.4;">${resultText}</p>`;
+    
+    // 恢復狀態
+    magicGenBtn.style.opacity = "1";
+    magicGenBtn.innerHTML = '<img src="https://www.figma.com/api/mcp/asset/89f5e432-57a7-46f5-ae26-16a2272e3300" /> ✨ 魔法生成';
+    phoneBadgeText.textContent = "已完成";
+  });
+
+  // 3. 圖片上傳預覽
+  const setupUpload = (zoneId, onImageLoad) => {
+    const zone = document.getElementById(zoneId);
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'file';
+    hiddenInput.accept = 'image/*';
+
+    zone.addEventListener('click', () => hiddenInput.click());
+    hiddenInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => onImageLoad(event.target.result, zone);
+        reader.readAsDataURL(file);
+      }
+    });
+  };
+
+  // 處理側邊小圖上傳
+  setupUpload('thumbUpload', (url, zone) => {
+    zone.innerHTML = `<img src="${url}" style="width:100%; height:100%; object-fit:cover;" />`;
+    document.getElementById('phoneVisualImg').style.backgroundImage = `url(${url})`;
+  });
+
+  // 處理底部大圖上傳
+  setupUpload('mainUpload', (url, zone) => {
+    const iconWrap = zone.querySelector('.upload-zone__icon-wrap');
+    if(iconWrap) iconWrap.style.display = 'none';
+    zone.style.backgroundImage = `url(${url})`;
+    zone.style.backgroundSize = 'cover';
+    zone.style.backgroundPosition = 'center';
+    
+    // 更新狀態面板
+    document.getElementById('statusVal').textContent = "處理中...";
+    document.getElementById('progressVal').textContent = "100%";
+    document.getElementById('retouchResultBox').innerHTML = `<img src="${url}" style="width:100%; height:100%; object-fit:cover;" />`;
+  });
+</script>
+</body>
+</html>

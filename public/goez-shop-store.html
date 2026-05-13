@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Goez Shop — 視覺編輯器</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@500&display=swap" rel="stylesheet" />
+  <style>
+    /* ═══════════════════════════════════
+       DESIGN TOKENS
+    ═══════════════════════════════════ */
+    :root {
+      --c-white:          #ffffff;
+      --c-black:          #0a0a0a;
+      --c-bg-page:        #f3f4f6;
+      --c-bg-light:       #f9fafb;
+      --c-bg-subtle:      #f8fafc;
+      --c-border:         #e5e7eb;
+      --c-border-light:   #f3f4f6;
+      --c-border-input:   #f1f5f9;
+      --c-border-field:   #d1d5dc;
+      --c-accent:         #6588A6;
+      --c-brand-dark:     #1d293d;
+      --c-blue:           #2b7fff;
+      --c-text-hero:      #0f172b;
+      --c-text-heading:   #101828;
+      --c-text-body:      #364153;
+      --c-text-muted:     #6a7282;
+      --c-text-faint:     #99a1af;
+      --c-text-nav:       #4a5565;
+      --c-text-slate:     #45556c;
+      --c-text-gray:      #64748b;
+      --c-placeholder:    rgba(10,10,10,0.5);
+
+      --sp-4:  4px;  --sp-8:  8px;  --sp-12: 12px; --sp-16: 16px;
+      --sp-20: 20px; --sp-24: 24px; --sp-32: 32px; --sp-48: 48px;
+      --sp-64: 64px; --sp-80: 80px; --sp-96: 96px; --sp-120:120px;
+
+      --fs-10: 10px; --fs-12: 12px; --fs-14: 14px; --fs-16: 16px;
+      --fs-18: 18px; --fs-20: 20px; --fs-24: 24px; --fs-64: 64px;
+
+      --r-10: 10px; --r-14: 14px; --r-16: 16px;
+      --r-24: 24px; --r-48: 48px; --r-full: 9999px;
+
+      --shadow-sm:     0 1px 2px rgba(0,0,0,.1);
+      --shadow-md:     0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.1);
+      --shadow-card:   0 1px 3px rgba(0,0,0,.1),0 1px 2px -1px rgba(0,0,0,.1);
+      --shadow-btn:    0 10px 15px rgba(0,0,0,.1),0 4px 6px rgba(0,0,0,.1);
+      --shadow-brand:  0 10px 15px rgba(0,0,0,.1),0 4px 6px rgba(0,0,0,.1);
+      --shadow-editor: 0 25px 50px -12px rgba(0,0,0,.25);
+      --shadow-preview:0 25px 50px rgba(0,0,0,.25);
+      --shadow-pub:    0 8px 10px 0 #e2e8f0;
+      --shadow-add:    0 4px 6px rgba(0,0,0,.1),0 2px 4px rgba(0,0,0,.1);
+    }
+
+    /* ═══════════════════════════════════
+       RESET
+    ═══════════════════════════════════ */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:16px}
+    body{font-family:'Inter','Noto Sans TC',sans-serif;background:var(--c-white);color:var(--c-text-heading);min-width:320px}
+    img{display:block;max-width:100%}
+    button{cursor:pointer;border:none;background:none;font:inherit;padding:0}
+    a{text-decoration:none;color:inherit}
+    ul,ol{list-style:none}
+
+    /* ═══════════════════════════════════
+       HERO BANNER
+    ═══════════════════════════════════ */
+    .hero {
+      position: relative;
+      width: 100%;
+      height: 174px;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 60px var(--sp-120) 34px;
+    }
+    .hero__bg { position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none; }
+    .hero__title {
+      position: relative; z-index:1;
+      font-size: var(--fs-64); font-weight:700; line-height:1.1;
+      letter-spacing:-1.6px; color:var(--c-white); text-align:center; width:100%;
+      text-decoration: none;
+      transition: opacity 0.2s ease;
+      display: block;
+    }
+    .hero__title:hover { opacity: 0.8; }
+
+    /* ═══════════════════════════════════
+       EDITOR SHELL
+    ═══════════════════════════════════ */
+    .editor-shell{background:var(--c-bg-page);width:100%;display:flex;}
+    .editor{background:var(--c-white);width:100%;box-shadow:var(--shadow-editor);display:flex;flex-direction:column}
+
+    /* Top bar */
+    .editor__topbar{
+      background:var(--c-white);border-bottom:1px solid var(--c-border-light);
+      box-shadow:var(--shadow-md);height:80px;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:0 32px;flex-shrink:0;
+    }
+    .editor__topbar-left{display:flex;align-items:center;gap:32px;height:40px}
+    .editor__brand{display:flex;align-items:center;gap:12px}
+    .editor__brand-icon{
+      background:var(--c-brand-dark);border-radius:var(--r-14);
+      box-shadow:var(--shadow-brand);width:40px;height:40px;
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    }
+    .editor__brand-icon img{width:22px;height:22px}
+    .editor__brand-name{
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:900;
+      font-size:var(--fs-20);color:var(--c-text-hero);
+      letter-spacing:-0.95px;line-height:28px;white-space:nowrap;
+    }
+    .editor__divider{width:1px;height:32px;background:var(--c-bg-page);flex-shrink:0}
+    .editor__preview-btn{
+      background:var(--c-bg-subtle);border:1px solid var(--c-border-input);
+      border-radius:var(--r-14);height:38px;padding:0 16px;
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:700;
+      font-size:var(--fs-14);color:var(--c-accent);letter-spacing:-0.15px;
+      line-height:20px;white-space:nowrap;display:flex;align-items:center;justify-content:center;
+    }
+    .editor__topbar-right{display:flex;align-items:center;gap:12px}
+    .btn-draft{
+      background:var(--c-white);border:2px solid var(--c-border-input);
+      border-radius:var(--r-14);box-shadow:var(--shadow-sm);
+      height:40px;width:120px;
+      display:flex;align-items:center;justify-content:center;gap:8px;
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:700;
+      font-size:var(--fs-14);color:var(--c-text-slate);
+      letter-spacing:-0.15px;white-space:nowrap;
+    }
+    .btn-draft img{width:16px;height:16px;flex-shrink:0}
+    .btn-publish{
+      background:var(--c-accent);border-radius:var(--r-14);
+      box-shadow:var(--shadow-pub);height:40px;width:120px;
+      display:flex;align-items:center;justify-content:center;gap:8px;
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:700;
+      font-size:var(--fs-14);color:var(--c-white);
+      letter-spacing:-0.15px;white-space:nowrap;
+    }
+    .btn-publish img{width:16px;height:16px;flex-shrink:0}
+
+    /* Hamburger — hidden desktop */
+    .editor__hamburger{
+      display:none;flex-direction:column;gap:5px;
+      padding:6px;background:none;border:none;cursor:pointer;
+    }
+    .editor__hamburger-line{
+      display:block;width:22px;height:2px;
+      background:var(--c-text-heading);border-radius:2px;
+      transition:transform .3s,opacity .3s;
+    }
+    .editor__hamburger[aria-expanded="true"] .editor__hamburger-line:nth-child(1){transform:translateY(7px) rotate(45deg)}
+    .editor__hamburger[aria-expanded="true"] .editor__hamburger-line:nth-child(2){opacity:0}
+    .editor__hamburger[aria-expanded="true"] .editor__hamburger-line:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+    /* Mobile dropdown */
+    .editor__mobile-nav{
+      display:none;flex-direction:column;
+      max-height:0;overflow:hidden;
+      transition:max-height .35s ease;
+      background:var(--c-white);border-bottom:1px solid var(--c-border-light);
+    }
+    .editor__mobile-nav.is-open{max-height:240px}
+    .editor__mobile-nav-link{
+      display:block;padding:14px 24px;
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:600;
+      font-size:var(--fs-14);color:var(--c-text-heading);
+      border-bottom:1px solid var(--c-border-light);
+    }
+    .editor__mobile-nav-link:last-child{border-bottom:none}
+
+    /* 3-col layout */
+    .editor__body{display:flex;flex:1;min-height:1140px}
+
+    /* ═══════════════════════════════════
+       LEFT SIDEBAR
+    ═══════════════════════════════════ */
+    .sidebar-left{
+      background:var(--c-white);border-right:1px solid var(--c-border);
+      width:320px;flex-shrink:0;display:flex;flex-direction:column;overflow:hidden;
+    }
+    .sidebar-left__head{
+      border-bottom:1px solid var(--c-border);
+      height:53px;padding:16px 16px 0;flex-shrink:0;
+    }
+    .sidebar-left__head-row{display:flex;align-items:center;gap:8px;height:20px}
+    .sidebar-left__head-row img{width:16px;height:16px}
+    .sidebar-left__head-title{
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:600;
+      font-size:var(--fs-14);color:var(--c-text-heading);
+      letter-spacing:-0.15px;line-height:20px;
+    }
+    .sidebar-left__scroll{
+      padding:16px;display:flex;flex-direction:column;
+      gap:24px;overflow-y:auto;flex:1;
+    }
+
+    .section-label{display:flex;align-items:center;height:16px;gap:8px}
+    .section-label img{width:14px;height:14px}
+    .section-label__text{
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:600;
+      font-size:var(--fs-12);color:var(--c-text-muted);
+      letter-spacing:0.6px;text-transform:uppercase;line-height:16px;
+    }
+
+    .field{display:flex;flex-direction:column;gap:4px}
+    .field__label{
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:500;
+      font-size:var(--fs-12);color:var(--c-text-body);line-height:16px;
+    }
+    .field__input{
+      border:1px solid var(--c-border-field);border-radius:var(--r-10);
+      height:38px;padding:8px 12px;display:flex;align-items:center;overflow:hidden;
+    }
+    .field__input-text{
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:400;
+      font-size:var(--fs-14);color:var(--c-placeholder);
+      letter-spacing:-0.15px;white-space:nowrap;
+    }
+    .field__textarea{
+      border:1px solid var(--c-border-field);border-radius:var(--r-10);
+      height:78px;padding:8px 12px;display:flex;align-items:flex-start;overflow:hidden;
+    }
+    .field__textarea-text{
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:400;
+      font-size:var(--fs-14);color:var(--c-placeholder);
+      letter-spacing:-0.15px;line-height:20px;
+    }
+    .field__logo-area{
+      background:var(--c-bg-light);border:2px dashed var(--c-border);
+      border-radius:var(--r-14);height:161px;padding:2px;overflow:hidden;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .field__logo-area img{width:100%;height:100%;object-fit:cover;border-radius:12px}
+
+    .product-mgmt{display:flex;flex-direction:column;gap:16px}
+    .btn-add-product{
+      background:var(--c-accent);border-radius:var(--r-14);
+      box-shadow:var(--shadow-add);height:48px;width:100%;
+      display:flex;align-items:center;justify-content:center;gap:8px;
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:500;
+      font-size:var(--fs-16);color:var(--c-white);
+      letter-spacing:-0.31px;line-height:24px;
+    }
+    .btn-add-product img{width:16px;height:16px}
+
+    .recent-header{display:flex;align-items:center;justify-content:space-between;height:16px}
+    .recent-header__manage{
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:500;
+      font-size:var(--fs-10);color:var(--c-blue);
+      letter-spacing:0.72px;line-height:15px;
+    }
+    .assets-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+    .asset-thumb{border:1px solid var(--c-border-light);border-radius:var(--r-10);aspect-ratio:1;overflow:hidden;padding:1px}
+    .asset-thumb img{width:100%;height:100%;object-fit:cover;border-radius:9px}
+    .asset-add{
+      border:2px dashed var(--c-border);border-radius:var(--r-10);
+      aspect-ratio:1;display:flex;align-items:center;justify-content:center;cursor:pointer;
+    }
+    .asset-add img{width:16px;height:16px}
+
+    /* ═══════════════════════════════════
+       CENTER
+    ═══════════════════════════════════ */
+    .editor__center{background:var(--c-bg-light);flex:1;min-width:0;display:flex;flex-direction:column}
+    .center__toolbar{
+      background:rgba(255,255,255,.8);border-bottom:1px solid var(--c-border-light);
+      height:56px;display:flex;align-items:center;padding:0 32px;flex-shrink:0;
+    }
+    .viewport-toggle{
+      background:rgba(243,244,246,.5);border:1px solid var(--c-border-light);
+      border-radius:var(--r-14);height:38px;
+      display:flex;align-items:center;padding:5px;gap:4px;width:158px;
+    }
+    .viewport-btn{
+      height:28px;border-radius:var(--r-10);
+      display:flex;align-items:center;gap:8px;
+      padding:0 6px;cursor:pointer;flex:1;
+    }
+    .viewport-btn--active{background:var(--c-white);box-shadow:var(--shadow-md)}
+    .viewport-btn img{width:16px;height:16px;flex-shrink:0}
+    .viewport-btn__label{
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:700;
+      font-size:var(--fs-12);color:var(--c-black);line-height:16px;white-space:nowrap;
+    }
+    .viewport-btn__label--inactive{font-weight:500;color:var(--c-text-faint)}
+
+    .center__canvas{padding:0;display:flex;justify-content:stretch;align-items:flex-start;flex:1}
+
+    /* ── Store Preview ── */
+    .store-preview{
+      background:var(--c-white);
+      width:100%;overflow:hidden;display:flex;flex-direction:column;
+    }
+
+    /* Store Nav */
+    .store-nav{
+      background:var(--c-white);border-bottom:1px solid var(--c-border-light);
+      height:70px;display:flex;align-items:center;justify-content:space-between;
+      padding:0 32px;flex-shrink:0;
+    }
+    .store-nav__brand{display:flex;align-items:center;gap:16px;height:40px;width:auto}
+    .store-nav__logo{
+      width:40px;height:40px;border-radius:var(--r-10);
+      box-shadow:var(--shadow-card);overflow:hidden;flex-shrink:0;
+    }
+    .store-nav__logo img{width:100%;height:100%;object-fit:cover}
+    .store-nav__name{
+      font-family:'Noto Sans TC',sans-serif;font-weight:700;
+      font-size:var(--fs-20);color:var(--c-text-heading);
+      letter-spacing:-0.5px;line-height:28px;white-space:nowrap;
+    }
+    .store-nav__right{display:flex;align-items:center;gap:32px;height:36px;width:auto}
+    .store-nav__links{display:flex;align-items:center;gap:16px;flex:1}
+    .store-nav__link{
+      font-family:'Noto Sans TC',sans-serif;font-weight:500;
+      font-size:var(--fs-14);color:var(--c-text-nav);line-height:20px;white-space:nowrap;
+    }
+    .store-nav__actions{display:flex;align-items:center;width:80px;position:relative}
+    .store-nav__action-btn{
+      width:36px;height:36px;border-radius:var(--r-full);
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    }
+    /* 將所有導覽列中的圖示統一設定大小 */
+    .store-nav__action-btn img {
+        width: 24px;
+        height: 24px;
+        display: block; /* 確保圖片正確對齊 */
+    }
+    .store-nav__cart-wrap{position:absolute;left:44px;top:0;width:36px;height:36px;border-radius:var(--r-full)}
+    .store-nav__cart-badge{
+      position:absolute;top:2px;left:18px;
+      background:var(--c-theme-accent, var(--c-accent));border-radius:var(--r-full);
+      width:16px;height:16px;display:flex;align-items:center;justify-content:center;
+      transition: background 0.3s ease;
+    }
+    .store-nav__cart-badge span{
+      font-family:'Noto Sans TC',sans-serif;font-weight:500;
+      font-size:var(--fs-10);color:var(--c-white);line-height:15px;
+    }
+
+    /* Store Hero */
+    .store-hero{
+      background:var(--c-white);padding:40px 32px 0;
+      display:flex;flex-direction:column;gap:16px;flex-shrink:0;
+    }
+    .store-hero__tagline{
+      font-family:'Noto Sans TC',sans-serif;font-weight:400;
+      font-size:var(--fs-18);color:var(--c-text-muted);
+      text-align:center;line-height:1.625;white-space:nowrap;
+    }
+    .store-hero__cta-wrap{display:flex;align-items:center;justify-content:center;height:56px}
+    .store-hero__cta-btn{
+      background:var(--c-theme-accent, var(--c-accent));border-radius:var(--r-full);
+      box-shadow:var(--shadow-btn);height:48px;width:128px;
+      font-family:'Noto Sans TC',sans-serif;font-weight:500;
+      font-size:var(--fs-16);color:var(--c-white);line-height:24px;
+      display:flex;align-items:center;justify-content:center;
+      transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    /* Products */
+    .store-products{padding:32px 32px 0;display:flex;flex-direction:column;gap:24px;flex-shrink:0}
+    .store-products__header{display:flex;align-items:center;justify-content:space-between;height:32px}
+    .store-products__heading{display:flex;align-items:center;gap:8px;width:124px}
+    .store-products__heading img{width:20px;height:20px}
+    .store-products__heading-text{
+      font-family:'Noto Sans TC',sans-serif;font-weight:700;
+      font-size:var(--fs-24);color:var(--c-text-heading);line-height:32px;white-space:nowrap;
+    }
+    .store-products__more{
+      font-family:'Noto Sans TC',sans-serif;font-weight:500;
+      font-size:var(--fs-14);color:var(--c-text-gray);line-height:20px;
+    }
+    .store-products__grid{display:flex;gap:16px}
+    .product-card{
+      background:var(--c-white);border:1px solid var(--c-border-light);
+      border-radius:var(--r-24);box-shadow:var(--shadow-card);
+      width:48%;overflow:hidden;display:flex;flex-direction:column;flex-shrink:0;
+    }
+    .product-card__image-area{background:var(--c-bg-page);height:160px;flex-shrink:0;overflow:hidden;position:relative}
+    .product-card__image-area img{width:100%;height:100%;object-fit:cover}
+    .product-card__image-area--empty::after{
+      content:'📷';
+      position:absolute;inset:0;
+      display:flex;align-items:center;justify-content:center;
+      font-size:32px;opacity:0.25;
+    }
+    .product-card__body{padding:20px;display:flex;flex-direction:column;gap:8px}
+    .product-card__meta{display:flex;align-items:center;justify-content:space-between;height:34px}
+    .product-card__tag{
+      background:var(--c-bg-light);border-radius:var(--r-full);
+      height:34px;min-width:50px;display:flex;align-items:center;padding:0 4px;
+    }
+    .product-card__tag-text{
+      font-family:'Noto Sans TC',sans-serif;font-weight:700;
+      font-size:var(--fs-10);color:var(--c-text-faint);
+      letter-spacing:0.5px;text-transform:uppercase;line-height:15px;
+    }
+    .product-card__stock{
+      font-family:'Noto Sans TC',sans-serif;font-weight:400;
+      font-size:var(--fs-12);color:var(--c-text-faint);line-height:16px;
+    }
+    .product-card__name{
+      font-family:'Noto Sans TC',sans-serif;font-weight:700;
+      font-size:var(--fs-18);color:var(--c-text-heading);
+      line-height:27px;height:27px;overflow:hidden;
+    }
+    .product-card__footer{display:flex;align-items:center;justify-content:space-between;height:40px}
+    .product-card__price{
+      font-family:'Noto Sans TC',sans-serif;font-weight:900;
+      font-size:var(--fs-18);color:var(--c-price, var(--c-accent));line-height:28px;
+      transition: color 0.3s ease;
+    }
+    .product-card__cart-btn{
+      background:var(--c-theme-accent, var(--c-accent));border-radius:var(--r-14);
+      box-shadow:var(--shadow-btn);width:36px;height:36px;
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;
+      transition: background 0.3s ease;
+    }
+    .product-card__cart-btn img {
+      width: 24px;
+      height: 24px;
+      /* 這裡如果有的話，請加上 background: transparent !important; */
+      background: transparent !important; 
+    }
+
+    /* Store Footer */
+    .store-footer{
+      background:var(--c-footer-bg, var(--c-accent));border-radius:48px 48px 0 0;
+      padding:64px 48px 40px;display:flex;flex-direction:column;
+      gap:32px;margin-top:32px;flex-shrink:0;
+      transition: background 0.3s ease;
+    }
+    .store-footer__cols{display:flex;gap:32px;flex-wrap:wrap;}
+    .store-footer__about{
+      flex:1;min-width:120px;
+      display:flex;flex-direction:column;gap:16px;
+    }
+    .store-footer__brand{
+      font-family:'Noto Sans TC',sans-serif;font-weight:700;
+      font-size:var(--fs-20);color:var(--c-white);line-height:28px;white-space:nowrap;
+    }
+    .store-footer__desc{
+      font-family:'Noto Sans TC',sans-serif;font-weight:400;
+      font-size:var(--fs-14);color:rgba(255,255,255,.7);
+      line-height:22.75px;width:154px;
+    }
+    .store-footer__links{
+      min-width:80px;
+      display:flex;flex-direction:column;
+    }
+    .store-footer__col-title{
+      font-family:'Noto Sans TC',sans-serif;font-weight:700;
+      font-size:var(--fs-16);color:var(--c-white);line-height:24px;
+      padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.2);
+      margin-bottom:16px;white-space:nowrap;
+    }
+    .store-footer__col-list{display:flex;flex-direction:column;gap:12px}
+    .store-footer__col-item{display:flex;align-items:center;gap:8px;height:24px}
+    .store-footer__col-dot{
+      width:4px;height:4px;background:rgba(255,255,255,.3);
+      border-radius:var(--r-full);flex-shrink:0;
+    }
+    .store-footer__col-link{
+      font-family:'Noto Sans TC',sans-serif;font-weight:500;
+      font-size:var(--fs-16);color:rgba(255,255,255,.7);
+      line-height:24px;white-space:nowrap;
+    }
+    .store-footer__contact{
+      min-width:120px;display:flex;flex-direction:column;
+    }
+    .store-footer__contact-items{display:flex;flex-direction:column;gap:12px;margin-top:16px}
+    .store-footer__contact-row{display:flex;align-items:center;gap:12px;height:36px}
+    .store-footer__contact-icon{
+      background:rgba(255,255,255,.1);border-radius:var(--r-14);
+      width:36px;height:36px;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    }
+    .store-footer__contact-icon img{width:36px;height:36px}
+    .store-footer__contact-email{
+      font-family:'Noto Sans TC',sans-serif;font-weight:500;
+      font-size:var(--fs-10);color:rgba(255,255,255,.7);line-height:20px;white-space:nowrap;
+    }
+    .store-footer__contact-phone{
+      font-family:'Noto Sans TC',sans-serif;font-weight:500;
+      font-size:var(--fs-14);color:rgba(255,255,255,.7);line-height:20px;white-space:nowrap;
+    }
+    .store-footer__bottom{
+      border-top:1px solid rgba(255,255,255,.1);padding-top:33px;text-align:center;
+    }
+    .store-footer__copyright{
+      font-family:'Noto Sans TC',sans-serif;font-weight:400;
+      font-size:var(--fs-10);color:rgba(255,255,255,.4);line-height:15px;
+    }
+
+    /* ═══════════════════════════════════
+       RIGHT SIDEBAR
+    ═══════════════════════════════════ */
+    .sidebar-right{
+      background:var(--c-white);border-left:1px solid var(--c-border);
+      width:320px;flex-shrink:0;display:flex;flex-direction:column;overflow:hidden;
+    }
+    .sidebar-right__head{
+      border-bottom:1px solid var(--c-border);height:56px;
+      padding:16px;display:flex;align-items:center;flex-shrink:0;
+    }
+    .sidebar-right__head-row{display:flex;align-items:center;gap:8px}
+    .sidebar-right__head-row img{width:16px;height:16px}
+    .sidebar-right__head-title{
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:600;
+      font-size:var(--fs-14);color:var(--c-text-heading);
+      letter-spacing:-0.15px;line-height:20px;
+    }
+    .sidebar-right__scroll{padding:24px;display:flex;flex-direction:column;overflow-y:auto}
+
+    .design-section{margin-bottom:24px}
+    .design-section-label{
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:600;
+      font-size:var(--fs-12);color:var(--c-text-muted);
+      letter-spacing:0.6px;text-transform:uppercase;line-height:16px;margin-bottom:16px;
+    }
+    .theme-options{position:relative;height:452px}
+    .theme-option{
+      position:absolute;background:var(--c-bg-light);border:2px solid var(--c-bg-light);
+      border-radius:var(--r-16);padding:18px;display:flex;flex-direction:column;
+      gap:12px;width:271px;cursor:pointer;height:104px;
+    }
+    .theme-option--0{top:-1px;left:-3px;gap:12.24px}
+    .theme-option--1{top:116px;left:0}
+    .theme-option--2{top:232px;left:0}
+    .theme-option--3{top:348px;left:0}
+    .theme-option__name{
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:700;
+      font-size:var(--fs-12);color:var(--c-text-muted);line-height:16px;
+    }
+    .theme-option__swatches{display:flex;gap:6px;height:40px}
+    .swatch{flex:1;border-radius:var(--r-10);box-shadow:inset 0 2px 4px rgba(0,0,0,.05)}
+
+    .font-section{margin-top:32px}
+    .font-section-head{display:flex;align-items:center;gap:8px;height:16px;margin-bottom:16px}
+    .font-section-head img{width:14px;height:14px}
+    .font-section-head__label{
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:600;
+      font-size:var(--fs-12);color:var(--c-text-muted);
+      letter-spacing:0.6px;text-transform:uppercase;line-height:16px;
+    }
+    .font-options{display:flex;flex-direction:column;gap:12px}
+    .font-option{
+      background:var(--c-bg-light);border-radius:var(--r-14);
+      height:48px;padding:0 16px;display:flex;align-items:center;cursor:pointer;
+    }
+    .font-option__name{font-size:var(--fs-14);color:var(--c-black);line-height:20px}
+    .font-option--gothic .font-option__name{font-family:'Noto Sans TC',sans-serif;font-weight:500}
+    .font-option--serif  .font-option__name{font-family:'Noto Serif TC',serif;font-weight:500}
+    .font-option--round  .font-option__name{font-family:'Noto Sans TC',sans-serif;font-weight:400}
+
+    /* ═══════════════════════════════════
+       PAGE FOOTER (Namedly)
+    ═══════════════════════════════════ */
+    .page-footer{position:relative;width:100%;overflow:hidden}
+    .page-footer__bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
+    .page-footer__inner{
+      position:relative;z-index:1;
+      border-top:1px solid rgba(255,255,255,.15);
+      display:flex;align-items:flex-start;justify-content:space-between;
+      padding:80px 60px 120px;
+    }
+    .page-footer__brand{
+      font-family:'Inter',sans-serif;font-weight:600;
+      font-size:var(--fs-24);color:var(--c-white);
+      letter-spacing:-0.48px;line-height:1.2;flex-shrink:0;
+    }
+    .page-footer__nav{display:flex;gap:96px;align-items:flex-start}
+    .page-footer__col{display:flex;flex-direction:column;gap:8px;width:130px}
+    .page-footer__col-head{
+      font-family:'Inter',sans-serif;font-weight:700;
+      font-size:var(--fs-16);color:var(--c-white);
+      letter-spacing:-0.08px;line-height:1.45;padding-bottom:16px;
+    }
+    .page-footer__col-link{
+      font-family:'Inter',sans-serif;font-weight:400;
+      font-size:var(--fs-16);color:rgba(255,255,255,.6);
+      letter-spacing:-0.08px;line-height:1.45;display:block;
+    }
+
+    /* ── Contenteditable fields ─────────────────────────────────────── */
+    .field__input[contenteditable],
+    .field__textarea[contenteditable] {
+      outline: none;
+      cursor: text;
+      color: var(--c-text-body);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .field__input[contenteditable]:empty::before,
+    .field__textarea[contenteditable]:empty::before {
+      content: attr(data-placeholder);
+      color: var(--c-placeholder);
+      pointer-events: none;
+    }
+    .field__input[contenteditable]:focus,
+    .field__textarea[contenteditable]:focus {
+      border-color: var(--c-accent);
+      box-shadow: 0 0 0 3px rgba(101,136,166,0.15);
+    }
+    .field__textarea[contenteditable] {
+      height: auto;
+      min-height: 78px;
+      align-items: flex-start;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    /* ── Logo upload area ────────────────────────────────────────────── */
+    .field__logo-area { position: relative; cursor: pointer; }
+    .logo-upload-overlay {
+      position: absolute; inset: 2px;
+      border-radius: 12px;
+      background: rgba(0,0,0,0.45);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0;
+      transition: opacity 0.22s ease;
+      pointer-events: none;
+    }
+    .field__logo-area:hover .logo-upload-overlay { opacity: 1; }
+    .logo-upload-overlay__inner {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+    }
+    .logo-upload-overlay__inner span {
+      font-family: 'Inter','Noto Sans TC',sans-serif;
+      font-size: var(--fs-12); font-weight: 600;
+      color: #fff; letter-spacing: 0.5px;
+    }
+    /* ── Mobile preview frame ────────────────────────────────────────── */
+    .center__canvas--mobile {
+      justify-content: center;
+      padding: 24px 0;
+      background: var(--c-bg-page);
+    }
+    .mobile-frame {
+      width: 390px;
+      min-width: 390px;
+      background: var(--c-white);
+      border-radius: 40px;
+      box-shadow: 0 0 0 10px #1d293d, 0 30px 60px rgba(0,0,0,0.35);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    .mobile-frame::before {
+      content: '';
+      display: block;
+      height: 36px;
+      background: #1d293d;
+      flex-shrink: 0;
+    }
+    .mobile-frame::after {
+      content: '';
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 16px;
+      background: #0a0a0a;
+      border-radius: 20px;
+      z-index: 10;
+    }
+    .mobile-preview {
+      overflow-y: auto;
+      max-height: 780px;
+    }
+    .mobile-store-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--c-border-light);
+      position: sticky; top: 0; background: var(--c-white); z-index: 5;
+    }
+    .mobile-store-nav__brand { display: flex; align-items: center; gap: 10px; }
+    .mobile-store-nav__logo {
+      width: 32px; height: 32px; border-radius: 8px;
+      box-shadow: var(--shadow-card); overflow: hidden; flex-shrink: 0;
+    }
+    .mobile-store-nav__logo img { width: 100%; height: 100%; object-fit: cover; }
+    .mobile-store-nav__name {
+      font-weight: 700; font-size: 15px;
+      color: var(--c-text-heading); letter-spacing: -0.3px;
+    }
+    .mobile-store-nav__actions { display: flex; align-items: center; gap: 4px; }
+    .mobile-store-nav__btn {
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: var(--r-full); border: none; background: none; cursor: pointer;
+    }
+    .mobile-cart-badge-wrap { position: relative; }
+    .mobile-cart-badge {
+      position: absolute; top: 2px; right: 2px;
+      background: var(--c-theme-accent, var(--c-accent));
+      border-radius: 999px; width: 13px; height: 13px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 8px; font-weight: 700; color: white;
+      transition: background 0.3s ease;
+    }
+    .mobile-hero {
+      padding: 28px 20px 20px;
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+    }
+    .mobile-hero__tagline {
+      font-size: 13px; color: var(--c-text-muted); text-align: center; line-height: 1.7;
+    }
+    .mobile-hero__cta {
+      background: var(--c-theme-accent, var(--c-accent));
+      border-radius: 999px; height: 40px; padding: 0 28px;
+      font-size: 14px; font-weight: 500; color: white;
+      display: flex; align-items: center; justify-content: center;
+      border: none; cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .mobile-products { padding: 20px 20px 0; }
+    .mobile-products__header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .mobile-products__title { font-weight: 700; font-size: 18px; color: var(--c-text-heading); }
+    .mobile-products__more { font-size: 12px; color: var(--c-text-gray); }
+    .mobile-products__grid { display: flex; flex-direction: column; gap: 12px; }
+    .mobile-product-card {
+      background: var(--c-white);
+      border: 1px solid var(--c-border-light);
+      border-radius: 16px;
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      display: flex;
+    }
+    .mobile-product-card__img {
+      width: 90px; flex-shrink: 0;
+      background: var(--c-bg-light);
+    }
+    .mobile-product-card__img img { width: 100%; height: 100%; object-fit: cover; }
+    .mobile-product-card__img--empty { background: #f3f4f6; }
+    .mobile-product-card__body {
+      padding: 12px; flex: 1; display: flex; flex-direction: column; gap: 6px;
+    }
+    .mobile-product-card__tag {
+      display: inline-flex; align-items: center;
+      background: rgba(100,116,139,0.1);
+      border-radius: 999px; padding: 2px 8px;
+      font-size: 10px; color: var(--c-text-muted); width: fit-content;
+    }
+    .mobile-product-card__name { font-size: 13px; font-weight: 600; color: var(--c-text-heading); }
+    .mobile-product-card__footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+    .mobile-product-card__price {
+      font-size: 15px; font-weight: 700;
+      color: var(--c-theme-accent, var(--c-accent));
+      transition: color 0.3s ease;
+    }
+    .mobile-product-card__cart {
+      width: 28px; height: 28px;
+      background: var(--c-theme-accent, var(--c-accent));
+      border-radius: 999px; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.3s ease;
+    }
+    .mobile-footer {
+      margin-top: 24px;
+      background: #1d293d;
+      padding: 24px 20px 32px;
+    }
+    .mobile-footer__brand { font-size: 16px; font-weight: 700; color: white; margin-bottom: 8px; }
+    .mobile-footer__desc { font-size: 11px; color: rgba(255,255,255,0.55); line-height: 1.6; margin-bottom: 12px; }
+    .mobile-footer__copyright { font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 16px; }
+
+    /* ═══════════════════════════════════
+       ANIMATIONS & INTERACTIONS
+    ═══════════════════════════════════ */
+
+    /* Page load — hero */
+    .hero__title {
+      animation: heroIn 0.8s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    @keyframes heroIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Editor shell fade in */
+    .editor-shell {
+      animation: shellIn 0.7s cubic-bezier(0.22,1,0.36,1) 0.15s both;
+    }
+    @keyframes shellIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Scroll fade-in utility */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s cubic-bezier(0.22,1,0.36,1),
+                  transform 0.6s cubic-bezier(0.22,1,0.36,1);
+    }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+    .delay-1 { transition-delay: 0.1s; }
+    .delay-2 { transition-delay: 0.2s; }
+
+    /* Button interactions */
+    .btn-draft {
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    .btn-draft:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+      background: var(--c-bg-light);
+    }
+    .btn-draft:active { transform: translateY(0); }
+
+    .btn-publish {
+      transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    }
+    .btn-publish:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.08);
+      box-shadow: 0 8px 20px rgba(101,136,166,0.4);
+    }
+    .btn-publish:active { transform: translateY(0); }
+
+    .editor__preview-btn {
+      transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    }
+    .editor__preview-btn:hover {
+      background: var(--c-accent);
+      color: var(--c-white);
+      transform: translateY(-1px);
+    }
+
+    /* Theme option hover */
+    .theme-option {
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    .theme-option:hover {
+      transform: translateX(4px);
+      border-color: var(--c-accent);
+      box-shadow: 0 4px 16px rgba(101,136,166,0.2);
+    }
+    .theme-option.selected {
+      border-color: var(--c-accent);
+      background: #eef3f7;
+    }
+
+    /* Font option hover */
+    .font-option {
+      transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+    .font-option:hover {
+      transform: translateX(4px);
+      background: #eef3f7;
+    }
+    .font-option.selected {
+      background: #e0eaf2;
+      box-shadow: inset 0 0 0 2px var(--c-accent);
+    }
+
+    /* Product card hover */
+    .product-card {
+      transition: transform 0.3s cubic-bezier(0.22,1,0.36,1),
+                  box-shadow 0.3s cubic-bezier(0.22,1,0.36,1);
+    }
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+    }
+
+    /* Add product button */
+    .btn-add-product {
+      transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    }
+    .btn-add-product:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.07);
+      box-shadow: 0 8px 20px rgba(101,136,166,0.35);
+    }
+
+    /* Store CTA button */
+    .store-hero__cta-btn {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .store-hero__cta-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(101,136,166,0.4);
+    }
+
+    /* Asset thumb hover */
+    .asset-thumb {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .asset-thumb:hover {
+      transform: scale(1.06);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    /* Footer links */
+    .page-footer__col-link {
+      transition: color 0.2s ease, transform 0.2s ease;
+    }
+    .page-footer__col-link:hover {
+      color: rgba(255,255,255,0.95);
+      transform: translateX(4px);
+    }
+
+    /* ═══════════════════════════════════
+       RESPONSIVE — TABLET ≤ 1024px
+    ═══════════════════════════════════ */
+    @media (max-width:1024px){
+      .editor__hamburger{display:flex}
+      .editor__topbar{flex-wrap:wrap;height:auto;min-height:64px;padding:12px 20px;gap:12px}
+      .editor__topbar-left{flex:1;min-width:0}
+      .editor__topbar-right{display:none}
+      .editor__mobile-nav{display:flex}
+      .editor__preview-btn,.editor__divider{display:none}
+
+      .editor{width:100%}
+      .editor__body{flex-direction:column;min-height:auto}
+      .sidebar-left,.sidebar-right{width:100%;border-right:none;border-left:none;border-bottom:1px solid var(--c-border)}
+      .editor__center{width:100%}
+      .center__canvas{padding:0;justify-content:stretch}
+      .store-preview{width:100%}
+
+      .page-footer__inner{flex-direction:column;gap:48px;padding:60px 40px 80px}
+      .page-footer__nav{flex-wrap:wrap;gap:40px}
+
+      .hero{height:auto;min-height:120px;padding:40px 40px 30px}
+      .hero__title{font-size:42px}
+    }
+
+    /* ═══════════════════════════════════
+       RESPONSIVE — MOBILE ≤ 768px
+    ═══════════════════════════════════ */
+    @media (max-width:768px){
+      .editor__brand-name{font-size:15px}
+      .editor__topbar{padding:10px 16px;gap:8px}
+
+      .store-nav{height:auto;flex-wrap:wrap;padding:14px 16px;gap:12px}
+      .store-nav__brand{width:auto}
+      .store-nav__right{width:100%;justify-content:space-between;gap:16px}
+      .store-nav__links{gap:12px}
+
+      .store-products__grid{flex-direction:column;gap:16px}
+      .product-card{width:100%;max-width:280px}
+
+      .store-hero__tagline{white-space:normal;font-size:14px}
+
+      .store-footer__cols{height:auto;position:static;display:flex;flex-direction:column;gap:24px}
+      .store-footer__about,.store-footer__links,.store-footer__contact{position:static;width:100%}
+      .store-footer__contact-items{margin-top:0}
+      .store-footer{padding:40px 24px 32px}
+
+      .hero__title{font-size:30px}
+      .page-footer__inner{padding:40px 20px 60px}
+      .page-footer__nav{gap:24px}
+      .page-footer__col{width:100px}
+
+      .center__canvas{padding:0}
+      .store-preview{width:100%}
+    }
+    /* --- 編輯器輸入框的反灰提示效果 --- */
+[contenteditable="true"]:empty:before {
+  content: attr(data-placeholder);
+  color: #9ca3af;                  /* 漂亮的淡灰色 */
+  font-style: normal;
+  cursor: text;
+  pointer-events: none;            /* 讓點擊能穿透文字，直接點到輸入框 */
+  font-weight: 300;                /* 讓它看起來輕盈一點 */
+}
+
+/* 當滑鼠點進去但還沒打字時，讓顏色再淡一點點 */
+[contenteditable="true"]:focus:empty:before {
+  color: #d1d5db;
+}
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HERO -->
+  <section class="hero" aria-label="Goez Shop 標題區">
+    <img class="hero__bg"
+      src="images/decorations/Background.svg"
+      alt="背景圖片" />
+    <a href="goez-shop-home.html" class="hero__title" style="cursor:pointer;" aria-label="返回首頁">Goez Shop</a>
+  </section>
+
+  <!-- EDITOR -->
+  <div class="editor-shell">
+    <div class="editor">
+
+      <!-- Top Bar -->
+      <header class="editor__topbar">
+        <div class="editor__topbar-left">
+          <div class="editor__brand">
+            <div class="editor__brand-icon">
+              <img src="images/decorations/small-cart.svg" alt="品牌圖示" />
+            </div>
+            <span class="editor__brand-name">建立屬於自己的賣場</span>
+          </div>
+          <div class="editor__divider" aria-hidden="true"></div>
+          <button class="editor__preview-btn" type="button">預覽編輯</button>
+        </div>
+
+        <button class="editor__hamburger" type="button"
+          aria-expanded="false" aria-controls="editor-mobile-nav"
+          aria-label="開啟選單" id="hamburger-btn">
+          <span class="editor__hamburger-line"></span>
+          <span class="editor__hamburger-line"></span>
+          <span class="editor__hamburger-line"></span>
+        </button>
+
+        <div class="editor__topbar-right">
+          <button class="btn-draft" type="button">
+            <img src="images/decorations/save.svg" alt="儲存圖示" />
+            儲存草稿
+          </button>
+          <button class="btn-publish" type="button">
+            <img src="images/decorations/publish.svg" alt="發布圖示" />
+            正式發布
+          </button>
+        </div>
+      </header>
+
+      <!-- Mobile nav -->
+      <nav class="editor__mobile-nav" id="editor-mobile-nav" aria-label="行動選單">
+        <a class="editor__mobile-nav-link" href="#">儲存草稿</a>
+        <a class="editor__mobile-nav-link" href="#">正式發布</a>
+        <a class="editor__mobile-nav-link" href="#">預覽編輯</a>
+      </nav>
+
+      <!-- Body -->
+      <div class="editor__body">
+
+        <!-- LEFT SIDEBAR -->
+        <aside class="sidebar-left" aria-label="店鋪管理">
+          <div class="sidebar-left__head">
+            <div class="sidebar-left__head-row">
+              <img src="images/decorations/store-image.svg" alt="店鋪圖示" />
+              <span class="sidebar-left__head-title">店鋪管理</span>
+            </div>
+          </div>
+          <div class="sidebar-left__scroll">
+
+            <!-- 店鋪基本資訊 -->
+            <section aria-label="店鋪基本資訊">
+              <div class="section-label" style="margin-bottom:16px">
+                <span class="section-label__text">店鋪基本資訊</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div class="field">
+                  <label class="field__label">店鋪名稱</label>
+                  <div
+                    class="field__input"
+                    id="store-name-input"
+                    role="textbox"
+                    contenteditable="true"
+                    data-placeholder="風格生活選物"
+                    ></div>
+                </div>
+                <div class="field">
+                  <label class="field__label">店鋪簡介</label>
+                  <div
+                    class="field__textarea"
+                    id="store-desc-input"
+                    role="textbox"
+                    contenteditable="true"
+                    data-placeholder="為您挑選來自世界各地的質感生活好物..."
+                    ></div>
+                </div>
+                <div class="field">
+                  <div class="field__label">店鋪商標</div>
+                  <div class="field__logo-area" id="logo-drop-zone">
+                    <img id="logo-preview-img" src="https://www.figma.com/api/mcp/asset/665605e6-519c-4fa0-8070-daa26e795351" alt="店鋪商標" />
+                    <div class="logo-upload-overlay" id="logo-upload-overlay">
+                      <div class="logo-upload-overlay__inner">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        <span>上傳商標</span>
+                      </div>
+                    </div>
+                  </div>
+                  <input type="file" id="logo-file-input" accept="image/*" style="display:none" />
+                </div>
+              </div>
+            </section>
+
+            <!-- 商品管理 -->
+            <section class="product-mgmt" aria-label="商品管理">
+              <div class="section-label">
+                <img src="images/decorations/plus2.svg" alt="商品圖示" />
+                <span class="section-label__text">商品管理</span>
+              </div>
+              <button class="btn-add-product" type="button">
+                <img src="images/decorations/plus.svg" alt="新增圖示" />
+                新增商品
+              </button>
+            </section>
+
+            <!-- 最近資源 -->
+            <section aria-label="最近資源">
+              <div class="recent-header" style="margin-bottom:16px">
+                <div class="section-label">
+                  <img src="images/decorations/photo.svg" alt="資源圖示" />
+                  <span class="section-label__text">最近資源</span>
+                </div>
+                <button class="recent-header__manage" type="button">管理全部</button>
+              </div>
+              <div class="assets-grid">
+                <div class="asset-thumb"><img src="https://www.figma.com/api/mcp/asset/665605e6-519c-4fa0-8070-daa26e795351" alt="資源 1" /></div>
+                <div class="asset-thumb"><img src="https://www.figma.com/api/mcp/asset/cb4607e6-dd4c-491d-9fb8-56843a56186f" alt="資源 2" /></div>
+                <div class="asset-thumb"><img src="https://www.figma.com/api/mcp/asset/cad7f391-572a-4480-a92f-910eed4422fb" alt="資源 3" /></div>
+                <div class="asset-thumb"><img src="https://www.figma.com/api/mcp/asset/e3fb4fa0-f3f9-4abc-a40c-f1c773d60716" alt="資源 4" /></div>
+                <div class="asset-thumb"><img src="https://www.figma.com/api/mcp/asset/e82ad3df-e435-42b4-bb9a-b8ba4f48e757" alt="資源 5" /></div>
+                <div class="asset-add" role="button" tabindex="0" aria-label="新增資源">
+                  <img src="images/decorations/plus2.svg" alt="新增" />
+                </div>
+              </div>
+            </section>
+
+          </div>
+        </aside>
+
+        <!-- CENTER -->
+        <main class="editor__center" aria-label="預覽畫面">
+          <div class="center__toolbar">
+            <div class="viewport-toggle" role="group" aria-label="視圖切換">
+              <button class="viewport-btn viewport-btn--active" type="button" aria-pressed="true">
+                <img src="images/decorations/computer.svg" alt="桌面版" />
+                <span class="viewport-btn__label">桌面版</span>
+              </button>
+              <button class="viewport-btn" type="button" aria-pressed="false">
+                <img src="images/decorations/smartphone.svg" alt="行動版" />
+                <span class="viewport-btn__label viewport-btn__label--inactive">行動版</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="center__canvas" id="preview-canvas">
+            <!-- DESKTOP PREVIEW -->
+            <article class="store-preview" id="desktop-preview">
+
+              <!-- Store navbar -->
+              <nav class="store-nav" aria-label="店鋪導覽">
+                <div class="store-nav__brand">
+                  <div class="store-nav__logo">
+                    <img id="preview-logo-desktop" src="https://www.figma.com/api/mcp/asset/665605e6-519c-4fa0-8070-daa26e795351" alt="店鋪商標" />
+                  </div>
+                  <span class="store-nav__name" id="preview-name-desktop">載入中...</span>
+                </div>
+                <div class="store-nav__right">
+                  <div class="store-nav__links">
+                    <a class="store-nav__link" href="#">首頁</a>
+                    <a class="store-nav__link" href="#">所有商品</a>
+                    <a class="store-nav__link" href="#">關於我們</a>
+                  </div>
+                  <div class="store-nav__actions">
+                    <button class="store-nav__action-btn" type="button" aria-label="搜尋">
+                      <img src="images/decorations/search.svg" alt="搜尋" style="width:36px;height:36px" />
+                    </button>
+                    <div class="store-nav__cart-wrap">
+                      <button class="store-nav__action-btn" type="button" aria-label="購物車">
+                        <img src="images/decorations/cart.svg" alt="購物車" style="width:36px;height:36px" />
+                      </button>
+                      <div class="store-nav__cart-badge" aria-label="購物車 2 件">
+                        <span>2</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </nav>
+
+              <!-- Store hero -->
+              <div class="store-hero">
+                <p class="store-hero__tagline" id="preview-desc-desktop">載入中...</p>
+                <div class="store-hero__cta-wrap">
+                  <button class="store-hero__cta-btn" type="button">立即選購</button>
+                </div>
+              </div>
+
+              <!-- Hot products -->
+              <section class="store-products" aria-label="熱門商品">
+                <div class="store-products__header">
+                  <div class="store-products__heading">
+                    <img src="images/decorations/square.svg" alt="熱門圖示" />
+                    <span class="store-products__heading-text">熱門商品</span>
+                  </div>
+                  <button class="store-products__more" type="button">查看更多</button>
+                </div>
+                <div class="store-products__grid" id="product-list"></div>
+              </section>
+
+              <!-- Store footer -->
+              <footer class="store-footer">
+                <div class="store-footer__cols">
+                  <div class="store-footer__about">
+                    <span class="store-footer__brand" id="preview-footer-brand">載入中...</span>
+                    <p class="store-footer__desc" id="preview-footer-desc">載入中...</p>
+                  </div>
+                  <div class="store-footer__links">
+                    <div class="store-footer__col-title">快速連結</div>
+                    <ul class="store-footer__col-list">
+                      <li class="store-footer__col-item">
+                        <span class="store-footer__col-dot"></span>
+                        <a class="store-footer__col-link" href="#"> 最新商品</a>
+                      </li>
+                      <li class="store-footer__col-item">
+                        <span class="store-footer__col-dot"></span>
+                        <a class="store-footer__col-link" href="#"> 會員中心</a>
+                      </li>
+                      <li class="store-footer__col-item">
+                        <span class="store-footer__col-dot"></span>
+                        <a class="store-footer__col-link" href="#"> 隱私條款</a>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="store-footer__contact">
+                    <div class="store-footer__col-title">聯絡我們</div>
+                    <div class="store-footer__contact-items">
+                      <div class="store-footer__contact-row">
+                        <div class="store-footer__contact-icon">
+                          <img src="images/decorations/email.svg" alt="Email" />
+                        </div>
+                        <span class="store-footer__contact-email">service@shop.com</span>
+                      </div>
+                      <div class="store-footer__contact-row">
+                        <div class="store-footer__contact-icon">
+                          <img src="images/decorations/phone.svg" alt="電話" />
+                        </div>
+                        <span class="store-footer__contact-phone">0800-000-000</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="store-footer__bottom">
+                  <p class="store-footer__copyright">© 2026 <span id="preview-footer-copyright-desktop">載入中...</span>. All rights reserved. Powered by Figma Make.</p>
+                </div>
+              </footer>
+
+            </article><!-- /desktop-preview -->
+
+            <!-- MOBILE PREVIEW -->
+            <div id="mobile-preview" style="display:none; width:100%; justify-content:center; padding:24px 0; background:var(--c-bg-page); flex:1;">
+              <div class="mobile-frame">
+                <div class="mobile-preview">
+                  <!-- Mobile nav -->
+                  <nav class="mobile-store-nav">
+                    <div class="mobile-store-nav__brand">
+                      <div class="mobile-store-nav__logo">
+                        <img id="preview-logo-mobile" src="https://www.figma.com/api/mcp/asset/665605e6-519c-4fa0-8070-daa26e795351" alt="商標" />
+                      </div>
+                      <span class="mobile-store-nav__name" id="preview-name-mobile">載入中...</span>
+                    </div>
+                    <div class="mobile-store-nav__actions">
+                      <button class="mobile-store-nav__btn" aria-label="搜尋">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                      </button>
+                      <div class="mobile-cart-badge-wrap">
+                        <button class="mobile-store-nav__btn" aria-label="購物車">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                        </button>
+                        <div class="mobile-cart-badge">2</div>
+                      </div>
+                    </div>
+                  </nav>
+                  <!-- Mobile hero -->
+                  <div class="mobile-hero">
+                    <p class="mobile-hero__tagline" id="preview-desc-mobile">載入中...。</p>
+                    <button class="mobile-hero__cta">立即選購</button>
+                  </div>
+                  <!-- Mobile products -->
+                  <div class="mobile-products">
+                    <div class="mobile-products__header">
+                      <span class="mobile-products__title">熱門商品</span>
+                      <span class="mobile-products__more">查看更多</span>
+                    </div>
+                    <div class="mobile-products__grid" id="mobile-product-list"></div>
+                  <!-- Mobile footer -->
+                  <div class="mobile-footer">
+                  <div class="mobile-footer__brand" id="preview-footer-brand-mobile">載入中...</div>
+                  <div class="mobile-footer__desc" id="preview-footer-desc-mobile">載入中...</div>
+                  <div class="mobile-footer__copyright">
+                    © 2026 <span id="preview-footer-copyright-mobile">Goezshop</span>. All rights reserved.
+                  </div>
+                  </div>
+                </div><!-- /mobile-preview scroll -->
+              </div><!-- /mobile-frame -->
+            </div><!-- /mobile-preview wrapper -->
+        </main>
+
+        <!-- RIGHT SIDEBAR -->
+        <aside class="sidebar-right" aria-label="設計系統">
+          <div class="sidebar-right__head">
+            <div class="sidebar-right__head-row">
+              <img src="images/decorations/color.svg" alt="設計系統圖示" />
+              <span class="sidebar-right__head-title">設計系統</span>
+            </div>
+          </div>
+          <div class="sidebar-right__scroll">
+
+            <!-- 主題配色 -->
+            <div class="design-section">
+              <p class="design-section-label">主題配色</p>
+              <div class="theme-options">
+                <div class="theme-option theme-option--0">
+                  <span class="theme-option__name">冷靜石板</span>
+                  <div class="theme-option__swatches">
+                    <div class="swatch" style="background:#64748b"></div>
+                    <div class="swatch" style="background:#94a3b8"></div>
+                    <div class="swatch" style="background:#cbd5e1"></div>
+                    <div class="swatch" style="background:#f1f5f9"></div>
+                  </div>
+                </div>
+                <div class="theme-option theme-option--1">
+                  <span class="theme-option__name">鼠尾草綠</span>
+                  <div class="theme-option__swatches">
+                    <div class="swatch" style="background:#869489"></div>
+                    <div class="swatch" style="background:#a3ad9e"></div>
+                    <div class="swatch" style="background:#c2c9bd"></div>
+                    <div class="swatch" style="background:#e8ebe4"></div>
+                  </div>
+                </div>
+                <div class="theme-option theme-option--2">
+                  <span class="theme-option__name">陶土橘</span>
+                  <div class="theme-option__swatches">
+                    <div class="swatch" style="background:#b38b7d"></div>
+                    <div class="swatch" style="background:#d1b4a6"></div>
+                    <div class="swatch" style="background:#e5d3c8"></div>
+                    <div class="swatch" style="background:#f5efea"></div>
+                  </div>
+                </div>
+                <div class="theme-option theme-option--3">
+                  <span class="theme-option__name">北歐沙色</span>
+                  <div class="theme-option__swatches">
+                    <div class="swatch" style="background:#a8a29e"></div>
+                    <div class="swatch" style="background:#d6d3d1"></div>
+                    <div class="swatch" style="background:#e7e5e4"></div>
+                    <div class="swatch" style="background:#f5f5f4"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 字體設定 -->
+            <div class="font-section">
+              <div class="font-section-head">
+                <img src="images/decorations/text.svg" alt="字體圖示" />
+                <span class="font-section-head__label">字體設定</span>
+              </div>
+              <div class="font-options">
+                <div class="font-option font-option--gothic">
+                  <span class="font-option__name">現代黑體</span>
+                </div>
+                <div class="font-option font-option--serif">
+                  <span class="font-option__name">經典明體</span>
+                </div>
+                <div class="font-option font-option--round">
+                  <span class="font-option__name">溫潤圓體</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </aside>
+
+      </div><!-- /editor__body -->
+    </div><!-- /editor -->
+  </div><!-- /editor-shell -->
+
+  <!-- PAGE FOOTER -->
+  <footer class="page-footer" aria-label="Namedly 頁腳">
+    <img class="page-footer__bg"
+      src="images/decorations/footer.svg"
+      alt="頁腳背景" />
+    <div class="page-footer__inner">
+      <div class="page-footer__brand">Namedly</div>
+      <nav class="page-footer__nav" aria-label="頁腳導覽">
+        <div class="page-footer__col">
+          <div class="page-footer__col-head">Platform</div>
+          <a class="page-footer__col-link" href="#">Individuals</a>
+          <a class="page-footer__col-link" href="#">Teams</a>
+          <a class="page-footer__col-link" href="#">Admins</a>
+          <a class="page-footer__col-link" href="#">Developers</a>
+        </div>
+        <div class="page-footer__col">
+          <div class="page-footer__col-head">Features</div>
+          <a class="page-footer__col-link" href="#">Core features</a>
+          <a class="page-footer__col-link" href="#">Pro experience</a>
+          <a class="page-footer__col-link" href="#">Integrations</a>
+        </div>
+        <div class="page-footer__col">
+          <div class="page-footer__col-head">Learn more</div>
+          <a class="page-footer__col-link" href="#">Blog</a>
+          <a class="page-footer__col-link" href="#">Case studies</a>
+          <a class="page-footer__col-link" href="#">Customer stories</a>
+          <a class="page-footer__col-link" href="#">Best practices</a>
+        </div>
+        <div class="page-footer__col">
+          <div class="page-footer__col-head">Support</div>
+          <a class="page-footer__col-link" href="#">Contact</a>
+          <a class="page-footer__col-link" href="#">Support</a>
+          <a class="page-footer__col-link" href="#">Legal</a>
+        </div>
+      </nav>
+    </div>
+  </footer>
+
+</div><!-- /page -->
+
+<script>
+  // ── Hamburger nav ────────────────────────────────────────────────
+  (function(){
+    var btn=document.getElementById('hamburger-btn');
+    var nav=document.getElementById('editor-mobile-nav');
+    if(!btn||!nav)return;
+    btn.addEventListener('click',function(){
+      var open=btn.getAttribute('aria-expanded')==='true';
+      btn.setAttribute('aria-expanded',String(!open));
+      nav.classList.toggle('is-open',!open);
+    });
+  }());
+
+  // ── Scroll fade-in ───────────────────────────────────────────────
+  var animEls = document.querySelectorAll('.fade-in');
+  var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  animEls.forEach(function(el){ observer.observe(el); });
+
+  // ── Live name / desc sync ─────────────────────────────────────────
+  var nameInput = document.getElementById('store-name-input');
+  var descInput = document.getElementById('store-desc-input');
+
+  var previewNameDesktop   = document.getElementById('preview-name-desktop');
+  var previewDescDesktop   = document.getElementById('preview-desc-desktop');
+  var previewFooterBrand   = document.getElementById('preview-footer-brand');
+  var previewFooterDesc    = document.getElementById('preview-footer-desc');
+  var previewNameMobile    = document.getElementById('preview-name-mobile');
+  var previewDescMobile    = document.getElementById('preview-desc-mobile');
+  var previewFooterBrandM  = document.getElementById('preview-footer-brand-mobile');
+  var previewFooterDescM   = document.getElementById('preview-footer-desc-mobile');
+
+  // ── Live name / desc sync (修正版) ──────────────────────────────────
+var nameInput = document.getElementById('store-name-input');
+var descInput = document.getElementById('store-desc-input');
+
+
+  // ── Theme data ───────────────────────────────────────────────────
+  var themes = {
+    '冷靜石板': { '--c-theme-accent': '#64748b', '--c-footer-bg': '#64748b', '--c-price': '#64748b' },
+    '鼠尾草綠': { '--c-theme-accent': '#869489', '--c-footer-bg': '#869489', '--c-price': '#5a6e61' },
+    '陶土橘':   { '--c-theme-accent': '#b38b7d', '--c-footer-bg': '#b38b7d', '--c-price': '#8c5c4e' },
+    '北歐沙色': { '--c-theme-accent': '#a8a29e', '--c-footer-bg': '#a8a29e', '--c-price': '#78716c' }
+  };
+
+  // ── Theme selection ──────────────────────────────────────────────
+  var preview = document.querySelector('.store-preview');
+  var mobilePreviewEl = document.querySelector('.mobile-preview');
+  document.querySelectorAll('.theme-option').forEach(function(opt){
+    opt.addEventListener('click', function(){
+      document.querySelectorAll('.theme-option').forEach(function(o){ o.classList.remove('selected'); });
+      opt.classList.add('selected');
+      var name = opt.querySelector('.theme-option__name');
+      if(!name) return;
+      var vars = themes[name.textContent.trim()];
+      if(!vars) return;
+      // Apply to both desktop and mobile previews
+      [preview, mobilePreviewEl].forEach(function(el){
+        if(!el) return;
+        Object.keys(vars).forEach(function(key){ el.style.setProperty(key, vars[key]); });
+      });
+    });
+  });
+
+  // ── Font families ────────────────────────────────────────────────
+  var fontFamilies = {
+    'gothic': "'Noto Sans TC', sans-serif",
+    'serif':  "'Noto Serif TC', serif",
+    'round':  "'M PLUS Rounded 1c', 'Noto Sans TC', sans-serif"
+  };
+
+  // Inject M PLUS Rounded if needed
+  var roundFont = document.createElement('link');
+  roundFont.rel = 'stylesheet';
+  roundFont.href = 'https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap';
+  document.head.appendChild(roundFont);
+
+  // ── Font selection ───────────────────────────────────────────────
+  document.querySelectorAll('.font-option').forEach(function(opt){
+    opt.addEventListener('click', function(){
+      document.querySelectorAll('.font-option').forEach(function(o){ o.classList.remove('selected'); });
+      opt.classList.add('selected');
+
+      var key = null;
+      if(opt.classList.contains('font-option--gothic')) key = 'gothic';
+      else if(opt.classList.contains('font-option--serif')) key = 'serif';
+      else if(opt.classList.contains('font-option--round')) key = 'round';
+      if(!key) return;
+
+      var fontVal = fontFamilies[key];
+      // Apply to ALL text elements inside both previews
+      var targets = [
+        '.store-nav__name','.store-nav__link','.store-hero__tagline',
+        '.store-hero__cta-btn','.store-products__heading-text','.store-products__more',
+        '.product-card__name','.product-card__price','.product-card__tag-text',
+        '.store-footer__brand','.store-footer__desc','.store-footer__col-title',
+        '.store-footer__col-link','.store-footer__contact-email','.store-footer__contact-phone',
+        '.store-footer__copyright',
+        // mobile
+        '.mobile-store-nav__name','.mobile-hero__tagline','.mobile-hero__cta',
+        '.mobile-products__title','.mobile-product-card__name','.mobile-product-card__price',
+        '.mobile-product-card__tag','.mobile-footer__brand','.mobile-footer__desc','.mobile-footer__copyright'
+      ];
+      targets.forEach(function(sel){
+        document.querySelectorAll(sel).forEach(function(el){ el.style.fontFamily = fontVal; });
+      });
+    });
+  });
+
+  // ── Viewport toggle ───────────────────────────────────────────────
+  var desktopPreview = document.getElementById('desktop-preview');
+  var mobilePreviewWrapper = document.getElementById('mobile-preview');
+  var canvas = document.getElementById('preview-canvas');
+  var viewportBtns = document.querySelectorAll('.viewport-btn');
+
+  viewportBtns.forEach(function(btn, idx){
+    btn.addEventListener('click', function(){
+      viewportBtns.forEach(function(b){
+        b.classList.remove('viewport-btn--active');
+        b.setAttribute('aria-pressed','false');
+        var lbl = b.querySelector('.viewport-btn__label');
+        if(lbl) lbl.classList.add('viewport-btn__label--inactive');
+      });
+      btn.classList.add('viewport-btn--active');
+      btn.setAttribute('aria-pressed','true');
+      var lbl = btn.querySelector('.viewport-btn__label');
+      if(lbl) lbl.classList.remove('viewport-btn__label--inactive');
+
+      if(idx === 0) {
+        // Desktop
+        desktopPreview.style.display = '';
+        mobilePreviewWrapper.style.display = 'none';
+        canvas.classList.remove('center__canvas--mobile');
+      } else {
+        // Mobile
+        desktopPreview.style.display = 'none';
+        mobilePreviewWrapper.style.display = 'flex';
+        canvas.classList.add('center__canvas--mobile');
+      }
+    });
+  });
+</script>
+<script src="./js/store-render.js"></script>
+// 在頁面載入時執行
+<script>
+window.onload = async () => {
+    // 1. 從網址列抓取 ?pageId=XXX
+    const urlParams = new URLSearchParams(window.location.search);
+    const pageId = urlParams.get('pageId'); 
+
+    if (!pageId) {
+        console.warn("網址列缺少 pageId，請確認網址格式為：...html?pageId=數字");
+        return; 
+    }
+
+    try {
+        // 2. 向後端請求資料 (後端現在有 findOrCreate，沒資料會自動初始化)
+        const response = await fetch(`/api/store/pages/${pageId}`);
+        const result = await response.json();
+
+        if (result.success && result.data) {
+            const store = result.data;
+            
+            // A. 填入店名與簡介 (使用 textContent 確保安全)
+            const nameInput = document.getElementById('store-name-input');
+            if (nameInput) nameInput.textContent = store.PageTitle || "";
+
+            const descInput = document.getElementById('store-desc-input');
+            if (descInput) descInput.textContent = store.PageDescription || "";
+
+            // B. 填入 Logo (增加防破圖保險)
+            const logoImg = document.getElementById('logo-preview-img');
+            if (logoImg) {
+                // 預設圖路徑 (當資料庫沒圖時顯示)
+                const defaultLogo = "https://www.figma.com/api/mcp/asset/665605e6-519c-4fa0-8070-daa26e795351";
+                
+                // 邏輯：有網址就用網址，沒網址就用預設圖
+                const finalLogoUrl = (store.StoreLogo && store.StoreLogo.trim() !== "") 
+                                     ? store.StoreLogo 
+                                     : defaultLogo;
+                
+                logoImg.src = finalLogoUrl;
+                console.log(`✅ PageID ${pageId} 資料載入成功`, { logo: finalLogoUrl });
+            }
+        }
+    } catch (error) {
+        console.error("❌ 載入資料失敗:", error);
+    }
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Goez Shop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+SC:wght@400&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Design Tokens ─────────────────────────────────────────── */
+    :root {
+      --color-white: #ffffff;
+      --color-black: #000000;
+      --color-black-55: rgba(0, 0, 0, 0.55);
+      --color-black-10: rgba(0, 0, 0, 0.1);
+      --color-white-60: rgba(255, 255, 255, 0.6);
+      --color-white-15: rgba(255, 255, 255, 0.15);
+
+      --fs-64: 64px;
+      --fs-36: 36px;
+      --fs-24: 24px;
+      --fs-20: 20px;
+      --fs-18: 18px;
+      --fs-16: 16px;
+
+      --fw-regular: 400;
+      --fw-medium: 500;
+      --fw-semibold: 600;
+      --fw-bold: 700;
+
+      --lh-hero: 1.1;
+      --lh-heading: 1.2;
+      --lh-body: 1.45;
+      --lh-sm: 1.4;
+      --lh-tight: 1.5;
+
+      --ls-hero: -1.6px;
+      --ls-heading: 3.6px;
+      --ls-gallery: 10.8px;
+      --ls-brand: -0.48px;
+      --ls-sm: -0.08px;
+      --ls-xs: -0.09px;
+      --ls-base: -0.1px;
+
+      --radius-16: 16px;
+      --radius-12: 12px;
+      --radius-8: 8px;
+
+      --shadow-card: 0px 4px 8px 0px rgba(0, 0, 0, 0.02), 0px 6px 12px 0px rgba(0, 0, 0, 0.03);
+
+      --spacing-120: 120px;
+      --spacing-96: 96px;
+      --spacing-80: 80px;
+      --spacing-48: 48px;
+      --spacing-40: 40px;
+      --spacing-32: 32px;
+      --spacing-24: 24px;
+      --spacing-16: 16px;
+      --spacing-12: 12px;
+      --spacing-8: 8px;
+      --spacing-4: 4px;
+
+      --font-primary: 'Inter', 'Noto Sans JP', 'Noto Sans SC', sans-serif;
+    }
+
+    /* ─── Reset ─────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; }
+    body { font-family: var(--font-primary); background: var(--color-white); color: var(--color-black); }
+    img { display: block; max-width: 100%; }
+    p, h1, h2, h3 { margin: 0; }
+    ul, ol { list-style: none; }
+    a { text-decoration: none; color: inherit; }
+
+    /* ─── Page Wrapper ───────────────────────────────────────────── */
+    .page { display: flex; flex-direction: column; align-items: center; width: 100%; }
+    .container { display: flex; flex-direction: column; align-items: flex-start; width: 100%; }
+
+    /* ─── Hero / Background ──────────────────────────────────────── */
+    .hero {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 400px;
+      padding: var(--spacing-120) var(--spacing-120) var(--spacing-96);
+      overflow: hidden;
+      gap: var(--spacing-120);
+    }
+    .hero__bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+    .hero__content {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--spacing-48);
+      width: 100%;
+      z-index: 1;
+    }
+    .hero__title {
+      font-size: var(--fs-64);
+      font-weight: var(--fw-bold);
+      line-height: var(--lh-hero);
+      letter-spacing: var(--ls-hero);
+      color: var(--color-white);
+      text-align: center;
+      width: 100%;
+    }
+    .hero__buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-16);
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .btn--primary {
+      background: var(--color-white);
+      color: var(--color-black);
+      padding: var(--spacing-12) var(--spacing-16);
+      border-radius: var(--radius-12);
+      font-size: var(--fs-18);
+      font-weight: var(--fw-medium);
+      line-height: var(--lh-body);
+      letter-spacing: var(--ls-xs);
+      white-space: nowrap;
+      cursor: pointer;
+      border: 2px solid transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn--secondary {
+      background: transparent;
+      color: var(--color-white);
+      padding: var(--spacing-12) var(--spacing-16);
+      border-radius: var(--radius-12);
+      border: 2px solid var(--color-white-15);
+      font-size: var(--fs-18);
+      font-weight: var(--fw-medium);
+      line-height: var(--lh-body);
+      letter-spacing: var(--ls-xs);
+      white-space: nowrap;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn--dark {
+      background: var(--color-black);
+      color: var(--color-white);
+      padding: var(--spacing-12) var(--spacing-24);
+      border-radius: var(--radius-12);
+      font-size: var(--fs-18);
+      font-weight: var(--fw-medium);
+      line-height: var(--lh-body);
+      letter-spacing: var(--ls-xs);
+      white-space: nowrap;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ─── Feature Gallery ────────────────────────────────────────── */
+    .feature-gallery {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: var(--spacing-80) var(--spacing-120);
+      width: 100%;
+    }
+    .feature-gallery__inner {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+    }
+    .feature-gallery__content {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-40);
+      align-items: flex-start;
+      padding-bottom: var(--spacing-80);
+      width: 100%;
+    }
+    .feature-gallery__text {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-16);
+      width: 100%;
+    }
+    .feature-gallery__heading {
+      font-size: var(--fs-36);
+      font-weight: var(--fw-bold);
+      line-height: var(--lh-heading);
+      letter-spacing: var(--ls-heading);
+      color: var(--color-black);
+      width: 100%;
+    }
+    .feature-gallery__desc {
+      font-size: var(--fs-20);
+      font-weight: var(--fw-medium);
+      line-height: var(--lh-body);
+      letter-spacing: var(--ls-base);
+      color: var(--color-black-55);
+      width: 100%;
+    }
+
+    /* ─── Image Gallery Grid ─────────────────────────────────────── */
+    .image-gallery {
+      display: flex;
+      gap: var(--spacing-32);
+      align-items: flex-start;
+      width: 100%;
+    }
+    .image-gallery__col {
+      display: flex;
+      flex: 1 0 0;
+      flex-direction: column;
+      gap: var(--spacing-32);
+      align-items: flex-start;
+      min-width: 0;
+    }
+    .image-gallery__col--offset {
+      padding-top: var(--spacing-96);
+    }
+    .gallery-card {
+      position: relative;
+      height: 390px;
+      width: 100%;
+      flex-shrink: 0;
+      overflow: hidden;
+      border-radius: var(--radius-16);
+      background: var(--color-white);
+    }
+    .gallery-card__img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+      border-radius: var(--radius-16);
+      opacity: 0.6;
+    }
+    .gallery-card__label {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: var(--fs-24);
+      font-weight: var(--fw-bold);
+      line-height: var(--lh-body);
+      letter-spacing: var(--ls-gallery);
+      color: var(--color-black);
+      text-align: center;
+      white-space: nowrap;
+      z-index: 1;
+    }
+
+    /* ─── Testimonial / FAQ ──────────────────────────────────────── */
+    .faq {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-32);
+      align-items: center;
+      justify-content: center;
+      padding: var(--spacing-80) var(--spacing-120) var(--spacing-120);
+      width: 100%;
+    }
+    .faq__header {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-16);
+      align-items: flex-start;
+      width: 100%;
+    }
+    .faq__heading {
+      font-size: var(--fs-36);
+      font-weight: var(--fw-bold);
+      line-height: var(--lh-heading);
+      letter-spacing: var(--ls-heading);
+      color: var(--color-black);
+      width: 100%;
+    }
+    .faq__subtext {
+      font-size: var(--fs-16);
+      font-weight: var(--fw-medium);
+      line-height: var(--lh-body);
+      letter-spacing: var(--ls-sm);
+      color: var(--color-black-55);
+      width: 100%;
+    }
+    .faq__cards {
+      display: flex;
+      gap: var(--spacing-32);
+      align-items: flex-start;
+      width: 100%;
+    }
+    .faq-card {
+      background: var(--color-white);
+      border: 1px solid var(--color-black-10);
+      border-radius: var(--radius-16);
+      box-shadow: var(--shadow-card);
+      padding: var(--spacing-32);
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-24);
+      align-items: flex-start;
+      flex: 1 0 0;
+      min-width: 0;
+      overflow: hidden;
+    }
+    .faq-card__header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+    .faq-card__author {
+      display: flex;
+      gap: var(--spacing-16);
+      align-items: flex-start;
+      flex: 1 0 0;
+      min-width: 0;
+    }
+    .faq-card__avatar {
+      position: relative;
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+      border-radius: var(--radius-8);
+      overflow: hidden;
+    }
+    .faq-card__avatar img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+      border-radius: var(--radius-8);
+    }
+    .faq-card__author-info {
+      display: flex;
+      flex: 1 0 0;
+      flex-direction: column;
+      gap: var(--spacing-4);
+      align-items: flex-start;
+      min-width: 0;
+      font-size: var(--fs-16);
+      letter-spacing: var(--ls-sm);
+    }
+    .faq-card__author-name {
+      font-weight: var(--fw-semibold);
+      line-height: var(--lh-tight);
+      color: var(--color-black);
+      width: 100%;
+    }
+    .faq-card__author-role {
+      font-weight: var(--fw-medium);
+      line-height: var(--lh-sm);
+      color: var(--color-black-55);
+      width: 100%;
+    }
+    .faq-card__question {
+      font-size: var(--fs-16);
+      font-weight: var(--fw-medium);
+      line-height: var(--lh-body);
+      letter-spacing: var(--ls-sm);
+      color: var(--color-black);
+      width: 100%;
+    }
+
+    /* ─── Footer ─────────────────────────────────────────────────── */
+    .footer {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding-bottom: var(--spacing-120);
+      padding-left: var(--spacing-120);
+      padding-right: var(--spacing-120);
+      width: 100%;
+    }
+    .footer__bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+    .footer__content {
+      position: relative;
+      display: flex;
+      flex: 1 0 0;
+      align-items: flex-start;
+      justify-content: space-between;
+      border-top: 1px solid var(--color-white-15);
+      padding-top: var(--spacing-80);
+      padding-bottom: var(--spacing-80);
+      z-index: 1;
+      min-width: 0;
+    }
+    .footer__brand {
+      font-size: var(--fs-24);
+      font-weight: var(--fw-semibold);
+      line-height: var(--lh-heading);
+      letter-spacing: var(--ls-brand);
+      color: var(--color-white);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .footer__nav {
+      display: flex;
+      gap: var(--spacing-96);
+      align-items: flex-start;
+      flex-shrink: 0;
+    }
+    .footer__nav-col {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-8);
+      align-items: flex-start;
+      justify-content: center;
+      width: 130px;
+    }
+    .footer__nav-header {
+      display: flex;
+      align-items: flex-start;
+      padding-bottom: var(--spacing-16);
+      width: 100%;
+    }
+    .footer__nav-title {
+      font-size: var(--fs-16);
+      font-weight: var(--fw-bold);
+      line-height: var(--lh-body);
+      letter-spacing: var(--ls-sm);
+      color: var(--color-white);
+      white-space: nowrap;
+    }
+    .footer__nav-link {
+      font-size: var(--fs-16);
+      font-weight: var(--fw-regular);
+      line-height: var(--lh-body);
+      letter-spacing: var(--ls-sm);
+      color: var(--color-white-60);
+      width: 100%;
+    }
+
+    /* ─── Animations & Transitions ──────────────────────────────── */
+
+    /* Scroll fade-in */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .fade-in-left {
+      opacity: 0;
+      transform: translateX(-32px);
+      transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .fade-in-left.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .fade-in-right {
+      opacity: 0;
+      transform: translateX(32px);
+      transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .fade-in-right.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* Stagger delays */
+    .delay-1 { transition-delay: 0.1s; }
+    .delay-2 { transition-delay: 0.2s; }
+    .delay-3 { transition-delay: 0.3s; }
+    .delay-4 { transition-delay: 0.4s; }
+
+    /* Hero title animation on load */
+    .hero__title {
+      animation: heroTitleIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .hero__buttons {
+      animation: heroTitleIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+    }
+    @keyframes heroTitleIn {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Button hover effects */
+    .btn--primary {
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    .btn--primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(255,255,255,0.3);
+      background: #f0f0f0;
+    }
+    .btn--primary:active { transform: translateY(0); }
+
+    .btn--secondary {
+      transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+    }
+    .btn--secondary:hover {
+      transform: translateY(-2px);
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.4);
+    }
+    .btn--secondary:active { transform: translateY(0); }
+
+    .btn--dark {
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    .btn--dark:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      background: #222;
+    }
+    .btn--dark:active { transform: translateY(0); }
+
+    /* Gallery card hover */
+    .gallery-card {
+      cursor: pointer;
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                  box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .gallery-card:hover {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.12);
+    }
+    .gallery-card__img {
+      transition: opacity 0.35s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .gallery-card:hover .gallery-card__img {
+      opacity: 0.8;
+      transform: scale(1.06);
+    }
+    .gallery-card__label {
+      transition: letter-spacing 0.35s ease, color 0.35s ease;
+    }
+    .gallery-card:hover .gallery-card__label {
+      letter-spacing: 14px;
+      color: #000;
+    }
+
+    /* FAQ card hover */
+    .faq-card {
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+                  box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .faq-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+    }
+
+    /* Footer nav link hover */
+    .footer__nav-link {
+      transition: color 0.2s ease, transform 0.2s ease;
+      display: inline-block;
+    }
+    .footer__nav-link:hover {
+      color: rgba(255,255,255,0.95);
+      transform: translateX(4px);
+    }
+
+    /* ─── Responsive: Tablet ─────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .hero {
+        padding: 80px 48px 64px;
+        height: auto;
+        min-height: 340px;
+      }
+      .hero__title { font-size: 48px; }
+      .feature-gallery { padding: var(--spacing-64, 64px) 48px; }
+      .feature-gallery { padding: 64px 48px; }
+      .feature-gallery__heading { font-size: 28px; }
+      .feature-gallery__desc { font-size: 17px; }
+      .image-gallery { flex-direction: column; }
+      .image-gallery__col--offset { padding-top: 0; }
+      .gallery-card { height: 260px; }
+      .faq { padding: 64px 48px 80px; }
+      .faq__heading { font-size: 28px; }
+      .faq__cards { flex-direction: column; }
+      .footer { padding: 0 48px 80px; }
+      .footer__nav { gap: 48px; }
+      .footer__nav-col { width: 110px; }
+    }
+
+    /* ─── Responsive: Mobile ─────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .hero {
+        padding: 60px 24px 48px;
+        min-height: 280px;
+        gap: 48px;
+      }
+      .hero__title { font-size: 36px; letter-spacing: -1px; }
+      .hero__buttons { flex-direction: column; align-items: center; width: 100%; }
+      .btn--primary, .btn--secondary { width: 100%; justify-content: center; }
+      .feature-gallery { padding: 48px 24px; }
+      .feature-gallery__heading { font-size: 22px; letter-spacing: 2px; }
+      .feature-gallery__desc { font-size: 15px; }
+      .feature-gallery__content { padding-bottom: 40px; }
+      .image-gallery { flex-direction: column; }
+      .image-gallery__col--offset { padding-top: 0; }
+      .gallery-card { height: 200px; }
+      .gallery-card__label { font-size: 18px; letter-spacing: 6px; }
+      .faq { padding: 48px 24px 64px; }
+      .faq__heading { font-size: 22px; letter-spacing: 2px; }
+      .faq__cards { flex-direction: column; }
+      .faq-card { padding: 24px; }
+      .footer { padding: 0 24px 64px; }
+      .footer__content { flex-direction: column; gap: 40px; }
+      .footer__nav { flex-wrap: wrap; gap: 32px; }
+      .footer__nav-col { width: calc(50% - 16px); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+  <main class="container">
+
+    <!-- ── Hero ──────────────────────────────────────── -->
+    <div class="hero">
+      <img
+        class="hero__bg"
+        src="https://www.figma.com/api/mcp/asset/46b1322c-1376-41b0-bd5f-f56f97fabf35"
+        alt=""
+        aria-hidden="true"
+      />
+      <div class="hero__content">
+        <h1 class="hero__title">Goez Shop</h1>
+        <div class="hero__buttons">
+          <button class="btn--primary">一鍵開店</button>
+          <button class="btn--secondary">認識我們</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Feature Gallery ───────────────────────────── -->
+    <section class="feature-gallery" aria-label="Feature gallery">
+      <div class="feature-gallery__inner">
+        <div class="feature-gallery__content fade-in">
+          <div class="feature-gallery__text">
+            <h2 class="feature-gallery__heading">快來建立屬於自己的專屬賣場～</h2>
+            <p class="feature-gallery__desc">
+              打造會自動賺錢的一頁式商店。<br>
+              內建多種優化工具，讓流量不再流失，<br>
+              輕鬆開啟你的電商生意。
+            </p>
+          </div>
+          <button class="btn--dark">瞭解更多</button>
+        </div>
+
+        <div class="image-gallery">
+          <!-- Column 1 -->
+          <div class="image-gallery__col fade-in-left delay-1">
+            <div class="gallery-card"
+              onclick="location.href='http://localhost:3000/goez-shop-ai-assistant.html'" 
+            style="cursor: pointer;">
+              <img
+                class="gallery-card__img"
+                src="https://www.figma.com/api/mcp/asset/3d382fe9-8eac-437a-93a1-549f8ce7040f"
+                alt="AI 開店助手"
+              />
+              <span class="gallery-card__label">ＡＩ開店助手</span>
+            </div>
+            <div class="gallery-card"
+            onclick="handleCreateShop()" 
+            style="cursor: pointer;">
+              <img
+                class="gallery-card__img"
+                src="https://www.figma.com/api/mcp/asset/f118d729-c7f6-44e2-9d0d-f8e24450b7f2"
+                alt="設計我的賣場"
+              />
+              <span class="gallery-card__label">設計我的賣場</span>
+            </div>
+          </div>
+
+          <!-- Column 2 (offset) -->
+          <div class="image-gallery__col image-gallery__col--offset fade-in-right delay-2">
+            <div class="gallery-card">
+              <img
+                class="gallery-card__img"
+                src="https://www.figma.com/api/mcp/asset/c08a41c2-449c-4fcc-809a-d383cc8c2c92"
+                alt="訂單與物流"
+              />
+              <span class="gallery-card__label">訂單與物流</span>
+            </div>
+            <div class="gallery-card">
+              <img
+                class="gallery-card__img"
+                src="https://www.figma.com/api/mcp/asset/add650ce-fb3c-4914-afbd-d23dd6d64613"
+                alt="銷售成效追蹤"
+              />
+              <span class="gallery-card__label">銷售成效追蹤</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FAQ ───────────────────────────────────────── -->
+    <section class="faq" aria-label="常見問題">
+      <div class="faq__header fade-in">
+        <h2 class="faq__heading">常見問題</h2>
+        <p class="faq__subtext">我們整理了大家在開店路上最常遇到的疑問。如果還有其他想了解的，隨時留言！</p>
+      </div>
+
+      <div class="faq__cards">
+        <!-- Card 1 -->
+        <article class="faq-card fade-in-left delay-1">
+          <div class="faq-card__header">
+            <div class="faq-card__author">
+              <div class="faq-card__avatar">
+                <img
+                  src="https://www.figma.com/api/mcp/asset/b3f1d24c-039d-4b9f-9b55-79bafe37cfcc"
+                  alt="User 1 avatar"
+                />
+              </div>
+              <div class="faq-card__author-info">
+                <p class="faq-card__author-name">User 1</p>
+                <p class="faq-card__author-role">Growth at Cocoon &amp; Co.</p>
+              </div>
+            </div>
+          </div>
+          <p class="faq-card__question">手機拍照背景很亂怎麼辦？</p>
+        </article>
+
+        <!-- Card 2 -->
+        <article class="faq-card fade-in-right delay-2">
+          <div class="faq-card__header">
+            <div class="faq-card__author">
+              <div class="faq-card__avatar">
+                <img
+                  src="https://www.figma.com/api/mcp/asset/c288dac9-c0a5-4c18-8281-a653e9087258"
+                  alt="User2 avatar"
+                />
+              </div>
+              <div class="faq-card__author-info">
+                <p class="faq-card__author-name">User2</p>
+                <p class="faq-card__author-role">Lepidopterist</p>
+              </div>
+            </div>
+          </div>
+          <p class="faq-card__question">寫不出那種很有質感、會讓人想下單的文案怎麼辦？</p>
+        </article>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── Footer ─────────────────────────────────────── -->
+  <footer class="footer" aria-label="Footer">
+    <img
+      class="footer__bg"
+      src="https://www.figma.com/api/mcp/asset/8d2a21a2-1708-4410-9d6e-2de54e107aa0"
+      alt=""
+      aria-hidden="true"
+    />
+    <div class="footer__content">
+      <p class="footer__brand">Namedly</p>
+
+      <div class="footer__nav">
+        <!-- Platform -->
+        <nav class="footer__nav-col" aria-label="Platform">
+          <div class="footer__nav-header">
+            <span class="footer__nav-title">Platform</span>
+          </div>
+          <a href="#" class="footer__nav-link">Individuals</a>
+          <a href="#" class="footer__nav-link">Teams</a>
+          <a href="#" class="footer__nav-link">Admins</a>
+          <a href="#" class="footer__nav-link">Developers</a>
+        </nav>
+
+        <!-- Features -->
+        <nav class="footer__nav-col" aria-label="Features">
+          <div class="footer__nav-header">
+            <span class="footer__nav-title">Features</span>
+          </div>
+          <a href="#" class="footer__nav-link">Core features</a>
+          <a href="#" class="footer__nav-link">Pro experience</a>
+          <a href="#" class="footer__nav-link">Integrations</a>
+        </nav>
+
+        <!-- Learn more -->
+        <nav class="footer__nav-col" aria-label="Learn more">
+          <div class="footer__nav-header">
+            <span class="footer__nav-title">Learn more</span>
+          </div>
+          <a href="#" class="footer__nav-link">Blog</a>
+          <a href="#" class="footer__nav-link">Case studies</a>
+          <a href="#" class="footer__nav-link">Customer stories</a>
+          <a href="#" class="footer__nav-link">Best practices</a>
+        </nav>
+
+        <!-- Support -->
+        <nav class="footer__nav-col" aria-label="Support">
+          <div class="footer__nav-header">
+            <span class="footer__nav-title">Support</span>
+          </div>
+          <a href="#" class="footer__nav-link">Contact</a>
+          <a href="#" class="footer__nav-link">Support</a>
+          <a href="#" class="footer__nav-link">Legal</a>
+        </nav>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<script>
+  // ── Scroll-triggered fade-in via Intersection Observer ──────────
+  const animatedEls = document.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target); // animate once
+      }
+    });
+  }, { threshold: 0.15 });
+
+  animatedEls.forEach(el => observer.observe(el));
+
+  // ── Parallax on Hero background ─────────────────────────────────
+  const heroBg = document.querySelector('.hero__bg');
+  if (heroBg) {
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      heroBg.style.transform = `translateY(${scrollY * 0.35}px)`;
+    }, { passive: true });
+  }
+</script>
+<script>
+async function handleCreateShop() {
+    try {
+        // 1. 顯示載入中（選配，增加儀式感）
+        console.log("正在為您申請新賣場 ID...");
+
+        // 2. 呼叫後端剛寫好的 POST 路由
+        const response = await fetch('/api/store/create-new-shop', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const result = await response.json();
+
+        if (result.success && result.pageId) {
+            // 3. 拿到新 ID 了，自動跳轉到編輯頁，並帶上 pageId
+            console.log("申請成功，ID 為:", result.pageId);
+            window.location.href = `http://localhost:3000/goez-shop-store.html?pageId=${result.pageId}`;
+        } else {
+            alert("建立失敗：" + (result.message || "未知錯誤"));
+        }
+    } catch (error) {
+        console.error("網路請求失敗:", error);
+        alert("伺服器連線失敗，請檢查後端是否啟動");
+    }
+}
+</script>
+</body>
+</html>

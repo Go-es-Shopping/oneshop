@@ -5,13 +5,16 @@
 | **身份驗證** | POST | `/api/auth/login` | `Seller` | 賣家登入 (回傳 Token) |
 | | GET | `/api/auth/me` | `Seller` | 取得當前登入賣家資訊 |
 | | POST | `/api/auth/logout` | - | 登出 |
-| **商品管理** | GET | `/api/products/` | `Product`, `PageContent` | 取得商品列表 (支援 SellerID 篩選) (瀏覽器可測) |
-| | GET | `/api/products/:ProductID` | `Product`, `PageContent` | 取得單一商品詳情 (瀏覽器可測) |
+| **商品管理** | GET | `/api/products/` | `Product`, `PageContent`, `PageProduct`, `StorePage` | 取得商品列表 (支援 SellerID 篩選) (瀏覽器可測) |
+| | GET | `/api/products/:ProductID` | `Product`, `PageContent`, `PageProduct`, `StorePage` | 取得單一商品詳情 (瀏覽器可測) |
 | | POST | `/api/products/` | `Product` | 新增商品 |
 | | PUT | `/api/products/:ProductID` | `Product` | 更新商品資訊 |
 | | DELETE | `/api/products/:ProductID` | `Product` | 刪除商品 |
 | **商店頁面** | GET | `/api/store/pages` | `StorePage`, `PageContent`, `PageProduct`, `Product` | 取得商店頁面列表 (瀏覽器可測) |
 | | GET | `/api/store/pages/:PageID` | `StorePage`, `PageContent`, `PageProduct`, `Product` | 取得單一商店頁面內容 (包含商品) (瀏覽器可測) |
+| | **POST** | `/api/store/upload-logo` | - | **上傳商店 Logo 圖片 (支援 Multer 處理，限制 5MB)** |
+| | **PUT** | `/api/store/pages/:PageID` | `StorePage` | **更新商店頁面基本資訊 (含 Logo 路徑、標題、發佈狀態)** |
+| | **PUT** | `/api/store/content/:ContentID` | `PageContent` | **更新頁面特定區塊內容 (如 CTA 文字、產品敘述)** |
 | **訂單管理** | POST | `/api/orders/` | `Order`, `Orderdetail`, `Product` | 建立新訂單 (包含扣庫存邏輯) |
 | | GET | `/api/orders/` | `Order` | 取得訂單列表 (支援 SellerID 篩選) (瀏覽器可測) |
 | | GET | `/api/orders/:OrderID` | `Order`, `Orderdetail`, `Shipment`, `Payment` | 取得訂單詳情 (包含明細、物流、付款) (瀏覽器可測) |

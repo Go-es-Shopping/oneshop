@@ -1,3 +1,4 @@
+require('dotenv').config();
 const sequelize = require('./config/database');
 const {
   PlatformAdmin,
@@ -18,6 +19,17 @@ async function seed() {
     console.log('🚀 開始連線資料庫...');
     await sequelize.authenticate();
     console.log('✅ 資料庫連線成功。');
+
+    // --- 關鍵修復：針對「藏起來」的 Notification 表進行資料清理 ---
+console.log('🧹 處理隱藏的 Notification 資料關聯...');
+try {
+    // 這一行只會清空裡面的「資料」，絕對不會刪除你的「表格結構」！
+    await sequelize.query('DELETE FROM [Notification]'); 
+    console.log('✅ Notification 資料清理完成（結構仍保留）。');
+} catch (e) {
+    // 如果表格真的不存在，就直接跳過，不會當機
+    console.log('ℹ️ 跳過 Notification 清理（表格可能尚未建立或已手動處理）。');
+}
 
     // 1. 自動清理 (依序刪除，避免外鍵衝突)
     console.log('🧹 正在清空舊資料...');
@@ -68,6 +80,7 @@ async function seed() {
       TemplateName: 'OnePageV1',
       IsPublished: true,
       PageUrl: 'acme-special',
+      StoreLogo: 'https://images.pexels.com/photos/7661491/pexels-photo-7661491.jpeg',
       CreatedAt: sequelize.literal('GETDATE()'),
       UpdatedAt: sequelize.literal('GETDATE()')
     });
@@ -75,9 +88,9 @@ async function seed() {
     // Product
     const product1 = await Product.create({
       SellerID: seller.SellerID,
-      ProductImg: 'https://images.oneshop.tw/p1.jpg',
-      Price: 1990.00,
-      Stock: 100,
+      ProductImg: 'https://images.pexels.com/photos/36726312/pexels-photo-36726312.jpeg',
+      Price: 590.00,
+      Stock: 50,
       IsActive: true,
       CreatedAt: sequelize.literal('GETDATE()'),
       UpdatedAt: sequelize.literal('GETDATE()')
@@ -85,27 +98,41 @@ async function seed() {
 
     const product2 = await Product.create({
       SellerID: seller.SellerID,
-      ProductImg: 'https://images.oneshop.tw/p2.jpg',
-      Price: 599.00,
-      Stock: 50,
+      ProductImg: 'https://images.pexels.com/photos/8222218/pexels-photo-8222218.jpeg',
+      Price: 990.00,
+      Stock: 20,
       IsActive: true,
       CreatedAt: sequelize.literal('GETDATE()'),
       UpdatedAt: sequelize.literal('GETDATE()')
     });
 
     // PageContent
-    await PageContent.create({
+    await PageContent.bulkCreate([
+      {
       PageID: page.PageID,
       ProductID: product1.ProductID,
       LanguageCode: 'zh-TW',
-      PageTitle: '阿米經典組合',
-      PageDescription: '這是一段精美的商店描述內容。',
-      ProductName: '阿米經典包',
-      ProductDescription: '極簡設計，支援多國語系。',
+      PageTitle: '小小復古選物天堂',
+      PageDescription: '找到屬於你的質感小物',
+      ProductName: '金屬花花戒指',
+      ProductDescription: '紅色小花，綻放在金黃色暖陽',
       CTA_Text: '立即購買',
       CreatedAt: sequelize.literal('GETDATE()'),
       UpdatedAt: sequelize.literal('GETDATE()')
-    });
+    },
+    {
+    PageID: page.PageID,
+    ProductID: product2.ProductID,
+    LanguageCode: 'zh-TW',
+    PageTitle: '小小復古選物天堂',
+    PageDescription: '找到屬於你的可愛小物',
+    ProductName: '鏤空花語小夜燈',
+    ProductDescription: '簡約小花設計，微光暖暖透出，伴你放鬆入眠。',
+    CTA_Text: '立即購買',
+    CreatedAt: sequelize.literal('GETDATE()'),
+    UpdatedAt: sequelize.literal('GETDATE()')
+  }
+    ]);
 
     // PageProduct
     await PageProduct.create({
