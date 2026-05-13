@@ -69,7 +69,7 @@ const upload = multer({
 const authRoutes = require('./routes/auth')
 const productRoutes = require('./routes/product')
 const storeRoutes = require('./routes/store')
-const orderRoutes = require('./routes/order')
+const orderRouter = require('./routes/order')
 const adminRoutes = require('./routes/adminRoutes')
 const checkoutRoutes = require('./routes/checkoutRoutes')
 const analyticsRoutes = require('./routes/analyticsRoutes')
@@ -83,7 +83,7 @@ app.use(express.static('public'));
 app.use('/api/auth', authRoutes)
 app.use('/api/products', productRoutes)
 app.use('/api/store', storeRoutes)
-app.use('/api/orders', orderRoutes)
+app.use('/api/orders', orderRouter)
 app.use('/api/seller', require('./routes/sellerRoutes'));
 app.use('/api/admin', adminRoutes)
 app.use('/api/checkout', checkoutRoutes)
