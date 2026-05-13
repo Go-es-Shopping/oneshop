@@ -61,7 +61,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ 
     storage: storage,
-    limits: { fileSize: 2 * 1024 * 1024 } // 限制 2MB
+    limits: { fileSize: 5 * 1024 * 1024 } // 限制 5MB
 });
 
 
@@ -69,7 +69,7 @@ const upload = multer({
 const authRoutes = require('./routes/auth')
 const productRoutes = require('./routes/product')
 const storeRoutes = require('./routes/store')
-const orderRouter = require('./routes/order')
+const orderRoutes = require('./routes/order')
 const adminRoutes = require('./routes/adminRoutes')
 const checkoutRoutes = require('./routes/checkoutRoutes')
 const analyticsRoutes = require('./routes/analyticsRoutes')
@@ -83,7 +83,7 @@ app.use(express.static('public'));
 app.use('/api/auth', authRoutes)
 app.use('/api/products', productRoutes)
 app.use('/api/store', storeRoutes)
-app.use('/api/orders', orderRouter)
+app.use('/api/orders', orderRoutes)
 app.use('/api/seller', require('./routes/sellerRoutes'));
 app.use('/api/admin', adminRoutes)
 app.use('/api/checkout', checkoutRoutes)

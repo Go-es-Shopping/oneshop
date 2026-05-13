@@ -61,7 +61,7 @@ function createDesktopHTML(p) {
             <div class="product-card__name">${p.ProductName}</div>
             <div class="product-card__footer">
                 <span class="product-card__price">$${p.Price}</span>
-                <button class="product-card__cart-btn"><img src="/Users/lc/Desktop/store/shopping-cart.svg" /></button>
+                <button class="product-card__cart-btn"><img src="images/decorations/shopping-cart.svg" /></button>
             </div>
         </div>
     </article>`;
