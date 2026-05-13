@@ -36,8 +36,8 @@ function flattenProduct(p, Lang) {
     Price: typeof p.Price === 'string' ? p.Price : dec2(p.Price),
     Stock: p.Stock,
     IsActive: p.IsActive,
-    // 從 PageProduct -> StorePage 抓取店名，增加更嚴格的檢查，並確保只取資料值 (.get() 或直接取值)
-    ShopName: (storePage && storePage.PageTitle) ? String(storePage.PageTitle) : '風格生活選物',
+    // 🚀 修改：拿掉硬編碼，改用空值，讓前端觸發 Placeholder
+    ShopName: (storePage && storePage.PageTitle) ? String(storePage.PageTitle) : '',
     ShopDescription: (storePage && storePage.PageDescription) ? String(storePage.PageDescription) : ''
   }
   const c = Array.isArray(p.PageContents) && p.PageContents.length ? p.PageContents[0] : null
@@ -89,7 +89,7 @@ async function listProducts(req, res) {
       const productContent = (p.PageContents && p.PageContents.length > 0) ? p.PageContents[0] : null;
 
       // 預設店鋪資訊
-      let shopName = '風格生活選物'; 
+      let shopName = ''; 
       let shopDesc = '';
 
       if (productContent) {

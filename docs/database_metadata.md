@@ -1,5 +1,5 @@
 # Database Metadata
-以下彙整Metadata內容，列出各資料表的欄位名稱、資料型態、是否可為 Null，以及名詞解釋。所有主鍵（如 AdminID、SellerID、ProductID、PageID、PageProductID 等）皆為 Identity 自動跳號。
+以下彙整Metadata內容，列出各資料表的欄位名稱、資料型態、是否可為 Null，以及名詞解釋。所有主鍵（如 AdminID、SellerID、ProductID、PageID、PageProductID 等）皆為 Identity 自動跳號。(持續待更新，可做開發參考)
 
 ## PlatformAdmin
 
@@ -36,8 +36,9 @@
 | TemplateName| varchar(50)     | 否        | 前端套用版型代碼（對應預設 CSS 樣式名稱，決定店鋪視覺風格）          |
 | IsPublished | bit             | 否        | 發佈狀態（0=草稿；1=已發布）                                         |
 | PageUrl     | nvarchar(100)   | 否        | 店鋪唯一網址後綴 slug（避免與其他賣家混淆）                          |
-| CreatedAt   | datetime        | 否        | 建立時間                                                             |
-| UpdatedAt   | datetime        | 否        | 更新時間                                                             |
+| CreatedAt   | datetime        | 是        | 建立時間                                                             |
+| UpdatedAt   | datetime        | 是        | 更新時間                                                             |
+| StoreLogo | nvarchar(MAX)     | 是        | 商店商標圖片(儲存圖片的相對路徑或 URL (例如: /uploads/logos/filename.jpg)。不建議儲存 Base64 原始碼以維護效能。)                                         |
 
 ## PageContent
 

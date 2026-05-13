@@ -80,6 +80,7 @@ try {
       TemplateName: 'OnePageV1',
       IsPublished: true,
       PageUrl: 'acme-special',
+      StoreLogo: 'https://images.pexels.com/photos/7661491/pexels-photo-7661491.jpeg',
       CreatedAt: sequelize.literal('GETDATE()'),
       UpdatedAt: sequelize.literal('GETDATE()')
     });

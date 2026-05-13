@@ -692,7 +692,7 @@
               <span class="gallery-card__label">ＡＩ開店助手</span>
             </div>
             <div class="gallery-card"
-            onclick="location.href='http://localhost:3000/goez-shop-store.html'" 
+            onclick="handleCreateShop()" 
             style="cursor: pointer;">
               <img
                 class="gallery-card__img"
@@ -857,6 +857,35 @@
       heroBg.style.transform = `translateY(${scrollY * 0.35}px)`;
     }, { passive: true });
   }
+</script>
+<script>
+async function handleCreateShop() {
+    try {
+        // 1. 顯示載入中（選配，增加儀式感）
+        console.log("正在為您申請新賣場 ID...");
+
+        // 2. 呼叫後端剛寫好的 POST 路由
+        const response = await fetch('/api/store/create-new-shop', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const result = await response.json();
+
+        if (result.success && result.pageId) {
+            // 3. 拿到新 ID 了，自動跳轉到編輯頁，並帶上 pageId
+            console.log("申請成功，ID 為:", result.pageId);
+            window.location.href = `http://localhost:3000/goez-shop-store.html?pageId=${result.pageId}`;
+        } else {
+            alert("建立失敗：" + (result.message || "未知錯誤"));
+        }
+    } catch (error) {
+        console.error("網路請求失敗:", error);
+        alert("伺服器連線失敗，請檢查後端是否啟動");
+    }
+}
 </script>
 </body>
 </html>

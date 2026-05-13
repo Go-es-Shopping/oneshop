@@ -41,6 +41,10 @@ const StorePage = sequelize.define('StorePage', {
     type: DataTypes.DATE,
     allowNull: true,
     field: 'UpdatedAt'
+  },
+  StoreLogo: {
+    type: DataTypes.TEXT, // 對應資料庫的 nvarchar(MAX)
+    allowNull: true       // 允許為空，因為剛開始可能還沒上傳
   }
 }, {
   tableName: 'StorePage', // 鎖定表名，防止變複數

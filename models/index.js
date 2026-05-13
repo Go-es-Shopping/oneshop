@@ -26,7 +26,7 @@ PageVisit.belongsTo(Seller, { foreignKey: 'SellerID' })
 
 // --- 2. 頁面與內容管理 (I18n 多國語言架構) ---
 // 頁面與頁面內容：一個頁面可以有多種語言版本的描述
-StorePage.hasMany(PageContent, { foreignKey: 'PageID' })
+StorePage.hasMany(PageContent, { foreignKey: 'PageID', as: 'PageContent' });
 PageContent.belongsTo(StorePage, { foreignKey: 'PageID' })
 
 // 商品與頁面內容：商品描述同樣支援多國語言映射
