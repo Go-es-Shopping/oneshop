@@ -1,3 +1,25 @@
+### 測試一：下單邏輯與運費計算 (確認後端會不會「自己算錢」以及「自動建立物流資訊」)
+POST http://localhost:3000/api/orders
+Content-Type: application/json
+
+{
+  "SellerID": 1,
+  "BuyerName": "測試員",
+  "BuyerPhone": "0912345678",
+  "BuyerAddress": "台北市信義區忠孝東路五段",
+  "ShippingMethod": "宅配",
+  "items": [
+    { "ProductID": 1, "Quantity": 1 }
+  ]
+}
+
+### 測試二：取消訂單 (模擬庫存回補)
+PATCH http://localhost:3000/api/orders/70001/cancel
+
+### --------------------------------------------------
+### 以下是你原本舊有的測試案例
+
+### 舊測試：結帳計算
 POST http://localhost:3000/api/checkout/calculate
 Content-Type: application/json
 
@@ -7,7 +29,7 @@ Content-Type: application/json
   ]
 }
 
-### 測試追蹤 API
+### 舊測試：追蹤 API
 POST http://localhost:3000/api/track/view
 Content-Type: application/json
 
@@ -17,5 +39,5 @@ Content-Type: application/json
   "referrer": "facebook.com"
 }
 
-### 測試後台分析
+### 舊測試：後台分析
 GET http://localhost:3000/api/admin/analytics
