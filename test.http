@@ -3,13 +3,17 @@ POST http://localhost:3000/api/orders
 Content-Type: application/json
 
 {
-  "SellerID": 1,
-  "BuyerName": "測試員",
+  "SellerID": 15,
+  "BuyerName": "真實連線測試",
   "BuyerPhone": "0912345678",
-  "BuyerAddress": "台北市信義區忠孝東路五段",
-  "ShippingMethod": "宅配",
+  "BuyerEmail": "seller@test.com",
+  "BuyerAddress": "資管系實驗室",
+  "ShippingMethod": "超取",
   "items": [
-    { "ProductID": 1, "Quantity": 1 }
+    {
+      "ProductID": 30,
+      "Quantity": 2
+    }
   ]
 }
 
