@@ -73,7 +73,12 @@ const orderController = {
         OrderID: newOrder.OrderID,
         ShippingMethod,
         StoreInfo: StoreInfo || null,
-        ShippingStatus: 0
+        //ShippingStatus: 0
+
+        //（初始狀態與暫時單號）(79~80)
+        ShipmentStatus: 1,  // 0 代表初始狀態（例如：待準備/備貨中）
+        TrackingNumber: 'PENDING',   // 因為不能為空，先填 'PENDING'（等待產生），等賣家出貨再更新！
+
       }, { transaction: t });
 
       const finalDetails = details.map(d => ({ ...d, OrderID: newOrder.OrderID }));
