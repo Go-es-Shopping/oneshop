@@ -80,11 +80,10 @@
     </main>
   </div>
 
-  <script src="./demo-orders.js"></script>
   <script>
     (function () {
       var ORDER_STATUS_LABELS = {
-        0: '處理中', 1: '待出貨', 2: '已出貨', 3: '已送達', 4: '完成取貨', 5: '已取消',
+        0: '處理中', 1: '待出貨', 2: '已出貨', 3: '已送達', 4: '完成取貨', 5: '已取消', 9: '已取消'
       };
       var PAYMENT_STATUS_LABELS = {
         0: '未付款', 1: '已付款', 2: '退款中', 3: '已退款', 4: '付款失敗',
@@ -99,6 +98,7 @@
         3: 'bg-emerald-50 text-emerald-800 border-emerald-200',
         4: 'bg-emerald-50 text-emerald-800 border-emerald-200',
         5: 'bg-slate-100 text-slate-600 border-slate-200',
+        9: 'bg-slate-100 text-slate-600 border-slate-200', // 補上你們後端定義的 9 取消狀態
       };
       var PAYMENT_STATUS_CLASS = {
         0: 'bg-rose-50 text-rose-700 border-rose-200',
@@ -211,8 +211,12 @@
           '<p><span class="text-slate-500">Email：</span>' + order.BuyerEmail + '</p>' +
           '<p><span class="text-slate-500">地址：</span>' + order.BuyerAddress + '</p>';
 
-        var itemsHtml = order.items.map(function (item) {
-          var sub = item.Quantity * item.UnitPrice;
+        // 防禦性處理：若 Mock 回傳的項目欄位大寫不同，做相容處理
+        var items = order.items || order.Items || [];
+        var itemsHtml = items.map(function (item) {
+          var qty = item.Quantity || item.quantity || 1;
+          var price = item.UnitPrice || item.unitPrice || 500;
+          var sub = qty * price;
           var img = item.ProductImg
             ? '<img src="' + item.ProductImg + '" alt="" class="w-14 h-14 rounded-lg object-cover bg-slate-100 flex-shrink-0" onerror="this.style.display=\'none\'"/>'
             : '<div class="w-14 h-14 rounded-lg bg-slate-200 flex-shrink-0 flex items-center justify-center text-xs text-slate-500">商品</div>';
@@ -220,8 +224,8 @@
             '<div class="flex gap-3 py-3 border-b border-slate-100 last:border-0">' +
               img +
               '<div class="flex-1 min-w-0">' +
-                '<p class="font-medium text-slate-900 truncate">' + item.ProductName + '</p>' +
-                '<p class="text-xs text-slate-500 mt-1">單價 ' + formatMoney(item.UnitPrice) + ' × ' + item.Quantity + '</p>' +
+                '<p class="font-medium text-slate-900 truncate">' + (item.ProductName || '商品') + '</p>' +
+                '<p class="text-xs text-slate-500 mt-1">單價 ' + formatMoney(price) + ' × ' + qty + '</p>' +
               '</div>' +
               '<p class="font-medium text-slate-900 flex-shrink-0">' + formatMoney(sub) + '</p>' +
             '</div>'
@@ -235,39 +239,79 @@
           sectionBlock('物流資訊', buildShipmentHtml(order) || '尚無物流資訊') +
           sectionBlock('付款資訊', buildPaymentHtml(order) || '尚無付款紀錄');
 
-        cancelOrderBtn.classList.toggle('hidden', !(os === 0 || os === 1));
+        // 如果訂單不是已取消(5或9)或已送達，就顯示取消按鈕
+        cancelOrderBtn.classList.toggle('hidden', (os === 5 || os === 9 || os === 3 || os === 4));
       }
 
+      // 💥【串接核心步驟 1】：向 Node.js 後端發送 GET 請求獲取真正資料
+      function fetchOrderDetail(orderId) {
+        // ✨ 關鍵修正：加上後端的絕對網址與 3000 埠口！
+        fetch('http://localhost:3000/api/orders/' + orderId)
+          .then(function (res) {
+            if (!res.ok) throw new Error('找不到該訂單');
+            return res.json();
+          })
+          .then(function (data) {
+            console.log('✅ 成功從後端 API 撈取到訂單詳情：', data);
+            renderOrder(data);
+          })
+          .catch(function (err) {
+            console.error('❌ 串接失敗：', err);
+            alert('撈取訂單失敗，請確認後端是否正常啟動，或資料庫是否有該訂單！');
+          });
+}
+
       function init() {
-        var order = null;
-        if (new URLSearchParams(window.location.search).get('demo') === '1') {
-          order = GoezBuyerOrders.getDemoOrder();
-          if (order) GoezBuyerOrders.saveOrderForDetail(order);
-        } else {
-          order = GoezBuyerOrders.loadOrderFromDetail();
+        // 從前一頁（查詢頁）傳過來的 URL 網址參數中抓取真實 OrderID 
+        // 例如網址是 http://localhost:3000/order-detail.html?id=70001
+        var urlParams = new URLSearchParams(window.location.search);
+        var orderId = urlParams.get('id') || urlParams.get('orderId');
+
+        // 如果網址沒有帶參數，先用你們預設下單的 70001 當作測試
+        if (!orderId) {
+          orderId = '70001';
         }
 
-        if (!order) {
-          window.location.replace('index.html');
-          return;
-        }
-
-        renderOrder(order);
+        // 改為向 Node.js 後端發送真正的 API 網路請求！
+        fetchOrderDetail(orderId);
 
         requestAnimationFrame(function () {
           document.querySelector('.page-enter').classList.add('is-entered');
         });
       }
 
+      // 💥【串接核心步驟 2】：點擊「取消訂單」，發送 PATCH 請求到後端，並回補庫存
       cancelOrderBtn.addEventListener('click', function () {
         if (!currentOrder) return;
-        alert('示範：已取消訂單 #' + currentOrder.OrderID + '。實際需呼叫 PATCH /api/orders/:OrderID/status');
-        GoezBuyerOrders.clearOrderDetail();
-        window.location.href = 'index.html';
+        
+        if (!confirm('您確定要取消訂單 #' + currentOrder.OrderID + ' 嗎？')) return;
+
+        // 發送到你寫在第 5 點的關鍵任務：router.patch('/:OrderID/cancel')
+        fetch('http://localhost:3000/api/orders/' + currentOrder.OrderID + '/cancel', {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(function (res) {
+          if (!res.ok) throw new Error('取消訂單失敗');
+          return res.json();
+        })
+        .then(function (data) {
+          console.log('🎉 成功執行例外處理：', data);
+          alert('訂單已成功取消！後端回補訊息：' + data.Message);
+          
+          // 重新從後端拉取最新狀態（此時狀態會被標記為 9）
+          fetchOrderDetail(currentOrder.OrderID);
+        })
+        .catch(function (err) {
+          console.error('❌ 取消失敗：', err);
+          alert('取消訂單發生錯誤，請檢查 Trae 後端伺服器日誌！');
+        });
       });
 
       document.getElementById('back-to-lookup').addEventListener('click', function () {
-        GoezBuyerOrders.clearOrderDetail();
+        window.location.href = 'index.html'; // 回到查詢主頁
       });
 
       detailBody.addEventListener('click', function (e) {
