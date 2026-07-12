@@ -1,4 +1,4 @@
-# Goez Shop｜Buyer Orders（買家訂單）
+# Goez Shop｜Costumer Orders（買家訂單）
 
 買家端「查詢訂單」頁面專案（以訂單編號 + 聯絡電話查詢單筆訂單）。
 
