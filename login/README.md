@@ -1,4 +1,4 @@
-# Goez Shop｜Sign-up 專案說明
+# Goez Shop｜Sign-up 分支說明
 
 這個資料夾是 `Goez Shop` 的登入/註冊前端示範頁面，使用 **HTML + Tailwind CSS（CDN）** 製作，風格與主專案一致。
 
