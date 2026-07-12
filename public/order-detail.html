@@ -41,14 +41,21 @@
   <div class="flex flex-col min-h-screen">
     <header class="flex-shrink-0 bg-gradient-to-r from-slate-200 via-slate-100 to-blue-100/80 backdrop-blur-sm">
       <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16">
+        <div class="flex items-center justify-between h-16 gap-3">
           <a href="../sign-up/index.html" class="flex items-center gap-2">
             <span class="text-xl font-bold text-slate-800 tracking-tight">Goez Shop</span>
           </a>
-          <div class="w-9 h-9 rounded-full bg-slate-300 flex items-center justify-center text-slate-600" role="img" aria-label="買家中心">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-            </svg>
+          <div class="flex items-center gap-3">
+            <label for="lang-switch" class="sr-only" data-i18n="language">語言</label>
+            <select
+              id="lang-switch"
+              class="text-sm rounded-xl border border-slate-200 bg-white/80 px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-200"
+            ></select>
+            <div class="w-9 h-9 rounded-full bg-slate-300 flex items-center justify-center text-slate-600" role="img" data-i18n-aria="buyerCenter" aria-label="買家中心">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+              </svg>
+            </div>
           </div>
         </div>
       </div>
@@ -58,7 +65,7 @@
       <div class="page-enter max-w-2xl mx-auto px-4 sm:px-6 py-8 lg:py-10">
         <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
           <div>
-            <h1 class="text-2xl sm:text-3xl font-bold text-slate-900">訂單詳情</h1>
+            <h1 class="text-2xl sm:text-3xl font-bold text-slate-900" data-i18n="detailTitle">訂單詳情</h1>
             <p id="result-order-id" class="mt-1 text-sm text-slate-600"></p>
             <div id="result-badges" class="flex flex-wrap gap-2 mt-3"></div>
           </div>
@@ -66,6 +73,7 @@
             href="index.html"
             id="back-to-lookup"
             class="flex-shrink-0 px-5 py-2.5 rounded-xl bg-slate-100 text-slate-700 text-sm font-medium hover:bg-slate-200 transition self-start text-center"
+            data-i18n="research"
           >
             重新查詢
           </a>
@@ -74,24 +82,17 @@
         <div id="order-detail-body" class="space-y-4"></div>
 
         <div class="mt-6 flex flex-wrap justify-end gap-3">
-          <button type="button" id="detail-cancel-order" class="hidden px-5 py-3 rounded-xl bg-slate-100 text-slate-700 font-medium hover:bg-slate-200 transition">取消訂單</button>
+          <button type="button" id="detail-cancel-order" class="hidden px-5 py-3 rounded-xl bg-slate-100 text-slate-700 font-medium hover:bg-slate-200 transition" data-i18n="cancelOrder">取消訂單</button>
         </div>
       </div>
     </main>
   </div>
 
+  <script src="../i18n-core.js"></script>
+  <script src="./i18n.js"></script>
   <script src="./demo-orders.js"></script>
   <script>
     (function () {
-      var ORDER_STATUS_LABELS = {
-        0: '處理中', 1: '待出貨', 2: '已出貨', 3: '已送達', 4: '完成取貨', 5: '已取消',
-      };
-      var PAYMENT_STATUS_LABELS = {
-        0: '未付款', 1: '已付款', 2: '退款中', 3: '已退款', 4: '付款失敗',
-      };
-      var SHIPMENT_STATUS_LABELS = {
-        0: '準備中', 1: '已出貨', 2: '配送中', 3: '已送達', 4: '退貨中',
-      };
       var ORDER_STATUS_CLASS = {
         0: 'bg-amber-50 text-amber-800 border-amber-200',
         1: 'bg-blue-50 text-blue-800 border-blue-200',
@@ -120,7 +121,10 @@
       }
 
       function formatMoney(n) {
-        return 'NT$ ' + Number(n).toLocaleString('zh-Hant', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        return 'NT$ ' + Number(n).toLocaleString(GoezI18n.getLang() === 'zh-Hant' ? 'zh-Hant' : GoezI18n.getLang(), {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
+        });
       }
 
       function formatDateTime(iso) {
@@ -137,19 +141,25 @@
         return '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ' + className + '">' + label + '</span>';
       }
 
+      function orderStatusLabel(os) {
+        return GoezI18n.t('orderStatus' + os) || GoezI18n.t('unknown');
+      }
+
+      function paymentStatusLabel(ps) {
+        return GoezI18n.t('paymentStatus' + ps) || GoezI18n.t('unknown');
+      }
+
       function shipmentStatusLabel(shipment) {
         var ss = parseStatus(shipment.ShipmentStatus);
-        return SHIPMENT_STATUS_LABELS[ss] || '—';
+        return GoezI18n.t('shipmentStatus' + ss) || '—';
       }
 
       function paymentRecordStatusLabel(order) {
         var ps = parseStatus(order.PaymentStatus);
-        if (order.payment && order.payment.PaymentStatus) {
-          if (ps === 0) return '未付款';
-          if (ps === 1) return '已付款';
-          return order.payment.PaymentStatus;
-        }
-        return PAYMENT_STATUS_LABELS[ps] || '—';
+        if (ps === 0) return GoezI18n.t('paymentUnpaid');
+        if (ps === 1) return GoezI18n.t('paymentDone');
+        if (ps === 3) return GoezI18n.t('paymentRefunded');
+        return paymentStatusLabel(ps);
       }
 
       function buildShipmentHtml(order) {
@@ -157,14 +167,14 @@
         var s = order.shipment;
         var tracking = (s.TrackingNumber || '').trim();
         var trackingLine = tracking
-          ? '<p class="flex flex-wrap items-center gap-2"><span class="text-slate-500">物流單號：</span><span class="font-mono text-slate-800">' + tracking + '</span>' +
-            '<button type="button" class="copy-tracking text-xs text-slate-600 underline underline-offset-2 hover:text-slate-900" data-tracking="' + tracking + '">複製</button></p>'
-          : '<p><span class="text-slate-500">物流單號：</span>—</p>';
+          ? '<p class="flex flex-wrap items-center gap-2"><span class="text-slate-500">' + GoezI18n.t('trackingNo') + '：</span><span class="font-mono text-slate-800">' + tracking + '</span>' +
+            '<button type="button" class="copy-tracking text-xs text-slate-600 underline underline-offset-2 hover:text-slate-900" data-tracking="' + tracking + '">' + GoezI18n.t('copy') + '</button></p>'
+          : '<p><span class="text-slate-500">' + GoezI18n.t('trackingNo') + '：</span>—</p>';
         return (
-          '<p><span class="text-slate-500">方式：</span>' + s.ShippingMethod + '</p>' +
+          '<p><span class="text-slate-500">' + GoezI18n.t('method') + '：</span>' + s.ShippingMethod + '</p>' +
           trackingLine +
-          '<p><span class="text-slate-500">物流狀態：</span>' + shipmentStatusLabel(s) + '</p>' +
-          '<p><span class="text-slate-500">出貨時間：</span>' + (s.ShippedAt ? formatDateTime(s.ShippedAt) : '—') + '</p>'
+          '<p><span class="text-slate-500">' + GoezI18n.t('shipmentStatus') + '：</span>' + shipmentStatusLabel(s) + '</p>' +
+          '<p><span class="text-slate-500">' + GoezI18n.t('shippedAt') + '：</span>' + (s.ShippedAt ? formatDateTime(s.ShippedAt) : '—') + '</p>'
         );
       }
 
@@ -172,9 +182,9 @@
         if (!order.payment) return null;
         var p = order.payment;
         return (
-          '<p><span class="text-slate-500">方式：</span>' + p.PaymentMethod + '</p>' +
-          '<p><span class="text-slate-500">紀錄狀態：</span>' + paymentRecordStatusLabel(order) + '</p>' +
-          '<p><span class="text-slate-500">付款時間：</span>' + (p.PaidAt ? formatDateTime(p.PaidAt) : '—') + '</p>'
+          '<p><span class="text-slate-500">' + GoezI18n.t('method') + '：</span>' + p.PaymentMethod + '</p>' +
+          '<p><span class="text-slate-500">' + GoezI18n.t('recordStatus') + '：</span>' + paymentRecordStatusLabel(order) + '</p>' +
+          '<p><span class="text-slate-500">' + GoezI18n.t('paidAt') + '：</span>' + (p.PaidAt ? formatDateTime(p.PaidAt) : '—') + '</p>'
         );
       }
 
@@ -192,36 +202,39 @@
         var os = parseStatus(order.OrderStatus);
         var ps = parseStatus(order.PaymentStatus);
 
-        resultOrderId.textContent = '訂單編號 #' + order.OrderID + ' · 下單時間 ' + formatDateTime(order.CreatedAt);
+        resultOrderId.textContent = GoezI18n.t('orderMeta', {
+          id: order.OrderID,
+          time: formatDateTime(order.CreatedAt),
+        });
         resultBadges.innerHTML =
-          badgeHtml(ORDER_STATUS_LABELS[os] || '未知', ORDER_STATUS_CLASS[os] || ORDER_STATUS_CLASS[0]) +
-          badgeHtml(PAYMENT_STATUS_LABELS[ps] || '未知', PAYMENT_STATUS_CLASS[ps] || PAYMENT_STATUS_CLASS[0]);
+          badgeHtml(orderStatusLabel(os), ORDER_STATUS_CLASS[os] || ORDER_STATUS_CLASS[0]) +
+          badgeHtml(paymentStatusLabel(ps), PAYMENT_STATUS_CLASS[ps] || PAYMENT_STATUS_CLASS[0]);
 
         var summaryHtml =
           '<dl class="grid grid-cols-1 sm:grid-cols-2 gap-3">' +
-            '<div><dt class="text-slate-500 text-xs">訂單狀態</dt><dd class="mt-1">' + badgeHtml(ORDER_STATUS_LABELS[os], ORDER_STATUS_CLASS[os]) + '</dd></div>' +
-            '<div><dt class="text-slate-500 text-xs">付款狀態</dt><dd class="mt-1">' + badgeHtml(PAYMENT_STATUS_LABELS[ps], PAYMENT_STATUS_CLASS[ps]) + '</dd></div>' +
-            '<div><dt class="text-slate-500 text-xs">訂單金額</dt><dd class="mt-1 font-semibold text-slate-900">' + formatMoney(order.TotalAmount) + '</dd></div>' +
-            '<div><dt class="text-slate-500 text-xs">下單時間</dt><dd class="mt-1">' + formatDateTime(order.CreatedAt) + '</dd></div>' +
+            '<div><dt class="text-slate-500 text-xs">' + GoezI18n.t('orderStatus') + '</dt><dd class="mt-1">' + badgeHtml(orderStatusLabel(os), ORDER_STATUS_CLASS[os]) + '</dd></div>' +
+            '<div><dt class="text-slate-500 text-xs">' + GoezI18n.t('paymentStatus') + '</dt><dd class="mt-1">' + badgeHtml(paymentStatusLabel(ps), PAYMENT_STATUS_CLASS[ps]) + '</dd></div>' +
+            '<div><dt class="text-slate-500 text-xs">' + GoezI18n.t('orderAmount') + '</dt><dd class="mt-1 font-semibold text-slate-900">' + formatMoney(order.TotalAmount) + '</dd></div>' +
+            '<div><dt class="text-slate-500 text-xs">' + GoezI18n.t('createdAt') + '</dt><dd class="mt-1">' + formatDateTime(order.CreatedAt) + '</dd></div>' +
           '</dl>';
 
         var addressHtml =
-          '<p><span class="text-slate-500">姓名：</span>' + order.BuyerName + '</p>' +
-          '<p><span class="text-slate-500">電話：</span>' + order.BuyerPhone + '</p>' +
-          '<p><span class="text-slate-500">Email：</span>' + order.BuyerEmail + '</p>' +
-          '<p><span class="text-slate-500">地址：</span>' + order.BuyerAddress + '</p>';
+          '<p><span class="text-slate-500">' + GoezI18n.t('name') + '：</span>' + order.BuyerName + '</p>' +
+          '<p><span class="text-slate-500">' + GoezI18n.t('phone') + '：</span>' + order.BuyerPhone + '</p>' +
+          '<p><span class="text-slate-500">' + GoezI18n.t('email') + '：</span>' + order.BuyerEmail + '</p>' +
+          '<p><span class="text-slate-500">' + GoezI18n.t('address') + '：</span>' + order.BuyerAddress + '</p>';
 
         var itemsHtml = order.items.map(function (item) {
           var sub = item.Quantity * item.UnitPrice;
           var img = item.ProductImg
             ? '<img src="' + item.ProductImg + '" alt="" class="w-14 h-14 rounded-lg object-cover bg-slate-100 flex-shrink-0" onerror="this.style.display=\'none\'"/>'
-            : '<div class="w-14 h-14 rounded-lg bg-slate-200 flex-shrink-0 flex items-center justify-center text-xs text-slate-500">商品</div>';
+            : '<div class="w-14 h-14 rounded-lg bg-slate-200 flex-shrink-0 flex items-center justify-center text-xs text-slate-500">' + GoezI18n.t('product') + '</div>';
           return (
             '<div class="flex gap-3 py-3 border-b border-slate-100 last:border-0">' +
               img +
               '<div class="flex-1 min-w-0">' +
                 '<p class="font-medium text-slate-900 truncate">' + item.ProductName + '</p>' +
-                '<p class="text-xs text-slate-500 mt-1">單價 ' + formatMoney(item.UnitPrice) + ' × ' + item.Quantity + '</p>' +
+                '<p class="text-xs text-slate-500 mt-1">' + GoezI18n.t('unitPrice') + ' ' + formatMoney(item.UnitPrice) + ' × ' + item.Quantity + '</p>' +
               '</div>' +
               '<p class="font-medium text-slate-900 flex-shrink-0">' + formatMoney(sub) + '</p>' +
             '</div>'
@@ -229,13 +242,19 @@
         }).join('');
 
         detailBody.innerHTML =
-          sectionBlock('訂單摘要', summaryHtml) +
-          sectionBlock('收件資訊', addressHtml) +
-          sectionBlock('商品明細', itemsHtml) +
-          sectionBlock('物流資訊', buildShipmentHtml(order) || '尚無物流資訊') +
-          sectionBlock('付款資訊', buildPaymentHtml(order) || '尚無付款紀錄');
+          sectionBlock(GoezI18n.t('orderSummary'), summaryHtml) +
+          sectionBlock(GoezI18n.t('shippingInfo'), addressHtml) +
+          sectionBlock(GoezI18n.t('itemDetails'), itemsHtml) +
+          sectionBlock(GoezI18n.t('logistics'), buildShipmentHtml(order) || GoezI18n.t('noShipment')) +
+          sectionBlock(GoezI18n.t('paymentInfo'), buildPaymentHtml(order) || GoezI18n.t('noPayment'));
 
         cancelOrderBtn.classList.toggle('hidden', !(os === 0 || os === 1));
+      }
+
+      function refreshUI() {
+        document.title = GoezI18n.t('pageTitleDetail');
+        GoezI18n.apply();
+        if (currentOrder) renderOrder(currentOrder);
       }
 
       function init() {
@@ -252,6 +271,9 @@
           return;
         }
 
+        GoezI18n.mountSwitcher(document.getElementById('lang-switch'), refreshUI);
+        GoezI18n.apply();
+        document.title = GoezI18n.t('pageTitleDetail');
         renderOrder(order);
 
         requestAnimationFrame(function () {
@@ -261,7 +283,7 @@
 
       cancelOrderBtn.addEventListener('click', function () {
         if (!currentOrder) return;
-        alert('示範：已取消訂單 #' + currentOrder.OrderID + '。實際需呼叫 PATCH /api/orders/:OrderID/status');
+        alert(GoezI18n.t('cancelDemo', { id: currentOrder.OrderID }));
         GoezBuyerOrders.clearOrderDetail();
         window.location.href = 'index.html';
       });
