@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sign Up ｜Goez Shop 後台</title>
+  <title>註冊｜Goez Shop 後台</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -49,7 +49,11 @@
           <a href="../index.html" class="flex items-center gap-2">
             <span class="text-xl font-bold text-slate-800 tracking-tight">Goez Shop</span>
           </a>
-          <div class="w-9 h-9 rounded-full bg-slate-300 flex items-center justify-center text-slate-600 text-sm font-medium">管</div>
+          <div class="flex items-center gap-3">
+            <label for="lang-switch" class="sr-only" data-i18n="language">語言</label>
+            <select id="lang-switch" class="text-sm rounded-xl border border-slate-200 bg-white/80 px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-200"></select>
+            <div class="w-9 h-9 rounded-full bg-slate-300 flex items-center justify-center text-slate-600 text-sm font-medium" data-i18n="avatarAdmin">管</div>
+          </div>
         </div>
       </div>
     </header>
@@ -57,18 +61,18 @@
     <main class="flex-1">
       <div class="page-enter max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
         <div class="mb-8">
-          <h1 class="text-2xl sm:text-3xl font-bold text-slate-900">建立賣家帳號</h1>
-          <p class="mt-2 text-sm text-slate-600">填寫以下資料註冊店鋪，送出後帳號狀態為「審核中」，並寄送 Email 驗證信。（示範流程）</p>
+          <h1 class="text-2xl sm:text-3xl font-bold text-slate-900" data-i18n="signupTitle">建立賣家帳號</h1>
+          <p class="mt-2 text-sm text-slate-600" data-i18n="signupSubtitle">填寫以下資料註冊店鋪，送出後帳號狀態為「審核中」，並寄送 Email 驗證信。（示範流程）</p>
         </div>
 
         <section class="bg-white rounded-2xl shadow-soft overflow-hidden">
           <div class="p-6 sm:p-8">
             <form id="signup-form" class="space-y-5" novalidate>
               <div class="rounded-xl border border-slate-200 bg-slate-50/40 p-5 sm:p-6 space-y-4" role="group" aria-labelledby="signup-section-basic">
-                <h2 id="signup-section-basic" class="text-sm font-semibold text-slate-800 pb-3 border-b border-slate-200">基本資料</h2>
+                <h2 id="signup-section-basic" class="text-sm font-semibold text-slate-800 pb-3 border-b border-slate-200" data-i18n="sectionBasic">基本資料</h2>
 
                 <div>
-                  <label for="signup-seller-name" class="block text-sm font-medium text-slate-700 mb-1.5">真實姓名 <span class="text-red-500">*</span></label>
+                  <label for="signup-seller-name" class="block text-sm font-medium text-slate-700 mb-1.5"><span data-i18n="sellerName">真實姓名</span> <span class="text-red-500">*</span></label>
                   <input
                     type="text"
                     id="signup-seller-name"
@@ -77,12 +81,13 @@
                     maxlength="100"
                     autocomplete="name"
                     placeholder="請輸入真實姓名"
+                    data-i18n-placeholder="sellerNamePlaceholder"
                     class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800 placeholder-slate-400 transition"
                   />
                 </div>
 
                 <div>
-                  <label for="signup-store-name" class="block text-sm font-medium text-slate-700 mb-1.5">店鋪名稱 <span class="text-red-500">*</span></label>
+                  <label for="signup-store-name" class="block text-sm font-medium text-slate-700 mb-1.5"><span data-i18n="storeName">店鋪名稱</span> <span class="text-red-500">*</span></label>
                   <input
                     type="text"
                     id="signup-store-name"
@@ -91,12 +96,13 @@
                     maxlength="100"
                     autocomplete="organization"
                     placeholder="例：小明選物店"
+                    data-i18n-placeholder="storeNamePlaceholder"
                     class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800 placeholder-slate-400 transition"
                   />
                 </div>
 
                 <div>
-                  <label for="signup-phone" class="block text-sm font-medium text-slate-700 mb-1.5">聯絡電話 <span class="text-red-500">*</span></label>
+                  <label for="signup-phone" class="block text-sm font-medium text-slate-700 mb-1.5"><span data-i18n="phone">聯絡電話</span> <span class="text-red-500">*</span></label>
                   <input
                     type="tel"
                     id="signup-phone"
@@ -107,15 +113,15 @@
                     placeholder="+886912345678"
                     class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800 placeholder-slate-400 transition"
                   />
-                  <p class="mt-2 text-xs text-slate-500">請使用 E.164 國際格式，例如 +886912345678。</p>
+                  <p class="mt-2 text-xs text-slate-500" data-i18n="phoneHint">請使用 E.164 國際格式，例如 +886912345678。</p>
                 </div>
               </div>
 
               <div class="rounded-xl border border-slate-200 bg-slate-50/40 p-5 sm:p-6 space-y-4" role="group" aria-labelledby="signup-section-account">
-                <h2 id="signup-section-account" class="text-sm font-semibold text-slate-800 pb-3 border-b border-slate-200">帳號與密碼</h2>
+                <h2 id="signup-section-account" class="text-sm font-semibold text-slate-800 pb-3 border-b border-slate-200" data-i18n="sectionAccount">帳號與密碼</h2>
 
                 <div>
-                  <label for="signup-email" class="block text-sm font-medium text-slate-700 mb-1.5">Email <span class="text-red-500">*</span></label>
+                  <label for="signup-email" class="block text-sm font-medium text-slate-700 mb-1.5"><span data-i18n="email">Email</span> <span class="text-red-500">*</span></label>
                   <input
                     type="email"
                     id="signup-email"
@@ -129,7 +135,7 @@
                 </div>
 
                 <div>
-                  <label for="signup-password" class="block text-sm font-medium text-slate-700 mb-1.5">密碼 <span class="text-red-500">*</span></label>
+                  <label for="signup-password" class="block text-sm font-medium text-slate-700 mb-1.5"><span data-i18n="password">密碼</span> <span class="text-red-500">*</span></label>
                   <input
                     type="password"
                     id="signup-password"
@@ -138,13 +144,14 @@
                     minlength="8"
                     autocomplete="new-password"
                     placeholder="請輸入密碼"
+                    data-i18n-placeholder="passwordPlaceholder"
                     class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800 placeholder-slate-400 transition"
                   />
-                  <p class="mt-2 text-xs text-slate-500">送出後由後端雜湊為 PasswordHash；至少 8 碼。</p>
+                  <p class="mt-2 text-xs text-slate-500" data-i18n="passwordHint">密碼至少需要 8 個字元。</p>
                 </div>
 
                 <div>
-                  <label for="signup-confirm" class="block text-sm font-medium text-slate-700 mb-1.5">再次輸入密碼 <span class="text-red-500">*</span></label>
+                  <label for="signup-confirm" class="block text-sm font-medium text-slate-700 mb-1.5"><span data-i18n="confirmPassword">再次輸入密碼</span> <span class="text-red-500">*</span></label>
                   <input
                     type="password"
                     id="signup-confirm"
@@ -152,21 +159,22 @@
                     minlength="8"
                     autocomplete="new-password"
                     placeholder="請再輸入一次密碼"
+                    data-i18n-placeholder="confirmPasswordPlaceholder"
                     class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800 placeholder-slate-400 transition"
                   />
                 </div>
               </div>
 
               <div class="rounded-xl border border-slate-200 bg-slate-50/40 p-5 sm:p-6 space-y-4" role="group" aria-labelledby="signup-section-plan">
-                <h2 id="signup-section-plan" class="text-sm font-semibold text-slate-800 pb-3 border-b border-slate-200">訂閱方案 <span class="text-red-500">*</span></h2>
+                <h2 id="signup-section-plan" class="text-sm font-semibold text-slate-800 pb-3 border-b border-slate-200"><span data-i18n="sectionPlan">訂閱方案</span> <span class="text-red-500">*</span></h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 bg-slate-50/50 cursor-pointer has-[:checked]:border-slate-800 has-[:checked]:bg-white has-[:checked]:ring-2 has-[:checked]:ring-slate-200 transition">
                     <input type="radio" name="PlanType" value="0" class="text-slate-800 focus:ring-slate-300" checked required />
-                    <span class="text-sm font-medium text-slate-900">免費方案</span>
+                    <span class="text-sm font-medium text-slate-900" data-i18n="planFree">免費方案</span>
                   </label>
                   <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 bg-slate-50/50 cursor-pointer has-[:checked]:border-slate-800 has-[:checked]:bg-white has-[:checked]:ring-2 has-[:checked]:ring-slate-200 transition">
                     <input type="radio" name="PlanType" value="1" class="text-slate-800 focus:ring-slate-300" />
-                    <span class="text-sm font-medium text-slate-900">進階付費</span>
+                    <span class="text-sm font-medium text-slate-900" data-i18n="planPaid">進階付費</span>
                   </label>
                 </div>
               </div>
@@ -177,10 +185,11 @@
                 <button
                   type="submit"
                   class="px-5 py-3 rounded-xl bg-slate-800 text-white font-medium shadow-soft hover:bg-slate-900 transition whitespace-nowrap"
+                  data-i18n="createAccountBtn"
                 >
                   建立帳號
                 </button>
-                <a href="./index.html" class="px-5 py-3 rounded-xl bg-slate-100 text-slate-700 font-medium hover:bg-slate-200 transition inline-flex items-center justify-center">
+                <a href="./index.html" class="px-5 py-3 rounded-xl bg-slate-100 text-slate-700 font-medium hover:bg-slate-200 transition inline-flex items-center justify-center" data-i18n="backToSignin">
                   返回登入
                 </a>
               </div>
@@ -199,13 +208,13 @@
           <div class="flex items-start gap-3 p-4 rounded-xl border border-emerald-200 bg-emerald-50/70">
             <span class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold flex-shrink-0">✓</span>
             <div>
-              <p class="text-sm font-semibold text-emerald-800">註冊申請已送出</p>
+              <p class="text-sm font-semibold text-emerald-800" data-i18n="verifyTitle">註冊申請已送出</p>
               <p id="verify-mail-text" class="mt-1 text-sm text-slate-700"></p>
               <p id="verify-mail-status" class="mt-2 text-xs text-slate-600"></p>
             </div>
           </div>
           <div class="pt-5 flex justify-end">
-            <button type="button" id="verify-mail-ok" class="px-5 py-3 rounded-xl bg-slate-800 text-white font-medium shadow-soft hover:bg-slate-900 transition">
+            <button type="button" id="verify-mail-ok" class="px-5 py-3 rounded-xl bg-slate-800 text-white font-medium shadow-soft hover:bg-slate-900 transition" data-i18n="verifyOk">
               我知道了
             </button>
           </div>
@@ -214,6 +223,8 @@
     </div>
   </div>
 
+  <script src="../i18n-core.js"></script>
+  <script src="./i18n.js"></script>
   <script>
     (function () {
       var entering = document.querySelector('.page-enter');
@@ -265,8 +276,8 @@
         };
       }
       function openSuccessModal(targetEmail, store) {
-        modalText.textContent = '已寄送驗證信到：' + targetEmail;
-        modalStatus.textContent = '店鋪「' + store + '」已建立申請，帳號狀態為審核中（Status = 0）。';
+        modalText.textContent = GoezI18n.t('verifyMailSent', { email: targetEmail });
+        modalStatus.textContent = GoezI18n.t('verifyStatus', { store: store });
         modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
       }
@@ -280,45 +291,45 @@
         clearError();
 
         if (!sellerName.value.trim()) {
-          showError('請輸入真實姓名。');
+          showError(GoezI18n.t('errSellerName'));
           sellerName.focus();
           return;
         }
         if (!storeName.value.trim()) {
-          showError('請輸入店鋪名稱。');
+          showError(GoezI18n.t('errStoreName'));
           storeName.focus();
           return;
         }
         var phoneVal = phone.value.trim();
         if (!phoneVal) {
-          showError('請輸入聯絡電話。');
+          showError(GoezI18n.t('errPhone'));
           phone.focus();
           return;
         }
         if (!E164_REGEX.test(phoneVal)) {
-          showError('聯絡電話請使用 E.164 格式，例如 +886912345678。');
+          showError(GoezI18n.t('errPhoneE164'));
           phone.focus();
           return;
         }
         if (!email.value.trim()) {
-          showError('請輸入 Email。');
+          showError(GoezI18n.t('errEmail'));
           email.focus();
           return;
         }
         var p = password.value || '';
         var c = confirm.value || '';
         if (p.length < 8) {
-          showError('密碼至少需要 8 碼。');
+          showError(GoezI18n.t('errPasswordLen'));
           password.focus();
           return;
         }
         if (p !== c) {
-          showError('兩次輸入的密碼不一致，請重新確認。');
+          showError(GoezI18n.t('errPasswordMismatch'));
           confirm.focus();
           return;
         }
         if (!getPlanType()) {
-          showError('請選擇訂閱方案。');
+          showError(GoezI18n.t('errPlan'));
           return;
         }
 
@@ -331,6 +342,13 @@
       document.addEventListener('keydown', function (ev) {
         if (ev.key === 'Escape' && !modal.classList.contains('hidden')) closeSuccessModal();
       });
+
+      GoezI18n.mountSwitcher(document.getElementById('lang-switch'), function () {
+        document.title = GoezI18n.t('pageTitleSignup');
+        clearError();
+      });
+      GoezI18n.apply();
+      document.title = GoezI18n.t('pageTitleSignup');
     })();
   </script>
 </body>
