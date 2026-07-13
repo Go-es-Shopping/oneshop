@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>優惠券產生器</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* =====================
+       Design Tokens
+    ===================== */
+    :root {
+      /* Colors */
+      --color-brand-500: #0ea5e9;
+      --color-brand-600: #0284c7;
+      --color-brand-700: #0369a1;
+      --color-brand-900: #0c4a6e;
+
+      --color-bg-page: #f8fafc;
+      --color-white: #ffffff;
+      --color-text-primary: #1e1e1e;
+      --color-text-label: #000000;
+      --color-text-placeholder: #aeaeb2;
+      --color-text-required: #b3261e;
+      --color-text-subtitle: #64748b;
+      --color-border: #8e8e93;
+      --color-border-brand: #0369a1;
+
+      --color-gray-50: #f9fafb;
+      --color-gray-200: #e5e7eb;
+      --color-gray-400: #9ca3af;
+      --color-gray-500: #6b7280;
+
+      /* Font Families */
+      --font-primary: 'Noto Sans TC', sans-serif;
+
+      /* Font Sizes */
+      --fs-title: 32px;
+      --fs-body-base: 16px;
+      --fs-body-small: 14px;
+      --fs-caption: 12px;
+
+      /* Line Heights */
+      --lh-title: 40px;
+      --lh-body-base: 24px;
+      --lh-body-small: 20px;
+      --lh-caption: 16px;
+
+      /* Spacing */
+      --sp-4: 4px;
+      --sp-8: 8px;
+      --sp-9: 9px;
+      --sp-10: 10px;
+      --sp-12: 12px;
+      --sp-16: 16px;
+      --sp-20: 20px;
+      --sp-32: 32px;
+
+      /* Border Radius */
+      --radius-card: 8px;
+      --radius-input: 6px;
+      --radius-dropdown: 4px;
+      --radius-btn: 4px;
+      --radius-checkbox: 4px;
+
+      /* Shadows */
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    }
+
+    /* =====================
+       Reset & Base
+    ===================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      font-family: var(--font-primary);
+      font-size: var(--fs-body-base);
+      line-height: var(--lh-body-base);
+      color: var(--color-text-primary);
+      background-color: var(--color-bg-page);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* =====================
+       Layout
+    ===================== */
+    .page {
+      min-height: 100vh;
+      background-color: var(--color-bg-page);
+      padding: var(--sp-16) var(--sp-32);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--sp-16);
+    }
+
+    .coupon-generator {
+      width: 100%;
+      max-width: 1280px;
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-16);
+    }
+
+    /* =====================
+       Card Base
+    ===================== */
+    .card {
+      background-color: var(--color-white);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      padding: var(--sp-20);
+      width: 100%;
+      display: flex;
+      gap: var(--sp-4);
+      align-items: stretch;
+    }
+
+    /* =====================
+       Card Sections (left info / right fields)
+    ===================== */
+    .card__info {
+      flex: 1 0 0;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: var(--sp-10);
+    }
+
+    .card__fields {
+      flex: 1 0 0;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-8);
+    }
+
+    /* =====================
+       Text Content Title (left panel)
+    ===================== */
+    .text-content-title__heading {
+      font-family: var(--font-primary);
+      font-size: var(--fs-title);
+      font-weight: 400;
+      line-height: var(--lh-title);
+      color: var(--color-text-label);
+      margin-bottom: var(--sp-8);
+    }
+
+    .text-content-title__subtitle {
+      font-family: var(--font-primary);
+      font-size: var(--fs-body-small);
+      font-weight: 400;
+      line-height: var(--lh-body-small);
+      color: var(--color-text-subtitle);
+    }
+
+    /* =====================
+       Field Group (wrapper for a label+input pair)
+    ===================== */
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-4);
+      padding: var(--sp-10);
+      width: 100%;
+    }
+
+    .field-group--no-padding {
+      padding: 0;
+    }
+
+    /* =====================
+       Field Label Row
+    ===================== */
+    .field-label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .field-label {
+      font-family: var(--font-primary);
+      font-size: var(--fs-body-small);
+      font-weight: 400;
+      line-height: var(--lh-body-small);
+      color: var(--color-text-label);
+      white-space: nowrap;
+    }
+
+    .field-required {
+      font-family: var(--font-primary);
+      font-size: var(--fs-caption);
+      font-weight: 400;
+      line-height: var(--lh-caption);
+      color: var(--color-text-required);
+      text-align: right;
+      flex-shrink: 0;
+      width: 41px;
+    }
+
+    /* =====================
+       Text Input
+    ===================== */
+    .input-field {
+      width: 100%;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-input);
+      padding: var(--sp-16) var(--sp-12);
+      font-family: var(--font-primary);
+      font-size: var(--fs-body-base);
+      font-weight: 400;
+      line-height: var(--lh-body-base);
+      color: var(--color-text-primary);
+      background-color: var(--color-white);
+      outline: none;
+      transition: border-color 0.15s ease;
+      appearance: none;
+    }
+
+    .input-field::placeholder {
+      color: var(--color-text-placeholder);
+    }
+
+    .input-field:focus {
+      border-color: var(--color-brand-600);
+      box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15);
+    }
+
+    /* =====================
+       Dropdown
+    ===================== */
+    .dropdown-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .dropdown-select {
+      width: 100%;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-dropdown);
+      padding: var(--sp-16) var(--sp-12);
+      padding-right: 40px;
+      font-family: var(--font-primary);
+      font-size: var(--fs-body-base);
+      font-weight: 400;
+      line-height: var(--lh-body-base);
+      color: var(--color-text-primary);
+      background-color: var(--color-white);
+      outline: none;
+      appearance: none;
+      cursor: pointer;
+      transition: border-color 0.15s ease;
+    }
+
+    .dropdown-select:focus {
+      border-color: var(--color-brand-600);
+      box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15);
+    }
+
+    .dropdown-icon {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: var(--color-gray-500);
+      display: flex;
+      align-items: center;
+    }
+
+    /* =====================
+       Date Picker
+    ===================== */
+    .date-input-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .date-input {
+      width: 100%;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-input);
+      padding: var(--sp-16) var(--sp-12);
+      padding-right: 44px;
+      font-family: var(--font-primary);
+      font-size: var(--fs-body-base);
+      font-weight: 400;
+      line-height: var(--lh-body-base);
+      color: var(--color-text-primary);
+      background-color: var(--color-white);
+      outline: none;
+      appearance: none;
+      cursor: pointer;
+      transition: border-color 0.15s ease;
+    }
+
+    .date-input:focus {
+      border-color: var(--color-brand-600);
+      box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15);
+    }
+
+    .date-icon {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: var(--color-gray-500);
+      display: flex;
+      align-items: center;
+    }
+
+    /* =====================
+       Checkbox
+    ===================== */
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-9);
+      cursor: pointer;
+      width: fit-content;
+    }
+
+    .checkbox-label--full {
+      width: 100%;
+    }
+
+    .checkbox-input {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 24px;
+      height: 24px;
+      min-width: 24px;
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-checkbox);
+      background-color: var(--color-white);
+      cursor: pointer;
+      position: relative;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .checkbox-input:checked {
+      background-color: var(--color-brand-600);
+      border-color: var(--color-brand-600);
+    }
+
+    .checkbox-input:checked::after {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 2px;
+      width: 6px;
+      height: 11px;
+      border: 2px solid var(--color-white);
+      border-top: none;
+      border-left: none;
+      transform: rotate(45deg);
+    }
+
+    .checkbox-input:focus-visible {
+      outline: 2px solid var(--color-brand-600);
+      outline-offset: 2px;
+    }
+
+    .checkbox-text {
+      font-family: var(--font-primary);
+      font-size: var(--fs-body-base);
+      font-weight: 400;
+      line-height: var(--lh-body-base);
+      color: var(--color-text-primary);
+    }
+
+    /* =====================
+       Card 3 (使用限制) - vertically centered info
+    ===================== */
+    .card--usage .card__info {
+      justify-content: center;
+    }
+
+    /* =====================
+       Buttons
+    ===================== */
+    .btn-row {
+      display: flex;
+      gap: var(--sp-20);
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .btn {
+      height: 40px;
+      padding: var(--sp-8) var(--sp-16);
+      border-radius: var(--radius-btn);
+      font-family: var(--font-primary);
+      font-size: var(--fs-body-base);
+      font-weight: 400;
+      line-height: var(--lh-body-base);
+      cursor: pointer;
+      transition: opacity 0.15s ease, background-color 0.15s ease;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--sp-8);
+      min-width: 83px;
+    }
+
+    .btn--primary {
+      background-color: var(--color-brand-700);
+      color: var(--color-white);
+      border: none;
+    }
+
+    .btn--primary:hover {
+      background-color: var(--color-brand-900);
+    }
+
+    .btn--primary:active {
+      opacity: 0.85;
+    }
+
+    .btn--secondary {
+      background-color: transparent;
+      color: var(--color-brand-700);
+      border: 1px solid var(--color-brand-700);
+    }
+
+    .btn--secondary:hover {
+      background-color: rgba(3, 105, 161, 0.06);
+    }
+
+    .btn--secondary:active {
+      opacity: 0.85;
+    }
+
+    /* =====================
+       Responsive — Tablet (≤1024px)
+    ===================== */
+    @media (max-width: 1024px) {
+      .page {
+        padding: var(--sp-16) var(--sp-20);
+      }
+
+      .card {
+        flex-direction: column;
+        gap: var(--sp-12);
+      }
+
+      .card__info {
+        padding: var(--sp-10) var(--sp-10) 0;
+        justify-content: flex-start;
+      }
+
+      .card__fields {
+        padding: 0 var(--sp-10) var(--sp-10);
+      }
+
+      .text-content-title__heading {
+        font-size: 24px;
+        line-height: 32px;
+      }
+    }
+
+    /* =====================
+       Responsive — Mobile (≤768px)
+    ===================== */
+    @media (max-width: 768px) {
+      .page {
+        padding: var(--sp-12) var(--sp-16);
+        gap: var(--sp-12);
+      }
+
+      .card {
+        padding: var(--sp-16);
+        gap: var(--sp-12);
+      }
+
+      .card__info {
+        padding: var(--sp-8) var(--sp-8) 0;
+      }
+
+      .card__fields {
+        padding: 0 var(--sp-8) var(--sp-8);
+        gap: 0;
+      }
+
+      .text-content-title__heading {
+        font-size: 20px;
+        line-height: 28px;
+      }
+
+      .field-group {
+        padding: var(--sp-8);
+      }
+
+      .input-field,
+      .dropdown-select,
+      .date-input {
+        padding: 12px var(--sp-12);
+        font-size: 15px;
+      }
+
+      .btn-row {
+        gap: var(--sp-12);
+      }
+
+      .btn {
+        flex: 1;
+        min-width: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="coupon-generator" role="main" aria-label="優惠券產生器">
+
+      <!-- ===== Card 1: 優惠劵 (Name + Code) ===== -->
+      <section class="card" aria-labelledby="card1-title">
+        <!-- Left: Info -->
+        <div class="card__info">
+          <h2 class="text-content-title__heading" id="card1-title">優惠劵</h2>
+          <p class="text-content-title__subtitle">＊應避免出現容易混淆的字，例：數字 1 英文小寫l</p>
+        </div>
+
+        <!-- Right: Fields -->
+        <div class="card__fields">
+          <!-- 名稱 -->
+          <div class="field-group">
+            <div class="field-label-row">
+              <label class="field-label" for="coupon-name">名稱</label>
+              <span class="field-required" aria-label="必填">必填</span>
+            </div>
+            <input
+              class="input-field"
+              type="text"
+              id="coupon-name"
+              name="coupon-name"
+              placeholder=""
+              required
+              aria-required="true"
+            />
+          </div>
+
+          <!-- 代碼 -->
+          <div class="field-group">
+            <div class="field-label-row">
+              <label class="field-label" for="coupon-code">代碼</label>
+              <span class="field-required" aria-label="必填">必填</span>
+            </div>
+            <input
+              class="input-field"
+              type="text"
+              id="coupon-code"
+              name="coupon-code"
+              placeholder=""
+              required
+              aria-required="true"
+            />
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Card 2: 折扣類型 (Discount Type) ===== -->
+      <section class="card" aria-labelledby="card2-title">
+        <!-- Left: Info -->
+        <div class="card__info">
+          <h2 class="text-content-title__heading" id="card2-title">折扣類型</h2>
+          <p class="text-content-title__subtitle">可設定滿1000元9折，滿2000元8折。 滿1000元折100，滿2000元折200...等等。</p>
+        </div>
+
+        <!-- Right: Dropdown -->
+        <div class="card__fields">
+          <div class="field-group">
+            <div class="field-label-row">
+              <label class="field-label" for="discount-type">折扣種類</label>
+              <span class="field-required" aria-label="必填">必填</span>
+            </div>
+            <div class="dropdown-wrapper">
+              <select
+                class="dropdown-select"
+                id="discount-type"
+                name="discount-type"
+                required
+                aria-required="true"
+              >
+                <option value="fixed" selected>固定金額</option>
+                <option value="percentage">百分比折扣</option>
+                <option value="tiered">階梯式折扣</option>
+              </select>
+              <span class="dropdown-icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Card 3: 使用限制 (Usage Limits) ===== -->
+      <section class="card card--usage" aria-labelledby="card3-title">
+        <!-- Left: Info -->
+        <div class="card__info">
+          <h2 class="text-content-title__heading" id="card3-title">使用限制</h2>
+          <p class="text-content-title__subtitle">設置優惠券使用限制。</p>
+        </div>
+
+        <!-- Right: Fields -->
+        <div class="card__fields">
+          <!-- 使用次數上限 -->
+          <div class="field-group">
+            <div class="field-label-row">
+              <label class="field-label" for="usage-limit">使用次數上限</label>
+            </div>
+            <input
+              class="input-field"
+              type="number"
+              id="usage-limit"
+              name="usage-limit"
+              placeholder="不限制"
+              min="0"
+            />
+          </div>
+
+          <!-- 最低訂單金額 -->
+          <div class="field-group">
+            <div class="field-label-row">
+              <label class="field-label" for="min-order">最低訂單金額</label>
+            </div>
+            <input
+              class="input-field"
+              type="number"
+              id="min-order"
+              name="min-order"
+              placeholder="不限制"
+              min="0"
+            />
+          </div>
+
+          <!-- 總發行量 -->
+          <div class="field-group">
+            <div class="field-label-row">
+              <label class="field-label" for="total-issued">總發行量</label>
+            </div>
+            <input
+              class="input-field"
+              type="number"
+              id="total-issued"
+              name="total-issued"
+              placeholder="不限制"
+              min="0"
+            />
+          </div>
+
+          <!-- 不可並用 -->
+          <div class="field-group">
+            <label class="checkbox-label checkbox-label--full" for="no-combine">
+              <input
+                class="checkbox-input"
+                type="checkbox"
+                id="no-combine"
+                name="no-combine"
+              />
+              <span class="checkbox-text">不可與其他優惠劵並用</span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Card 4: 時間限制 (Time Limits) ===== -->
+      <section class="card" aria-labelledby="card4-title">
+        <!-- Left: Info -->
+        <div class="card__info">
+          <h2 class="text-content-title__heading" id="card4-title">時間限制</h2>
+          <p class="text-content-title__subtitle">可設定滿1000元9折，滿2000元8折。 滿1000元折100，滿2000元折200...等等。</p>
+        </div>
+
+        <!-- Right: Date Fields -->
+        <div class="card__fields">
+          <!-- 開始時間 -->
+          <div class="field-group">
+            <div class="field-label-row">
+              <label class="field-label" for="start-date">開始時間</label>
+            </div>
+            <div class="date-input-wrapper">
+              <input
+                class="date-input"
+                type="date"
+                id="start-date"
+                name="start-date"
+                value="2026-01-01"
+              />
+              <span class="date-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="1.5" y="3" width="15" height="13.5" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M1.5 7.5H16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  <path d="M6 1.5V4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  <path d="M12 1.5V4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </span>
+            </div>
+          </div>
+
+          <!-- 結束時間 -->
+          <div class="field-group">
+            <div class="field-label-row">
+              <label class="field-label" for="end-date">結束時間</label>
+            </div>
+            <div class="date-input-wrapper">
+              <input
+                class="date-input"
+                type="date"
+                id="end-date"
+                name="end-date"
+                value="2026-12-01"
+              />
+              <span class="date-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="1.5" y="3" width="15" height="13.5" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M1.5 7.5H16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  <path d="M6 1.5V4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  <path d="M12 1.5V4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </span>
+            </div>
+          </div>
+
+          <!-- 永不過期 -->
+          <div class="field-group">
+            <label class="checkbox-label" for="no-expiry">
+              <input
+                class="checkbox-input"
+                type="checkbox"
+                id="no-expiry"
+                name="no-expiry"
+              />
+              <span class="checkbox-text">無時間限制</span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Action Buttons ===== -->
+      <div class="btn-row">
+        <button type="button" class="btn btn--primary">產生優惠券</button>
+        <button type="button" class="btn btn--secondary">儲存草稿</button>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // Toggle date fields disabled state when "無時間限制" is checked
+    const noExpiryCheckbox = document.getElementById('no-expiry');
+    const startDateInput = document.getElementById('start-date');
+    const endDateInput = document.getElementById('end-date');
+
+    noExpiryCheckbox.addEventListener('change', function () {
+      const isChecked = this.checked;
+      startDateInput.disabled = isChecked;
+      endDateInput.disabled = isChecked;
+
+      if (isChecked) {
+        startDateInput.style.opacity = '0.4';
+        endDateInput.style.opacity = '0.4';
+        startDateInput.style.cursor = 'not-allowed';
+        endDateInput.style.cursor = 'not-allowed';
+      } else {
+        startDateInput.style.opacity = '1';
+        endDateInput.style.opacity = '1';
+        startDateInput.style.cursor = 'pointer';
+        endDateInput.style.cursor = 'pointer';
+      }
+    });
+
+    // Generate button — basic validation feedback
+    const generateBtn = document.querySelector('.btn--primary');
+    generateBtn.addEventListener('click', function () {
+      const name = document.getElementById('coupon-name').value.trim();
+      const code = document.getElementById('coupon-code').value.trim();
+      const type = document.getElementById('discount-type').value;
+
+      if (!name || !code || !type) {
+        const missing = [];
+        if (!name) missing.push('名稱');
+        if (!code) missing.push('代碼');
+        if (!type) missing.push('折扣種類');
+        alert('請填寫必填欄位：' + missing.join('、'));
+        return;
+      }
+
+      alert('優惠券已產生！');
+    });
+
+    // Draft save button
+    const draftBtn = document.querySelector('.btn--secondary');
+    draftBtn.addEventListener('click', function () {
+      alert('草稿已儲存。');
+    });
+  </script>
+</body>
+</html>
