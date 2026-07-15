@@ -12,17 +12,17 @@
 
 | 檔案 | 說明 |
 |------|------|
-| [`index.html`](./index.html) | 查詢表單（訂單編號、聯絡電話） |
-| [`order-detail.html`](./order-detail.html) | 訂單詳情（查詢成功後跳轉） |
+| [`goez-buyerOrder.html`](./goez-buyerOrder.html) | 查詢表單（訂單編號、聯絡電話） |
+| [`goez-buyerOrder-detail.html`](./goez-buyerOrder-detail.html) | 訂單詳情（查詢成功後跳轉） |
 | [`demo-orders.js`](./demo-orders.js) | 示範資料與查詢邏輯（兩頁共用） |
 | [`SCHEMA.md`](./SCHEMA.md) | 資料表與 API 對照 |
 
 ## 流程
 
-1. 買家在 `index.html` 輸入訂單編號、電話 → 按「查詢」
-2. 驗證通過 → 訂單資料寫入 `sessionStorage` → **跳轉** `order-detail.html`
-3. 詳情頁顯示該筆訂單；「重新查詢」回到 `index.html`
-4. 若直接開啟 `order-detail.html` 且無資料 → 自動回到 `index.html`
+1. 買家在 `goez-buyerOrder.html` 輸入訂單編號、電話 → 按「查詢」
+2. 驗證通過 → 訂單資料寫入 `sessionStorage` → **跳轉** `goez-buyerOrder-detail.html`
+3. 詳情頁顯示該筆訂單；「重新查詢」回到 `goez-buyerOrder.html`
+4. 若直接開啟 `goez-buyerOrder-detail.html` 且無資料 → 自動回到 `goez-buyerOrder.html`
 
 ## 示範訂單
 
