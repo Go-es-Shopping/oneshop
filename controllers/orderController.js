@@ -73,12 +73,7 @@ const orderController = {
         OrderID: newOrder.OrderID,
         ShippingMethod,
         StoreInfo: StoreInfo || null,
-        //ShippingStatus: 0
-
-        //（初始狀態與暫時單號）(79~80)
-        ShipmentStatus: 1,  // 0 代表初始狀態（例如：待準備/備貨中）
-        TrackingNumber: 'PENDING',   // 因為不能為空，先填 'PENDING'（等待產生），等賣家出貨再更新！
-
+        ShippingStatus: 0
       }, { transaction: t });
 
       const finalDetails = details.map(d => ({ ...d, OrderID: newOrder.OrderID }));
@@ -112,6 +107,35 @@ const orderController = {
       res.status(500).json({ Success: false, Error: error.message });
     }
   },
+
+  // ✨ 補上失蹤的：查詢單筆買家訂單詳情 (GET /:OrderID)
+getOrderDetail: async (req, res) => {
+  try {
+    const { OrderID } = req.params; // 拿到網址上的 14
+    
+    console.log('🔍 [真資料庫模式] 正在撈取訂單詳情，編號為:', OrderID);
+
+    // 去 SQL Server 尋找這筆訂單，並按照組長規格優化：include 物流和付款
+    const order = await Order.findOne({
+      where: { OrderID: OrderID },
+      include: [Shipment, Payment] // 👈 任務：資料關聯優化（物流與付款狀態）
+    });
+
+    // 如果資料庫真的找不到這筆編號
+    if (!order) {
+      console.log(`❌ 資料庫找不到 OrderID = ${OrderID} 的訂單`);
+      return res.status(404).json({ Success: false, message: '找不到此訂單，請確認訂單編號是否正確。' });
+    }
+
+    // 🎯 成功捞到資料，打包回傳給前端網頁！
+    console.log(`✅ 成功撈到訂單 ${OrderID} 的真資料！`);
+    return res.json(order);
+
+  } catch (error) {
+    console.error('❌ 撈取資料庫噴出錯誤:', error);
+    return res.status(500).json({ Success: false, Error: error.message });
+  }
+},
 
   // 四、更新狀態與物流 (PATCH /api/orders/:id/status)
   updateStatus: async (req, res) => {
