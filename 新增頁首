@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>訂單明細</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            background-color: #f1f5f9; /* 延續淺灰藍底色 */
+        }
+        
+        /* 自訂滾動條樣式 */
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- 頁首 Header (參考圖片風格) -->
+    <header class="bg-white border-b border-gray-200 px-4 md:px-6 py-3 md:py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
+        <div class="flex items-center gap-2.5">
+            <i class="fa-solid fa-bag-shopping text-indigo-600 text-xl md:text-2xl"></i>
+            <span class="font-bold text-gray-900 text-lg md:text-xl tracking-tight">goezshop</span>
+        </div>
+    </header>
+
+    <!-- 主要內容區 -->
+    <main class="flex-1 p-4 md:p-8">
+        <div class="max-w-[1200px] mx-auto">
+            
+            <!-- Header Section -->
+        </div>
+
+        <!-- 訂單資訊摘要卡片 (Optional but good UX) -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 mb-6 flex flex-wrap gap-x-12 gap-y-4 text-sm">
+            <div>
+                <span class="text-gray-500 block mb-1">所屬訂單編號</span>
+                <span id="summary-order-id" class="font-semibold text-gray-800 text-lg">載入中...</span>
+            </div>
+            <div>
+                <span class="text-gray-500 block mb-1">明細項目總數</span>
+                <span id="summary-total-items" class="font-semibold text-gray-800 text-lg">-</span>
+            </div>
+        </div>
+
+        <!-- Main Card Container -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            
+            <!-- Table Container -->
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full text-sm text-left whitespace-nowrap">
+                    <thead class="text-xs text-gray-600 uppercase bg-gray-100/80">
+                        <tr>
+                            <th scope="col" class="px-6 py-4 font-semibold">訂單明細主鍵</th>
+                            <th scope="col" class="px-6 py-4 font-semibold">所屬訂單</th>
+                            <th scope="col" class="px-6 py-4 font-semibold">對應商品</th>
+                            <th scope="col" class="px-6 py-4 font-semibold text-right">購買數量</th>
+                            <th scope="col" class="px-6 py-4 font-semibold text-right">成交單價</th>
+                            <th scope="col" class="px-6 py-4 font-semibold text-right text-gray-800">小計</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detail-table-body" class="divide-y divide-gray-100 bg-white">
+                        <!-- Table rows will be populated by JavaScript -->
+                    </tbody>
+                    <tfoot class="bg-gray-50/50">
+                        <tr>
+                            <td colspan="5" class="px-6 py-4 text-right font-medium text-gray-600">總計金額：</td>
+                            <td id="table-grand-total" class="px-6 py-4 text-right font-bold text-lg text-[#026b9c]">NT$ 0</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    </main>
+
+    <script>
+        // Formatting currency utility
+        const formatter = new Intl.NumberFormat('zh-TW', {
+            style: 'currency',
+            currency: 'TWD',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
+        });
+
+        function renderDetailTable(detailData) {
+            const tbody = document.getElementById('detail-table-body');
+            tbody.innerHTML = '';
+            
+            let grandTotal = 0;
+
+            // 處理空資料
+            if (!detailData || detailData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="px-6 py-12 text-center text-gray-500 bg-gray-50/50">
+                            <div class="flex flex-col items-center justify-center">
+                                <i class="fa-solid fa-box-open text-3xl text-gray-300 mb-3"></i>
+                                <p>目前尚無明細資料</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                document.getElementById('summary-total-items').innerText = '0 件';
+                document.getElementById('table-grand-total').innerText = formatter.format(0);
+                return;
+            }
+
+            // 渲染資料列
+            detailData.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-gray-50/80 transition-colors group';
+                
+                // 計算小計: 單價 * 數量
+                const quantity = item.Quantity || 0;
+                const unitPrice = item.UnitPrice || 0;
+                const subtotal = quantity * unitPrice;
+                
+                grandTotal += subtotal;
+
+                tr.innerHTML = `
+                    <td class="px-6 py-4 text-gray-500">#${item.OrderdetailID || '-'}</td>
+                    <td class="px-6 py-4 font-medium text-gray-900">#${item.OrderID || '-'}</td>
+                    <td class="px-6 py-4 text-[#026b9c] font-medium">
+                        <!-- 通常對應商品會顯示商品名稱，這裡以商品編號(或帶名稱的格式)為主 -->
+                        商品 ID: ${item.ProductID || '-'}
+                    </td>
+                    <td class="px-6 py-4 text-right font-mono">${quantity}</td>
+                    <td class="px-6 py-4 text-right text-gray-600">${formatter.format(unitPrice)}</td>
+                    <td class="px-6 py-4 text-right font-semibold text-gray-800">${formatter.format(subtotal)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // 更新摘要與總計
+            document.getElementById('summary-order-id').innerText = detailData.length > 0 ? `#${detailData[0].OrderID}` : '-';
+            document.getElementById('summary-total-items').innerText = `${detailData.length} 件`;
+            document.getElementById('table-grand-total').innerText = formatter.format(grandTotal);
+        }
+
+        // 模擬後端 API 呼叫的模板
+        async function fetchOrderDetails() {
+            const tbody = document.getElementById('detail-table-body');
+            tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i>明細載入中...</td></tr>`;
+
+            try {
+                // 實務上可能會從網址取得 OrderID，例如: ?orderId=123
+                const urlParams = new URLSearchParams(window.location.search);
+                const orderId = urlParams.get('orderId') || '未知訂單';
+                
+                // TODO: 後端工程師請將這裡替換為實際的 fetch 呼叫
+                // const response = await fetch(`/api/order-details/${orderId}`);
+                // ...
+                
+                await new Promise(resolve => setTimeout(resolve, 600)); // 模擬 API 延遲
+                
+                // 清空假資料，保留空陣列以觸發「無明細資料」畫面
+                const data = [];
+
+                renderDetailTable(data);
+
+                // 更新摘要欄位 (如果有帶入 orderId 的話)
+                if(urlParams.has('orderId')) {
+                     document.getElementById('summary-order-id').innerText = `#${orderId}`;
+                }
+
+            } catch (error) {
+                console.error('取得明細資料失敗:', error);
+                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-red-500">資料載入失敗，請檢查網路連線或稍後再試。</td></tr>`;
+            }
+        }
+
+        // Initialize table on load
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchOrderDetails();
+        });
+    </script>
+</body>
+</html>
