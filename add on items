@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>現代電商結帳 - 加購功能實作</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                screens: {
+                    'md': '800px',   // 對應 800px - 1279px 區間
+                    'lg': '1280px',  // 對應 1280px 以上區間
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts: Inter & Noto Sans TC -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom CSS for specific behaviors -->
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            background-color: #F9FAFB; /* 淺灰色背景，凸顯白色卡片 */
+        }
+
+        /* 隱藏水平捲軸但保留滑動功能 (適用於手機版加購區塊) */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* 價格跳動動畫 */
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); color: #EF4444; }
+            100% { transform: scale(1); }
+        }
+        .price-update {
+            animation: pop 0.4s ease-out;
+        }
+    </style>
+</head>
+<body class="text-gray-800 pb-20 lg:pb-0">
+
+    <!-- 頂部導覽列 -->
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-bag-shopping text-indigo-600 text-xl"></i>
+                <span class="font-bold text-lg tracking-wide">goezshop</span>
+            </div>
+            <div class="text-sm font-medium text-gray-500">
+                <i class="fa-solid fa-lock mr-1"></i> 安全結帳
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主容器 -->
+    <main class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-8 flex flex-col md:flex-row gap-6 md:gap-8 lg:gap-12">
+        
+        <!-- 左側：購物車內容與加購區 -->
+        <div class="w-full md:w-3/5 lg:w-2/3 flex flex-col gap-6 md:gap-8">
+            
+            <!-- 1. 購物車主要商品清單 -->
+            <section class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                    <h2 class="font-bold text-lg">您的購物車</h2>
+                    <span class="text-sm text-gray-500">共 <span id="main-item-count">0</span> 件商品</span>
+                </div>
+                <div id="cart-container" class="p-6 flex flex-col gap-6">
+                    <!-- 購物車商品會透過 JS 渲染在這裡 -->
+                </div>
+            </section>
+
+            <!-- 2. 🔥 加價購/組合優惠區塊 (Figma 實作重點) -->
+            <section class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative">
+                <div class="px-6 py-5 border-b border-gray-100 bg-indigo-50/50">
+                    <h2 class="font-bold text-lg text-indigo-900 flex items-center gap-2">
+                        <i class="fa-solid fa-fire text-orange-500"></i> 
+                        獨家加價購
+                    </h2>
+                    <p class="text-sm text-indigo-700/70 mt-1">搭配以下商品，享結帳專屬優惠價！</p>
+                </div>
+                
+                <!-- 水平滑動容器 (Mobile Friendly) -->
+                <!-- 這裡對應 Figma 的 Horizontal Auto Layout -->
+                <div class="px-4 md:px-6 py-6 overflow-x-auto hide-scrollbar snap-x snap-mandatory cursor-grab active:cursor-grabbing">
+                    <div id="addon-container" class="flex gap-4 md:gap-5 w-max pb-2">
+                        <!-- 加購卡片會透過 JS 渲染在這裡 -->
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- 右側：訂單摘要 (Sticky 佈局) -->
+        <div class="w-full md:w-2/5 lg:w-1/3">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 sticky top-24">
+                <h2 class="font-bold text-lg md:text-xl mb-6">訂單摘要</h2>
+                
+                <div class="space-y-4 text-sm md:text-base mb-6 pb-6 border-b border-gray-100">
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">商品總計</span>
+                        <span class="font-medium" id="summary-subtotal">NT$ 0</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-500">加購優惠</span>
+                        <span class="font-medium text-indigo-600" id="summary-addon-total">+ NT$ 0</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">運費</span>
+                        <span class="font-medium text-gray-500">免運費</span>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-end mb-8">
+                    <span class="font-bold text-gray-800 text-lg">總結帳金額</span>
+                    <div class="text-right">
+                        <span class="text-xs text-gray-500 block mb-1">含稅</span>
+                        <span class="font-bold text-2xl text-gray-900 transition-colors" id="summary-total">NT$ 0</span>
+                    </div>
+                </div>
+
+                <button onclick="checkout()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl transition-all duration-300 shadow-lg shadow-indigo-200 flex justify-center items-center gap-2 transform hover:-translate-y-0.5">
+                    <i class="fa-solid fa-credit-card"></i>
+                    前往付款
+                </button>
+                
+                <p class="text-xs text-center text-gray-400 mt-4">
+                    <i class="fa-solid fa-shield-halved"></i> 256-bit SSL 安全加密連線
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast 通知容器 (替代 alert) -->
+    <div id="toast-container" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 z-50 flex flex-col gap-2"></div>
+
+    <!-- 應用程式邏輯 -->
+    <script>
+        // 1. 狀態與資料定義 (模擬從資料庫或前一頁傳來的資料)
+        
+        // 主購物車商品
+        const cartItems = [
+            {
+                id: 'm1',
+                name: '極簡風雙層真空保溫瓶',
+                variant: '霧面黑 / 500ml',
+                price: 890,
+                qty: 1,
+                img: 'https://placehold.co/200x200/F3F4F6/9CA3AF?text=Thermos'
+            },
+            {
+                id: 'm2',
+                name: '有機棉休閒帆布托特包',
+                variant: '米白色',
+                price: 1280,
+                qty: 1,
+                img: 'https://placehold.co/200x200/F3F4F6/9CA3AF?text=Tote+Bag'
+            }
+        ];
+
+        // 加購區商品 (加入 added 狀態來控制 Figma 中的 Variants)
+        const addons = [
+            {
+                id: 'a1',
+                name: '專屬矽膠防滑杯底套',
+                desc: '完美保護保溫瓶底部',
+                price: 99,
+                originalPrice: 150,
+                img: 'https://placehold.co/150x150/EEF2FF/4F46E5?text=Sleeve',
+                added: false // 對應 Figma: State = Default
+            },
+            {
+                id: 'a2',
+                name: '環保不鏽鋼吸管 3 件組',
+                desc: '附專屬收納刷',
+                price: 199,
+                originalPrice: 350,
+                img: 'https://placehold.co/150x150/EEF2FF/4F46E5?text=Straw',
+                added: false
+            },
+            {
+                id: 'a3',
+                name: '皮革防水杯墊',
+                desc: '質感桌面必備',
+                price: 149,
+                originalPrice: 280,
+                img: 'https://placehold.co/150x150/EEF2FF/4F46E5?text=Coaster',
+                added: false
+            },
+            {
+                id: 'a4',
+                name: '天然精油抗菌洗手慕斯',
+                desc: '隨身輕巧版 50ml',
+                price: 89,
+                originalPrice: 120,
+                img: 'https://placehold.co/150x150/EEF2FF/4F46E5?text=Soap',
+                added: false
+            }
+        ];
+
+        // 2. 畫面渲染函數
+
+        // 格式化金錢
+        const formatMoney = (amount) => {
+            return 'NT$ ' + amount.toLocaleString('zh-TW');
+        };
+
+        // 渲染主購物車
+        const renderCart = () => {
+            const container = document.getElementById('cart-container');
+            document.getElementById('main-item-count').innerText = cartItems.length;
+            
+            let html = '';
+            cartItems.forEach(item => {
+                html += `
+                    <div class="flex gap-4 md:gap-6 items-start">
+                        <img src="${item.img}" alt="${item.name}" class="w-20 h-20 md:w-28 md:h-28 lg:w-32 lg:h-32 object-cover rounded-lg border border-gray-100">
+                        <div class="flex-1">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-medium text-gray-900 md:text-lg lg:text-xl">${item.name}</h3>
+                                    <p class="text-sm text-gray-500 mt-1 md:mt-2">${item.variant}</p>
+                                </div>
+                                <span class="font-medium md:text-lg">${formatMoney(item.price)}</span>
+                            </div>
+                            <div class="mt-4 md:mt-6 flex justify-between items-center">
+                                <div class="text-sm md:text-base text-gray-500 bg-gray-50 px-3 md:px-4 py-1 md:py-1.5 rounded-md">數量: ${item.qty}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        };
+
+        // 渲染加購區塊 (Figma 卡片實作)
+        const renderAddons = () => {
+            const container = document.getElementById('addon-container');
+            let html = '';
+            
+            addons.forEach(item => {
+                // 根據狀態決定按鈕樣式 (對應 Figma Variants)
+                const btnClass = item.added 
+                    ? 'bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200' 
+                    : 'bg-white text-indigo-600 border-indigo-600 hover:bg-indigo-50';
+                
+                const btnIcon = item.added ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-plus"></i>';
+                const btnText = item.added ? '已加購' : '加購';
+                
+                // 卡片外框狀態
+                const cardBorder = item.added ? 'border-indigo-300 ring-1 ring-indigo-300 bg-indigo-50/20' : 'border-gray-200 bg-white';
+
+                html += `
+                    <div class="snap-start shrink-0 w-40 md:w-48 lg:w-56 border rounded-xl p-3 md:p-4 flex flex-col transition-all duration-300 relative ${cardBorder}">
+                        ${item.added ? '<div class="absolute -top-2 -right-2 bg-indigo-500 text-white text-xs w-6 h-6 flex items-center justify-center rounded-full shadow-sm z-10"><i class="fa-solid fa-check"></i></div>' : ''}
+                        
+                        <div class="w-full aspect-square bg-gray-50 rounded-lg overflow-hidden mb-3 md:mb-4">
+                            <img src="${item.img}" alt="${item.name}" class="w-full h-full object-cover mix-blend-multiply">
+                        </div>
+                        
+                        <div class="flex-1 flex flex-col">
+                            <h4 class="font-medium text-sm md:text-base text-gray-900 leading-tight mb-1 md:mb-2 line-clamp-2">${item.name}</h4>
+                            <p class="text-xs md:text-sm text-gray-500 mb-2 md:mb-4">${item.desc}</p>
+                            
+                            <div class="mt-auto flex items-baseline gap-1.5 md:gap-2 mb-3 md:mb-4">
+                                <span class="font-bold text-red-500 text-base md:text-lg">${formatMoney(item.price)}</span>
+                                <span class="text-xs md:text-sm text-gray-400 line-through">${formatMoney(item.originalPrice)}</span>
+                            </div>
+                            
+                            <button onclick="toggleAddon('${item.id}')" 
+                                    class="w-full py-2 md:py-2.5 px-3 border rounded-lg text-sm md:text-base font-medium transition-colors flex items-center justify-center gap-1.5 ${btnClass}">
+                                ${btnIcon} ${btnText}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        };
+
+        // 3. 互動邏輯與金額計算
+
+        // 切換加購狀態
+        const toggleAddon = (id) => {
+            const itemIndex = addons.findIndex(a => a.id === id);
+            if (itemIndex > -1) {
+                // 切換 boolean 狀態
+                addons[itemIndex].added = !addons[itemIndex].added;
+                
+                // 重新渲染加購區與摘要
+                renderAddons();
+                updateSummary();
+                
+                // 顯示回饋提示
+                if (addons[itemIndex].added) {
+                    showToast(`已將「${addons[itemIndex].name}」加入結帳！`, 'success');
+                }
+            }
+        };
+
+        // 更新訂單摘要與總價
+        const updateSummary = () => {
+            // 計算主商品總計
+            const mainSubtotal = cartItems.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            
+            // 計算加購品總計
+            const addedItems = addons.filter(item => item.added);
+            const addonSubtotal = addedItems.reduce((sum, item) => sum + item.price, 0);
+            
+            // 計算總和
+            const total = mainSubtotal + addonSubtotal;
+
+            // 更新 DOM
+            document.getElementById('summary-subtotal').innerText = formatMoney(mainSubtotal);
+            document.getElementById('summary-addon-total').innerText = addonSubtotal > 0 ? `+ ${formatMoney(addonSubtotal)}` : 'NT$ 0';
+            
+            const totalEl = document.getElementById('summary-total');
+            totalEl.innerText = formatMoney(total);
+            
+            // 加上跳動特效
+            totalEl.classList.remove('price-update');
+            void totalEl.offsetWidth; // 觸發 reflow 讓動畫可重複播放
+            totalEl.classList.add('price-update');
+        };
+
+        // 顯示 Toast 通知 (取代難看的 alert)
+        const showToast = (message, type = 'success') => {
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const icon = type === 'success' ? '<i class="fa-solid fa-circle-check text-green-500"></i>' : '<i class="fa-solid fa-circle-info text-blue-500"></i>';
+            
+            toast.className = `bg-gray-900 text-white px-5 py-3 rounded-full shadow-lg text-sm font-medium flex items-center gap-2 transform transition-all duration-300 translate-y-10 opacity-0`;
+            toast.innerHTML = `${icon} ${message}`;
+            
+            toastContainer.appendChild(toast);
+            
+            // 飛入動畫
+            setTimeout(() => {
+                toast.classList.remove('translate-y-10', 'opacity-0');
+            }, 10);
+            
+            // 3秒後消失
+            setTimeout(() => {
+                toast.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3000);
+        };
+
+        // 結帳按鈕點擊
+        const checkout = () => {
+            const addedCount = addons.filter(a => a.added).length;
+            let msg = `準備前往綠界/LinePay付款！\n包含 ${cartItems.length} 件主商品`;
+            if (addedCount > 0) {
+                msg += ` 及 ${addedCount} 件超值加購品`;
+            }
+            showToast(msg, 'info');
+        };
+
+        // 4. 初始化應用程式
+        window.onload = () => {
+            renderCart();
+            renderAddons();
+            updateSummary();
+        };
+    </script>
+</body>
+</html>
