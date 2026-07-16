@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>廢棄購物車挽回</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================
+     DESIGN TOKENS
+     ============================================ */
+  :root {
+    /* Colors — surface & text */
+    --color-bg: #f9fafb;
+    --color-white: #ffffff;
+    --color-border: #e5e7eb;
+    --color-text-primary: #111827;
+    --color-text-secondary: #4b5563;
+    --color-text-tertiary: #9ca3af;
+
+    /* Colors — brand */
+    --color-brand: #0369a1;
+    --color-brand-hover: #075985;
+
+    /* Colors — blue (avatar / info tag) */
+    --color-blue-100: #dbeafe;
+    --color-blue-600: #2563eb;
+    --color-blue-700: #1d4ed8;
+    --color-blue-bg: #eff6ff;
+    --color-blue-border: #bfdbfe;
+
+    /* Colors — red (down trend) */
+    --color-red-500: #ef4444;
+    --color-red-bg: #fef2f2;
+
+    /* Colors — green (success / checked-out) */
+    --color-green-600: #16a34a;
+    --color-green-700: #15803d;
+    --color-green-bg: #f0fdf4;
+    --color-green-border: #bbf7d0;
+
+    /* Colors — amber (pending / not-reminded) */
+    --color-amber-500: #f59e0b;
+    --color-amber-700: #b45309;
+    --color-amber-bg: #fffbeb;
+    --color-amber-border: #fde68a;
+
+    /* Typography */
+    --font-family-base: 'Noto Sans TC', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-family-number: 'Inter', 'Noto Sans TC', sans-serif;
+
+    --font-size-xs: 12px;
+    --font-size-sm: 14px;
+    --font-size-base: 16px;
+    --font-size-lg: 18px;
+    --font-size-2xl: 24px;
+
+    --line-height-xs: 16px;
+    --line-height-sm: 20px;
+    --line-height-base: 24px;
+    --line-height-lg: 28px;
+    --line-height-2xl: 32px;
+
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+
+    /* Spacing scale */
+    --space-2xs: 4px;
+    --space-xs: 8px;
+    --space-sm: 12px;
+    --space-md: 16px;
+    --space-lg: 21px;
+    --space-xl: 24px;
+    --space-2xl: 32px;
+
+    /* Radius */
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+    --radius-xl: 12px;
+    --radius-full: 9999px;
+
+    /* Shadows */
+    --shadow-xs: 0px 1px 1px rgba(0, 0, 0, 0.05);
+    --shadow-sm: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
+
+    /* Layout */
+    --header-height: 64px;
+  }
+
+  /* ============================================
+     RESET & BASE
+     ============================================ */
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--color-bg);
+    color: var(--color-text-primary);
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-sm);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 0;
+  }
+
+  ul { list-style: none; margin: 0; padding: 0; }
+
+  .icon { display: inline-block; flex-shrink: 0; }
+  .visually-hidden {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap; border: 0;
+  }
+
+  /* ============================================
+     LAYOUT SHELL
+     ============================================ */
+  .app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* ============================================
+     HEADER
+     ============================================ */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--header-height);
+    padding: 0 var(--space-2xl);
+    background: var(--color-white);
+    border-bottom: 1px solid var(--color-border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .header__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .header__menu-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+  }
+  .header__menu-toggle:hover { background: var(--color-bg); }
+
+  .header__title {
+    font-family: var(--font-family-base);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-lg);
+    line-height: var(--line-height-lg);
+    color: var(--color-text-primary);
+    white-space: nowrap;
+  }
+
+  .header__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+  }
+
+  .header__icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    color: var(--color-text-primary);
+  }
+  .header__icon-btn:hover { background: var(--color-bg); }
+
+  .header__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    background: var(--color-blue-100);
+    border: none;
+  }
+
+  /* ============================================
+     MAIN CONTENT
+     ============================================ */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xl);
+    padding: var(--space-2xl);
+  }
+
+  /* ---- Stat cards ---- */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-xl);
+  }
+
+  .stat-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    padding: var(--space-lg);
+    background: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xs);
+    min-width: 0;
+  }
+
+  .stat-card__label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    color: var(--color-text-secondary);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-sm);
+  }
+
+  .stat-card__icon { color: var(--color-text-secondary); }
+
+  .stat-card__value-row {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-xs);
+    flex-wrap: wrap;
+  }
+
+  .stat-card__value {
+    font-family: var(--font-family-number);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-2xl);
+    line-height: var(--line-height-2xl);
+    color: var(--color-text-primary);
+    white-space: nowrap;
+  }
+
+  .stat-card__value--success { color: var(--color-green-600); }
+
+  .stat-card__unit {
+    font-family: var(--font-family-base);
+    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-sm);
+    color: var(--color-text-tertiary);
+  }
+
+  .stat-card__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 2px 6px;
+    margin-bottom: 4px;
+    border-radius: var(--radius-sm);
+    background: var(--color-red-bg);
+    color: var(--color-red-500);
+    font-family: var(--font-family-number);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-xs);
+  }
+
+  /* ---- List panel ---- */
+  .list-panel {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    padding: 16px 24px 17px;
+    background: rgba(249, 250, 251, 0.5);
+    border-bottom: 1px solid var(--color-border);
+    overflow-x: auto;
+  }
+
+  .toolbar__filters {
+    display: flex;
+    gap: var(--space-xs);
+    flex-shrink: 0;
+  }
+
+  .filter-tab {
+    padding: 7px 13px;
+    background: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-xs);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-xs);
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+  }
+  .filter-tab[aria-pressed="true"] { color: var(--color-text-primary); }
+
+  .export-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--color-brand);
+    border-radius: var(--radius-md);
+    color: var(--color-white);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-sm);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .export-btn:hover { background: var(--color-brand-hover); }
+
+  /* ---- Desktop table ---- */
+  .table-wrapper {
+    overflow-x: auto;
+  }
+
+  .table {
+    width: 100%;
+    min-width: 800px;
+    border-collapse: collapse;
+  }
+
+  .table thead tr {
+    background: #f9fafb;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .table th {
+    padding: 12px 24px;
+    text-align: left;
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-xs);
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+  }
+  .table th.col-total { text-align: center; width: 120px; }
+  .table th.col-time { text-align: center; width: 100px; }
+  .table th.col-status { text-align: center; width: 120px; }
+  .table th.col-actions { text-align: right; width: 180px; }
+
+  .table tbody tr { border-top: 1px solid var(--color-border); }
+
+  .table td {
+    padding: 17px 24px;
+    vertical-align: middle;
+  }
+  .table td.col-total { text-align: center; }
+  .table td.col-time { text-align: center; }
+  .table td.col-status { text-align: center; }
+  .table td.col-actions { text-align: right; }
+
+  .customer {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    background: var(--color-blue-100);
+    color: var(--color-blue-600);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-xs);
+  }
+  .avatar--lg { width: 40px; height: 40px; font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); }
+
+  .customer__info { display: flex; flex-direction: column; min-width: 0; }
+  .customer__name {
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-sm);
+    color: var(--color-text-primary);
+  }
+  .customer__phone {
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-xs);
+    color: var(--color-text-secondary);
+  }
+  .customer__email {
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-xs);
+    color: var(--color-text-tertiary);
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .cart-summary { display: flex; flex-direction: column; max-width: 200px; }
+  .cart-summary__item {
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-sm);
+    color: var(--color-text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .cart-summary__qty {
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  .amount {
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-sm);
+    color: var(--color-text-primary);
+    white-space: nowrap;
+  }
+
+  .time-ago {
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-sm);
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+  }
+
+  .status-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 9px;
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-xs);
+    white-space: nowrap;
+  }
+  .status-tag--pending {
+    background: var(--color-amber-bg);
+    border-color: var(--color-amber-border);
+    color: var(--color-amber-700);
+  }
+  .status-tag--pending .status-tag__dot {
+    width: 6px; height: 6px; border-radius: var(--radius-full);
+    background: var(--color-amber-500);
+  }
+  .status-tag--sent {
+    background: var(--color-blue-bg);
+    border-color: var(--color-blue-border);
+    color: var(--color-blue-700);
+  }
+  .status-tag--success {
+    background: var(--color-green-bg);
+    border-color: var(--color-green-border);
+    color: var(--color-green-700);
+  }
+
+  .actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+
+  .action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 11px;
+    background: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-xs);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-xs);
+    color: var(--color-text-primary);
+    white-space: nowrap;
+  }
+  .action-btn:hover:not(:disabled) { background: var(--color-bg); }
+  .action-btn:disabled {
+    background: #f9fafb;
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .action-btn--block {
+    flex: 1;
+    justify-content: center;
+    padding: 9px 1px;
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-sm);
+  }
+
+  /* ---- Mobile / tablet card list ---- */
+  .cards {
+    display: none;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding: var(--space-md);
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    padding: 17px;
+    background: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xs);
+  }
+
+  .card__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-xs);
+  }
+
+  .card__identity { display: flex; align-items: center; gap: var(--space-sm); min-width: 0; }
+
+  .card__divider {
+    height: 1px;
+    background: var(--color-border);
+    border: none;
+    margin: 0;
+  }
+
+  .card__body { display: flex; flex-direction: column; gap: var(--space-xs); }
+
+  .card__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+  }
+  .card__row--top { align-items: flex-start; }
+
+  .card__row-label {
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-sm);
+    color: var(--color-text-secondary);
+    flex-shrink: 0;
+  }
+  .card__row-label--strong { font-weight: var(--font-weight-medium); }
+
+  .card__cart-info { display: flex; flex-direction: column; align-items: flex-end; text-align: right; }
+  .card__cart-item {
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-sm);
+    color: var(--color-text-primary);
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .card__cart-qty {
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  .card__time { font-size: var(--font-size-sm); line-height: var(--line-height-sm); color: var(--color-text-primary); }
+
+  .card__total {
+    font-family: var(--font-family-number);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-base);
+    line-height: var(--font-size-2xl);
+    color: var(--color-text-primary);
+  }
+
+  .card__actions {
+    display: flex;
+    gap: var(--space-xs);
+    padding-top: var(--space-xs);
+  }
+
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
+
+  /* Tablet: ≤1024px — switch to card list, stat cards stack */
+  @media (max-width: 1024px) {
+    .stats { grid-template-columns: 1fr; }
+    .list-panel { border-radius: var(--radius-xl); }
+    .table-wrapper { display: none; }
+    .cards { display: flex; }
+    .toolbar { padding: 12px 16px; }
+  }
+
+  /* Mobile: ≤768px */
+  @media (max-width: 768px) {
+    .header { padding: 12px 16px; height: auto; }
+    .header__title { font-size: var(--font-size-base); line-height: var(--line-height-base); }
+    .main { padding: var(--space-md); gap: var(--space-xl); }
+    .stats { gap: var(--space-md); }
+    .list-panel { gap: var(--space-md); }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ HEADER ============ -->
+  <header class="header">
+    <div class="header__brand">
+      <button class="header__menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="primaryNav" aria-label="開啟選單">
+        <svg class="icon" width="18" height="18" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"></path></svg>
+      </button>
+      <h1 class="header__title">廢棄購物車挽回</h1>
+    </div>
+    <nav id="primaryNav" aria-label="主選單" class="visually-hidden"></nav>
+    <div class="header__actions">
+      <button class="header__icon-btn" type="button" aria-label="搜尋">
+        <svg class="icon" width="20" height="20" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M229.66,218.34,179.6,168.28a88.11,88.11,0,1,0-11.32,11.32l50.06,50.06a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path></svg>
+      </button>
+      <button class="header__avatar" type="button" aria-label="使用者選單"></button>
+    </div>
+  </header>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+
+    <!-- Summary stat cards -->
+    <section class="stats" aria-label="摘要統計">
+      <div class="stat-card">
+        <div class="stat-card__label">
+          <svg class="icon stat-card__icon" width="18" height="18" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M230.14,58.87A8,8,0,0,0,224,56H62.68L56.6,22.57A8,8,0,0,0,48.73,16H24a8,8,0,0,0,0,16h18.1L63.6,148.42a24,24,0,0,0,4.94,10.85,28,28,0,1,0,44.4,8.73h34.12A27.75,27.75,0,0,0,144,180a28,28,0,1,0,28-28H91.17a8,8,0,0,1-7.87-6.57L80.13,128H197.72a24,24,0,0,0,23.62-19.71l9.55-42A8,8,0,0,0,230.14,58.87ZM104,204a12,12,0,1,1-12-12A12,12,0,0,1,104,204Zm88,0a12,12,0,1,1-12-12A12,12,0,0,1,192,204Zm22.14-98.85a8,8,0,0,1-7.9,6.57H77.35L65.63,72H214.71Z"></path></svg>
+          <span>累積廢棄總額 (近7天)</span>
+        </div>
+        <div class="stat-card__value-row">
+          <span class="stat-card__value">NT$ 124,500</span>
+          <span class="stat-card__badge">
+            <svg class="icon" width="12" height="12" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M205.66,149.66a8,8,0,0,1-11.32,0L136,91.31V216a8,8,0,0,1-16,0V91.31L61.66,149.66a8,8,0,0,1-11.32-11.32l72-72a8,8,0,0,1,11.32,0l72,72A8,8,0,0,1,205.66,149.66ZM200,40H56a8,8,0,0,0,0,16H200a8,8,0,0,0,0-16Z" transform="rotate(180 128 128)"></path></svg>
+            <span>12%</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card__label">
+          <svg class="icon stat-card__icon" width="18" height="18" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M164.47,195.63a8,8,0,0,1-6.7,12.37H10.23a8,8,0,0,1-6.7-12.37,95.83,95.83,0,0,1,47.22-37.71,60,60,0,1,1,66.5,0A95.83,95.83,0,0,1,164.47,195.63Zm87.91-.15a95.87,95.87,0,0,0-47.13-37.56A60,60,0,0,0,158.06,54.5a4,4,0,0,0-1.34,6.07,75.83,75.83,0,0,1,0,94.86,4,4,0,0,0,1.19,6,95.7,95.7,0,0,1,44.7,40.29,4,4,0,0,0,3.49,2h35.5a8,8,0,0,0,7.28-4.66A8.19,8.19,0,0,0,252.38,195.48Z"></path></svg>
+          <span>待挽回客戶數</span>
+        </div>
+        <div class="stat-card__value-row">
+          <span class="stat-card__value">42</span>
+          <span class="stat-card__unit">人</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card__label">
+          <svg class="icon stat-card__icon" width="18" height="18" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path></svg>
+          <span>成功挽回金額 (本月)</span>
+        </div>
+        <div class="stat-card__value-row">
+          <span class="stat-card__value stat-card__value--success">NT$ 45,800</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- List & table section -->
+    <section class="list-panel" aria-label="廢棄購物車客戶清單">
+      <div class="toolbar">
+        <div class="toolbar__filters" role="tablist" aria-label="狀態篩選">
+          <button class="filter-tab" type="button" role="tab" aria-pressed="true">全部</button>
+          <button class="filter-tab" type="button" role="tab" aria-pressed="false">未提醒</button>
+          <button class="filter-tab" type="button" role="tab" aria-pressed="false">已發送</button>
+        </div>
+        <button class="export-btn" type="button">
+          <svg class="icon" width="14" height="14" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,152v56a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V152a8,8,0,0,1,16,0v56H208V152a8,8,0,0,1,16,0ZM93.66,93.66,120,67.31V152a8,8,0,0,0,16,0V67.31l26.34,26.35a8,8,0,0,0,11.32-11.32l-40-40a8,8,0,0,0-11.32,0l-40,40A8,8,0,0,0,93.66,93.66Z"></path></svg>
+          <span>匯出清單</span>
+        </button>
+      </div>
+
+      <!-- Desktop table (≥1025px) -->
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>客戶資訊</th>
+              <th>購物車摘要</th>
+              <th class="col-total">總金額</th>
+              <th class="col-time">放棄時間</th>
+              <th class="col-status">狀態</th>
+              <th class="col-actions">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="customer">
+                  <div class="avatar">王</div>
+                  <div class="customer__info">
+                    <span class="customer__name">王小明</span>
+                    <span class="customer__phone">0912-345-678</span>
+                    <span class="customer__email">david.wang@email.com</span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="cart-summary">
+                  <span class="cart-summary__item">經典皮革托特包</span>
+                  <span class="cart-summary__qty">共 2 件商品</span>
+                </div>
+              </td>
+              <td class="col-total"><span class="amount">NT$ 4,500</span></td>
+              <td class="col-time"><span class="time-ago">2 小時前</span></td>
+              <td class="col-status">
+                <span class="status-tag status-tag--pending"><span class="status-tag__dot"></span>未提醒</span>
+              </td>
+              <td class="col-actions">
+                <div class="actions">
+                  <button class="action-btn" type="button">
+                    <svg class="icon" width="14" height="14" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48Zm-96,85.15L52.57,64H203.43ZM98.71,128,40,181.81V74.19Zm11.84,10.85,12,11.05a8,8,0,0,0,10.82,0l12-11.05,58.65,53.15H51.9ZM157.29,128,216,74.18V181.82Z"></path></svg>
+                    <span>Email</span>
+                  </button>
+                  <button class="action-btn" type="button">
+                    <svg class="icon" width="14" height="14" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M176,16H80A24,24,0,0,0,56,40V216a24,24,0,0,0,24,24h96a24,24,0,0,0,24-24V40A24,24,0,0,0,176,16Zm8,200a8,8,0,0,1-8,8H80a8,8,0,0,1-8-8V40a8,8,0,0,1,8-8h96a8,8,0,0,1,8,8ZM140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180Z"></path></svg>
+                    <span>SMS</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="customer">
+                  <div class="avatar">李</div>
+                  <div class="customer__info">
+                    <span class="customer__name">李小華</span>
+                    <span class="customer__phone">無手機號碼</span>
+                    <span class="customer__email">jane.lee@email.com</span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="cart-summary">
+                  <span class="cart-summary__item">保濕精華液30ml</span>
+                  <span class="cart-summary__qty">共 1 件商品</span>
+                </div>
+              </td>
+              <td class="col-total"><span class="amount">NT$ 1,200</span></td>
+              <td class="col-time"><span class="time-ago">1 天前</span></td>
+              <td class="col-status">
+                <span class="status-tag status-tag--sent">
+                  <svg class="icon" width="12" height="12" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M243.31,90.91,207.6,126.63l9.14,51.83a16,16,0,0,1-23.31,16.99L148,168.61l-45.43,26.84a16,16,0,0,1-23.31-17l9.14-51.83L52.69,90.91A16,16,0,0,1,61.47,63.4l52-7.51L136.71,9.6a16,16,0,0,1,28.58,0l23.24,46.29,52,7.51A16,16,0,0,1,243.31,90.91Z" transform="translate(0 26) scale(1 0.9)"></path></svg>
+                  已發 Email
+                </span>
+              </td>
+              <td class="col-actions">
+                <div class="actions">
+                  <button class="action-btn" type="button">
+                    <svg class="icon" width="14" height="14" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48Zm-96,85.15L52.57,64H203.43ZM98.71,128,40,181.81V74.19Zm11.84,10.85,12,11.05a8,8,0,0,0,10.82,0l12-11.05,58.65,53.15H51.9ZM157.29,128,216,74.18V181.82Z"></path></svg>
+                    <span>Email</span>
+                  </button>
+                  <button class="action-btn" type="button" disabled>
+                    <svg class="icon" width="14" height="14" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M176,16H80A24,24,0,0,0,56,40V216a24,24,0,0,0,24,24h96a24,24,0,0,0,24-24V40A24,24,0,0,0,176,16Zm8,200a8,8,0,0,1-8,8H80a8,8,0,0,1-8-8V40a8,8,0,0,1,8-8h96a8,8,0,0,1,8,8ZM140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180Z"></path></svg>
+                    <span>SMS</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="customer">
+                  <div class="avatar">陳</div>
+                  <div class="customer__info">
+                    <span class="customer__name">陳大山</span>
+                    <span class="customer__phone">0987-654-321</span>
+                    <span class="customer__email">mike.chen@email.com</span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="cart-summary">
+                  <span class="cart-summary__item">機械鍵盤 青軸</span>
+                  <span class="cart-summary__qty">共 1 件商品</span>
+                </div>
+              </td>
+              <td class="col-total"><span class="amount">NT$ 2,800</span></td>
+              <td class="col-time"><span class="time-ago">3 天前</span></td>
+              <td class="col-status">
+                <span class="status-tag status-tag--success">
+                  <svg class="icon" width="12" height="12" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M226.83,74.83l-128,128a4,4,0,0,1-5.66,0l-56-56a4,4,0,0,1,5.66-5.66L96,194.34,221.17,69.17a4,4,0,0,1,5.66,5.66Z"></path></svg>
+                  已結帳
+                </span>
+              </td>
+              <td class="col-actions">
+                <div class="actions">
+                  <button class="action-btn" type="button" disabled>
+                    <svg class="icon" width="14" height="14" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48Zm-96,85.15L52.57,64H203.43ZM98.71,128,40,181.81V74.19Zm11.84,10.85,12,11.05a8,8,0,0,0,10.82,0l12-11.05,58.65,53.15H51.9ZM157.29,128,216,74.18V181.82Z"></path></svg>
+                    <span>Email</span>
+                  </button>
+                  <button class="action-btn" type="button" disabled>
+                    <svg class="icon" width="14" height="14" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M176,16H80A24,24,0,0,0,56,40V216a24,24,0,0,0,24,24h96a24,24,0,0,0,24-24V40A24,24,0,0,0,176,16Zm8,200a8,8,0,0,1-8,8H80a8,8,0,0,1-8-8V40a8,8,0,0,1,8-8h96a8,8,0,0,1,8,8ZM140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180Z"></path></svg>
+                    <span>SMS</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="customer">
+                  <div class="avatar">林</div>
+                  <div class="customer__info">
+                    <span class="customer__name">林小玉</span>
+                    <span class="customer__phone">0933-111-222</span>
+                    <span class="customer__email">mary.lin@email.com</span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="cart-summary">
+                  <span class="cart-summary__item">香氛蠟燭組</span>
+                  <span class="cart-summary__qty">共 1 件商品</span>
+                </div>
+              </td>
+              <td class="col-total"><span class="amount">NT$ 1,580</span></td>
+              <td class="col-time"><span class="time-ago">5 小時前</span></td>
+              <td class="col-status">
+                <span class="status-tag status-tag--pending"><span class="status-tag__dot"></span>未提醒</span>
+              </td>
+              <td class="col-actions">
+                <div class="actions">
+                  <button class="action-btn" type="button">
+                    <svg class="icon" width="14" height="14" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48Zm-96,85.15L52.57,64H203.43ZM98.71,128,40,181.81V74.19Zm11.84,10.85,12,11.05a8,8,0,0,0,10.82,0l12-11.05,58.65,53.15H51.9ZM157.29,128,216,74.18V181.82Z"></path></svg>
+                    <span>Email</span>
+                  </button>
+                  <button class="action-btn" type="button">
+                    <svg class="icon" width="14" height="14" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M176,16H80A24,24,0,0,0,56,40V216a24,24,0,0,0,24,24h96a24,24,0,0,0,24-24V40A24,24,0,0,0,176,16Zm8,200a8,8,0,0,1-8,8H80a8,8,0,0,1-8-8V40a8,8,0,0,1,8-8h96a8,8,0,0,1,8,8ZM140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180Z"></path></svg>
+                    <span>SMS</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile / tablet card list (≤1024px) -->
+      <div class="cards">
+        <article class="card">
+          <div class="card__header">
+            <div class="card__identity">
+              <div class="avatar avatar--lg">王</div>
+              <div class="customer__info">
+                <span class="customer__name">王小明</span>
+                <span class="customer__phone">0912-345-678</span>
+                <span class="customer__email">david.wang@email.com</span>
+              </div>
+            </div>
+            <span class="status-tag status-tag--pending"><span class="status-tag__dot"></span>未提醒</span>
+          </div>
+          <hr class="card__divider">
+          <div class="card__body">
+            <div class="card__row card__row--top">
+              <span class="card__row-label">購物車</span>
+              <div class="card__cart-info">
+                <span class="card__cart-item">經典皮革托特包</span>
+                <span class="card__cart-qty">共 2 件</span>
+              </div>
+            </div>
+            <div class="card__row">
+              <span class="card__row-label">放棄時間</span>
+              <span class="card__time">2 小時前</span>
+            </div>
+            <div class="card__row">
+              <span class="card__row-label card__row-label--strong">總金額</span>
+              <span class="card__total">NT$ 4,500</span>
+            </div>
+          </div>
+          <div class="card__actions">
+            <button class="action-btn action-btn--block" type="button">
+              <svg class="icon" width="16" height="16" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48Zm-96,85.15L52.57,64H203.43ZM98.71,128,40,181.81V74.19Zm11.84,10.85,12,11.05a8,8,0,0,0,10.82,0l12-11.05,58.65,53.15H51.9ZM157.29,128,216,74.18V181.82Z"></path></svg>
+              <span>Email</span>
+            </button>
+            <button class="action-btn action-btn--block" type="button">
+              <svg class="icon" width="16" height="16" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M176,16H80A24,24,0,0,0,56,40V216a24,24,0,0,0,24,24h96a24,24,0,0,0,24-24V40A24,24,0,0,0,176,16Zm8,200a8,8,0,0,1-8,8H80a8,8,0,0,1-8-8V40a8,8,0,0,1,8-8h96a8,8,0,0,1,8,8ZM140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180Z"></path></svg>
+              <span>SMS</span>
+            </button>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card__header">
+            <div class="card__identity">
+              <div class="avatar avatar--lg">李</div>
+              <div class="customer__info">
+                <span class="customer__name">李小華</span>
+                <span class="customer__phone">無手機號碼</span>
+                <span class="customer__email">jane.lee@email.com</span>
+              </div>
+            </div>
+            <span class="status-tag status-tag--sent">
+              <svg class="icon" width="12" height="12" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M243.31,90.91,207.6,126.63l9.14,51.83a16,16,0,0,1-23.31,16.99L148,168.61l-45.43,26.84a16,16,0,0,1-23.31-17l9.14-51.83L52.69,90.91A16,16,0,0,1,61.47,63.4l52-7.51L136.71,9.6a16,16,0,0,1,28.58,0l23.24,46.29,52,7.51A16,16,0,0,1,243.31,90.91Z" transform="translate(0 26) scale(1 0.9)"></path></svg>
+              已發送
+            </span>
+          </div>
+          <hr class="card__divider">
+          <div class="card__body">
+            <div class="card__row card__row--top">
+              <span class="card__row-label">購物車</span>
+              <div class="card__cart-info">
+                <span class="card__cart-item">保濕精華液 30ml</span>
+                <span class="card__cart-qty">共 1 件</span>
+              </div>
+            </div>
+            <div class="card__row">
+              <span class="card__row-label">放棄時間</span>
+              <span class="card__time">1 天前</span>
+            </div>
+            <div class="card__row">
+              <span class="card__row-label card__row-label--strong">總金額</span>
+              <span class="card__total">NT$ 1,200</span>
+            </div>
+          </div>
+          <div class="card__actions">
+            <button class="action-btn action-btn--block" type="button">
+              <svg class="icon" width="16" height="16" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48Zm-96,85.15L52.57,64H203.43ZM98.71,128,40,181.81V74.19Zm11.84,10.85,12,11.05a8,8,0,0,0,10.82,0l12-11.05,58.65,53.15H51.9ZM157.29,128,216,74.18V181.82Z"></path></svg>
+              <span>Email</span>
+            </button>
+            <button class="action-btn action-btn--block" type="button" disabled>
+              <svg class="icon" width="16" height="16" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M176,16H80A24,24,0,0,0,56,40V216a24,24,0,0,0,24,24h96a24,24,0,0,0,24-24V40A24,24,0,0,0,176,16Zm8,200a8,8,0,0,1-8,8H80a8,8,0,0,1-8-8V40a8,8,0,0,1,8-8h96a8,8,0,0,1,8,8ZM140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180Z"></path></svg>
+              <span>SMS</span>
+            </button>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card__header">
+            <div class="card__identity">
+              <div class="avatar avatar--lg">陳</div>
+              <div class="customer__info">
+                <span class="customer__name">陳大山</span>
+                <span class="customer__phone">0987-654-321</span>
+                <span class="customer__email">mike.chen@email.com</span>
+              </div>
+            </div>
+            <span class="status-tag status-tag--success">
+              <svg class="icon" width="12" height="12" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M226.83,74.83l-128,128a4,4,0,0,1-5.66,0l-56-56a4,4,0,0,1,5.66-5.66L96,194.34,221.17,69.17a4,4,0,0,1,5.66,5.66Z"></path></svg>
+              已結帳
+            </span>
+          </div>
+          <hr class="card__divider">
+          <div class="card__body">
+            <div class="card__row card__row--top">
+              <span class="card__row-label">購物車</span>
+              <div class="card__cart-info">
+                <span class="card__cart-item">機械鍵盤 青軸</span>
+                <span class="card__cart-qty">共 1 件</span>
+              </div>
+            </div>
+            <div class="card__row">
+              <span class="card__row-label">放棄時間</span>
+              <span class="card__time">3 天前</span>
+            </div>
+            <div class="card__row">
+              <span class="card__row-label card__row-label--strong">總金額</span>
+              <span class="card__total">NT$ 2,800</span>
+            </div>
+          </div>
+          <div class="card__actions">
+            <button class="action-btn action-btn--block" type="button" disabled>
+              <svg class="icon" width="16" height="16" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48Zm-96,85.15L52.57,64H203.43ZM98.71,128,40,181.81V74.19Zm11.84,10.85,12,11.05a8,8,0,0,0,10.82,0l12-11.05,58.65,53.15H51.9ZM157.29,128,216,74.18V181.82Z"></path></svg>
+              <span>Email</span>
+            </button>
+            <button class="action-btn action-btn--block" type="button" disabled>
+              <svg class="icon" width="16" height="16" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M176,16H80A24,24,0,0,0,56,40V216a24,24,0,0,0,24,24h96a24,24,0,0,0,24-24V40A24,24,0,0,0,176,16Zm8,200a8,8,0,0,1-8,8H80a8,8,0,0,1-8-8V40a8,8,0,0,1,8-8h96a8,8,0,0,1,8,8ZM140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180Z"></path></svg>
+              <span>SMS</span>
+            </button>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card__header">
+            <div class="card__identity">
+              <div class="avatar avatar--lg">林</div>
+              <div class="customer__info">
+                <span class="customer__name">林小玉</span>
+                <span class="customer__phone">0933-111-222</span>
+                <span class="customer__email">mary.lin@email.com</span>
+              </div>
+            </div>
+            <span class="status-tag status-tag--pending"><span class="status-tag__dot"></span>未提醒</span>
+          </div>
+          <hr class="card__divider">
+          <div class="card__body">
+            <div class="card__row card__row--top">
+              <span class="card__row-label">購物車</span>
+              <div class="card__cart-info">
+                <span class="card__cart-item">香氛蠟燭組</span>
+                <span class="card__cart-qty">共 1 件</span>
+              </div>
+            </div>
+            <div class="card__row">
+              <span class="card__row-label">放棄時間</span>
+              <span class="card__time">5 小時前</span>
+            </div>
+            <div class="card__row">
+              <span class="card__row-label card__row-label--strong">總金額</span>
+              <span class="card__total">NT$ 1,580</span>
+            </div>
+          </div>
+          <div class="card__actions">
+            <button class="action-btn action-btn--block" type="button">
+              <svg class="icon" width="16" height="16" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48Zm-96,85.15L52.57,64H203.43ZM98.71,128,40,181.81V74.19Zm11.84,10.85,12,11.05a8,8,0,0,0,10.82,0l12-11.05,58.65,53.15H51.9ZM157.29,128,216,74.18V181.82Z"></path></svg>
+              <span>Email</span>
+            </button>
+            <button class="action-btn action-btn--block" type="button">
+              <svg class="icon" width="16" height="16" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M176,16H80A24,24,0,0,0,56,40V216a24,24,0,0,0,24,24h96a24,24,0,0,0,24-24V40A24,24,0,0,0,176,16Zm8,200a8,8,0,0,1-8,8H80a8,8,0,0,1-8-8V40a8,8,0,0,1,8-8h96a8,8,0,0,1,8,8ZM140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180Z"></path></svg>
+              <span>SMS</span>
+            </button>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  // Hamburger menu toggle — accessible, minimal.
+  // This view has no secondary navigation content in the source design;
+  // the toggle simply exposes the standard expand/collapse affordance
+  // (aria-expanded) requested for tablet/mobile, wired to the existing nav landmark.
+  (function () {
+    var toggle = document.getElementById('menuToggle');
+    var nav = document.getElementById('primaryNav');
+
+    toggle.addEventListener('click', function () {
+      var expanded = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!expanded));
+      nav.classList.toggle('visually-hidden', expanded);
+    });
+  })();
+
+  // Filter tabs — simple pressed-state toggle (visual only, matches design).
+  (function () {
+    var tabs = document.querySelectorAll('.filter-tab');
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        tabs.forEach(function (t) { t.setAttribute('aria-pressed', 'false'); });
+        tab.setAttribute('aria-pressed', 'true');
+      });
+    });
+  })();
+</script>
+</body>
+</html>
