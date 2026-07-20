@@ -3,381 +3,387 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>現代電商結帳 - 加購功能實作</title>
+    <title>新增優惠券 - goezshop</title>
     
-    <!-- Tailwind CSS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 screens: {
-                    'md': '800px',   // 對應 800px - 1279px 區間
-                    'lg': '1280px',  // 對應 1280px 以上區間
+                    'md': '800px',
+                    'lg': '1280px',
+                },
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans TC"', 'sans-serif'],
+                    },
+                    colors: {
+                        appbg: '#F3F6F9', 
+                        logo: '#5B4EFA', 
+                        btn: {
+                            DEFAULT: '#334155', 
+                            hover: '#1e293b'
+                        }
+                    }
                 }
             }
         }
     </script>
-    
-    <!-- Google Fonts: Inter & Noto Sans TC -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
-    
-    <!-- FontAwesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Custom CSS for specific behaviors -->
     <style>
         body {
-            font-family: 'Inter', 'Noto Sans TC', sans-serif;
-            background-color: #F9FAFB; /* 淺灰色背景，凸顯白色卡片 */
+            background-color: theme('colors.appbg');
+        }
+        
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
         }
 
-        /* 隱藏水平捲軸但保留滑動功能 (適用於手機版加購區塊) */
-        .hide-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .hide-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-
-        /* 價格跳動動畫 */
-        @keyframes pop {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); color: #EF4444; }
-            100% { transform: scale(1); }
-        }
-        .price-update {
-            animation: pop 0.4s ease-out;
+        .custom-checkbox:checked {
+            background-color: theme('colors.logo');
+            border-color: theme('colors.logo');
         }
     </style>
 </head>
-<body class="text-gray-800 pb-20 lg:pb-0">
+<body class="text-slate-800 antialiased min-h-screen pb-20">
 
-    <!-- 頂部導覽列 -->
-    <nav class="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <i class="fa-solid fa-bag-shopping text-indigo-600 text-xl"></i>
-                <span class="font-bold text-lg tracking-wide">goezshop</span>
-            </div>
-            <div class="text-sm font-medium text-gray-500">
-                <i class="fa-solid fa-lock mr-1"></i> 安全結帳
-            </div>
+    <header class="bg-white h-16 flex items-center px-6 sticky top-0 z-20 border-b border-slate-200">
+        <div class="flex items-center gap-2 font-bold text-xl tracking-tight text-slate-900">
+            <svg class="w-6 h-6 text-logo" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 6h-2c0-2.8-2.2-5-5-5S7 3.2 7 6H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7-3c1.7 0 3 1.3 3 3H9c0-1.7 1.3-3 3-3zm7 17H5V8h14v12z"/>
+                <circle cx="9" cy="10" r="1.5"/>
+                <circle cx="15" cy="10" r="1.5"/>
+            </svg>
+            goezshop
         </div>
-    </nav>
+    </header>
 
-    <!-- 主容器 -->
-    <main class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-8 flex flex-col md:flex-row gap-6 md:gap-8 lg:gap-12">
+    <main class="w-full max-w-[1200px] mx-auto px-4 md:px-8 lg:px-12 py-8">
         
-        <!-- 左側：購物車內容與加購區 -->
-        <div class="w-full md:w-3/5 lg:w-2/3 flex flex-col gap-6 md:gap-8">
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold text-slate-900">新增優惠券</h1>
+        </div>
+        
+        <form id="couponForm">
             
-            <!-- 1. 購物車主要商品清單 -->
-            <section class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-                    <h2 class="font-bold text-lg">您的購物車</h2>
-                    <span class="text-sm text-gray-500">共 <span id="main-item-count">0</span> 件商品</span>
+            <section class="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 lg:p-10 mb-6 flex flex-col md:flex-row gap-6 md:gap-8 lg:gap-12 items-start shadow-sm">
+                <div class="w-full md:w-1/3 flex-shrink-0 md:max-w-[260px] lg:max-w-[320px]">
+                    <h2 class="text-lg md:text-xl font-bold text-slate-900">優惠券</h2>
+                    <p class="text-sm text-slate-500 mt-2 md:mt-3 leading-relaxed">
+                        建議6個字以下，使用「數字」「全大寫英文」「全大寫英文＋數字」。<br>
+                        <span class="text-slate-400 text-xs mt-1 block">* 應避免出現容易混淆的字，例：數字 1 英文小寫 l</span>
+                    </p>
                 </div>
-                <div id="cart-container" class="p-6 flex flex-col gap-6">
-                    <!-- 購物車商品會透過 JS 渲染在這裡 -->
+                
+                <div class="w-full md:w-2/3 flex-grow flex flex-col gap-6">
+                    <div>
+                        <div class="flex items-center gap-2 mb-2">
+                            <label for="coupon-name" class="block text-sm font-medium text-slate-700">名稱</label>
+                            <span class="text-red-500 text-xs font-medium">必填</span>
+                        </div>
+                        <input type="text" id="coupon-name" placeholder="例如：2026年終優惠" required
+                            class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-400 focus:border-slate-400 transition-colors placeholder:text-slate-300">
+                    </div>
+                    
+                    <div>
+                        <div class="flex items-center gap-2 mb-2">
+                            <label for="coupon-code" class="block text-sm font-medium text-slate-700">代碼</label>
+                            <span class="text-red-500 text-xs font-medium">必填</span>
+                        </div>
+                        <input type="text" id="coupon-code" placeholder="例如：SAVE2026" required
+                            class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-400 focus:border-slate-400 transition-colors placeholder:text-slate-300">
+                    </div>
                 </div>
             </section>
 
-            <!-- 2. 🔥 加價購/組合優惠區塊 (Figma 實作重點) -->
-            <section class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative">
-                <div class="px-6 py-5 border-b border-gray-100 bg-indigo-50/50">
-                    <h2 class="font-bold text-lg text-indigo-900 flex items-center gap-2">
-                        <i class="fa-solid fa-fire text-orange-500"></i> 
-                        獨家加價購
-                    </h2>
-                    <p class="text-sm text-indigo-700/70 mt-1">搭配以下商品，享結帳專屬優惠價！</p>
+            <section class="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 lg:p-10 mb-6 flex flex-col md:flex-row gap-6 md:gap-8 lg:gap-12 items-start shadow-sm">
+                <div class="w-full md:w-1/3 flex-shrink-0 md:max-w-[260px] lg:max-w-[320px]">
+                    <h2 class="text-lg md:text-xl font-bold text-slate-900">折扣類型</h2>
+                    <p class="text-sm text-slate-500 mt-2 md:mt-3 leading-relaxed">
+                        可設定滿1000元9折，滿2000元8折。<br>
+                        滿1000元折100，滿2000元折200...等等。
+                    </p>
                 </div>
                 
-                <!-- 水平滑動容器 (Mobile Friendly) -->
-                <!-- 這裡對應 Figma 的 Horizontal Auto Layout -->
-                <div class="px-4 md:px-6 py-6 overflow-x-auto hide-scrollbar snap-x snap-mandatory cursor-grab active:cursor-grabbing">
-                    <div id="addon-container" class="flex gap-4 md:gap-5 w-max pb-2">
-                        <!-- 加購卡片會透過 JS 渲染在這裡 -->
+                <div class="w-full md:w-2/3 flex-grow flex flex-col gap-6">
+                    <div>
+                        <div class="flex items-center gap-2 mb-2">
+                            <label for="discount-type" class="block text-sm font-medium text-slate-700">折扣種類</label>
+                            <span class="text-red-500 text-xs font-medium">必填</span>
+                        </div>
+                        <div class="relative">
+                            <select id="discount-type" required
+                                class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-slate-900 appearance-none bg-white focus:outline-none focus:ring-1 focus:ring-slate-400 focus:border-slate-400 transition-colors">
+                                <option value="" disabled selected>請選擇種類</option>
+                                <option value="fixed">固定</option>
+                                <option value="percentage">百分比</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="discount-rules-wrapper" class="hidden mt-2 pt-4 border-t border-slate-100">
+                        <div id="discount-rules-list" class="flex flex-col gap-4"></div>
+                        
+                        <button type="button" id="add-rule-btn" class="mt-4 inline-flex items-center gap-2 px-4 py-2 border border-slate-300 shadow-sm text-sm font-medium rounded-lg text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-200 transition-colors">
+                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            新增規則
+                        </button>
                     </div>
                 </div>
             </section>
-        </div>
 
-        <!-- 右側：訂單摘要 (Sticky 佈局) -->
-        <div class="w-full md:w-2/5 lg:w-1/3">
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 sticky top-24">
-                <h2 class="font-bold text-lg md:text-xl mb-6">訂單摘要</h2>
+            <section class="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 lg:p-10 mb-6 flex flex-col md:flex-row gap-6 md:gap-8 lg:gap-12 items-start shadow-sm">
+                <div class="w-full md:w-1/3 flex-shrink-0 md:max-w-[260px] lg:max-w-[320px]">
+                    <h2 class="text-lg md:text-xl font-bold text-slate-900">使用限制</h2>
+                    <p class="text-sm text-slate-500 mt-2 md:mt-3 leading-relaxed">
+                        設置優惠券的發放數量與使用條件限制。
+                    </p>
+                </div>
                 
-                <div class="space-y-4 text-sm md:text-base mb-6 pb-6 border-b border-gray-100">
-                    <div class="flex justify-between">
-                        <span class="text-gray-500">商品總計</span>
-                        <span class="font-medium" id="summary-subtotal">NT$ 0</span>
+                <div class="w-full md:w-2/3 flex-grow flex flex-col gap-6">
+                    <div>
+                        <label for="limit-uses" class="block text-sm font-medium text-slate-700 mb-2">使用次數上限</label>
+                        <div class="relative">
+                            <input type="number" id="limit-uses" placeholder="不限制" min="1"
+                                class="w-full border border-slate-300 rounded-lg pl-4 pr-10 py-2.5 text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-400 focus:border-slate-400 transition-colors placeholder:text-slate-300">
+                            <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 pointer-events-none text-sm font-medium">次</span>
+                        </div>
                     </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-500">加購優惠</span>
-                        <span class="font-medium text-indigo-600" id="summary-addon-total">+ NT$ 0</span>
+
+                    <div>
+                        <label for="min-amount" class="block text-sm font-medium text-slate-700 mb-2">最低訂單金額</label>
+                        <div class="relative">
+                            <input type="number" id="min-amount" placeholder="不限制" min="0"
+                                class="w-full border border-slate-300 rounded-lg pl-4 pr-10 py-2.5 text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-400 focus:border-slate-400 transition-colors placeholder:text-slate-300">
+                            <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 pointer-events-none text-sm font-medium">元</span>
+                        </div>
                     </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-500">運費</span>
-                        <span class="font-medium text-gray-500">免運費</span>
+
+                    <div>
+                        <label for="total-issue" class="block text-sm font-medium text-slate-700 mb-2">總發行量</label>
+                        <div class="relative">
+                            <input type="number" id="total-issue" placeholder="不限制" min="1"
+                                class="w-full border border-slate-300 rounded-lg pl-4 pr-10 py-2.5 text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-400 focus:border-slate-400 transition-colors placeholder:text-slate-300">
+                            <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 pointer-events-none text-sm font-medium">張</span>
+                        </div>
+                    </div>
+
+                    <div class="pt-1">
+                        <label class="inline-flex items-center cursor-pointer group">
+                            <input type="checkbox" id="no-combine" class="custom-checkbox w-5 h-5 rounded border-slate-300 text-logo focus:ring-slate-400 cursor-pointer transition-colors">
+                            <span class="ml-3 text-sm text-slate-700 group-hover:text-slate-900">不可與其他優惠券並用</span>
+                        </label>
                     </div>
                 </div>
+            </section>
 
-                <div class="flex justify-between items-end mb-8">
-                    <span class="font-bold text-gray-800 text-lg">總結帳金額</span>
-                    <div class="text-right">
-                        <span class="text-xs text-gray-500 block mb-1">含稅</span>
-                        <span class="font-bold text-2xl text-gray-900 transition-colors" id="summary-total">NT$ 0</span>
+            <section class="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 lg:p-10 mb-8 flex flex-col md:flex-row gap-6 md:gap-8 lg:gap-12 items-start shadow-sm">
+                <div class="w-full md:w-1/3 flex-shrink-0 md:max-w-[260px] lg:max-w-[320px]">
+                    <h2 class="text-lg md:text-xl font-bold text-slate-900">時間限制</h2>
+                    <p class="text-sm text-slate-500 mt-2 md:mt-3 leading-relaxed">
+                        設定此優惠券可被使用的有效期限。
+                    </p>
+                </div>
+                
+                <div class="w-full md:w-2/3 flex-grow flex flex-col gap-6">
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                        <div>
+                            <label for="start-date" class="block text-sm font-medium text-slate-700 mb-2">開始時間</label>
+                            <input type="date" id="start-date" value="2026-01-01"
+                                class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-400 focus:border-slate-400 transition-colors disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200 disabled:cursor-not-allowed">
+                        </div>
+                        <div>
+                            <label for="end-date" class="block text-sm font-medium text-slate-700 mb-2">結束時間</label>
+                            <input type="date" id="end-date" value="2026-12-01"
+                                class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-400 focus:border-slate-400 transition-colors disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200 disabled:cursor-not-allowed">
+                        </div>
+                    </div>
+
+                    <div class="pt-1">
+                        <label class="inline-flex items-center cursor-pointer group">
+                            <input type="checkbox" id="no-time-limit" class="custom-checkbox w-5 h-5 rounded border-slate-300 text-logo focus:ring-slate-400 cursor-pointer transition-colors">
+                            <span class="ml-3 text-sm text-slate-700 group-hover:text-slate-900">無時間限制</span>
+                        </label>
                     </div>
                 </div>
+            </section>
 
-                <button onclick="checkout()" class="w-full text-white font-bold py-4 rounded-xl transition-all duration-300 flex justify-center items-center gap-2 transform hover:-translate-y-0.5" style="background-color: #4F5D73; box-shadow: 0 10px 15px -3px rgba(79, 93, 115, 0.3), 0 4px 6px -4px rgba(79, 93, 115, 0.3);">
-                    <i class="fa-solid fa-credit-card"></i>
-                    前往付款
+            <div class="flex flex-row-reverse items-center gap-4 pt-2">
+                <button type="submit" class="px-8 py-2.5 rounded-lg border border-transparent text-white bg-btn hover:bg-btn-hover font-medium shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500">
+                    儲存設定
                 </button>
-                
-                <p class="text-xs text-center text-gray-400 mt-4">
-                    <i class="fa-solid fa-shield-halved"></i> 256-bit SSL 安全加密連線
-                </p>
+                <button type="button" class="px-8 py-2.5 rounded-lg border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-200">
+                    取消
+                </button>
             </div>
-        </div>
+            
+        </form>
     </main>
 
-    <!-- Toast 通知容器 (替代 alert) -->
-    <div id="toast-container" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 z-50 flex flex-col gap-2"></div>
-
-    <!-- 應用程式邏輯 -->
     <script>
-        // 1. 狀態與資料定義 (模擬從資料庫或前一頁傳來的資料)
-        
-        // 主購物車商品
-        const cartItems = [
-            {
-                id: 'm1',
-                name: '極簡風雙層真空保溫瓶',
-                variant: '霧面黑 / 500ml',
-                price: 890,
-                qty: 1,
-                img: 'https://placehold.co/200x200/F3F4F6/9CA3AF?text=Thermos'
-            },
-            {
-                id: 'm2',
-                name: '有機棉休閒帆布托特包',
-                variant: '米白色',
-                price: 1280,
-                qty: 1,
-                img: 'https://placehold.co/200x200/F3F4F6/9CA3AF?text=Tote+Bag'
-            }
-        ];
+        document.addEventListener('DOMContentLoaded', () => {
+            const discountTypeSelect = document.getElementById('discount-type');
+            const rulesWrapper = document.getElementById('discount-rules-wrapper');
+            const rulesList = document.getElementById('discount-rules-list');
+            const addRuleBtn = document.getElementById('add-rule-btn');
 
-        // 加購區商品 (加入 added 狀態來控制 Figma 中的 Variants)
-        const addons = [
-            {
-                id: 'a1',
-                name: '專屬矽膠防滑杯底套',
-                desc: '完美保護保溫瓶底部',
-                price: 99,
-                originalPrice: 150,
-                img: 'https://placehold.co/150x150/EEF2FF/4F46E5?text=Sleeve',
-                added: false // 對應 Figma: State = Default
-            },
-            {
-                id: 'a2',
-                name: '環保不鏽鋼吸管 3 件組',
-                desc: '附專屬收納刷',
-                price: 199,
-                originalPrice: 350,
-                img: 'https://placehold.co/150x150/EEF2FF/4F46E5?text=Straw',
-                added: false
-            },
-            {
-                id: 'a3',
-                name: '皮革防水杯墊',
-                desc: '質感桌面必備',
-                price: 149,
-                originalPrice: 280,
-                img: 'https://placehold.co/150x150/EEF2FF/4F46E5?text=Coaster',
-                added: false
-            },
-            {
-                id: 'a4',
-                name: '天然精油抗菌洗手慕斯',
-                desc: '隨身輕巧版 50ml',
-                price: 89,
-                originalPrice: 120,
-                img: 'https://placehold.co/150x150/EEF2FF/4F46E5?text=Soap',
-                added: false
-            }
-        ];
+            const getRightColumnInfo = (type) => {
+                if (type === 'percentage') {
+                    return { label: '折扣百分比 例：10%請寫0.1', placeholder: '0.1' };
+                } else {
+                    return { label: '折扣金額 100元請填100', placeholder: '50' };
+                }
+            };
 
-        // 2. 畫面渲染函數
+            const updateRuleIndices = () => {
+                const ruleItems = rulesList.querySelectorAll('.rule-item');
+                ruleItems.forEach((item, index) => {
+                    const indexLabel = item.querySelector('.rule-index');
+                    if (indexLabel) {
+                        indexLabel.textContent = `#${index + 1}`;
+                    }
+                });
+            };
 
-        // 格式化金錢
-        const formatMoney = (amount) => {
-            return 'NT$ ' + amount.toLocaleString('zh-TW');
-        };
-
-        // 渲染主購物車
-        const renderCart = () => {
-            const container = document.getElementById('cart-container');
-            document.getElementById('main-item-count').innerText = cartItems.length;
-            
-            let html = '';
-            cartItems.forEach(item => {
-                html += `
-                    <div class="flex gap-4 md:gap-6 items-start">
-                        <img src="${item.img}" alt="${item.name}" class="w-20 h-20 md:w-28 md:h-28 lg:w-32 lg:h-32 object-cover rounded-lg border border-gray-100">
-                        <div class="flex-1">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <h3 class="font-medium text-gray-900 md:text-lg lg:text-xl">${item.name}</h3>
-                                    <p class="text-sm text-gray-500 mt-1 md:mt-2">${item.variant}</p>
-                                </div>
-                                <span class="font-medium md:text-lg">${formatMoney(item.price)}</span>
-                            </div>
-                            <div class="mt-4 md:mt-6 flex justify-between items-center">
-                                <div class="text-sm md:text-base text-gray-500 bg-gray-50 px-3 md:px-4 py-1 md:py-1.5 rounded-md">數量: ${item.qty}</div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        };
-
-        // 渲染加購區塊 (Figma 卡片實作)
-        const renderAddons = () => {
-            const container = document.getElementById('addon-container');
-            let html = '';
-            
-            addons.forEach(item => {
-                // 根據狀態決定按鈕樣式 (對應 Figma Variants)
-                const btnClass = item.added 
-                    ? 'bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200' 
-                    : 'bg-white text-indigo-600 border-indigo-600 hover:bg-indigo-50';
+            const createRuleItem = () => {
+                const currentType = discountTypeSelect.value;
+                const rightInfo = getRightColumnInfo(currentType);
                 
-                const btnIcon = item.added ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-plus"></i>';
-                const btnText = item.added ? '已加購' : '加購';
+                const ruleDiv = document.createElement('div');
+                ruleDiv.className = 'rule-item border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm';
                 
-                // 卡片外框狀態
-                const cardBorder = item.added ? 'border-indigo-300 ring-1 ring-indigo-300 bg-indigo-50/20' : 'border-gray-200 bg-white';
-
-                html += `
-                    <div class="snap-start shrink-0 w-40 md:w-48 lg:w-56 border rounded-xl p-3 md:p-4 flex flex-col transition-all duration-300 relative ${cardBorder}">
-                        ${item.added ? '<div class="absolute -top-2 -right-2 bg-indigo-500 text-white text-xs w-6 h-6 flex items-center justify-center rounded-full shadow-sm z-10"><i class="fa-solid fa-check"></i></div>' : ''}
-                        
-                        <div class="w-full aspect-square bg-gray-50 rounded-lg overflow-hidden mb-3 md:mb-4">
-                            <img src="${item.img}" alt="${item.name}" class="w-full h-full object-cover mix-blend-multiply">
-                        </div>
-                        
-                        <div class="flex-1 flex flex-col">
-                            <h4 class="font-medium text-sm md:text-base text-gray-900 leading-tight mb-1 md:mb-2 line-clamp-2">${item.name}</h4>
-                            <p class="text-xs md:text-sm text-gray-500 mb-2 md:mb-4">${item.desc}</p>
-                            
-                            <div class="mt-auto flex items-baseline gap-1.5 md:gap-2 mb-3 md:mb-4">
-                                <span class="font-bold text-red-500 text-base md:text-lg">${formatMoney(item.price)}</span>
-                                <span class="text-xs md:text-sm text-gray-400 line-through">${formatMoney(item.originalPrice)}</span>
+                ruleDiv.innerHTML = `
+                    <div class="bg-slate-50 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between">
+                        <div class="flex items-center gap-1">
+                            <button type="button" class="text-slate-400 hover:text-slate-600 p-1 cursor-move" title="拖曳排序">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path></svg>
+                            </button>
+                            <div class="flex items-center text-sm text-slate-600 border-l border-slate-200 pl-3 ml-2">
+                                <span class="mr-1 hidden sm:inline">移動到</span>
+                                <select class="text-sm border-none bg-transparent focus:ring-0 cursor-pointer pr-6 py-0.5 text-slate-700 font-medium">
+                                    <option>1</option>
+                                </select>
                             </div>
-                            
-                            <button onclick="toggleAddon('${item.id}')" 
-                                    class="w-full py-2 md:py-2.5 px-3 border rounded-lg text-sm md:text-base font-medium transition-colors flex items-center justify-center gap-1.5 ${btnClass}">
-                                ${btnIcon} ${btnText}
+                            <button type="button" class="delete-rule-btn text-slate-400 hover:text-red-500 border-l border-slate-200 pl-4 ml-2 py-1 transition-colors" title="刪除此規則">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                             </button>
                         </div>
+                        <div class="rule-index text-sm font-bold text-logo">
+                            #1
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-slate-200">
+                        <div class="flex-1 p-4 bg-white hover:bg-slate-50 focus-within:bg-white focus-within:ring-1 focus-within:ring-inset focus-within:ring-slate-400 transition-all">
+                            <div class="flex justify-between items-center mb-1.5">
+                                <label class="text-xs font-medium text-slate-500">金額滿X元</label>
+                                <span class="text-red-500 text-xs font-bold">*</span>
+                            </div>
+                            <input type="number" min="0" placeholder="0" required class="w-full border-none p-0 text-slate-900 focus:outline-none focus:ring-0 text-sm placeholder:text-slate-300 bg-transparent">
+                        </div>
+                        
+                        <div class="flex-1 p-4 bg-white hover:bg-slate-50 focus-within:bg-white focus-within:ring-1 focus-within:ring-inset focus-within:ring-slate-400 transition-all">
+                            <div class="flex justify-between items-center mb-1.5">
+                                <label class="dynamic-right-label text-xs font-medium text-slate-500">${rightInfo.label}</label>
+                                <span class="text-red-500 text-xs font-bold">*</span>
+                            </div>
+                            <input type="number" min="0" step="0.01" placeholder="${rightInfo.placeholder}" required class="w-full border-none p-0 text-slate-900 focus:outline-none focus:ring-0 text-sm placeholder:text-slate-300 bg-transparent">
+                        </div>
                     </div>
                 `;
-            });
-            
-            container.innerHTML = html;
-        };
 
-        // 3. 互動邏輯與金額計算
+                const deleteBtn = ruleDiv.querySelector('.delete-rule-btn');
+                deleteBtn.addEventListener('click', () => {
+                    ruleDiv.remove();
+                    updateRuleIndices();
+                });
 
-        // 切換加購狀態
-        const toggleAddon = (id) => {
-            const itemIndex = addons.findIndex(a => a.id === id);
-            if (itemIndex > -1) {
-                // 切換 boolean 狀態
-                addons[itemIndex].added = !addons[itemIndex].added;
-                
-                // 重新渲染加購區與摘要
-                renderAddons();
-                updateSummary();
-                
-                // 顯示回饋提示
-                if (addons[itemIndex].added) {
-                    showToast(`已將「${addons[itemIndex].name}」加入結帳！`, 'success');
+                return ruleDiv;
+            };
+
+            discountTypeSelect.addEventListener('change', () => {
+                if (discountTypeSelect.value) {
+                    rulesWrapper.classList.remove('hidden');
+                    
+                    const rightInfo = getRightColumnInfo(discountTypeSelect.value);
+                    
+                    if (rulesList.children.length === 0) {
+                        rulesList.appendChild(createRuleItem());
+                        updateRuleIndices();
+                    } else {
+                        const rightLabels = rulesList.querySelectorAll('.dynamic-right-label');
+                        const rightInputs = rulesList.querySelectorAll('.flex-1:last-child input');
+                        
+                        rightLabels.forEach(label => label.textContent = rightInfo.label);
+                        rightInputs.forEach(input => input.placeholder = rightInfo.placeholder);
+                    }
+                } else {
+                    rulesWrapper.classList.add('hidden');
                 }
-            }
-        };
+            });
 
-        // 更新訂單摘要與總價
-        const updateSummary = () => {
-            // 計算主商品總計
-            const mainSubtotal = cartItems.reduce((sum, item) => sum + (item.price * item.qty), 0);
-            
-            // 計算加購品總計
-            const addedItems = addons.filter(item => item.added);
-            const addonSubtotal = addedItems.reduce((sum, item) => sum + item.price, 0);
-            
-            // 計算總和
-            const total = mainSubtotal + addonSubtotal;
+            addRuleBtn.addEventListener('click', () => {
+                rulesList.appendChild(createRuleItem());
+                updateRuleIndices();
+            });
 
-            // 更新 DOM
-            document.getElementById('summary-subtotal').innerText = formatMoney(mainSubtotal);
-            document.getElementById('summary-addon-total').innerText = addonSubtotal > 0 ? `+ ${formatMoney(addonSubtotal)}` : 'NT$ 0';
-            
-            const totalEl = document.getElementById('summary-total');
-            totalEl.innerText = formatMoney(total);
-            
-            // 加上跳動特效
-            totalEl.classList.remove('price-update');
-            void totalEl.offsetWidth; // 觸發 reflow 讓動畫可重複播放
-            totalEl.classList.add('price-update');
-        };
+            const noTimeLimitCheckbox = document.getElementById('no-time-limit');
+            const startDateInput = document.getElementById('start-date');
+            const endDateInput = document.getElementById('end-date');
 
-        // 顯示 Toast 通知 (取代難看的 alert)
-        const showToast = (message, type = 'success') => {
-            const toastContainer = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            
-            const icon = type === 'success' ? '<i class="fa-solid fa-circle-check text-green-500"></i>' : '<i class="fa-solid fa-circle-info text-blue-500"></i>';
-            
-            toast.className = `bg-gray-900 text-white px-5 py-3 rounded-full shadow-lg text-sm font-medium flex items-center gap-2 transform transition-all duration-300 translate-y-10 opacity-0`;
-            toast.innerHTML = `${icon} ${message}`;
-            
-            toastContainer.appendChild(toast);
-            
-            // 飛入動畫
-            setTimeout(() => {
-                toast.classList.remove('translate-y-10', 'opacity-0');
-            }, 10);
-            
-            // 3秒後消失
-            setTimeout(() => {
-                toast.classList.add('translate-y-10', 'opacity-0');
+            noTimeLimitCheckbox.addEventListener('change', (e) => {
+                const isChecked = e.target.checked;
+                
+                startDateInput.disabled = isChecked;
+                endDateInput.disabled = isChecked;
+                
+                if (isChecked) {
+                    startDateInput.type = "text";
+                    startDateInput.value = "不限制";
+                    endDateInput.type = "text";
+                    endDateInput.value = "不限制";
+                } else {
+                    startDateInput.type = "date";
+                    startDateInput.value = "2026-01-01";
+                    endDateInput.type = "date";
+                    endDateInput.value = "2026-12-01";
+                }
+            });
+
+            const form = document.getElementById('couponForm');
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const submitBtn = form.querySelector('button[type="submit"]');
+                const originalText = submitBtn.textContent;
+                
+                submitBtn.textContent = "處理中...";
+                submitBtn.classList.add('opacity-80', 'cursor-not-allowed');
+                
                 setTimeout(() => {
-                    toast.remove();
-                }, 300);
-            }, 3000);
-        };
-
-        // 結帳按鈕點擊
-        const checkout = () => {
-            const addedCount = addons.filter(a => a.added).length;
-            let msg = `準備前往綠界/LinePay付款！\n包含 ${cartItems.length} 件主商品`;
-            if (addedCount > 0) {
-                msg += ` 及 ${addedCount} 件超值加購品`;
-            }
-            showToast(msg, 'info');
-        };
-
-        // 4. 初始化應用程式
-        window.onload = () => {
-            renderCart();
-            renderAddons();
-            updateSummary();
-        };
+                    submitBtn.textContent = "建立成功 ✓";
+                    submitBtn.classList.remove('bg-btn', 'hover:bg-btn-hover');
+                    submitBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+                    
+                    setTimeout(() => {
+                        submitBtn.textContent = originalText;
+                        submitBtn.classList.remove('opacity-80', 'cursor-not-allowed', 'bg-green-600', 'hover:bg-green-700');
+                        submitBtn.classList.add('bg-btn', 'hover:bg-btn-hover');
+                    }, 2000);
+                }, 800);
+            });
+        });
     </script>
 </body>
 </html>
