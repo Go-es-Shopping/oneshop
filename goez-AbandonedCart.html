@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>廢棄購物車挽回 | Goez Shop</title>
+    <style>
+        :root {
+            --color-bg: #f3f4f6;
+            --color-white: #ffffff;
+            --color-border: #e5e7eb;
+            --color-text-primary: #111827;
+            --color-text-secondary: #4b5563;
+            --color-brand: #4f46e5;
+            --font-main: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body { font-family: var(--font-main); background-color: var(--color-bg); margin: 0; color: var(--color-text-primary); }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding: 0 32px;
+            background: var(--color-white);
+            border-bottom: 1px solid var(--color-border);
+        }
+        .logo { font-weight: 700; font-size: 20px; color: #000000; }
+
+        /* Main */
+        .main { max-width: 1200px; margin: 32px auto; padding: 0 24px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 24px; }
+        .stat-card { background: var(--color-white); padding: 24px; border-radius: 12px; border: 1px solid var(--color-border); }
+        .stat-label { font-size: 14px; color: var(--color-text-secondary); margin-bottom: 8px; }
+        .stat-value { font-size: 24px; font-weight: 700; }
+
+        /* Table */
+        .panel { background: var(--color-white); border-radius: 12px; border: 1px solid var(--color-border); overflow: hidden; }
+        .table { width: 100%; border-collapse: collapse; }
+        .table th { text-align: left; padding: 16px 24px; font-size: 13px; color: var(--color-text-secondary); border-bottom: 1px solid var(--color-border); }
+        .table td { padding: 16px 24px; border-bottom: 1px solid var(--color-border); vertical-align: middle; }
+
+        /* Button-style Status */
+        .btn-status {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid var(--color-border);
+            background: var(--color-white);
+            cursor: default;
+        }
+        .btn-status--pending { border-color: #f59e0b; color: #b45309; background: #fffbeb; }
+        .btn-status--sent { border-color: #3b82f6; color: #1d4ed8; background: #eff6ff; }
+        .btn-status--success { border-color: #10b981; color: #065f46; background: #ecfdf5; }
+
+        .btn-action { padding: 6px 12px; border: 1px solid var(--color-border); border-radius: 6px; background: #fff; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo">Goez Shop</div>
+    </header>
+
+    <main class="main">
+        <h2 style="margin-bottom: 24px;">廢棄購物車挽回</h2>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">累積廢棄總額 (近7天)</div>
+                <div class="stat-value">NT$ 124,500</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">待挽回客戶數</div>
+                <div class="stat-value">42 人</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">成功挽回金額 (本月)</div>
+                <div class="stat-value" style="color: #059669;">NT$ 45,800</div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>客戶資訊</th>
+                        <th>購物車摘要</th>
+                        <th>總金額</th>
+                        <th>放棄時間</th>
+                        <th>狀態</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>王小明<br><small style="color:#9ca3af">0912-345-678</small></td>
+                        <td>經典皮革托特包</td>
+                        <td>NT$ 4,500</td>
+                        <td>2 小時前</td>
+                        <td><span class="btn-status btn-status--pending">未提醒</span></td>
+                        <td><button class="btn-action">Email</button> <button class="btn-action">SMS</button></td>
+                    </tr>
+                    <tr>
+                        <td>李小華<br><small style="color:#9ca3af">無手機號碼</small></td>
+                        <td>保濕精華液</td>
+                        <td>NT$ 1,200</td>
+                        <td>1 天前</td>
+                        <td><span class="btn-status btn-status--sent">已發 Email</span></td>
+                        <td><button class="btn-action">Email</button> <button class="btn-action" disabled>SMS</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+</body>
+</html>
