@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>電商數據與追蹤設定</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: '#4F5C6E',
+                        bg: '#F4F5F7',
+                        logo: '#5D3FD3',
+                        /* 自定義的 focus 邊框色，調整為更偏灰的冷灰藍 */
+                        focusRing: '#94A3B8' 
+                    },
+                    screens: { 'sm': '1px', 'md': '800px', 'lg': '1280px' }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #F4F5F7; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen">
+
+    <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+            <span class="font-bold text-xl text-slate-800 tracking-tight">Goez Shop</span>
+        </div>
+    </header>
+
+    <main class="p-6 md:p-8 lg:p-10 max-w-7xl mx-auto">
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold text-slate-800">數據看板</h1>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-8">
+            
+            <div class="w-full lg:w-2/3 bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+                <h2 class="text-base font-bold mb-8">轉換率分析</h2>
+                <div class="overflow-x-auto hide-scrollbar">
+                    <div class="min-w-[600px] h-[300px] relative mt-4 flex items-end justify-between px-4 pb-12">
+                        <!-- 線條與柱狀圖結構 -->
+                        <div class="absolute inset-0 flex flex-col justify-between pointer-events-none px-4 pb-12">
+                            <div class="border-t border-slate-100 w-full"></div>
+                            <div class="border-t border-slate-100 w-full"></div>
+                            <div class="border-t border-slate-100 w-full"></div>
+                            <div class="border-t border-slate-100 w-full"></div>
+                        </div>
+                        
+                        <div class="flex-1 flex flex-col items-center justify-end h-full z-10"><div class="w-16 bg-[#D4DEED] rounded-t-2xl h-[90%]"></div><span class="mt-3 text-xs font-medium">造訪網頁</span></div>
+                        <div class="w-16 flex justify-center items-center h-full z-10"><div class="bg-slate-100 px-2 py-1 text-[10px] rounded">75.27%</div></div>
+                        <div class="flex-1 flex flex-col items-center justify-end h-full z-10"><div class="w-16 bg-[#B0BDD1] rounded-t-2xl h-[70%]"></div><span class="mt-3 text-xs font-medium">商品瀏覽</span></div>
+                        <div class="w-16 flex justify-center items-center h-full z-10"><div class="bg-slate-100 px-2 py-1 text-[10px] rounded">75.71%</div></div>
+                        <div class="flex-1 flex flex-col items-center justify-end h-full z-10"><div class="w-16 bg-[#8C9BB0] rounded-t-2xl h-[50%]"></div><span class="mt-3 text-xs font-medium">加入購物車</span></div>
+                        <div class="w-16 flex justify-center items-center h-full z-10"><div class="bg-slate-100 px-2 py-1 text-[10px] rounded">64.15%</div></div>
+                        <div class="flex-1 flex flex-col items-center justify-end h-full z-10"><div class="w-16 bg-[#6B7A8F] rounded-t-2xl h-[30%]"></div><span class="mt-3 text-xs font-medium">進入結帳頁</span></div>
+                        <div class="w-16 flex justify-center items-center h-full z-10"><div class="bg-slate-100 px-2 py-1 text-[10px] rounded">44.12%</div></div>
+                        <div class="flex-1 flex flex-col items-center justify-end h-full z-10"><div class="w-16 bg-[#4F5C6E] rounded-t-2xl h-[15%]"></div><span class="mt-3 text-xs font-medium">完成結帳</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full lg:w-1/3 bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+                <h2 class="text-base font-bold mb-6">廣告與追蹤碼設定</h2>
+                <form class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Facebook Pixel ID</label>
+                        <input type="text" placeholder="例如：1234567890123456" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:border-focusRing focus:ring-1 focus:ring-focusRing outline-none transition duration-200">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Google Tag Manager (GTM) ID</label>
+                        <input type="text" placeholder="例如：GTM-A1B2C3D" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:border-focusRing focus:ring-1 focus:ring-focusRing outline-none transition duration-200">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Google Analytics 4 (GA4) ID</label>
+                        <input type="text" placeholder="例如：G-ABC1234XYZ" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:border-focusRing focus:ring-1 focus:ring-focusRing outline-none transition duration-200">
+                    </div>
+                    <div class="pt-4 flex gap-3">
+                        <button type="button" class="flex-1 bg-brand text-white py-2 rounded-lg text-sm hover:bg-slate-700 transition font-medium">儲存</button>
+                        <button type="button" class="flex-1 border border-slate-300 text-slate-600 py-2 rounded-lg text-sm hover:bg-slate-50 transition font-medium">捨棄</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
