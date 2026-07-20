@@ -3,27 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>訂單明細</title>
+    <title>訂單管理</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script>
         tailwind.config = {
             theme: {
                 screens: {
-                    'md': '800px',
-                    'xl': '1280px',
+                    'md': '800px',  // 涵蓋 800px - 1279px 的平板尺寸
+                    'xl': '1280px', // 涵蓋 1280px 以上的桌機尺寸
                 }
             }
         }
     </script>
+    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', 'Noto Sans TC', sans-serif;
-            background-color: #f1f5f9;
+            background-color: #f1f5f9; 
         }
         
+        /* 自訂滾動條樣式 */
         .custom-scrollbar::-webkit-scrollbar {
             height: 8px;
             width: 8px;
@@ -53,141 +55,174 @@
 
     <!-- 主要內容區 -->
     <main class="flex-1 p-3 md:p-6 xl:p-8">
-        <div class="max-w-[1200px] mx-auto">
+        <div class="max-w-[1600px] mx-auto">
             
             <!-- Header Section -->
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                <div class="flex items-center gap-4">
-                    <a href="seller-order.html" class="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-sm transition-all shadow-sm">
-                        <i class="fa-solid fa-arrow-left"></i>
-                    </a>
-                    <h1 class="text-2xl font-bold text-gray-800 tracking-tight">訂單明細</h1>
-                </div>
+                <h1 class="text-2xl font-bold text-gray-800 tracking-tight">訂單管理</h1>
+                <button class="w-full md:w-auto bg-slate-600 hover:bg-slate-700 active:bg-slate-800 active:scale-95 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> 匯出訂單
+                </button>
             </div>
 
-            <!-- 訂單資訊摘要卡片 -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 mb-6 flex flex-wrap gap-x-12 gap-y-4 text-sm">
-                <div>
-                    <span class="text-gray-500 block mb-1">所屬訂單編號</span>
-                    <span id="summary-order-id" class="font-semibold text-gray-800 text-lg">-</span>
-                </div>
-                <div>
-                    <span class="text-gray-500 block mb-1">明細項目總數</span>
-                    <span id="summary-total-items" class="font-semibold text-gray-800 text-lg">0 件</span>
-                </div>
-            </div>
-
-            <!-- Main Card Container -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <!-- Status Tabs -->
+            <div class="flex overflow-x-auto custom-scrollbar bg-white rounded-t-xl border-b border-gray-200 shadow-sm w-full text-sm font-medium">
+                <!-- 當前選中的狀態 (Active Tab) -->
+                <button class="flex-1 min-w-[100px] text-center px-4 py-3.5 text-indigo-600 bg-indigo-50/50 border-b-2 border-indigo-600 whitespace-nowrap transition-all">全部</button>
                 
-                <!-- Table Container -->
-                <div class="overflow-x-auto custom-scrollbar">
-                    <table class="w-full text-sm text-left whitespace-nowrap">
-                        <thead class="text-xs text-gray-600 uppercase bg-gray-100/80">
-                            <tr>
-                                <th scope="col" class="px-6 py-4 font-semibold border-b border-gray-200">明細編號</th>
-                                <th scope="col" class="px-6 py-4 font-semibold border-b border-gray-200">所屬訂單</th>
-                                <th scope="col" class="px-6 py-4 font-semibold border-b border-gray-200">對應商品</th>
-                                <th scope="col" class="px-6 py-4 font-semibold text-right border-b border-gray-200">購買數量</th>
-                                <th scope="col" class="px-6 py-4 font-semibold text-right border-b border-gray-200">成交單價</th>
-                                <th scope="col" class="px-6 py-4 font-semibold text-right text-gray-800 border-b border-gray-200">小計</th>
-                            </tr>
-                        </thead>
-                        <tbody id="detail-table-body" class="divide-y divide-gray-100 bg-white">
-                            <!-- Table rows will be populated by JavaScript -->
-                        </tbody>
-                        <tfoot class="bg-gray-50/50">
-                            <tr>
-                                <td colspan="5" class="px-6 py-4 text-right font-medium text-gray-600 border-t border-gray-200">總計金額：</td>
-                                <td id="table-grand-total" class="px-6 py-4 text-right font-bold text-lg text-slate-700 border-t border-gray-200">NT$ 0</td>
-                            </tr>
-                        </tfoot>
-                    </table>
+                <!-- 其他未選中的狀態 (Inactive Tabs) -->
+                <button class="flex-1 min-w-[100px] text-center px-4 py-3.5 text-gray-500 border-b-2 border-transparent hover:text-gray-800 hover:bg-gray-50 active:bg-gray-100 active:scale-[0.98] whitespace-nowrap transition-all duration-200">處理中</button>
+                <button class="flex-1 min-w-[100px] text-center px-4 py-3.5 text-gray-500 border-b-2 border-transparent hover:text-gray-800 hover:bg-gray-50 active:bg-gray-100 active:scale-[0.98] whitespace-nowrap transition-all duration-200">待出貨</button>
+                <button class="flex-1 min-w-[100px] text-center px-4 py-3.5 text-gray-500 border-b-2 border-transparent hover:text-gray-800 hover:bg-gray-50 active:bg-gray-100 active:scale-[0.98] whitespace-nowrap transition-all duration-200">已出貨</button>
+                <button class="flex-1 min-w-[100px] text-center px-4 py-3.5 text-gray-500 border-b-2 border-transparent hover:text-gray-800 hover:bg-gray-50 active:bg-gray-100 active:scale-[0.98] whitespace-nowrap transition-all duration-200">已送達</button>
+                <button class="flex-1 min-w-[100px] text-center px-4 py-3.5 text-gray-500 border-b-2 border-transparent hover:text-gray-800 hover:bg-gray-50 active:bg-gray-100 active:scale-[0.98] whitespace-nowrap transition-all duration-200">完成取貨</button>
+                <button class="flex-1 min-w-[100px] text-center px-4 py-3.5 text-gray-500 border-b-2 border-transparent hover:text-gray-800 hover:bg-gray-50 active:bg-gray-100 active:scale-[0.98] whitespace-nowrap transition-all duration-200">已取消</button>
+            </div>
+
+            <!-- Table Container -->
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full text-sm text-left whitespace-nowrap">
+                    <thead class="text-xs text-gray-600 uppercase bg-gray-100/80">
+                        <tr>
+                            <th scope="col" class="px-4 py-4 font-semibold">訂單編號</th>
+                            <th scope="col" class="px-4 py-4 font-semibold">買家姓名</th>
+                            <th scope="col" class="px-4 py-4 font-semibold">電話</th>
+                            <th scope="col" class="px-4 py-4 font-semibold">Email</th>
+                            <th scope="col" class="px-4 py-4 font-semibold">地址</th>
+                            <th scope="col" class="px-4 py-4 font-semibold">訂單處理狀態</th>
+                            <th scope="col" class="px-4 py-4 font-semibold">訂單總金額</th>
+                            <th scope="col" class="px-4 py-4 font-semibold">支付狀態</th>
+                            <th scope="col" class="px-4 py-4 font-semibold">建立時間</th>
+                            <th scope="col" class="px-4 py-4 font-semibold">更新時間</th>
+                            <th scope="col" class="px-4 py-4 font-semibold text-center sticky right-0 bg-gray-100/80 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)] z-10">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body" class="divide-y divide-gray-100 bg-white">
+                        <!-- Table rows will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination (Mock) -->
+            <div class="px-6 py-4 flex items-center justify-between border-t border-gray-100 text-sm text-gray-500 bg-gray-50/30 rounded-b-xl">
+                <div id="pagination-info">顯示 0 筆訂單</div>
+                <div class="flex gap-1">
+                    <button class="px-3 py-1 border border-gray-200 rounded hover:bg-gray-100 disabled:opacity-50" disabled>上一頁</button>
+                    <button class="px-3 py-1 border border-gray-200 rounded bg-blue-50 text-blue-600 font-medium">1</button>
+                    <button class="px-3 py-1 border border-gray-200 rounded hover:bg-gray-100 disabled:opacity-50" disabled>下一頁</button>
                 </div>
             </div>
         </div>
     </main>
 
     <script>
-        const formatter = new Intl.NumberFormat('zh-TW', {
-            style: 'currency',
-            currency: 'TWD',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 2
-        });
+        function getOrderStatusBadge(statusInt) {
+            const statusMap = {
+                0: { label: '處理中', dot: 'bg-blue-400', bg: 'bg-blue-50', text: 'text-blue-700' },
+                1: { label: '待出貨', dot: 'bg-yellow-400', bg: 'bg-yellow-50', text: 'text-yellow-700' },
+                2: { label: '已出貨', dot: 'bg-purple-400', bg: 'bg-purple-50', text: 'text-purple-700' },
+                3: { label: '已送達', dot: 'bg-indigo-400', bg: 'bg-indigo-50', text: 'text-indigo-700' },
+                4: { label: '完成取貨', dot: 'bg-green-500', bg: 'bg-green-50', text: 'text-green-700' },
+                5: { label: '已取消', dot: 'bg-red-500', bg: 'bg-red-50', text: 'text-red-700' }
+            };
+            const s = statusMap[statusInt] || { label: '未知狀態', dot: 'bg-gray-400', bg: 'bg-gray-50', text: 'text-gray-700' };
+            return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${s.bg} ${s.text}">
+                        <span class="w-1.5 h-1.5 rounded-full ${s.dot}"></span>
+                        ${s.label}
+                    </span>`;
+        }
 
-        function renderDetailTable(detailData) {
-            const tbody = document.getElementById('detail-table-body');
+        function getPaymentStatusBadge(statusInt) {
+            const statusMap = {
+                0: { label: '未付款', dot: 'bg-gray-400', bg: 'bg-gray-100', text: 'text-gray-700' },
+                1: { label: '已付款', dot: 'bg-teal-500', bg: 'bg-teal-50', text: 'text-teal-700' },
+                2: { label: '退款中', dot: 'bg-orange-400', bg: 'bg-orange-50', text: 'text-orange-700' },
+                3: { label: '已退款', dot: 'bg-red-400', bg: 'bg-red-50', text: 'text-red-700' },
+                4: { label: '失敗', dot: 'bg-rose-600', bg: 'bg-rose-50', text: 'text-rose-700' }
+            };
+            const s = statusMap[statusInt] || { label: '未知', dot: 'bg-gray-400', bg: 'bg-gray-100', text: 'text-gray-700' };
+            return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${s.bg} ${s.text}">
+                        <span class="w-1.5 h-1.5 rounded-full ${s.dot}"></span>
+                        ${s.label}
+                    </span>`;
+        }
+
+        function renderTable(orderData) {
+            const tbody = document.getElementById('table-body');
             tbody.innerHTML = '';
-            
-            let grandTotal = 0;
 
-            if (!detailData || detailData.length === 0) {
+            if (!orderData || orderData.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="6" class="px-6 py-12 text-center text-gray-500 bg-gray-50/50">
+                        <td colspan="11" class="px-4 py-12 text-center text-gray-500 bg-gray-50/50">
                             <div class="flex flex-col items-center justify-center">
-                                <i class="fa-solid fa-box-open text-3xl text-gray-300 mb-3"></i>
-                                <p>目前尚無明細資料</p>
+                                <i class="fa-solid fa-inbox text-3xl text-gray-300 mb-3"></i>
+                                <p>目前尚無訂單資料</p>
                             </div>
                         </td>
                     </tr>
                 `;
-                document.getElementById('summary-total-items').innerText = '0 件';
-                document.getElementById('table-grand-total').innerText = formatter.format(0);
                 return;
             }
 
-            detailData.forEach(item => {
+            orderData.forEach(order => {
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-gray-50/80 transition-colors group';
                 
-                const quantity = item.Quantity || 0;
-                const unitPrice = item.UnitPrice || 0;
-                const subtotal = quantity * unitPrice;
-                
-                grandTotal += subtotal;
+                const formatter = new Intl.NumberFormat('zh-TW', {
+                    style: 'currency',
+                    currency: 'TWD',
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 2
+                });
 
                 tr.innerHTML = `
-                    <td class="px-6 py-4 text-gray-500">#${item.OrderdetailID || '-'}</td>
-                    <td class="px-6 py-4 font-medium text-gray-900">#${item.OrderID || '-'}</td>
-                    <td class="px-6 py-4 text-slate-600 font-medium">${item.ProductID || '-'}</td>
-                    <td class="px-6 py-4 text-right font-mono">${quantity}</td>
-                    <td class="px-6 py-4 text-right text-gray-600">${formatter.format(unitPrice)}</td>
-                    <td class="px-6 py-4 text-right font-semibold text-gray-800">${formatter.format(subtotal)}</td>
+                    <td class="px-4 py-4 font-medium text-gray-900">#${order.OrderID || '-'}</td>
+                    <td class="px-4 py-4">${order.BuyerName || '-'}</td>
+                    <td class="px-4 py-4 font-mono text-gray-600">${order.BuyerPhone || '-'}</td>
+                    <td class="px-4 py-4 text-gray-600">${order.BuyerEmail || '-'}</td>
+                    <td class="px-4 py-4">
+                        <div class="truncate max-w-[250px]" title="${order.BuyerAddress || ''}">
+                            ${order.BuyerAddress || '-'}
+                        </div>
+                    </td>
+                    <td class="px-4 py-4">${getOrderStatusBadge(order.OrderStatus)}</td>
+                    <td class="px-4 py-4 font-semibold text-gray-800">${formatter.format(order.TotalAmount || 0)}</td>
+                    <td class="px-4 py-4">${getPaymentStatusBadge(order.PaymentStatus)}</td>
+                    <td class="px-4 py-4 text-xs text-gray-500">${order.CreatedAt || '-'}</td>
+                    <td class="px-4 py-4 text-xs text-gray-500">${order.UpdatedAt || '-'}</td>
+                    <td class="px-4 py-4 sticky right-0 bg-white group-hover:bg-gray-50/90 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)] transition-colors z-10">
+                        <div class="flex items-center justify-center gap-3 text-gray-400">
+                            <a href="seller-order-detail.html?orderId=${order.OrderID}" class="hover:text-indigo-600 transition-colors cursor-pointer" title="查看明細"><i class="fa-solid fa-eye text-lg"></i></a>
+                            <button class="hover:text-blue-600 transition-colors cursor-pointer" title="編輯訂單"><i class="fa-regular fa-pen-to-square text-lg"></i></button>
+                            <button class="hover:text-red-500 transition-colors cursor-pointer" title="刪除訂單"><i class="fa-regular fa-trash-can text-lg"></i></button>
+                        </div>
+                    </td>
                 `;
                 tbody.appendChild(tr);
             });
-
-            document.getElementById('summary-order-id').innerText = detailData.length > 0 ? `#${detailData[0].OrderID}` : '-';
-            document.getElementById('summary-total-items').innerText = `${detailData.length} 件`;
-            document.getElementById('table-grand-total').innerText = formatter.format(grandTotal);
         }
 
-        async function fetchOrderDetails() {
-            const tbody = document.getElementById('detail-table-body');
-            tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i>明細載入中...</td></tr>`;
+        async function fetchOrders() {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = `<tr><td colspan="11" class="px-4 py-12 text-center text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i>資料載入中...</td></tr>`;
 
             try {
-                const urlParams = new URLSearchParams(window.location.search);
-                const orderId = urlParams.get('orderId') || '';
+                await new Promise(resolve => setTimeout(resolve, 600)); 
                 
-                await new Promise(resolve => setTimeout(resolve, 600));
-                
-                const data = [];
+                const data = []; 
 
-                renderDetailTable(data);
-
-                document.getElementById('summary-order-id').innerText = orderId ? `#${orderId}` : '-';
+                renderTable(data);
+                document.getElementById('pagination-info').innerText = `顯示 ${data.length} 筆訂單`;
 
             } catch (error) {
                 console.error(error);
-                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-red-500">資料載入失敗，請檢查網路連線。</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="11" class="px-4 py-12 text-center text-red-500">資料載入失敗，請檢查網路連線。</td></tr>`;
             }
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            fetchOrderDetails();
+            fetchOrders();
         });
     </script>
 </body>
