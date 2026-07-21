@@ -26,7 +26,7 @@
    - `index.html`（登入頁）
    - `signup.html`（註冊頁）
 2. 或使用本地伺服器（建議）：
-   - 在專案根目錄執行 `npx serve .` 後開啟 `/sign-up/`
+   - 在專案根目錄執行 `npx serve .` 後開啟 `/login/`
 
 ## 目前為前端示範（Demo）
 
