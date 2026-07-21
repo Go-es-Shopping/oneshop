@@ -39,6 +39,10 @@
 | CreatedAt   | datetime        | 是        | 建立時間                                                             |
 | UpdatedAt   | datetime        | 是        | 更新時間                                                             |
 | StoreLogo | nvarchar(MAX)     | 是        | 商店商標圖片(儲存圖片的相對路徑或 URL (例如: /uploads/logos/filename.jpg)。不建議儲存 Base64 原始碼以維護效能。)                                         |
+| ThemeColor   | varchar(50)        | 是        | 頁面主題顏色，初始設置"冷靜石板"                                           |
+| ThemeFont   | varchar(50)        | 是        | 頁面主題字體，初始設置"現代黑體"                                             |
+| StoreEmail   | nvarchar(255)        | 是        | 商家賣場聯絡郵件(聯絡我們)                                                  |
+| StorePhone   | nvarchar(50)        | 是        | 商家賣場聯絡電話(聯絡我們)                                                   |
 
 ## PageContent
 
@@ -145,3 +149,18 @@
 | SessionID     | nvarchar(100)   | 是        | 唯一工作階段 ID，用於追蹤從瀏覽到購買的完整轉換路徑 (Conversion Path) |
 | Metadatas     | nvarchar(MAX)   | 是        | AI 數據擴展接口：JSON 格式儲存非結構化數據（如 UTM 標籤、OpenAI 意圖預分析結果） |
 | CreatedAt     | datetime   | 否        | 瀏覽發生的精確時間 |
+## Coupon
+
+| 欄位名稱    | 資料型態       | 可為 Null | 說明                                                                 |
+|-------------|-----------------|-----------|----------------------------------------------------------------------|
+| Id          | int             | 否        | 優惠券唯一識別碼 (Primary Key)                                       |
+| Title       | nvarchar(100)   | 否        | 優惠券名稱（例如：2026年終優惠）                                     |
+| Code        | varchar(50)     | 否        | 優惠券代碼（例如：SAVE2026，需具備唯一性）                           |
+| DiscountType| nvarchar(50)    | 否        | 折扣種類（對應前端選擇的折扣規則類型）                               |
+| MinSpend    | decimal(10,2)   | 是        | 最低訂單金額限制（未填代表不限制）                                   |
+| UsageLimit  | int             | 是        | 使用次數上限（未填代表不限制）                                       |
+| TotalQuantity| int            | 是        | 總發行量（未填代表不限制）                                           |
+| IsExclusive | bit             | 否        | 不可與其他優惠券並用（0=否；1=是）                                   |
+| StartDate   | date            | 是        | 開始時間（優惠生效日）                                               |
+| EndDate     | date            | 是        | 結束時間（優惠到期日）                                               |
+| CreatedAt   | datetime        | 否        | 建立時間（預設為系統當前時間）                                       |

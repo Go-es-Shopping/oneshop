@@ -917,7 +917,6 @@ const STORE_CONFIG = {
 
   /* ── Hero 按鈕 ────────────────────── */
   ctaPrimary:   '立即選購',   /* 主要按鈕文字 */
-  ctaSecondary: '瞭解品牌',  /* 次要按鈕文字，留空則隱藏 */
 
   /* ── 分類標籤 ─────────────────────── */
   /* 留空陣列則隱藏整排 */
@@ -1337,48 +1336,43 @@ const CART_ICON_SVG = `<svg width="18" height="18" viewBox="0 0 16 16" fill="non
 const IMAGE_PLACEHOLDER_SVG = `<div class="product-card__image-placeholder"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg><span>尚未上傳圖片</span></div>`;
 
 function renderProducts(category = 'all') {
-  const grid = document.getElementById('productsGrid');
+  const grid = document.getElementById('productsGrid'); // 確保 template.html 有這個 ID
   const list = STORE_CONFIG.products;
 
-  if (!list.length) {
-    grid.innerHTML = `<div class="products-empty"><div class="products-empty__icon">🛍️</div><div class="products-empty__text">尚未新增任何商品<br>請在 STORE_CONFIG.products 中加入商品</div></div>`;
+  console.log("正在渲染商品，目前資料量:", list.length);
+
+  if (!list || list.length === 0) {
+    grid.innerHTML = `<div class="products-empty">尚未新增任何商品</div>`;
     return;
   }
 
+  // 分類過濾邏輯
   const filtered = category === 'all' ? list : list.filter(p => p.category === category);
-
-  if (!filtered.length) {
-    grid.innerHTML = `<div class="products-empty"><div class="products-empty__icon">🔍</div><div class="products-empty__text">此分類暫無商品</div></div>`;
+  
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="products-empty">該分類目前沒有商品</div>`;
     return;
   }
 
+  // 渲染卡片：這裡對應你 console 裡的結構 (p.name, p.price, p.imageUrl)
   grid.innerHTML = filtered.map((p, i) => {
-    const imgHtml = p.imageUrl
-      ? `<img src="${p.imageUrl}" alt="${p.name}" loading="lazy">`
-      : IMAGE_PLACEHOLDER_SVG;
-    const badge    = p.badge ? `<span class="product-card__badge">${p.badge}</span>` : '';
-    const nameHtml = p.name  ? p.name : '<span class="product-card__name--placeholder">（未填寫商品名稱）</span>';
-    const priceHtml = p.price != null
-      ? `$${p.price.toLocaleString()}${p.originalPrice ? `<span class="product-card__price-orig">$${p.originalPrice.toLocaleString()}</span>` : ''}`
-      : '<span class="product-card__price--placeholder">待定價</span>';
-    const stockClass = (p.stock != null && p.stock <= 5) ? 'low' : '';
-    const stockText  = p.stock != null ? `剩餘 ${p.stock}` : '';
-
-    return `<article class="product-card fade-up delay-${(i%4)+1}" onclick="openProductModal(${p.id})">
-      <div class="product-card__image-area">${imgHtml}${badge}</div>
+    return `
+    <div class="product-card" data-id="${p.id}" onclick="openProductModal(${p.id})">
+      <div class="product-card__image-area">
+        <img src="${p.imageUrl || 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=300'}" alt="${p.name}">
+      </div>
       <div class="product-card__body">
-        <div class="product-card__meta">
-          <div class="product-card__tag"><span class="product-card__tag-text">${p.category || '未分類'}</span></div>
-          <span class="product-card__stock ${stockClass}">${stockText}</span>
-        </div>
-        <div class="product-card__name">${nameHtml}</div>
+        <h4 class="product-card__name">${p.name}</h4>
         <div class="product-card__footer">
-          <div class="product-card__price">${priceHtml}</div>
-          <button class="product-card__cart-btn" onclick="event.stopPropagation();addToCart(${p.id})">${CART_ICON_SVG}</button>
+          <span class="product-card__price">$${Number(p.price).toLocaleString()}</span>
+          <button class="product-card__cart-btn" onclick="event.stopPropagation();addToCart(${p.id})">
+            加入購物車
+          </button>
         </div>
       </div>
-    </article>`;
+    </div>`;
   }).join('');
+
 
   grid.querySelectorAll('.fade-up').forEach(el => { el.classList.remove('visible'); observer.observe(el); });
 }
@@ -1389,6 +1383,7 @@ function filterCategory(cat, btn) {
   btn.classList.add('active');
   renderProducts(cat);
 }
+
 
 /* ══════════════════════════════════
    Toast
@@ -1701,5 +1696,8 @@ function logout() {
   showToast('已登出');
 }
 </script>
+<!-- 引入前台專屬的渲染與初始化邏輯 -->
+    <script src="./js/store-template-render0.js"></script>
+</body>
 </body>
 </html>

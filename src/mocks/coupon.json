@@ -1,0 +1,30 @@
+{
+  "list": [
+    {
+      "Id": 1,
+      "Title": "2026年終優惠",
+      "Code": "SAVE2026",
+      "DiscountType": "滿額折抵",
+      "MinSpend": 1000,
+      "UsageLimit": 100,
+      "TotalQuantity": 500,
+      "IsExclusive": 0,
+      "StartDate": "2026-01-01",
+      "EndDate": "2026-12-31",
+      "CreatedAt": "2026-03-02T10:00:00Z"
+    }
+  ],
+  "detail": {
+    "Id": 1,
+    "Title": "2026年終優惠",
+    "Code": "SAVE2026",
+    "DiscountType": "滿額折抵",
+    "MinSpend": 1000,
+    "UsageLimit": 100,
+    "TotalQuantity": 500,
+    "IsExclusive": 0,
+    "StartDate": "2026-01-01",
+    "EndDate": "2026-12-31",
+    "CreatedAt": "2026-03-02T10:00:00Z"
+  }
+}
