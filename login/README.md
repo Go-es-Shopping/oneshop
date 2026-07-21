@@ -5,7 +5,7 @@
 ## 多語言
 
 右上角可切換：**中文、English、日本語**。  
-依賴 `../i18n-core.js` + `./i18n.js`；語系與店鋪設置、`buyer-orders` 共用（`goezLang`）。
+依賴 `../i18n-core.js` + `./i18n.js`；語系與店鋪設置、`customer-order` 共用（`goezLang`）。
 
 ## 檔案結構
 
