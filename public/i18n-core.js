@@ -1,6 +1,6 @@
 /**
  * Goez Shop 共用多語言核心
- * 語系：中文、英文、日文、越南文、西班牙文
+ * 語系：中文、英文、日文
  * localStorage key：goezLang（全站共用）
  */
 (function (global) {
@@ -12,8 +12,6 @@
     { code: 'zh-Hant', label: '中文' },
     { code: 'en', label: 'English' },
     { code: 'ja', label: '日本語' },
-    { code: 'vi', label: 'Tiếng Việt' },
-    { code: 'es', label: 'Español' },
   ];
 
   var MESSAGES = {};
@@ -35,6 +33,10 @@
     migrateLegacy();
     try {
       var saved = localStorage.getItem(STORAGE_KEY);
+      if (saved && !LANGS.some(function (l) { return l.code === saved; })) {
+        setLang(DEFAULT_LANG);
+        return DEFAULT_LANG;
+      }
       if (saved && (MESSAGES[saved] || saved === DEFAULT_LANG)) return saved;
       if (saved && LANGS.some(function (l) { return l.code === saved; })) return saved;
     } catch (e) { /* ignore */ }

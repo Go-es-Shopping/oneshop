@@ -8,15 +8,15 @@
   - **網域管理**：綁定自訂網域、DNS CNAME 說明
   - **金物流開通嚮導**：步驟式介面（LINE Pay、信用卡、超商取貨）
   - **多權限管理**：店長與小幫手的查看／編輯權限說明與邀請
-- `sign-up/`：登入／註冊
-- `buyer-orders/`：買家查詢訂單
+- `login/`：登入／註冊
+- `customer-order/`：買家查詢訂單
 - `i18n-core.js`：全站共用多語言核心（語系存 `localStorage`：`goezLang`）
-- `i18n-store.js`：store-setting文案（中／英／日／越／西）
+- `i18n-store.js`：店鋪設置頁文案（中／英／日）
 
 ## 多語言
 
-右上角下拉可切換：**中文、English、日本語、Tiếng Việt、Español**。  
-語系全站共用，切換後到 `sign-up`、`buyer-orders` 也會記住。
+右上角下拉可切換：**中文、English、日本語**。  
+語系全站共用，切換後到 `login`、`customer-order` 也會記住。若先前選過已移除的語系，會自動重設為中文。
 
 ## 使用方式
 
