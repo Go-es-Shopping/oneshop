@@ -1,0 +1,1939 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>風格生活選物</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ═══════════════════════════════════
+       DESIGN TOKENS
+    ═══════════════════════════════════ */
+    :root {
+      --c-white:        #ffffff;
+      --c-black:        #0a0a0a;
+      --c-bg-page:      #f3f4f6;
+      --c-bg-light:     #f9fafb;
+      --c-bg-subtle:    #f8fafc;
+      --c-border:       #e5e7eb;
+      --c-border-light: #f3f4f6;
+      --c-accent:       #6588A6;
+      --c-accent-dark:  #4e6d8c;
+      --c-text-heading: #101828;
+      --c-text-body:    #364153;
+      --c-text-muted:   #6a7282;
+      --c-text-faint:   #99a1af;
+      --c-text-nav:     #4a5565;
+
+      --r-10:   10px;
+      --r-14:   14px;
+      --r-16:   16px;
+      --r-24:   24px;
+      --r-full: 9999px;
+
+      --shadow-sm:   0 1px 2px rgba(0,0,0,.08);
+      --shadow-card: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+      --shadow-btn:  0 4px 12px rgba(101,136,166,.4);
+      --shadow-lg:   0 8px 24px rgba(0,0,0,.12);
+    }
+
+    /* ═══════════════════════════════════
+       RESET & BASE
+    ═══════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', 'Noto Sans TC', sans-serif;
+      background: var(--c-bg-page);
+      color: var(--c-text-heading);
+      min-width: 320px;
+      overflow-x: hidden;
+    }
+    img { display: block; max-width: 100%; }
+    button { cursor: pointer; border: none; background: none; font: inherit; padding: 0; }
+    a { text-decoration: none; color: inherit; }
+    ul, ol { list-style: none; }
+
+    /* ═══════════════════════════════════
+       PAGE SHELL
+    ═══════════════════════════════════ */
+    .page {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background: var(--c-white);
+    }
+
+    /* ═══════════════════════════════════
+       STORE NAV
+    ═══════════════════════════════════ */
+    .store-nav {
+      background: var(--c-white);
+      border-bottom: 1px solid var(--c-border-light);
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      transition: box-shadow 0.3s ease;
+    }
+    .store-nav.scrolled { box-shadow: 0 2px 12px rgba(0,0,0,.08); }
+
+    .store-nav__brand { display: flex; align-items: center; gap: 12px; }
+    .store-nav__logo {
+      width: 40px; height: 40px;
+      border-radius: var(--r-10);
+      box-shadow: var(--shadow-card);
+      overflow: hidden; flex-shrink: 0;
+      background: var(--c-bg-page);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .store-nav__logo img { width: 100%; height: 100%; object-fit: cover; }
+    .store-nav__logo-placeholder {
+      width: 100%; height: 100%;
+      background: linear-gradient(135deg, var(--c-accent) 0%, var(--c-accent-dark) 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 900; color: white;
+      letter-spacing: -0.5px;
+    }
+    .store-nav__name {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 700; font-size: 18px;
+      color: var(--c-text-heading); letter-spacing: -0.5px;
+      white-space: nowrap;
+    }
+
+    .store-nav__right { display: flex; align-items: center; gap: 24px; }
+    .store-nav__links { display: flex; align-items: center; gap: 4px; }
+    .store-nav__link {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 500; font-size: 14px;
+      color: var(--c-text-nav); line-height: 20px;
+      padding: 6px 12px; border-radius: var(--r-10);
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .store-nav__link:hover { background: var(--c-bg-page); color: var(--c-text-heading); }
+    .store-nav__link.active { color: var(--c-accent); font-weight: 700; }
+
+    .store-nav__actions { display: flex; align-items: center; gap: 4px; }
+    .store-nav__action-btn {
+      width: 36px; height: 36px;
+      border-radius: var(--r-full);
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s ease;
+      position: relative;
+    }
+    .store-nav__action-btn:hover { background: var(--c-bg-page); }
+    .store-nav__action-btn img { width: 22px; height: 22px; }
+
+    .store-nav__cart-wrap { position: relative; }
+    .store-nav__cart-badge {
+      position: absolute; top: 2px; right: 2px;
+      background: var(--c-accent);
+      border-radius: var(--r-full);
+      width: 16px; height: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700;
+      color: var(--c-white); line-height: 1;
+      pointer-events: none;
+    }
+
+    /* Mobile hamburger */
+    .store-nav__hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      width: 36px; height: 36px; padding: 8px;
+      border-radius: var(--r-10);
+    }
+    .store-nav__hamburger span {
+      display: block; height: 2px;
+      background: var(--c-text-heading);
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+
+    /* ═══════════════════════════════════
+       MOBILE NAV MENU
+    ═══════════════════════════════════ */
+    .mobile-menu {
+      display: none;
+      position: fixed; inset: 0; top: 70px;
+      background: rgba(0,0,0,.5);
+      z-index: 99;
+    }
+    .mobile-menu.open { display: block; }
+    .mobile-menu__panel {
+      background: var(--c-white);
+      padding: 16px;
+      display: flex; flex-direction: column; gap: 4px;
+      box-shadow: var(--shadow-lg);
+    }
+    .mobile-menu__link {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 500; font-size: 16px;
+      color: var(--c-text-heading);
+      padding: 12px 16px; border-radius: var(--r-14);
+      display: block;
+    }
+    .mobile-menu__link:hover { background: var(--c-bg-page); }
+
+    /* ═══════════════════════════════════
+       HERO
+    ═══════════════════════════════════ */
+    .store-hero {
+      background: var(--c-white);
+      padding: 64px 32px 48px;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 24px;
+      flex-shrink: 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .store-hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(101,136,166,.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .store-hero__eyebrow {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 700; font-size: 11px;
+      color: var(--c-accent);
+      letter-spacing: 2px; text-transform: uppercase;
+      background: rgba(101,136,166,.1);
+      padding: 4px 12px; border-radius: var(--r-full);
+    }
+    .store-hero__tagline {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 400; font-size: 17px;
+      color: var(--c-text-muted);
+      line-height: 1.7; max-width: 480px;
+    }
+    .store-hero__cta-wrap {
+      display: flex; align-items: center;
+      justify-content: center; gap: 12px;
+    }
+    .store-hero__cta-btn {
+      background: var(--c-accent);
+      border-radius: var(--r-full);
+      box-shadow: var(--shadow-btn);
+      height: 48px; padding: 0 32px;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 700; font-size: 15px;
+      color: var(--c-white); line-height: 24px;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .store-hero__cta-btn:hover {
+      background: var(--c-accent-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(101,136,166,.5);
+    }
+    .store-hero__cta-btn:active { transform: translateY(0); }
+    .store-hero__cta-secondary {
+      height: 48px; padding: 0 24px;
+      border: 1.5px solid var(--c-border);
+      border-radius: var(--r-full);
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 500; font-size: 15px;
+      color: var(--c-text-muted);
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+    }
+    .store-hero__cta-secondary:hover {
+      border-color: var(--c-accent);
+      color: var(--c-accent);
+      background: rgba(101,136,166,.04);
+    }
+
+    /* ═══════════════════════════════════
+       CATEGORY CHIPS
+    ═══════════════════════════════════ */
+    .store-categories {
+      padding: 0 32px 24px;
+      display: flex; align-items: center; gap: 8px;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .store-categories::-webkit-scrollbar { display: none; }
+    .category-chip {
+      height: 34px; padding: 0 16px;
+      border-radius: var(--r-full);
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 500; font-size: 13px;
+      white-space: nowrap; flex-shrink: 0;
+      border: 1.5px solid var(--c-border);
+      color: var(--c-text-muted);
+      background: var(--c-white);
+      transition: all 0.2s ease;
+    }
+    .category-chip:hover { border-color: var(--c-accent); color: var(--c-accent); }
+    .category-chip.active {
+      background: var(--c-accent); border-color: var(--c-accent);
+      color: var(--c-white);
+    }
+
+    /* ═══════════════════════════════════
+       PRODUCTS
+    ═══════════════════════════════════ */
+    .store-products {
+      padding: 0 24px 40px;
+      display: flex; flex-direction: column; gap: 24px;
+      flex-shrink: 0;
+    }
+    .store-products__header {
+      display: flex; align-items: center;
+      justify-content: space-between;
+    }
+    .store-products__heading {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .store-products__heading img { width: 20px; height: 20px; }
+    .store-products__heading-text {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 700; font-size: 22px;
+      color: var(--c-text-heading); line-height: 32px;
+    }
+    .store-products__more {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 500; font-size: 14px;
+      color: var(--c-accent); line-height: 20px;
+      display: flex; align-items: center; gap: 4px;
+      padding: 6px 12px; border-radius: var(--r-10);
+      transition: background 0.2s ease;
+    }
+    .store-products__more:hover { background: rgba(101,136,166,.08); }
+    .store-products__more::after {
+      content: '→'; font-size: 14px;
+    }
+
+    .store-products__grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    /* ═══════════════════════════════════
+       PRODUCT CARD
+    ═══════════════════════════════════ */
+    .product-card {
+      background: var(--c-white);
+      border: 1px solid var(--c-border-light);
+      border-radius: var(--r-24);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      display: flex; flex-direction: column;
+      cursor: pointer;
+      transition: transform 0.25s cubic-bezier(.22,1,.36,1), box-shadow 0.25s ease;
+    }
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0,0,0,.1);
+    }
+
+    .product-card__image-area {
+      height: 180px; flex-shrink: 0;
+      overflow: hidden; position: relative;
+      background: var(--c-bg-page);
+    }
+    .product-card__image-area img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.4s cubic-bezier(.22,1,.36,1);
+    }
+    .product-card:hover .product-card__image-area img { transform: scale(1.06); }
+    .product-card__image-area--empty {
+      display: flex; align-items: center; justify-content: center;
+    }
+    .product-card__image-area--empty .placeholder-art {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 40px; opacity: 0.3;
+    }
+    .placeholder-gradient-1 { background: linear-gradient(135deg,#e8edf2 0%,#ccd5dc 100%); }
+    .placeholder-gradient-2 { background: linear-gradient(135deg,#dce8f0 0%,#b8cfd9 100%); }
+    .placeholder-gradient-3 { background: linear-gradient(135deg,#f0e8dc 0%,#dcc8b0 100%); }
+    .placeholder-gradient-4 { background: linear-gradient(135deg,#e0dce8 0%,#c4bcdc 100%); }
+
+    .product-card__badge {
+      position: absolute; top: 12px; left: 12px;
+      background: var(--c-accent);
+      color: var(--c-white);
+      font-size: 10px; font-weight: 700;
+      padding: 3px 8px; border-radius: var(--r-full);
+      letter-spacing: 0.5px;
+    }
+
+    .product-card__body { padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 8px; }
+
+    .product-card__meta { display: flex; align-items: center; justify-content: space-between; }
+    .product-card__tag {
+      background: var(--c-bg-light);
+      border-radius: var(--r-full);
+      padding: 0 10px; height: 26px;
+      display: flex; align-items: center;
+    }
+    .product-card__tag-text {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 700; font-size: 10px;
+      color: var(--c-text-faint);
+      letter-spacing: 0.5px; line-height: 1;
+    }
+    .product-card__stock {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 400; font-size: 11px;
+      color: var(--c-text-faint); line-height: 1;
+    }
+    .product-card__stock.low { color: #e07046; }
+
+    .product-card__name {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 700; font-size: 16px;
+      color: var(--c-text-heading);
+      line-height: 1.4;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .product-card__footer {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      margin-top: 4px;
+    }
+    .product-card__price {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 900; font-size: 18px;
+      color: var(--c-accent); line-height: 1;
+    }
+    .product-card__price-orig {
+      font-size: 12px; font-weight: 500;
+      color: var(--c-text-faint);
+      text-decoration: line-through;
+      margin-left: 4px;
+    }
+    .product-card__cart-btn {
+      background: var(--c-accent);
+      border-radius: var(--r-14);
+      box-shadow: var(--shadow-btn);
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+    .product-card__cart-btn:hover { background: var(--c-accent-dark); transform: scale(1.08); }
+    .product-card__cart-btn:active { transform: scale(0.96); }
+    .product-card__cart-btn img { width: 20px; height: 20px; }
+
+    /* ═══════════════════════════════════
+       PROMO BANNER
+    ═══════════════════════════════════ */
+    .promo-banner {
+      margin: 0 24px 40px;
+      background: linear-gradient(135deg, var(--c-accent) 0%, var(--c-accent-dark) 100%);
+      border-radius: var(--r-24);
+      padding: 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px;
+      overflow: hidden; position: relative;
+    }
+    .promo-banner::before {
+      content: '';
+      position: absolute; top: -40px; right: -40px;
+      width: 160px; height: 160px;
+      background: rgba(255,255,255,.08);
+      border-radius: 50%;
+    }
+    .promo-banner::after {
+      content: '';
+      position: absolute; bottom: -60px; right: 60px;
+      width: 200px; height: 200px;
+      background: rgba(255,255,255,.05);
+      border-radius: 50%;
+    }
+    .promo-banner__text { position: relative; z-index: 1; }
+    .promo-banner__title {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 900; font-size: 20px;
+      color: var(--c-white); line-height: 1.3;
+      margin-bottom: 6px;
+    }
+    .promo-banner__sub {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 400; font-size: 13px;
+      color: rgba(255,255,255,.75); line-height: 1.5;
+    }
+    .promo-banner__btn {
+      position: relative; z-index: 1;
+      background: var(--c-white);
+      color: var(--c-accent);
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 700; font-size: 14px;
+      padding: 10px 20px;
+      border-radius: var(--r-full);
+      white-space: nowrap; flex-shrink: 0;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .promo-banner__btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,.15); }
+
+    /* ═══════════════════════════════════
+       STORE FOOTER
+    ═══════════════════════════════════ */
+    .store-footer {
+      background: var(--c-accent);
+      border-radius: 48px 48px 0 0;
+      padding: 56px 40px 36px;
+      display: flex; flex-direction: column; gap: 32px;
+      margin-top: auto; flex-shrink: 0;
+    }
+    .store-footer__cols { display: flex; gap: 32px; flex-wrap: wrap; }
+
+    .store-footer__about { flex: 1.5; min-width: 140px; display: flex; flex-direction: column; gap: 12px; }
+    .store-footer__brand {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 700; font-size: 18px;
+      color: var(--c-white); line-height: 28px;
+    }
+    .store-footer__desc {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 400; font-size: 13px;
+      color: rgba(255,255,255,.7); line-height: 1.7;
+      max-width: 180px;
+    }
+
+    .store-footer__links { min-width: 80px; display: flex; flex-direction: column; }
+    .store-footer__contact { min-width: 120px; display: flex; flex-direction: column; }
+
+    .store-footer__col-title {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 700; font-size: 14px;
+      color: var(--c-white); line-height: 24px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,255,255,.15);
+      margin-bottom: 16px;
+    }
+    .store-footer__col-list { display: flex; flex-direction: column; gap: 10px; }
+    .store-footer__col-item { display: flex; align-items: center; gap: 8px; }
+    .store-footer__col-dot {
+      width: 4px; height: 4px;
+      background: rgba(255,255,255,.3);
+      border-radius: var(--r-full); flex-shrink: 0;
+    }
+    .store-footer__col-link {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 500; font-size: 14px;
+      color: rgba(255,255,255,.7); line-height: 1;
+      transition: color 0.2s ease;
+    }
+    .store-footer__col-link:hover { color: var(--c-white); }
+
+    .store-footer__contact-items { display: flex; flex-direction: column; gap: 12px; }
+    .store-footer__contact-row { display: flex; align-items: center; gap: 10px; }
+    .store-footer__contact-icon {
+      width: 36px; height: 36px;
+      flex-shrink: 0;
+    }
+    .store-footer__contact-email,
+    .store-footer__contact-phone {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 500; font-size: 13px;
+      color: rgba(255,255,255,.75); line-height: 1;
+    }
+
+    .store-footer__bottom {
+      border-top: 1px solid rgba(255,255,255,.1);
+      padding-top: 24px; text-align: center;
+    }
+    .store-footer__copyright {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 400; font-size: 11px;
+      color: rgba(255,255,255,.4); line-height: 1.6;
+    }
+
+    /* ═══════════════════════════════════
+       CART DRAWER
+    ═══════════════════════════════════ */
+    .cart-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.45);
+      z-index: 200;
+      backdrop-filter: blur(2px);
+    }
+    .cart-overlay.open { display: block; }
+
+    .cart-drawer {
+      position: fixed; top: 0; right: 0; bottom: 0;
+      width: 360px; max-width: 100vw;
+      background: var(--c-white);
+      box-shadow: -8px 0 40px rgba(0,0,0,.15);
+      z-index: 201;
+      display: flex; flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(.22,1,.36,1);
+    }
+    .cart-drawer.open { transform: translateX(0); }
+
+    .cart-drawer__header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--c-border-light);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .cart-drawer__title {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 700; font-size: 18px;
+      color: var(--c-text-heading);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .cart-drawer__count {
+      background: var(--c-accent); color: var(--c-white);
+      font-size: 11px; font-weight: 700;
+      padding: 2px 7px; border-radius: var(--r-full);
+    }
+    .cart-drawer__close {
+      width: 32px; height: 32px;
+      border-radius: var(--r-full);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--c-text-muted); font-size: 18px;
+      transition: background 0.2s ease;
+    }
+    .cart-drawer__close:hover { background: var(--c-bg-page); }
+
+    .cart-drawer__body { flex: 1; overflow-y: auto; padding: 16px; }
+
+    .cart-empty {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      height: 100%; gap: 12px;
+      color: var(--c-text-faint);
+      font-family: 'Noto Sans TC', sans-serif;
+    }
+    .cart-empty__icon { font-size: 48px; opacity: 0.4; }
+    .cart-empty__text { font-size: 15px; font-weight: 500; }
+
+    .cart-item {
+      display: flex; gap: 12px;
+      padding: 12px; border-radius: var(--r-16);
+      margin-bottom: 8px;
+      background: var(--c-bg-subtle);
+      border: 1px solid var(--c-border-light);
+    }
+    .cart-item__img {
+      width: 60px; height: 60px;
+      border-radius: var(--r-10);
+      overflow: hidden; flex-shrink: 0;
+      background: var(--c-bg-page);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .cart-item__img img { width: 100%; height: 100%; object-fit: cover; }
+    .cart-item__info { flex: 1; min-width: 0; }
+    .cart-item__name {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 600; font-size: 13px;
+      color: var(--c-text-heading);
+      line-height: 1.4; margin-bottom: 4px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .cart-item__price {
+      font-weight: 700; font-size: 14px; color: var(--c-accent);
+    }
+    .cart-item__controls {
+      display: flex; flex-direction: column;
+      align-items: flex-end; justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .cart-item__remove {
+      font-size: 14px; color: var(--c-text-faint);
+      transition: color 0.2s ease;
+    }
+    .cart-item__remove:hover { color: #e07046; }
+    .cart-item__qty {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .cart-item__qty-btn {
+      width: 24px; height: 24px;
+      border-radius: var(--r-full);
+      background: var(--c-white);
+      border: 1px solid var(--c-border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: var(--c-text-heading);
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .cart-item__qty-btn:hover { background: var(--c-bg-page); border-color: var(--c-accent); }
+    .cart-item__qty-num {
+      font-size: 13px; font-weight: 600; min-width: 16px; text-align: center;
+    }
+
+    .cart-drawer__footer {
+      padding: 16px 24px 24px;
+      border-top: 1px solid var(--c-border-light);
+      flex-shrink: 0;
+    }
+    .cart-drawer__summary {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 16px;
+    }
+    .cart-drawer__summary-label {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 500; font-size: 14px; color: var(--c-text-muted);
+    }
+    .cart-drawer__total {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 900; font-size: 22px; color: var(--c-accent);
+    }
+    .cart-drawer__checkout {
+      background: var(--c-accent); color: var(--c-white);
+      border-radius: var(--r-full);
+      height: 50px; width: 100%;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 700; font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: var(--shadow-btn);
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+    .cart-drawer__checkout:hover { background: var(--c-accent-dark); transform: translateY(-1px); }
+    .cart-drawer__checkout:active { transform: translateY(0); }
+
+    /* ═══════════════════════════════════
+       SEARCH OVERLAY
+    ═══════════════════════════════════ */
+    .search-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.5);
+      z-index: 300;
+      backdrop-filter: blur(4px);
+      padding: 80px 24px 24px;
+      align-items: flex-start; justify-content: center;
+    }
+    .search-overlay.open { display: flex; }
+    .search-box {
+      background: var(--c-white);
+      border-radius: var(--r-24);
+      box-shadow: var(--shadow-lg);
+      width: 100%; max-width: 560px;
+      overflow: hidden;
+      animation: slideDown 0.3s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .search-box__input-row {
+      display: flex; align-items: center;
+      padding: 16px 20px; gap: 12px;
+      border-bottom: 1px solid var(--c-border-light);
+    }
+    .search-box__icon { color: var(--c-text-faint); font-size: 18px; flex-shrink: 0; }
+    .search-box__input {
+      flex: 1; border: none; outline: none;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-size: 16px; font-weight: 500;
+      color: var(--c-text-heading); background: transparent;
+    }
+    .search-box__input::placeholder { color: var(--c-text-faint); }
+    .search-box__close {
+      width: 28px; height: 28px;
+      border-radius: var(--r-full);
+      background: var(--c-bg-page);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--c-text-muted); font-size: 14px;
+      transition: background 0.2s ease;
+    }
+    .search-box__close:hover { background: var(--c-border); }
+    .search-box__results { padding: 12px; max-height: 400px; overflow-y: auto; }
+    .search-result-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px; border-radius: var(--r-14);
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .search-result-item:hover { background: var(--c-bg-page); }
+    .search-result-item__img {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: var(--c-bg-page);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0; overflow: hidden;
+    }
+    .search-result-item__img img { width: 100%; height: 100%; object-fit: cover; }
+    .search-result-item__name {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 600; font-size: 14px;
+      color: var(--c-text-heading); flex: 1;
+    }
+    .search-result-item__price {
+      font-weight: 700; font-size: 14px; color: var(--c-accent);
+    }
+    .search-no-results {
+      text-align: center; padding: 32px;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-size: 14px; color: var(--c-text-faint);
+    }
+
+    /* ═══════════════════════════════════
+       PRODUCT MODAL
+    ═══════════════════════════════════ */
+    .product-modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.5);
+      z-index: 400;
+      backdrop-filter: blur(4px);
+      align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .product-modal-overlay.open { display: flex; }
+    .product-modal {
+      background: var(--c-white);
+      border-radius: var(--r-24);
+      box-shadow: 0 32px 64px rgba(0,0,0,.2);
+      width: 100%; max-width: 460px;
+      overflow: hidden;
+      animation: modalIn 0.35s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.94) translateY(12px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .product-modal__img {
+      width: 100%; height: 220px;
+      background: var(--c-bg-page);
+      position: relative; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .product-modal__img img { width: 100%; height: 100%; object-fit: cover; }
+    .product-modal__img-placeholder { font-size: 56px; opacity: 0.25; }
+    .product-modal__close-btn {
+      position: absolute; top: 12px; right: 12px;
+      width: 32px; height: 32px; border-radius: var(--r-full);
+      background: rgba(255,255,255,.9);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; color: var(--c-text-heading);
+      box-shadow: var(--shadow-sm);
+    }
+    .product-modal__body { padding: 24px; }
+    .product-modal__tag {
+      display: inline-block;
+      background: rgba(101,136,166,.1);
+      color: var(--c-accent);
+      font-size: 11px; font-weight: 700;
+      padding: 3px 10px; border-radius: var(--r-full);
+      margin-bottom: 10px; letter-spacing: 0.5px;
+    }
+    .product-modal__name {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 900; font-size: 22px;
+      color: var(--c-text-heading); line-height: 1.3;
+      margin-bottom: 8px;
+    }
+    .product-modal__desc {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-size: 14px; color: var(--c-text-muted);
+      line-height: 1.7; margin-bottom: 20px;
+    }
+    .product-modal__footer {
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 12px;
+    }
+    .product-modal__price-block { display: flex; flex-direction: column; }
+    .product-modal__price {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 900; font-size: 26px;
+      color: var(--c-accent); line-height: 1;
+    }
+    .product-modal__stock {
+      font-size: 12px; color: var(--c-text-faint); margin-top: 4px;
+    }
+    .product-modal__qty-row {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .product-modal__qty-btn {
+      width: 32px; height: 32px; border-radius: var(--r-full);
+      border: 1.5px solid var(--c-border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; color: var(--c-text-heading);
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+    .product-modal__qty-btn:hover { border-color: var(--c-accent); }
+    .product-modal__qty-num {
+      font-weight: 700; font-size: 16px;
+      min-width: 24px; text-align: center;
+    }
+    .product-modal__add-btn {
+      background: var(--c-accent); color: var(--c-white);
+      border-radius: var(--r-full);
+      height: 44px; padding: 0 24px;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 700; font-size: 14px;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      box-shadow: var(--shadow-btn);
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+    .product-modal__add-btn:hover { background: var(--c-accent-dark); transform: translateY(-1px); }
+
+    /* ═══════════════════════════════════
+       TOAST NOTIFICATION
+    ═══════════════════════════════════ */
+    .toast-container {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 500; display: flex; flex-direction: column;
+      align-items: center; gap: 8px;
+      pointer-events: none;
+    }
+    .toast {
+      background: var(--c-text-heading);
+      color: var(--c-white);
+      padding: 12px 20px; border-radius: var(--r-full);
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 600; font-size: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.2);
+      white-space: nowrap;
+      animation: toastIn 0.3s cubic-bezier(.22,1,.36,1) both;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .toast.success { background: #2d7d46; }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes toastOut {
+      from { opacity: 1; transform: translateY(0); }
+      to   { opacity: 0; transform: translateY(12px); }
+    }
+
+    /* ═══════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════ */
+    @media (max-width: 640px) {
+      .store-nav { padding: 0 20px; }
+      .store-nav__links { display: none; }
+      .store-nav__hamburger { display: flex; }
+      .store-hero { padding: 48px 20px 36px; }
+      .store-hero__tagline { font-size: 15px; }
+      .store-categories { padding: 0 20px 20px; }
+      .store-products { padding: 0 16px 32px; }
+      .store-products__grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .product-card__image-area { height: 140px; }
+      .product-card__body { padding: 12px 14px 14px; }
+      .product-card__name { font-size: 13px; }
+      .product-card__price { font-size: 15px; }
+      .product-card__cart-btn { width: 30px; height: 30px; }
+      .promo-banner { margin: 0 16px 32px; padding: 24px; flex-direction: column; align-items: flex-start; }
+      .store-footer { padding: 40px 24px 28px; border-radius: 32px 32px 0 0; }
+      .store-footer__cols { flex-direction: column; gap: 24px; }
+    }
+
+    @media (min-width: 641px) and (max-width: 900px) {
+      .store-products__grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (min-width: 901px) {
+      .store-products__grid { grid-template-columns: repeat(4, 1fr); }
+      .store-hero { padding: 80px 48px 64px; }
+      .store-hero__tagline { font-size: 18px; }
+      .store-products { padding: 0 40px 56px; }
+      .promo-banner { margin: 0 40px 56px; }
+      .store-nav { padding: 0 40px; }
+      .store-categories { padding: 0 40px 32px; }
+    }
+
+    /* ═══════════════════════════════════
+       SCROLL ANIMATIONS
+    ═══════════════════════════════════ */
+    .fade-up {
+      opacity: 0; transform: translateY(24px);
+      transition: opacity 0.6s cubic-bezier(.22,1,.36,1),
+                  transform 0.6s cubic-bezier(.22,1,.36,1);
+    }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+    .delay-1 { transition-delay: 0.08s; }
+    .delay-2 { transition-delay: 0.16s; }
+    .delay-3 { transition-delay: 0.24s; }
+    .delay-4 { transition-delay: 0.32s; }
+
+    /* ── AUTH MODAL ── */
+    .auth-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.5); z-index: 500;
+      backdrop-filter: blur(4px);
+      align-items: center; justify-content: center; padding: 20px;
+    }
+    .auth-overlay.open { display: flex; }
+    .auth-modal {
+      background: var(--c-white); border-radius: var(--r-24);
+      box-shadow: 0 32px 64px rgba(0,0,0,.2);
+      width: 100%; max-width: 420px;
+      animation: modalIn 0.35s cubic-bezier(.22,1,.36,1) both;
+      overflow: hidden;
+    }
+    .auth-modal__head {
+      padding: 24px 24px 0;
+      display: flex; align-items: flex-start; justify-content: space-between;
+    }
+    .auth-tabs { display: flex; gap: 4px; background: var(--c-bg-page); padding: 4px; border-radius: var(--r-full); }
+    .auth-tab {
+      height: 36px; padding: 0 20px; border-radius: var(--r-full);
+      font-family: 'Noto Sans TC', sans-serif; font-weight: 600; font-size: 14px;
+      color: var(--c-text-muted); transition: all 0.2s ease;
+    }
+    .auth-tab.active { background: var(--c-white); color: var(--c-text-heading); box-shadow: var(--shadow-sm); }
+    .auth-modal__close {
+      width: 32px; height: 32px; border-radius: var(--r-full);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--c-text-faint); font-size: 16px;
+      transition: background 0.2s ease; flex-shrink: 0;
+    }
+    .auth-modal__close:hover { background: var(--c-bg-page); }
+    .auth-form { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+    .auth-form.hidden { display: none; }
+    .auth-field { display: flex; flex-direction: column; gap: 6px; }
+    .auth-field label { font-family: 'Noto Sans TC', sans-serif; font-weight: 600; font-size: 13px; color: var(--c-text-heading); }
+    .auth-field input {
+      height: 44px; border: 1.5px solid var(--c-border);
+      border-radius: var(--r-14); padding: 0 14px;
+      font-family: 'Noto Sans TC', sans-serif; font-size: 15px;
+      color: var(--c-text-heading); background: var(--c-white);
+      outline: none; transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .auth-field input:focus { border-color: var(--c-accent); box-shadow: 0 0 0 3px rgba(101,136,166,.12); }
+    .auth-field__hint { font-size: 12px; color: #e07046; display: none; }
+    .auth-field.has-error .auth-field__hint { display: block; }
+    .auth-field.has-error input { border-color: #e07046; }
+    .auth-row { display: flex; align-items: center; justify-content: space-between; }
+    .auth-remember { display: flex; align-items: center; gap: 6px; font-family: 'Noto Sans TC', sans-serif; font-size: 13px; color: var(--c-text-muted); cursor: pointer; }
+    .auth-remember input { width: 15px; height: 15px; accent-color: var(--c-accent); }
+    .auth-forgot { font-family: 'Noto Sans TC', sans-serif; font-size: 13px; color: var(--c-accent); }
+    .auth-submit {
+      height: 48px; background: var(--c-accent); color: var(--c-white);
+      border-radius: var(--r-full); font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 700; font-size: 15px;
+      display: flex; align-items: center; justify-content: center;
+      transition: filter 0.2s ease; margin-top: 4px;
+    }
+    .auth-submit:hover { filter: brightness(0.9); }
+    .auth-submit:disabled { opacity: 0.6; pointer-events: none; }
+    .auth-divider { display: flex; align-items: center; gap: 12px; color: var(--c-text-faint); font-size: 12px; }
+    .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--c-border); }
+    .auth-social {
+      height: 44px; border: 1.5px solid var(--c-border); border-radius: var(--r-full);
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      font-family: 'Noto Sans TC', sans-serif; font-weight: 600; font-size: 14px;
+      color: var(--c-text-heading); transition: background 0.2s ease;
+    }
+    .auth-social:hover { background: var(--c-bg-page); }
+    .auth-switch { text-align: center; font-family: 'Noto Sans TC', sans-serif; font-size: 13px; color: var(--c-text-muted); padding-top: 4px; }
+    .auth-switch a { color: var(--c-accent); font-weight: 600; cursor: pointer; }
+    .auth-terms { display: flex; align-items: flex-start; gap: 8px; font-family: 'Noto Sans TC', sans-serif; font-size: 13px; color: var(--c-text-muted); cursor: pointer; }
+    .auth-terms input { width: 15px; height: 15px; flex-shrink: 0; margin-top: 1px; accent-color: var(--c-accent); }
+    .auth-terms a { color: var(--c-accent); }
+    @media (max-width: 380px) { .auth-modal { border-radius: var(--r-16); } }
+
+    /* ── 使用者按鈕 & 下拉選單 ── */
+    .user-btn {
+      display: flex; align-items: center; gap: 8px;
+      height: 36px; padding: 0 12px; border-radius: var(--r-full);
+      font-family: 'Noto Sans TC', sans-serif; font-weight: 600; font-size: 13px;
+      color: var(--c-text-heading); transition: background 0.2s ease; position: relative;
+    }
+    .user-btn:hover { background: var(--c-bg-page); }
+    .user-btn__avatar {
+      width: 28px; height: 28px; border-radius: var(--r-full);
+      background: var(--c-accent); color: var(--c-white);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 900; flex-shrink: 0;
+    }
+    .user-btn__name { max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .login-btn {
+      height: 36px; padding: 0 16px; border-radius: var(--r-full);
+      border: 1.5px solid var(--c-border);
+      font-family: 'Noto Sans TC', sans-serif; font-weight: 600; font-size: 13px;
+      color: var(--c-text-heading); transition: all 0.2s ease;
+    }
+    .login-btn:hover { border-color: var(--c-accent); color: var(--c-accent); }
+    .user-dropdown {
+      display: none; position: absolute; top: calc(100% + 8px); right: 0;
+      background: var(--c-white); border: 1px solid var(--c-border-light);
+      border-radius: var(--r-16); box-shadow: var(--shadow-lg);
+      min-width: 160px; overflow: hidden; z-index: 200;
+    }
+    .user-btn:focus-within .user-dropdown,
+    .user-dropdown.open { display: block; }
+    .user-dropdown__item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 16px; font-family: 'Noto Sans TC', sans-serif;
+      font-size: 14px; font-weight: 500; color: var(--c-text-heading);
+      transition: background 0.15s ease; cursor: pointer; width: 100%;
+    }
+    .user-dropdown__item:hover { background: var(--c-bg-page); }
+    .user-dropdown__item--danger { color: #e07046; }
+    .user-dropdown__divider { height: 1px; background: var(--c-border-light); margin: 4px 0; }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════
+     CART DRAWER
+══════════════════════════════════ -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<aside class="cart-drawer" id="cartDrawer" aria-label="購物車">
+  <div class="cart-drawer__header">
+    <div class="cart-drawer__title">
+      購物車 <span class="cart-drawer__count" id="cartCountBadge">0</span>
+    </div>
+    <button class="cart-drawer__close" onclick="closeCart()" aria-label="關閉">✕</button>
+  </div>
+  <div class="cart-drawer__body" id="cartBody">
+    <div class="cart-empty" id="cartEmpty">
+      <div class="cart-empty__icon">🛒</div>
+      <div class="cart-empty__text">購物車是空的</div>
+    </div>
+    <div id="cartItems"></div>
+  </div>
+  <div class="cart-drawer__footer" id="cartFooter" style="display:none">
+    <div class="cart-drawer__summary">
+      <span class="cart-drawer__summary-label">合計金額</span>
+      <span class="cart-drawer__total" id="cartTotal">$0</span>
+    </div>
+    <button class="cart-drawer__checkout" onclick="checkout()">前往結帳</button>
+  </div>
+</aside>
+
+<!-- ══════════════════════════════════
+     SEARCH OVERLAY
+══════════════════════════════════ -->
+<div class="search-overlay" id="searchOverlay" onclick="handleSearchOverlayClick(event)">
+  <div class="search-box" id="searchBox">
+    <div class="search-box__input-row">
+      <span class="search-box__icon">🔍</span>
+      <input class="search-box__input" id="searchInput" type="text" placeholder="搜尋商品…" oninput="doSearch(this.value)" />
+      <button class="search-box__close" onclick="closeSearch()" aria-label="關閉搜尋">✕</button>
+    </div>
+    <div class="search-box__results" id="searchResults">
+      <div class="search-no-results">輸入關鍵字搜尋商品</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PRODUCT MODAL
+══════════════════════════════════ -->
+<div class="product-modal-overlay" id="productModalOverlay" onclick="handleModalOverlayClick(event)">
+  <div class="product-modal" id="productModal">
+    <div class="product-modal__img" id="modalImg">
+      <div class="product-modal__img-placeholder" id="modalImgPlaceholder"></div>
+      <button class="product-modal__close-btn" onclick="closeModal()" aria-label="關閉">✕</button>
+    </div>
+    <div class="product-modal__body">
+      <div class="product-modal__tag" id="modalTag"></div>
+      <div class="product-modal__name" id="modalName"></div>
+      <div class="product-modal__desc" id="modalDesc"></div>
+      <div class="product-modal__footer">
+        <div class="product-modal__price-block">
+          <span class="product-modal__price" id="modalPrice"></span>
+          <span class="product-modal__stock" id="modalStock"></span>
+        </div>
+        <div class="product-modal__qty-row">
+          <button class="product-modal__qty-btn" onclick="changeModalQty(-1)">−</button>
+          <span class="product-modal__qty-num" id="modalQty">1</span>
+          <button class="product-modal__qty-btn" onclick="changeModalQty(1)">+</button>
+        </div>
+        <button class="product-modal__add-btn" id="modalAddBtn" onclick="addModalToCart()">
+          加入購物車
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     TOAST CONTAINER
+══════════════════════════════════ -->
+<div class="toast-container" id="toastContainer"></div>
+
+
+
+<!-- ══════════════════════════════════
+     MOBILE MENU
+══════════════════════════════════ -->
+<div class="mobile-menu" id="mobileMenu" onclick="closeMobileMenu()">
+  <div class="mobile-menu__panel" onclick="event.stopPropagation()">
+    <a class="mobile-menu__link" href="#" onclick="closeMobileMenu()">首頁</a>
+    <a class="mobile-menu__link" href="#products" onclick="closeMobileMenu()">所有商品</a>
+    <a class="mobile-menu__link" href="#about" onclick="closeMobileMenu()">關於我們</a>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     MAIN PAGE
+══════════════════════════════════ -->
+<div class="page" id="page">
+
+  <!-- Store Navbar -->
+  <nav class="store-nav" aria-label="店鋪導覽" id="storeNav">
+    <div class="store-nav__brand">
+      <div class="store-nav__logo">
+        <div class="store-nav__logo-placeholder">風</div>
+      </div>
+      <span class="store-nav__name">風格生活選物</span>
+    </div>
+    <div class="store-nav__right">
+      <div class="store-nav__links">
+        <a class="store-nav__link active" href="#">首頁</a>
+        <a class="store-nav__link" href="#products">所有商品</a>
+        <a class="store-nav__link" href="#about">關於我們</a>
+      </div>
+      <div class="store-nav__actions">
+        <button class="store-nav__action-btn" type="button" aria-label="搜尋" onclick="openSearch()">
+          <svg width="22" height="22" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.1667 23.8333C20.8486 23.8333 23.8333 20.8486 23.8333 17.1667C23.8333 13.4848 20.8486 10.5 17.1667 10.5C13.4848 10.5 10.5 13.4848 10.5 17.1667C10.5 20.8486 13.4848 23.8333 17.1667 23.8333Z" stroke="#4A5565" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M25.5 25.5L21.9167 21.9167" stroke="#4A5565" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="store-nav__cart-wrap">
+          <button class="store-nav__action-btn" type="button" aria-label="購物車" onclick="openCart()">
+            <svg width="22" height="22" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.6666 26.3333C15.1269 26.3333 15.5 25.9602 15.5 25.5C15.5 25.0398 15.1269 24.6667 14.6666 24.6667C14.2064 24.6667 13.8333 25.0398 13.8333 25.5C13.8333 25.9602 14.2064 26.3333 14.6666 26.3333Z" stroke="#4A5565" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M23.8333 26.3333C24.2936 26.3333 24.6667 25.9602 24.6667 25.5C24.6667 25.0398 24.2936 24.6667 23.8333 24.6667C23.3731 24.6667 23 25.0398 23 25.5C23 25.9602 23.3731 26.3333 23.8333 26.3333Z" stroke="#4A5565" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.70831 9.70834H11.375L13.5916 20.0583C13.673 20.4374 13.8839 20.7762 14.1881 21.0166C14.4923 21.2569 14.8707 21.3836 15.2583 21.375H23.4083C23.7876 21.3744 24.1554 21.2444 24.4508 21.0065C24.7463 20.7687 24.9518 20.4371 25.0333 20.0667L26.4083 13.875H12.2666" stroke="#4A5565" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="store-nav__cart-badge" id="navCartBadge" aria-live="polite">
+            <span id="navCartCount">0</span>
+          </div>
+        </div>
+      </div>
+      <!-- 登入/使用者按鈕 -->
+      <div id="navAuthArea"></div>
+      <button class="store-nav__hamburger" aria-label="選單" onclick="toggleMobileMenu()">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Store Hero -->
+  <div class="store-hero fade-up" id="heroSection">
+    <div class="store-hero__eyebrow">精選好物 · 品味生活</div>
+    <p class="store-hero__tagline">為您挑選來自世界各地的質感生活好物，讓日常充滿美感。</p>
+    <div class="store-hero__cta-wrap">
+      <button class="store-hero__cta-btn" type="button" onclick="scrollToProducts()">立即選購</button>
+      <button class="store-hero__cta-secondary" type="button" onclick="scrollToAbout()">瞭解品牌</button>
+    </div>
+  </div>
+
+  <!-- Category Chips -->
+  <div class="store-categories fade-up">
+    <button class="category-chip active" onclick="filterCategory('all', this)">全部商品</button>
+    <button class="category-chip" onclick="filterCategory('居家生活', this)">居家生活</button>
+    <button class="category-chip" onclick="filterCategory('科技配件', this)">科技配件</button>
+    <button class="category-chip" onclick="filterCategory('時尚精品', this)">時尚精品</button>
+    <button class="category-chip" onclick="filterCategory('美食饗宴', this)">美食饗宴</button>
+  </div>
+
+  <!-- Hot Products -->
+  <section class="store-products" id="products" aria-label="熱門商品">
+    <div class="store-products__header fade-up">
+      <div class="store-products__heading">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15.8333 2.5H4.16667C3.24619 2.5 2.5 3.24619 2.5 4.16667V15.8333C2.5 16.7538 3.24619 17.5 4.16667 17.5H15.8333C16.7538 17.5 17.5 16.7538 17.5 15.8333V4.16667C17.5 3.24619 16.7538 2.5 15.8333 2.5Z" stroke="#99A1AF" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 7.5H17.5" stroke="#99A1AF" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 12.5H17.5" stroke="#99A1AF" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.5 2.5V17.5" stroke="#99A1AF" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M12.5 2.5V17.5" stroke="#99A1AF" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="store-products__heading-text">熱門商品</span>
+      </div>
+      <button class="store-products__more" type="button" onclick="showAllProducts()">查看更多</button>
+    </div>
+    <div class="store-products__grid" id="productsGrid">
+      <!-- Rendered by JS -->
+    </div>
+  </section>
+
+  <!-- Promo Banner -->
+  <div class="promo-banner fade-up">
+    <div class="promo-banner__text">
+      <div class="promo-banner__title">新會員首購 9 折優惠</div>
+      <div class="promo-banner__sub">現在加入會員，立即享有首購優惠<br>精選商品任選，品質保證</div>
+    </div>
+    <button class="promo-banner__btn" onclick="showToast('優惠碼已複製：NEW10', 'success')">立即領取</button>
+  </div>
+
+  <!-- Store Footer -->
+  <footer class="store-footer" id="about" aria-label="頁尾">
+    <div class="store-footer__cols">
+      <div class="store-footer__about">
+        <span class="store-footer__brand">風格生活選物</span>
+        <p class="store-footer__desc">為您挑選來自世界各地的質感生活好物，讓日常充滿美感。</p>
+      </div>
+      <div class="store-footer__links">
+        <div class="store-footer__col-title">快速連結</div>
+        <ul class="store-footer__col-list">
+          <li class="store-footer__col-item">
+            <span class="store-footer__col-dot"></span>
+            <a class="store-footer__col-link" href="#">最新商品</a>
+          </li>
+          <li class="store-footer__col-item">
+            <span class="store-footer__col-dot"></span>
+            <a class="store-footer__col-link" href="#">會員中心</a>
+          </li>
+          <li class="store-footer__col-item">
+            <span class="store-footer__col-dot"></span>
+            <a class="store-footer__col-link" href="#">隱私條款</a>
+          </li>
+          <li class="store-footer__col-item">
+            <span class="store-footer__col-dot"></span>
+            <a class="store-footer__col-link" href="#">退換貨政策</a>
+          </li>
+        </ul>
+      </div>
+      <div class="store-footer__contact">
+        <div class="store-footer__col-title">聯絡我們</div>
+        <div class="store-footer__contact-items">
+          <div class="store-footer__contact-row">
+            <div class="store-footer__contact-icon">
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 14C0 6.26801 6.26801 0 14 0H22C29.732 0 36 6.26801 36 14V22C36 29.732 29.732 36 22 36H14C6.26801 36 0 29.732 0 22V14Z" fill="white" fill-opacity="0.1"/><path d="M23.3294 12.6666H12.6627C11.9264 12.6666 11.3294 13.2636 11.3294 14V22C11.3294 22.7363 11.9264 23.3333 12.6627 23.3333H23.3294C24.0658 23.3333 24.6627 22.7363 24.6627 22V14C24.6627 13.2636 24.0658 12.6666 23.3294 12.6666Z" stroke="white" stroke-opacity="0.7" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M24.6627 14.6666L18.6827 18.4666C18.4769 18.5956 18.239 18.664 17.9961 18.664C17.7532 18.664 17.5152 18.5956 17.3094 18.4666L11.3294 14.6666" stroke="white" stroke-opacity="0.7" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <span class="store-footer__contact-email">service@shop.com</span>
+          </div>
+          <div class="store-footer__contact-row">
+            <div class="store-footer__contact-icon">
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 14C0 6.26801 6.26801 0 14 0H22C29.732 0 36 6.26801 36 14V22C36 29.732 29.732 36 22 36H14C6.26801 36 0 29.732 0 22V14Z" fill="white" fill-opacity="0.1"/><path d="M24.6666 21.28V23.28C24.6674 23.4657 24.6294 23.6494 24.555 23.8195C24.4806 23.9897 24.3715 24.1424 24.2347 24.2679C24.0979 24.3934 23.9364 24.489 23.7605 24.5485C23.5846 24.6079 23.3982 24.63 23.2133 24.6133C21.1619 24.3904 19.1913 23.6894 17.46 22.5667C15.8492 21.5431 14.4835 20.1774 13.46 18.5667C12.3333 16.8275 11.6321 14.8473 11.4133 12.7866C11.3966 12.6023 11.4186 12.4165 11.4776 12.2411C11.5367 12.0656 11.6317 11.9044 11.7565 11.7677C11.8813 11.631 12.0332 11.5218 12.2025 11.447C12.3718 11.3722 12.5549 11.3335 12.74 11.3333H14.74C15.0635 11.3301 15.3772 11.4447 15.6225 11.6557C15.8678 11.8666 16.028 12.1596 16.0733 12.48C16.1577 13.12 16.3143 13.7485 16.54 14.3533C16.6297 14.5919 16.6491 14.8513 16.5959 15.1006C16.5427 15.3499 16.4192 15.5787 16.24 15.76L15.3933 16.6066C16.3423 18.2757 17.7243 19.6576 19.3933 20.6067L20.24 19.76C20.4212 19.5807 20.6501 19.4572 20.8994 19.404C21.1487 19.3509 21.408 19.3703 21.6466 19.46C22.2515 19.6857 22.8799 19.8422 23.52 19.9267C23.8438 19.9723 24.1396 20.1355 24.351 20.385C24.5624 20.6345 24.6748 20.953 24.6666 21.28Z" stroke="white" stroke-opacity="0.7" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <span class="store-footer__contact-phone">0800-000-000</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="store-footer__bottom">
+      <p class="store-footer__copyright">© 2026 風格生活選物. All rights reserved. Powered by Goez Shop.</p>
+    </div>
+  </footer>
+
+</div><!-- end .page -->
+
+<script>
+/* ══════════════════════════════════
+   PRODUCT DATA
+══════════════════════════════════ */
+const PRODUCTS = [
+  {
+    id: 1,
+    name: '質感陶瓷花瓶',
+    tag: '居家生活',
+    price: 890,
+    stock: 15,
+    emoji: '🏺',
+    gradientClass: 'placeholder-gradient-1',
+    badge: null,
+    desc: '手工拉坯製作，每件都是獨一無二的藝術品。極簡北歐風格，為居家空間增添質感與溫度。',
+  },
+  {
+    id: 2,
+    name: '無線降噪耳機',
+    tag: '科技配件',
+    price: 3280,
+    origPrice: 4200,
+    stock: 8,
+    emoji: '🎧',
+    gradientClass: 'placeholder-gradient-2',
+    badge: '熱銷',
+    desc: '主動降噪技術，隔絕外界干擾。長達 30 小時續航，讓音樂陪伴每一段旅程。',
+  },
+  {
+    id: 3,
+    name: '手工皮革錢包',
+    tag: '時尚精品',
+    price: 1280,
+    stock: 20,
+    emoji: '👛',
+    gradientClass: 'placeholder-gradient-3',
+    badge: null,
+    desc: '嚴選義大利植鞣革，採用傳統手縫工藝。隨著使用歲月增添專屬包漿，越用越美。',
+  },
+  {
+    id: 4,
+    name: '北歐木質時鐘',
+    tag: '居家生活',
+    price: 2400,
+    stock: 5,
+    emoji: '🕐',
+    gradientClass: 'placeholder-gradient-4',
+    badge: '限量',
+    desc: '實木框架搭配靜音機芯，精準報時不干擾。斯堪地納維亞美學設計，客廳臥室皆宜。',
+  },
+  {
+    id: 5,
+    name: '精釀蜂蜜禮盒',
+    tag: '美食饗宴',
+    price: 760,
+    stock: 30,
+    emoji: '🍯',
+    gradientClass: 'placeholder-gradient-1',
+    badge: null,
+    desc: '嚴選台灣在地養蜂場，無添加純天然蜂蜜。附精美禮盒包裝，送禮自用兩相宜。',
+  },
+  {
+    id: 6,
+    name: '智慧香薰機',
+    tag: '居家生活',
+    price: 1680,
+    origPrice: 2100,
+    stock: 12,
+    emoji: '💨',
+    gradientClass: 'placeholder-gradient-2',
+    badge: '特價',
+    desc: '超音波冷霧技術，靜音且高效。可搭配 App 定時控制，智慧調香讓空間隨時充滿香氛。',
+  },
+  {
+    id: 7,
+    name: '真皮名片夾',
+    tag: '時尚精品',
+    price: 580,
+    stock: 25,
+    emoji: '💼',
+    gradientClass: 'placeholder-gradient-3',
+    badge: null,
+    desc: '輕薄設計，可容納 20 張名片。採用頭層牛皮，細膩紋路展現專業品味與個人風格。',
+  },
+  {
+    id: 8,
+    name: '無線充電板',
+    tag: '科技配件',
+    price: 990,
+    stock: 18,
+    emoji: '⚡',
+    gradientClass: 'placeholder-gradient-4',
+    badge: null,
+    desc: '支援 15W 快充，相容 Qi 標準裝置。輕薄鋁合金外殼，商務出行不可或缺的隨身神器。',
+  },
+];
+
+/* ══════════════════════════════════
+   CART STATE
+══════════════════════════════════ */
+let cart = JSON.parse(localStorage.getItem('goez_cart') || '[]');
+
+function saveCart() {
+  localStorage.setItem('goez_cart', JSON.stringify(cart));
+}
+
+function getTotalItems() {
+  return cart.reduce((sum, item) => sum + item.qty, 0);
+}
+
+function getTotalPrice() {
+  return cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+}
+
+function addToCart(productId, qty = 1) {
+  const product = PRODUCTS.find(p => p.id === productId);
+  if (!product) return;
+  const existing = cart.find(i => i.id === productId);
+  if (existing) {
+    existing.qty = Math.min(existing.qty + qty, product.stock);
+  } else {
+    cart.push({ id: productId, name: product.name, price: product.price, emoji: product.emoji, qty });
+  }
+  saveCart();
+  updateCartUI();
+  showToast(`✓ ${product.name} 已加入購物車`, 'success');
+}
+
+function removeFromCart(productId) {
+  cart = cart.filter(i => i.id !== productId);
+  saveCart();
+  updateCartUI();
+  renderCartItems();
+}
+
+function updateQty(productId, delta) {
+  const item = cart.find(i => i.id === productId);
+  if (!item) return;
+  const product = PRODUCTS.find(p => p.id === productId);
+  item.qty = Math.max(1, Math.min(item.qty + delta, product.stock));
+  saveCart();
+  updateCartUI();
+  renderCartItems();
+}
+
+function updateCartUI() {
+  const count = getTotalItems();
+  document.getElementById('navCartCount').textContent = count;
+  document.getElementById('cartCountBadge').textContent = count;
+  const badge = document.getElementById('navCartBadge');
+  badge.style.display = count > 0 ? 'flex' : 'none';
+}
+
+function renderCartItems() {
+  const container = document.getElementById('cartItems');
+  const empty = document.getElementById('cartEmpty');
+  const footer = document.getElementById('cartFooter');
+
+  if (cart.length === 0) {
+    empty.style.display = 'flex';
+    container.innerHTML = '';
+    footer.style.display = 'none';
+    return;
+  }
+
+  empty.style.display = 'none';
+  footer.style.display = 'block';
+
+  container.innerHTML = cart.map(item => `
+    <div class="cart-item">
+      <div class="cart-item__img">${item.emoji}</div>
+      <div class="cart-item__info">
+        <div class="cart-item__name">${item.name}</div>
+        <div class="cart-item__price">$${(item.price * item.qty).toLocaleString()}</div>
+      </div>
+      <div class="cart-item__controls">
+        <button class="cart-item__remove" onclick="removeFromCart(${item.id})" aria-label="移除">✕</button>
+        <div class="cart-item__qty">
+          <button class="cart-item__qty-btn" onclick="updateQty(${item.id}, -1)">−</button>
+          <span class="cart-item__qty-num">${item.qty}</span>
+          <button class="cart-item__qty-btn" onclick="updateQty(${item.id}, 1)">+</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('cartTotal').textContent = `$${getTotalPrice().toLocaleString()}`;
+}
+
+/* ══════════════════════════════════
+   CART DRAWER OPEN/CLOSE
+══════════════════════════════════ */
+function openCart() {
+  renderCartItems();
+  document.getElementById('cartOverlay').classList.add('open');
+  document.getElementById('cartDrawer').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCart() {
+  document.getElementById('cartOverlay').classList.remove('open');
+  document.getElementById('cartDrawer').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function checkout() {
+  if (cart.length === 0) return;
+
+  /* 1. 將購物車寫入 goez_cart_v2（checkout 頁讀取的 key） */
+  const cartForCheckout = cart.map(item => ({
+    id:       item.id,
+    name:     item.name,
+    price:    item.price,
+    qty:      item.qty,
+    imageUrl: item.imageUrl || ''   // store.html 商品含 emoji，無 imageUrl 時留空
+  }));
+  localStorage.setItem('goez_cart_v2', JSON.stringify(cartForCheckout));
+
+  /* 2. 寫入店鋪資訊供 checkout 頁顯示品牌 */
+  const storeName  = document.title || '風格生活選物';
+  const accentColor = getComputedStyle(document.documentElement)
+                        .getPropertyValue('--c-accent').trim() || '#6588A6';
+  localStorage.setItem('goez_store_meta', JSON.stringify({
+    name:        storeName,
+    accentColor: accentColor,
+    logoUrl:     ''
+  }));
+
+  /* 3. 關閉購物車抽屜，跳轉至結帳頁 */
+  closeCart();
+  window.location.href = 'goez-shop-checkout.html';
+}
+
+/* ══════════════════════════════════
+   SEARCH
+══════════════════════════════════ */
+function openSearch() {
+  document.getElementById('searchOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => document.getElementById('searchInput').focus(), 100);
+}
+
+function closeSearch() {
+  document.getElementById('searchOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchResults').innerHTML = '<div class="search-no-results">輸入關鍵字搜尋商品</div>';
+}
+
+function handleSearchOverlayClick(e) {
+  if (e.target === document.getElementById('searchOverlay')) closeSearch();
+}
+
+function doSearch(query) {
+  const results = document.getElementById('searchResults');
+  const q = query.trim().toLowerCase();
+  if (!q) {
+    results.innerHTML = '<div class="search-no-results">輸入關鍵字搜尋商品</div>';
+    return;
+  }
+  const matches = PRODUCTS.filter(p =>
+    p.name.toLowerCase().includes(q) || p.tag.toLowerCase().includes(q)
+  );
+  if (matches.length === 0) {
+    results.innerHTML = `<div class="search-no-results">找不到「${query}」的相關商品</div>`;
+    return;
+  }
+  results.innerHTML = matches.map(p => `
+    <div class="search-result-item" onclick="openProductModal(${p.id}); closeSearch();">
+      <div class="search-result-item__img">${p.emoji}</div>
+      <span class="search-result-item__name">${p.name}</span>
+      <span class="search-result-item__price">$${p.price.toLocaleString()}</span>
+    </div>
+  `).join('');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeSearch();
+    closeModal();
+    closeCart();
+  }
+});
+
+/* ══════════════════════════════════
+   PRODUCT MODAL
+══════════════════════════════════ */
+let modalProductId = null;
+let modalQtyVal = 1;
+
+function openProductModal(productId) {
+  const p = PRODUCTS.find(pr => pr.id === productId);
+  if (!p) return;
+  modalProductId = productId;
+  modalQtyVal = 1;
+
+  document.getElementById('modalTag').textContent = p.tag;
+  document.getElementById('modalName').textContent = p.name;
+  document.getElementById('modalDesc').textContent = p.desc;
+  document.getElementById('modalPrice').textContent = `$${p.price.toLocaleString()}`;
+  document.getElementById('modalStock').textContent = `剩餘 ${p.stock} 件`;
+  document.getElementById('modalQty').textContent = '1';
+
+  const imgArea = document.getElementById('modalImg');
+  imgArea.className = 'product-modal__img ' + p.gradientClass;
+  document.getElementById('modalImgPlaceholder').textContent = p.emoji;
+
+  document.getElementById('productModalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('productModalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleModalOverlayClick(e) {
+  if (e.target === document.getElementById('productModalOverlay')) closeModal();
+}
+
+function changeModalQty(delta) {
+  const p = PRODUCTS.find(pr => pr.id === modalProductId);
+  if (!p) return;
+  modalQtyVal = Math.max(1, Math.min(modalQtyVal + delta, p.stock));
+  document.getElementById('modalQty').textContent = modalQtyVal;
+}
+
+function addModalToCart() {
+  addToCart(modalProductId, modalQtyVal);
+  closeModal();
+}
+
+/* ══════════════════════════════════
+   PRODUCTS RENDERING
+══════════════════════════════════ */
+let currentCategory = 'all';
+
+function renderProducts(category = 'all') {
+  const grid = document.getElementById('productsGrid');
+  const products = category === 'all'
+    ? PRODUCTS
+    : PRODUCTS.filter(p => p.tag === category);
+
+  if (products.length === 0) {
+    grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:40px;color:var(--c-text-faint);font-family:\'Noto Sans TC\',sans-serif;">此分類暫無商品</p>';
+    return;
+  }
+
+  grid.innerHTML = products.map((p, i) => `
+    <article class="product-card fade-up delay-${(i % 4) + 1}" aria-label="${p.name}" onclick="openProductModal(${p.id})">
+      <div class="product-card__image-area product-card__image-area--empty ${p.gradientClass}">
+        <div class="placeholder-art">${p.emoji}</div>
+        ${p.badge ? `<span class="product-card__badge">${p.badge}</span>` : ''}
+      </div>
+      <div class="product-card__body">
+        <div class="product-card__meta">
+          <div class="product-card__tag"><span class="product-card__tag-text">${p.tag}</span></div>
+          <span class="product-card__stock ${p.stock <= 5 ? 'low' : ''}">剩餘 ${p.stock}</span>
+        </div>
+        <div class="product-card__name">${p.name}</div>
+        <div class="product-card__footer">
+          <div>
+            <span class="product-card__price">$${p.price.toLocaleString()}</span>
+            ${p.origPrice ? `<span class="product-card__price-orig">$${p.origPrice.toLocaleString()}</span>` : ''}
+          </div>
+          <button class="product-card__cart-btn" type="button" aria-label="加入購物車"
+            onclick="event.stopPropagation(); addToCart(${p.id})">
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.33333 14.6667C5.70152 14.6667 6 14.3682 6 14C6 13.6318 5.70152 13.3333 5.33333 13.3333C4.96514 13.3333 4.66666 13.6318 4.66666 14C4.66666 14.3682 4.96514 14.6667 5.33333 14.6667Z" stroke="white" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M12.6667 14.6667C13.0349 14.6667 13.3333 14.3682 13.3333 14C13.3333 13.6318 13.0349 13.3333 12.6667 13.3333C12.2985 13.3333 12 13.6318 12 14C12 14.3682 12.2985 14.6667 12.6667 14.6667Z" stroke="white" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M1.36667 1.36667H2.7L4.47334 9.64667C4.53839 9.94991 4.70712 10.221 4.95048 10.4132C5.19384 10.6055 5.49661 10.7069 5.80667 10.7H12.3267C12.6301 10.6995 12.9243 10.5955 13.1607 10.4052C13.397 10.2149 13.5614 9.94969 13.6267 9.65333L14.7267 4.7H3.41334" stroke="white" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+    </article>
+  `).join('');
+
+  /* re-observe newly rendered cards */
+  grid.querySelectorAll('.fade-up').forEach(el => {
+    el.classList.remove('visible');
+    observer.observe(el);
+  });
+}
+
+function filterCategory(category, btn) {
+  currentCategory = category;
+  document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  renderProducts(category);
+}
+
+function showAllProducts() {
+  showToast('已顯示全部商品');
+}
+
+/* ══════════════════════════════════
+   TOAST
+══════════════════════════════════ */
+function showToast(message, type = '') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.animation = 'toastOut 0.3s ease forwards';
+    setTimeout(() => toast.remove(), 300);
+  }, 2400);
+}
+
+/* ══════════════════════════════════
+   MOBILE MENU
+══════════════════════════════════ */
+function toggleMobileMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+function closeMobileMenu() {
+  document.getElementById('mobileMenu').classList.remove('open');
+}
+
+/* ══════════════════════════════════
+   SCROLL HELPERS
+══════════════════════════════════ */
+function scrollToProducts() {
+  document.getElementById('products').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function scrollToAbout() {
+  document.getElementById('about').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ══════════════════════════════════
+   STICKY NAV SHADOW
+══════════════════════════════════ */
+window.addEventListener('scroll', () => {
+  const nav = document.getElementById('storeNav');
+  nav.classList.toggle('scrolled', window.scrollY > 10);
+}, { passive: true });
+
+/* ══════════════════════════════════
+   SCROLL ANIMATIONS
+══════════════════════════════════ */
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12 });
+
+/* ══════════════════════════════════
+   INIT
+══════════════════════════════════ */
+(function init() {
+  renderProducts();
+  updateCartUI();
+  renderAuthNav();
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+})();
+/* ══════════════════════════════════
+   AUTH 系統
+══════════════════════════════════ */
+function getUser()   { try { return JSON.parse(localStorage.getItem('goez_user') || 'null'); } catch { return null; } }
+function saveUser(u) { localStorage.setItem('goez_user', JSON.stringify(u)); }
+function clearUser() { localStorage.removeItem('goez_user'); }
+
+function openAuth(tab='login') {
+  switchTab(tab);
+  document.getElementById('authOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeAuth() {
+  document.getElementById('authOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function handleAuthBg(e) { if (e.target === document.getElementById('authOverlay')) closeAuth(); }
+
+function switchTab(tab) {
+  const isLogin = tab === 'login';
+  document.getElementById('tabLogin').classList.toggle('active', isLogin);
+  document.getElementById('tabRegister').classList.toggle('active', !isLogin);
+  document.getElementById('loginForm').classList.toggle('hidden', !isLogin);
+  document.getElementById('registerForm').classList.toggle('hidden', isLogin);
+}
+
+function setFieldError(id, hasError) { document.getElementById(id).classList.toggle('has-error', hasError); }
+function clearFieldErrors(...ids) { ids.forEach(id => setFieldError(id, false)); }
+
+function submitLogin(e) {
+  e.preventDefault();
+  const email    = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  let valid = true;
+  clearFieldErrors('lf-email','lf-password');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setFieldError('lf-email', true); valid = false; }
+  if (!password) { setFieldError('lf-password', true); valid = false; }
+  if (!valid) return;
+  const btn = document.getElementById('loginSubmitBtn');
+  btn.disabled = true; btn.textContent = '登入中…';
+  setTimeout(() => {
+    btn.disabled = false; btn.textContent = '登入';
+    const name = email.split('@')[0].replace(/[._]/g,' ').replace(/\b\w/g, c=>c.toUpperCase());
+    saveUser({ name, email, joinedAt: new Date().toISOString().slice(0,10) });
+    closeAuth(); renderAuthNav();
+    showToast(`👋 歡迎回來，${name}！`, 'success');
+  }, 800);
+}
+
+function submitRegister(e) {
+  e.preventDefault();
+  const name     = document.getElementById('regName').value.trim();
+  const email    = document.getElementById('regEmail').value.trim();
+  const password = document.getElementById('regPassword').value;
+  const confirm  = document.getElementById('regConfirm').value;
+  const agreed   = document.getElementById('agreeTerms').checked;
+  let valid = true;
+  clearFieldErrors('rf-name','rf-email','rf-password','rf-confirm');
+  if (!name)  { setFieldError('rf-name', true); valid = false; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setFieldError('rf-email', true); valid = false; }
+  if (password.length < 8) { setFieldError('rf-password', true); valid = false; }
+  if (password !== confirm) { setFieldError('rf-confirm', true); valid = false; }
+  if (!agreed) { showToast('請勾選同意服務條款'); return; }
+  if (!valid) return;
+  const btn = document.getElementById('registerSubmitBtn');
+  btn.disabled = true; btn.textContent = '建立中…';
+  setTimeout(() => {
+    btn.disabled = false; btn.textContent = '建立帳號';
+    saveUser({ name, email, joinedAt: new Date().toISOString().slice(0,10) });
+    closeAuth(); renderAuthNav();
+    showToast(`🎉 歡迎加入，${name}！`, 'success');
+  }, 900);
+}
+
+function socialLogin() { showToast('Google 登入功能串接中…'); }
+
+function renderAuthNav() {
+  const area = document.getElementById('navAuthArea');
+  const user = getUser();
+  if (!user) {
+    area.innerHTML = `<button class="login-btn" onclick="openAuth('login')">登入 / 註冊</button>`;
+  } else {
+    const initial = user.name.charAt(0).toUpperCase();
+    area.innerHTML = `
+      <div class="user-btn" tabindex="0" onclick="toggleUserMenu(event)">
+        <div class="user-btn__avatar">${initial}</div>
+        <span class="user-btn__name">${user.name}</span>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="user-dropdown" id="userDropdown">
+          <button class="user-dropdown__item" onclick="event.stopPropagation();showToast('訂單功能即將上線')">📦 我的訂單</button>
+          <button class="user-dropdown__item" onclick="event.stopPropagation();showToast('設定功能即將上線')">⚙️ 帳戶設定</button>
+          <div class="user-dropdown__divider"></div>
+          <button class="user-dropdown__item user-dropdown__item--danger" onclick="event.stopPropagation();logout()">登出</button>
+        </div>
+      </div>`;
+  }
+}
+
+function toggleUserMenu(e) {
+  const dd = document.getElementById('userDropdown');
+  if (dd) { dd.classList.toggle('open'); e.stopPropagation(); }
+}
+document.addEventListener('click', () => {
+  const dd = document.getElementById('userDropdown');
+  if (dd) dd.classList.remove('open');
+});
+
+function logout() { clearUser(); renderAuthNav(); showToast('已登出'); }
+</script>
+
+<!-- 登入 / 註冊 Modal -->
+<div class="auth-overlay" id="authOverlay" onclick="handleAuthBg(event)">
+  <div class="auth-modal" id="authModal">
+    <div class="auth-modal__head">
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabLogin"    onclick="switchTab('login')">登入</button>
+        <button class="auth-tab"        id="tabRegister" onclick="switchTab('register')">註冊</button>
+      </div>
+      <button class="auth-modal__close" onclick="closeAuth()">✕</button>
+    </div>
+    <!-- 登入表單 -->
+    <form class="auth-form" id="loginForm" onsubmit="submitLogin(event)">
+      <div class="auth-field" id="lf-email">
+        <label for="loginEmail">電子郵件</label>
+        <input id="loginEmail" type="email" placeholder="your@email.com" autocomplete="email" />
+        <span class="auth-field__hint">請輸入有效的電子郵件</span>
+      </div>
+      <div class="auth-field" id="lf-password">
+        <label for="loginPassword">密碼</label>
+        <input id="loginPassword" type="password" placeholder="••••••••" autocomplete="current-password" />
+        <span class="auth-field__hint">請輸入密碼</span>
+      </div>
+      <div class="auth-row">
+        <label class="auth-remember"><input type="checkbox" id="rememberMe"> 記住我</label>
+        <a class="auth-forgot" href="#">忘記密碼？</a>
+      </div>
+      <button type="submit" class="auth-submit" id="loginSubmitBtn">登入</button>
+      <div class="auth-divider"><span>或</span></div>
+      <button type="button" class="auth-social" onclick="socialLogin()">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-3.59-13.46-8.83l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        以 Google 繼續
+      </button>
+      <div class="auth-switch">還沒有帳號？ <a onclick="switchTab('register')">立即註冊</a></div>
+    </form>
+    <!-- 註冊表單 -->
+    <form class="auth-form hidden" id="registerForm" onsubmit="submitRegister(event)">
+      <div class="auth-field" id="rf-name">
+        <label for="regName">姓名</label>
+        <input id="regName" type="text" placeholder="您的姓名" autocomplete="name" />
+        <span class="auth-field__hint">請輸入姓名</span>
+      </div>
+      <div class="auth-field" id="rf-email">
+        <label for="regEmail">電子郵件</label>
+        <input id="regEmail" type="email" placeholder="your@email.com" autocomplete="email" />
+        <span class="auth-field__hint">請輸入有效的電子郵件</span>
+      </div>
+      <div class="auth-field" id="rf-password">
+        <label for="regPassword">密碼</label>
+        <input id="regPassword" type="password" placeholder="至少 8 個字元" autocomplete="new-password" />
+        <span class="auth-field__hint">密碼至少需要 8 個字元</span>
+      </div>
+      <div class="auth-field" id="rf-confirm">
+        <label for="regConfirm">確認密碼</label>
+        <input id="regConfirm" type="password" placeholder="再次輸入密碼" autocomplete="new-password" />
+        <span class="auth-field__hint">兩次密碼輸入不一致</span>
+      </div>
+      <label class="auth-terms">
+        <input type="checkbox" id="agreeTerms">
+        我已閱讀並同意 <a href="#" onclick="event.stopPropagation()">服務條款</a> 及 <a href="#" onclick="event.stopPropagation()">隱私政策</a>
+      </label>
+      <button type="submit" class="auth-submit" id="registerSubmitBtn">建立帳號</button>
+      <div class="auth-switch">已有帳號？ <a onclick="switchTab('login')">立即登入</a></div>
+    </form>
+  </div>
+</div>
+</body>
+</html>
