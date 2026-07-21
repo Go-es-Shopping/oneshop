@@ -52,7 +52,6 @@
           <div class="flex items-center gap-3">
             <label for="lang-switch" class="sr-only" data-i18n="language">語言</label>
             <select id="lang-switch" class="text-sm rounded-xl border border-slate-200 bg-white/80 px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-200"></select>
-            <div class="w-9 h-9 rounded-full bg-slate-300 flex items-center justify-center text-slate-600 text-sm font-medium" data-i18n="avatarAdmin">管</div>
           </div>
         </div>
       </div>
@@ -165,19 +164,22 @@
                 </div>
               </div>
 
-              <div class="rounded-xl border border-slate-200 bg-slate-50/40 p-5 sm:p-6 space-y-4" role="group" aria-labelledby="signup-section-plan">
-                <h2 id="signup-section-plan" class="text-sm font-semibold text-slate-800 pb-3 border-b border-slate-200"><span data-i18n="sectionPlan">訂閱方案</span> <span class="text-red-500">*</span></h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 bg-slate-50/50 cursor-pointer has-[:checked]:border-slate-800 has-[:checked]:bg-white has-[:checked]:ring-2 has-[:checked]:ring-slate-200 transition">
-                    <input type="radio" name="PlanType" value="0" class="text-slate-800 focus:ring-slate-300" checked required />
-                    <span class="text-sm font-medium text-slate-900" data-i18n="planFree">免費方案</span>
-                  </label>
-                  <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 bg-slate-50/50 cursor-pointer has-[:checked]:border-slate-800 has-[:checked]:bg-white has-[:checked]:ring-2 has-[:checked]:ring-slate-200 transition">
-                    <input type="radio" name="PlanType" value="1" class="text-slate-800 focus:ring-slate-300" />
-                    <span class="text-sm font-medium text-slate-900" data-i18n="planPaid">進階付費</span>
-                  </label>
-                </div>
-              </div>
+              <label class="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  id="signup-terms"
+                  name="AgreeTerms"
+                  required
+                  class="mt-0.5 h-4 w-4 flex-shrink-0 rounded border-slate-300 text-slate-800 focus:ring-slate-300"
+                />
+                <span class="text-sm text-slate-700 leading-relaxed">
+                  <span data-i18n="termsAgreePrefix">我已閱讀並同意</span>
+                  <button type="button" id="open-terms-btn" class="text-blue-600 hover:text-blue-800 underline underline-offset-2" data-i18n="termsOfService">服務條款</button>
+                  <span data-i18n="termsAgreeAnd">及</span>
+                  <button type="button" id="open-privacy-btn" class="text-blue-600 hover:text-blue-800 underline underline-offset-2" data-i18n="privacyPolicy">隱私政策</button>
+                  <span data-i18n="termsAgreeSuffix"></span>
+                </span>
+              </label>
 
               <div id="signup-error" class="hidden p-3 rounded-xl border border-red-200 bg-red-50 text-red-700 text-sm" role="alert"></div>
 
@@ -223,6 +225,24 @@
     </div>
   </div>
 
+  <div id="legal-modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-labelledby="legal-modal-title" aria-hidden="true">
+    <div id="legal-modal-overlay" class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+      <div class="w-full max-w-2xl max-h-[85vh] bg-white rounded-2xl shadow-soft-lg border border-slate-100 overflow-hidden flex flex-col">
+        <div class="flex items-start justify-between gap-4 p-6 sm:p-8 pb-4 border-b border-slate-100">
+          <h2 id="legal-modal-title" class="text-lg font-bold text-slate-900 pr-2"></h2>
+          <button type="button" id="legal-modal-close" class="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition" data-i18n-aria="close" aria-label="關閉">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div id="legal-modal-body" class="overflow-y-auto px-6 sm:px-8 py-5 text-sm text-slate-700 leading-relaxed space-y-4"></div>
+        <div class="p-6 sm:p-8 pt-4 border-t border-slate-100 flex justify-end">
+          <button type="button" id="legal-modal-ok" class="px-5 py-3 rounded-xl bg-slate-800 text-white font-medium shadow-soft hover:bg-slate-900 transition" data-i18n="legalModalClose">關閉</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="../i18n-core.js"></script>
   <script src="./i18n.js"></script>
   <script>
@@ -244,13 +264,14 @@
       var email = document.getElementById('signup-email');
       var password = document.getElementById('signup-password');
       var confirm = document.getElementById('signup-confirm');
+      var terms = document.getElementById('signup-terms');
       var errorBox = document.getElementById('signup-error');
       var modal = document.getElementById('verify-mail-modal');
       var modalOverlay = document.getElementById('verify-mail-overlay');
       var modalText = document.getElementById('verify-mail-text');
       var modalStatus = document.getElementById('verify-mail-status');
       var modalOk = document.getElementById('verify-mail-ok');
-      if (!form || !sellerName || !storeName || !phone || !email || !password || !confirm || !errorBox || !modal) return;
+      if (!form || !sellerName || !storeName || !phone || !email || !password || !confirm || !terms || !errorBox || !modal) return;
 
       function showError(msg) {
         errorBox.textContent = msg;
@@ -260,10 +281,6 @@
         errorBox.textContent = '';
         errorBox.classList.add('hidden');
       }
-      function getPlanType() {
-        var checked = form.querySelector('input[name="PlanType"]:checked');
-        return checked ? checked.value : '';
-      }
       function buildPayload() {
         return {
           SellerName: sellerName.value.trim(),
@@ -271,7 +288,6 @@
           Email: email.value.trim(),
           Phone: phone.value.trim(),
           PasswordHash: '(由後端雜湊)',
-          PlanType: getPlanType(),
           Status: 0,
         };
       }
@@ -283,7 +299,9 @@
       }
       function closeSuccessModal() {
         modal.classList.add('hidden');
-        document.body.style.overflow = '';
+        if (!legalModal || legalModal.classList.contains('hidden')) {
+          document.body.style.overflow = '';
+        }
       }
 
       form.addEventListener('submit', function (e) {
@@ -328,8 +346,9 @@
           confirm.focus();
           return;
         }
-        if (!getPlanType()) {
-          showError(GoezI18n.t('errPlan'));
+        if (!terms.checked) {
+          showError(GoezI18n.t('errTermsRequired'));
+          terms.focus();
           return;
         }
 
@@ -339,13 +358,67 @@
 
       modalOk.addEventListener('click', closeSuccessModal);
       modalOverlay.addEventListener('click', closeSuccessModal);
+
+      var legalModal = document.getElementById('legal-modal');
+      var legalModalOverlay = document.getElementById('legal-modal-overlay');
+      var legalModalTitle = document.getElementById('legal-modal-title');
+      var legalModalBody = document.getElementById('legal-modal-body');
+      var legalModalClose = document.getElementById('legal-modal-close');
+      var legalModalOk = document.getElementById('legal-modal-ok');
+      var openTermsBtn = document.getElementById('open-terms-btn');
+      var openPrivacyBtn = document.getElementById('open-privacy-btn');
+      var legalModalType = null;
+
+      function openLegalModal(type) {
+        if (!legalModal || !legalModalTitle || !legalModalBody) return;
+        legalModalType = type;
+        legalModalTitle.textContent = GoezI18n.t(type === 'terms' ? 'termsModalTitle' : 'privacyModalTitle');
+        legalModalBody.innerHTML = GoezI18n.t(type === 'terms' ? 'termsBody' : 'privacyBody');
+        legalModal.classList.remove('hidden');
+        legalModal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        legalModalClose.focus();
+      }
+      function closeLegalModal() {
+        if (!legalModal) return;
+        legalModal.classList.add('hidden');
+        legalModal.setAttribute('aria-hidden', 'true');
+        legalModalType = null;
+        if (modal.classList.contains('hidden')) document.body.style.overflow = '';
+      }
+      function refreshLegalModal() {
+        if (!legalModalType || legalModal.classList.contains('hidden')) return;
+        legalModalTitle.textContent = GoezI18n.t(legalModalType === 'terms' ? 'termsModalTitle' : 'privacyModalTitle');
+        legalModalBody.innerHTML = GoezI18n.t(legalModalType === 'terms' ? 'termsBody' : 'privacyBody');
+      }
+
+      if (openTermsBtn) {
+        openTermsBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          openLegalModal('terms');
+        });
+      }
+      if (openPrivacyBtn) {
+        openPrivacyBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          openLegalModal('privacy');
+        });
+      }
+      if (legalModalClose) legalModalClose.addEventListener('click', closeLegalModal);
+      if (legalModalOk) legalModalOk.addEventListener('click', closeLegalModal);
+      if (legalModalOverlay) legalModalOverlay.addEventListener('click', closeLegalModal);
+
       document.addEventListener('keydown', function (ev) {
         if (ev.key === 'Escape' && !modal.classList.contains('hidden')) closeSuccessModal();
+        if (ev.key === 'Escape' && legalModal && !legalModal.classList.contains('hidden')) closeLegalModal();
       });
 
       GoezI18n.mountSwitcher(document.getElementById('lang-switch'), function () {
         document.title = GoezI18n.t('pageTitleSignup');
         clearError();
+        refreshLegalModal();
       });
       GoezI18n.apply();
       document.title = GoezI18n.t('pageTitleSignup');
