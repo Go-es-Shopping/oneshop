@@ -27,4 +27,6 @@
 | **數據追蹤** | POST | `/api/track/view` | `PageVisit` , `Product` , `Seller` | 瀏覽紀錄追蹤 (支援商品 ID、來源網址、SessionID 與 Metadata 擴充) |
 | **優惠券管理** | GET | `/api/coupons` | `Coupon` | 取得賣家已設定的所有優惠券列表 |
 | | POST | `/api/coupons` | `Coupon` | 新增一筆優惠券設定（包含折扣種類、門檻與時間限制） |
-| | DELETE | `/api/coupons/:id` | `Coupon` | 刪除指定的優惠券 |
+| | DELETE | `/api/coupons/:CouponID` | `Coupon` | 刪除指定的優惠券 |
+| | POST | `/api/coupons/apply` | `Coupon` | 驗證並套用優惠券 |
+| | POST | `/api/checkout` | `Order`, `Orderdetail`, `Product` | 結帳並建立訂單 (包含優惠券套用) |

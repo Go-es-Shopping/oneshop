@@ -28,6 +28,7 @@ router.get('/pages', async (req, res) => {
     const MockData = readMock('storepage.json').pages
     const Data = MockData.map((p) => ({
       ...p,
+      
       PageContent: { ...(p.PageContent || {}), LanguageCode: Lang },
       PageProducts: Array.isArray(p.PageProducts) ? p.PageProducts : []
     }))
@@ -102,17 +103,18 @@ router.get('/pages/:PageID', async (req, res) => {
 
     // 3. 如果真的通通找不到該語言內容，就幫他建一個店鋪模板
     if (!content) {
-      content = await PageContent.create({
+      content = {
         PageID: PageID,
         LanguageCode: Lang,
-        PageTitle: "復古商店",
-        PageDescription: "帶你回到1989",
-        ProductID: null,           
+        PageTitle: "",
+        PageDescription: "",
+        ProductID: 26,   
+        ProductName: "",       
         CTA_Text: "立即購買",    
-        ThemeColor: "冷靜石板", 
+        ThemeColor: "冷靜石板",
         ThemeFont: "gothic",    
         UpdatedAt: sqlLiteral
-      });
+      };
     }
 
     // 📥 先撈出該 PageID 在 PageProduct 表裡的所有商品紀錄
@@ -152,8 +154,8 @@ router.get('/pages/:PageID', async (req, res) => {
     return res.json({
       success: true,
       data: {
-        PageTitle: content.PageTitle || "復古商店",
-        PageDescription: content.PageDescription || "帶你回到1989",
+        PageTitle: content.PageTitle || "",
+        PageDescription: content.PageDescription || "",
         StoreLogo: page.StoreLogo || "https://www.figma.com/api/mcp/asset/665605e6-519c-4fa0-8070-daa26e795351",
         ThemeColor: page.ThemeColor || '冷靜石板',
         ThemeFont: page.ThemeFont || 'gothic',
@@ -179,11 +181,35 @@ router.get('/template/:pageId', async (req, res) => {
 
   // 1. 為了防止兩邊主題色名稱對不上有色差，做一個簡單的 CSS 十六進位顏色映射表
   const colorMap = {
-    '冷靜石板': '#64748b',
-    '鼠尾草綠': '#869489',
-    '陶土橘': '#b38b7d',
-    '北歐沙色': '#a8a29e'
-  };
+        '冷靜石板': {
+            '--c-accent': '#64748b',
+            '--c-theme-1': '#64748b',
+            '--c-theme-2': '#94a3b8',
+            '--c-theme-3': '#cbd5e1',
+            '--c-theme-4': '#f1f5f9'
+        },
+        '鼠尾草綠': {
+            '--c-accent': '#869489',
+            '--c-theme-1': '#869489',
+            '--c-theme-2': '#a3ad9e',
+            '--c-theme-3': '#c2c9bd',
+            '--c-theme-4': '#e8ebe4'
+        },
+        '陶土橘': {
+            '--c-accent': '#b38b7d',
+            '--c-theme-1': '#b38b7d',
+            '--c-theme-2': '#d1b4a6',
+            '--c-theme-3': '#e5d3c8',
+            '--c-theme-4': '#f5efea'
+        },
+        '北歐沙色': {
+            '--c-accent': '#a8a29e',
+            '--c-theme-1': '#a8a29e',
+            '--c-theme-2': '#d6d3d1',
+            '--c-theme-3': '#e7e5e4',
+            '--c-theme-4': '#f5f5f4'
+        }
+    };
 
   // Mock 模式處理
   if (Mock) {
@@ -203,6 +229,8 @@ router.get('/template/:pageId', async (req, res) => {
       // 🎨 ✍️ Mock 模式也要回傳 ThemeColor 和 ThemeFont
       ThemeColor: rawColor,
       ThemeFont: rawFont,
+      // 👇 【Mock 模式也順便在這裡補上一行】
+      SellerID: base.SellerID || 15,
       categories: ['全部', '古著', '磁帶'], // Mock 預設分類
       products: [
         { id: 1, name: '古著襯衫(Mock)', category: '古著', price: 1200, stock: 5, imageUrl: '' },
@@ -250,7 +278,7 @@ router.get('/template/:pageId', async (req, res) => {
     if (!content) {
       content = await PageContent.create({
         PageID: PageID, LanguageCode: Lang,
-        PageTitle: "復古商店", PageDescription: "帶你回到1989",
+        PageTitle: "", PageDescription: "",
         ProductID: null, CTA_Text: "立即購買", ThemeColor: "冷靜石板", ThemeFont: "gothic",    
         UpdatedAt: sqlLiteral
       });
@@ -300,6 +328,9 @@ router.get('/template/:pageId', async (req, res) => {
       // 🎨 ✍️ 回傳 ThemeColor 和 ThemeFont（只從 StorePage 讀取）
       ThemeColor: dbThemeColor,
       ThemeFont: dbThemeFont,
+      // 👇 💡【關鍵修正】把資料庫的 SellerID 帶給前端，才能正確載入優惠券！
+      SellerID: page.SellerID || 15,
+      
       // 動態從你查出來的商品中，過濾提取出所有不重複的分類作為分類晶片列
       categories: [...new Set(formattedProducts.map(p => p.category))].filter(Boolean),
       products: formattedProducts, // 這邊就是 100% 來自資料庫 page19 的實體商品列表
@@ -323,8 +354,8 @@ router.post('/pages/:PageID/update', async (req, res) => {
     return res.status(400).json({ success: false, message: '後端沒收到資料，請檢查前端格式' });
   }
 
-  // 🎨 🚀 核心新增：解析前端打包帶過來的 themeColor 與 themeFont
-  const { isPublished, shopName, shopDesc, logoUrl, themeColor, themeFont, storeEmail, storePhone} = req.body || {}; 
+  // 🎨 🚀 確保這裡完整接收前端打包帶過來的 themeColor 與 themeFont
+  const { isPublished, shopName, shopDesc, logoUrl, themeColor, themeFont, storeEmail, storePhone } = req.body || {}; 
   const Mock = await useMock();
 
   if (Mock) {
@@ -341,7 +372,7 @@ router.post('/pages/:PageID/update', async (req, res) => {
           // 新增：Mock 模式寫入主表聯絡資訊
           p.StoreEmail = storeEmail || "";
           p.StorePhone = storePhone || "";
-          // 🎨 ✅ 統一：Mock 模式也只更新 StorePage 層級的 ThemeColor 和 ThemeFont
+          // 🎨 ✅ 確保 Mock 模式確實寫入收到的 themeColor 與 themeFont
           p.ThemeColor = themeColor || '冷靜石板';
           p.ThemeFont = themeFont || 'gothic';
           if (!p.PageContent) p.PageContent = {};
@@ -374,8 +405,8 @@ router.post('/pages/:PageID/update', async (req, res) => {
       { 
         IsPublished: isPublished,
         StoreLogo: logoUrl,
-        ThemeColor: req.body.themeColor || '冷靜石板', // 📥 寫入實體欄位
-        ThemeFont: req.body.themeFont || 'gothic',   // 📥 寫入實體欄位
+        ThemeColor: themeColor || '冷靜石板', // 📥 直接使用解構出來的變數
+        ThemeFont: themeFont || 'gothic',   // 📥 直接使用解構出來的變數
         // 新增：成功將前台傳回的聯絡資訊塞入實體主表！
         StoreEmail: storeEmail || "", 
         StorePhone: storePhone || "",

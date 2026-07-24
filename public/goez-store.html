@@ -467,7 +467,7 @@
     .store-footer__desc{
       font-family:'Noto Sans TC',sans-serif;font-weight:400;
       font-size:var(--fs-14);color:rgba(255,255,255,.7);
-      line-height:22.75px;width:154px;
+      line-height:22.75px;/*width:154px;*/
     }
     .store-footer__links{
       min-width:80px;
@@ -789,7 +789,7 @@
     }
     .mobile-footer {
       margin-top: 24px;
-      background: var(--c-theme-2,#1d293d);
+      background: var(--c-theme-1,var(--c-accent));
       padding: 24px 20px 32px;
       transition: background 0.3s ease;
     }
@@ -1193,7 +1193,7 @@
     <img class="hero__bg"
       src="images/decorations/Background.svg"
       alt="背景圖片" />
-    <a href="goez-shop-home.html" class="hero__title" style="cursor:pointer;" aria-label="返回首頁">Goez Shop</a>
+    <a href="goez-home.html" class="hero__title" style="cursor:pointer;" aria-label="返回首頁">Goez Shop</a>
   </section>
 
   <!-- EDITOR -->
@@ -1211,6 +1211,7 @@
           </div>
           <div class="editor__divider" aria-hidden="true"></div>
           <button class="editor__preview-btn" type="button">預覽編輯</button>
+          <span style="font-size: 15px; color: #888;">💡 離開前記得點擊儲存草稿喔！</span>
         </div>
 
         <button class="editor__hamburger" type="button"
@@ -1421,10 +1422,6 @@
                       </li>
                       <li class="store-footer__col-item">
                         <span class="store-footer__col-dot"></span>
-                        <a class="store-footer__col-link" href="#"> 會員中心</a>
-                      </li>
-                      <li class="store-footer__col-item">
-                        <span class="store-footer__col-dot"></span>
                         <a class="store-footer__col-link" href="#"> 隱私條款</a>
                       </li>
                     </ul>
@@ -1501,38 +1498,36 @@
 
   <!-- 2. 快速連結 -->
   <div class="mobile-footer__links" style="border-top: 1px solid rgba(255, 255, 255, 0.15); padding-top: 20px;">
-    <div class="mobile-footer__col-title" style="font-weight: bold; margin-bottom: 12px; font-size: 1.1rem; letter-spacing: 1px;">快速連結</div>
+    <!-- 加上 color: #fff; -->
+    <div class="mobile-footer__col-title" style="font-weight: bold; margin-bottom: 12px; font-size: 1.1rem; letter-spacing: 1px; color: #fff;">快速連結</div>
     <ul class="mobile-footer__col-list" style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; font-size: 0.95rem;">
       <li class="mobile-footer__col-item">
-        <a class="mobile-footer__col-link" href="#" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 6px;">
-          <span style="font-size: 0.6rem; opacity: 0.5;">●</span> 最新商品
+        <!-- 讓連結文字也變成白色（或 rgba 柔和白） -->
+        <a class="mobile-footer__col-link" href="#" style="color: rgba(255, 255, 255, 0.9); text-decoration: none; display: flex; align-items: center; gap: 6px;">
+          <span style="font-size: 0.6rem; opacity: 0.7;">●</span> 最新商品
         </a>
       </li>
       <li class="mobile-footer__col-item">
-        <a class="mobile-footer__col-link" href="#" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 6px;">
-          <span style="font-size: 0.6rem; opacity: 0.5;">●</span> 會員中心
-        </a>
-      </li>
-      <li class="mobile-footer__col-item">
-        <a class="mobile-footer__col-link" href="#" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 6px;">
-          <span style="font-size: 0.6rem; opacity: 0.5;">●</span> 隱私條款
+        <a class="mobile-footer__col-link" href="#" style="color: rgba(255, 255, 255, 0.9); text-decoration: none; display: flex; align-items: center; gap: 6px;">
+          <span style="font-size: 0.6rem; opacity: 0.7;">●</span> 隱私條款
         </a>
       </li>
     </ul>
   </div>
 
-  <!-- 3. 聯絡我們 (🚀 Backend Lead 核心補強：手機版雙端同步) -->
+  <!-- 3. 聯絡我們 -->
   <div class="mobile-footer__contact" style="border-top: 1px solid rgba(255, 255, 255, 0.15); padding-top: 20px;">
-    <div class="mobile-footer__col-title" style="font-weight: bold; margin-bottom: 12px; font-size: 1.1rem; letter-spacing: 1px;">聯絡我們</div>
+    <!-- 加上 color: #fff; -->
+    <div class="mobile-footer__col-title" style="font-weight: bold; margin-bottom: 12px; font-size: 1.1rem; letter-spacing: 1px; color: #fff;">聯絡我們</div>
     <div class="mobile-footer__contact-items" style="display: flex; flex-direction: column; gap: 12px; font-size: 0.95rem;">
       
       <!-- 信箱 Row -->
       <div class="mobile-footer__contact-row" id="row-email-mobile" style="display: flex; align-items: center; gap: 12px;">
-        <!-- 圓圈圖示底色改為 rgba 柔軟透白，完美融入任何主題背景 -->
         <div class="mobile-footer__contact-icon" style="width: 32px; height: 32px; background: rgba(255, 255, 255, 0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
           <img src="images/decorations/email.svg" alt="Email" style="width: 100%; height: 100%; filter: brightness(0.4);" />
         </div>
-        <span class="mobile-footer__contact-email" id="preview-email-mobile">載入中...</span>
+        <!-- 讓文字變成白色 -->
+        <span class="mobile-footer__contact-email" id="preview-email-mobile" style="color: #fff;">載入中...</span>
       </div>
 
       <!-- 電話 Row -->
@@ -1540,7 +1535,8 @@
         <div class="mobile-footer__contact-icon" style="width: 32px; height: 32px; background: rgba(255, 255, 255, 0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
           <img src="images/decorations/phone.svg" alt="Phone" style="width: 100%; height: 100%; filter: brightness(0.4);" />
         </div>
-        <span class="mobile-footer__contact-phone" id="preview-phone-mobile">載入中...</span>
+        <!-- 讓文字變成白色 -->
+        <span class="mobile-footer__contact-phone" id="preview-phone-mobile" style="color: #fff;">載入中...</span>
       </div>
 
     </div>
@@ -1861,24 +1857,28 @@ var descInput = document.getElementById('store-desc-input');
   // --c-theme-4 (lightest)→ hero section bg, product image bg, footer contact icons
   var themes = {
     '冷靜石板': {
+      '--c-accent': '#64748b',
       '--c-theme-1': '#64748b',
       '--c-theme-2': '#94a3b8',
       '--c-theme-3': '#cbd5e1',
       '--c-theme-4': '#f1f5f9'
     },
     '鼠尾草綠': {
+      '--c-accent': '#869489',
       '--c-theme-1': '#869489',
       '--c-theme-2': '#a3ad9e',
       '--c-theme-3': '#c2c9bd',
       '--c-theme-4': '#e8ebe4'
     },
     '陶土橘': {
+      '--c-accent': '#b38b7d',
       '--c-theme-1': '#b38b7d',
       '--c-theme-2': '#d1b4a6',
       '--c-theme-3': '#e5d3c8',
       '--c-theme-4': '#f5efea'
     },
     '北歐沙色': {
+      '--c-accent': '#a8a29e',
       '--c-theme-1': '#a8a29e',
       '--c-theme-2': '#d6d3d1',
       '--c-theme-3': '#e7e5e4',
@@ -1897,11 +1897,20 @@ var descInput = document.getElementById('store-desc-input');
       if(!name) return;
       var vars = themes[name.textContent.trim()];
       if(!vars) return;
-      // Apply to both desktop and mobile previews
+      
+      // 1. 同時打到全域與預覽容器，確保商品價格的 CSS 變數能同步更新
+      Object.keys(vars).forEach(function(key){ 
+        document.documentElement.style.setProperty(key, vars[key]);
+      });
       [preview, mobilePreviewEl].forEach(function(el){
         if(!el) return;
         Object.keys(vars).forEach(function(key){ el.style.setProperty(key, vars[key]); });
       });
+
+      // 💡 2. 關鍵修復：換完顏色後，立刻呼叫 renderAll() 把商品重新畫出來！
+      if (typeof renderAll === 'function') {
+          renderAll();
+      }
     });
   });
 
@@ -1942,7 +1951,7 @@ var descInput = document.getElementById('store-desc-input');
         // mobile
         '.mobile-store-nav__name','.mobile-hero__tagline','.mobile-hero__cta',
         '.mobile-products__title','.mobile-product-card__name','.mobile-product-card__price',
-        '.mobile-product-card__tag','.mobile-footer__brand','.mobile-footer__desc','.mobile-footer__copyright'
+        '.mobile-product-card__tag','.mobile-footer__brand','.mobile-footer__desc','.mobile-footer__links','.mobile-footer__contact','.mobile-footer__col-title','.mobile-footer__copyright'
       ];
       targets.forEach(function(sel){
         document.querySelectorAll(sel).forEach(function(el){ el.style.fontFamily = fontVal; });
@@ -2093,8 +2102,12 @@ window.onload = async () => {
                             
                             <!-- 價格與購物車按鈕同一行或完美置底 -->
                             <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px;">
-                              <span class="product-card__price" style="font-family: 'Noto Sans TC', sans-serif; font-weight: 900; font-size: 18px; color: ${dbColor}; line-height: 1;">$${displayPrice}</span>
                               
+                              <!-- 👇 【新增】價格與刪除按鈕包在同一側 -->
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="product-card__price" style="font-family: 'Noto Sans TC', sans-serif; font-weight: 900; font-size: 18px; color: ${dbColor}; line-height: 1;">$${displayPrice}</span>
+              <button class="delete-product-btn" data-id="${prod.ProductID}" style="background: #ff4d4f; color: white; border: none; padding: 4px 8px; border-radius: 8px; cursor: pointer; font-size: 12px;">刪除</button>
+            </div>
                               <!-- 購物車按鈕直接跟價格排在右側，大小適中且絕對有背景色 -->
                               <button class="add-to-cart-btn" style="position: absolute; right: 16px; bottom: 16px; background: var(--c-theme-1, #2b4c7e); border-radius: 14px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.12); flex-shrink: 0; transition: transform 0.15s ease;">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">

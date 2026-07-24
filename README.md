@@ -211,6 +211,9 @@
 {
   "OrderID": 70001,
   "SellerID": 123,
+  "CouponID": 1,
+  "CouponCode": "SAVE2026",
+  "DiscountValue": "100.00",
   "BuyerName": "王小明",
   "BuyerPhone": "+886912345678",
   "BuyerEmail": "buyer@example.com",
@@ -391,7 +394,8 @@
   "success": true,
   "list": [
     {
-      "Id": 1,
+      "CouponID": 1,
+      "SellerID": 123,
       "Title": "2026年終優惠",
       "Code": "SAVE2026",
       "DiscountType": "滿額折抵",
@@ -412,6 +416,8 @@
 - Request Body 範例
 ```json
 {
+  "CouponID": 2,
+  "SellerID": 123,
   "Title": "新會員首購 9 折",
   "Code": "NEW10",
   "DiscountType": "打折 (9折)",
@@ -429,7 +435,8 @@
   "success": true,
   "message": "優惠券建立成功",
   "data": {
-    "Id": 2,
+    "CouponID": 2,
+    "SellerID": 123,
     "Title": "新會員首購 9 折",
     "Code": "NEW10",
     "DiscountType": "打折 (9折)",

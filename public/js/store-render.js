@@ -13,6 +13,7 @@
  * * 本檔案僅負責「店鋪外觀裝潢」。
  * * 依據單一職責原則，任何「商品新增/刪除/管理」功能請一律寫在獨立的新檔案中。
  * ====================================================================
+ *  由goez-store.html引用
  */
 
 // 1. 全域資料中心：存放店鋪狀態
@@ -100,8 +101,13 @@ function createDesktopHTML(p) {
         
         <!-- 價格與購物車按鈕同一行 -->
         <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px;">
-          <span style="font-family: 'Noto Sans TC', sans-serif; font-weight: 900; font-size: 18px; color: ${activeColor}; line-height: 1;">$${price}</span>
+        <div style="display: flex; align-items: center; gap: 8px;">  
+        <span style="font-family: 'Noto Sans TC', sans-serif; font-weight: 900; font-size: 18px; color: ${activeColor}; line-height: 1;">$${price}</span>
           
+          <!-- 桌面版刪除按鈕 -->
+            <button class="delete-product-btn" data-id="${p.ProductID}" style="background: #ff4d4f; color: white; border: none; padding: 4px 8px; border-radius: 8px; cursor: pointer; font-size: 12px;">刪除</button>
+          </div>
+
           <!-- 購物車按鈕 -->
           <button class="add-to-cart-btn" style="position: absolute; right: 16px; bottom: 16px; background: var(--c-theme-1, #2b4c7e); border-radius: 14px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.12); flex-shrink: 0; transition: transform 0.15s ease;">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -145,6 +151,10 @@ function createMobileHTML(p) {
                 <span style="color: #888; font-size: 10px; background: #f5f7fa; padding: 2px 6px; border-radius: 4px;">
                     剩餘 ${stock}
                 </span>
+
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <!-- 行動版刪除按鈕 -->
+                    <button class="delete-product-btn" data-id="${p.ProductID}" style="background: #ff4d4f; color: white; border: none; padding: 3px 6px; border-radius: 6px; cursor: pointer; font-size: 10px;">刪除</button>
 
                 <button style="background: var(--c-theme-1, #2b4c7e); border: none; border-radius: 10px; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -289,7 +299,7 @@ async function sendUpdateToBackend(isPublished) {
             
             // 💡 莊組長流暢加分點：如果是正式發布 (isPublished === true)，立刻執行跳轉
             if (isPublished) {
-                window.location.href = `goez-shop-store-template.html?pageId=${pageId}`;
+                window.location.href = `goez-store-template.html?pageId=${pageId}`;
             }
         } else {
             alert("儲存失敗：" + result.message);
@@ -314,88 +324,97 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             const response = await fetch(`/api/store/pages/${pageId}`);
             const result = await response.json();
+            console.log("📥 後端回傳的原始資料：", result); // 👈 F12 可以在這裡看後端吐什麼
+
             if (result.success && result.data) {
-                window.currentStoreData.shopName = result.data.PageTitle || "";
-                window.currentStoreData.shopDesc = result.data.PageDescription || "";
-                window.currentStoreData.logoUrl = result.data.StoreLogo || "";
-                // 1. 欄位防禦開滿！不管後端回傳大寫還是小寫，通通都要撈到
-window.currentStoreData.storeEmail = result.data.StoreEmail || result.data.storeEmail || "";
-window.currentStoreData.storePhone = result.data.StorePhone || result.data.storePhone || "";
+                const data = result.data;
 
-// 填回左側 Input（因為是 contenteditable 的 div，所以一律用 innerText！）
-const nIn = document.getElementById('store-name-input');
-const dIn = document.getElementById('store-desc-input');
-if (nIn) nIn.innerText = window.currentStoreData.shopName;
-if (dIn) dIn.innerText = window.currentStoreData.shopDesc;
+                // 🛡️ 欄位防禦開滿！不管後端回傳大小寫或不同命名，通通抓得到
+                window.currentStoreData.shopName = data.PageTitle || data.pageTitle || data.ShopName || "";
+                window.currentStoreData.shopDesc = data.PageDescription || data.pageDescription || data.ShopDesc || "";
+                window.currentStoreData.logoUrl = data.StoreLogo || data.storeLogo || "";
+                window.currentStoreData.storeEmail = data.StoreEmail || data.storeEmail || "";
+                window.currentStoreData.storePhone = data.StorePhone || data.storePhone || "";
 
-const emailIn = document.getElementById('store-email-input');
-const phoneIn = document.getElementById('store-phone-input');
+                // 填回左側 Input（因為是 contenteditable 的 div，所以一律用 innerText！）
+                const nIn = document.getElementById('store-name-input');
+                const dIn = document.getElementById('store-desc-input');
+                
+                // 💡 只有當後端真的有資料時才覆蓋，避免空白覆蓋掉使用者的輸入
+                if (nIn && window.currentStoreData.shopName) nIn.innerText = window.currentStoreData.shopName;
+                if (dIn && window.currentStoreData.shopDesc) dIn.innerText = window.currentStoreData.shopDesc;
 
-if (emailIn) {
-    emailIn.innerText = window.currentStoreData.storeEmail; // 👈 正確使用 innerText！
-}
-if (phoneIn) {
-    phoneIn.innerText = window.currentStoreData.storePhone; // 👈 正確使用 innerText！
-}
+                const emailIn = document.getElementById('store-email-input');
+                const phoneIn = document.getElementById('store-phone-input');
 
-// 3. 同步把預覽畫面也畫出來
-const previewEmailEl = document.querySelector('.preview-email') || document.getElementById('preview-email');
-const previewPhoneEl = document.querySelector('.preview-phone') || document.getElementById('preview-phone');
-
-if (previewEmailEl && window.currentStoreData.storeEmail) {
-    previewEmailEl.textContent = window.currentStoreData.storeEmail;
-}
-if (previewPhoneEl && window.currentStoreData.storePhone) {
-    previewPhoneEl.textContent = window.currentStoreData.storePhone;
-}
-                // 【核心修復點】：
-                // 這裡！把後端撈出來的商品陣列，塞進前端的全域狀態變數，並觸發畫面上架
-                if (result.data.PageProducts) {
-                    window.currentStoreData.products = result.data.PageProducts;
-                    if (typeof renderAll === 'function') renderAll(); // 讓畫面立刻把古著襯衫畫出來
+                if (emailIn && window.currentStoreData.storeEmail) {
+                    emailIn.innerText = window.currentStoreData.storeEmail;
+                }
+                if (phoneIn && window.currentStoreData.storePhone) {
+                    phoneIn.innerText = window.currentStoreData.storePhone;
                 }
 
-                // 🎨 🚀 核心新增：從後端撈回資料後，模擬真人點擊右側面板，重現顏色與字體
-setTimeout(() => {
-    // 1. 還原主題顏色
-    const savedColor = result.data.ThemeColor || '冷靜石板';
-    document.querySelectorAll('.theme-option').forEach(opt => {
-        const name = opt.querySelector('.theme-option__name')?.textContent.trim();
-        if (name === savedColor) {
-            opt.click(); // 觸發前端變色
-        }
-    });
+                // 3. 同步把預覽畫面也畫出來
+                const previewEmailEl = document.querySelector('.preview-email') || document.getElementById('preview-email');
+                const previewPhoneEl = document.querySelector('.preview-phone') || document.getElementById('preview-phone');
 
-    // 2. 還原字體
-    const savedFont = result.data.ThemeFont || 'gothic';
-    const fontClassMap = {
-        'gothic': '.font-option--gothic',
-        'serif': '.font-option--serif',
-        'round': '.font-option--round'
-    };
-    const targetFontSelector = fontClassMap[savedFont];
-    if (targetFontSelector) {
-        document.querySelector(targetFontSelector)?.click(); // 觸發前端換字體
-    }
+                if (previewEmailEl && window.currentStoreData.storeEmail) {
+                    previewEmailEl.textContent = window.currentStoreData.storeEmail;
+                }
+                if (previewPhoneEl && window.currentStoreData.storePhone) {
+                    previewPhoneEl.textContent = window.currentStoreData.storePhone;
+                }
 
-    // 💡 ─── 莊組長終極核心防禦：在此補強初始化全域字體連動 ───
-    let finalFontFamily = '"Noto Sans TC", "Arial", "Microsoft JhengHei", sans-serif';
-    if (savedFont === 'serif') {
-        finalFontFamily = '"Noto Serif TC", "Georgia", "PMingLiU", serif';
-    } else if (savedFont === 'gothic') {
-        finalFontFamily = '"Noto Sans TC", "Arial", "Microsoft JhengHei", sans-serif';
-    } else if (savedFont === 'round') {
-        finalFontFamily = '"Xingothic TC", "Noto Sans TC", "Arial", "Microsoft JhengHei", sans-serif';
-    }
+                // 【核心修復點】：把後端撈出來的商品陣列，安全塞進前端的全域狀態變數
+                const productsList = data.PageProducts || data.pageProducts || data.Products || [];
+                window.currentStoreData.products = productsList;
+                
+                if (typeof renderAll === 'function') {
+                    renderAll(); // 讓畫面立刻把商品畫出來
+                }
 
-    // 🚀 一槍斃命！直接將變數打進全域網頁，管它什麼按鈕漏抓，全部強制跟進！
-    document.documentElement.style.setProperty('--f-body', finalFontFamily);
-    console.log(`💪 [Backend Lead] 初始化全域變數打通成功：${savedFont} -> ${finalFontFamily}`);
+                // 🎨 核心新增：從後端撈回資料後，模擬真人點擊右側面板，重現顏色與字體
+                setTimeout(() => {
+                    // 1. 還原主題顏色
+                    const savedColor = data.ThemeColor || data.themeColor || '冷靜石板';
+                    document.querySelectorAll('.theme-option').forEach(opt => {
+                        const name = opt.querySelector('.theme-option__name')?.textContent.trim();
+                        if (name === savedColor) {
+                            opt.click(); // 觸發前端變色
+                        }
+                    });
 
-}, 100); // 延遲 100 毫秒確保前端元件已渲染完畢
+                    // 2. 還原字體
+                    const savedFont = data.ThemeFont || data.themeFont || 'gothic';
+                    const fontClassMap = {
+                        'gothic': '.font-option--gothic',
+                        'serif': '.font-option--serif',
+                        'round': '.font-option--round'
+                    };
+                    const targetFontSelector = fontClassMap[savedFont];
+                    if (targetFontSelector) {
+                        document.querySelector(targetFontSelector)?.click(); // 觸發前端換字體
+                    }
+
+                    // 💡 莊組長終極核心防禦：在此補強初始化全域字體連動
+                    let finalFontFamily = '"Noto Sans TC", "Arial", "Microsoft JhengHei", sans-serif';
+                    if (savedFont === 'serif') {
+                        finalFontFamily = '"Noto Serif TC", "Georgia", "PMingLiU", serif';
+                    } else if (savedFont === 'gothic') {
+                        finalFontFamily = '"Noto Sans TC", "Arial", "Microsoft JhengHei", sans-serif';
+                    } else if (savedFont === 'round') {
+                        finalFontFamily = '"Xingothic TC", "Noto Sans TC", "Arial", "Microsoft JhengHei", sans-serif';
+                    }
+
+                    document.documentElement.style.setProperty('--f-body', finalFontFamily);
+                    console.log(`💪 [Backend Lead] 初始化全域變數打通成功：${savedFont} -> ${finalFontFamily}`);
+
+                }, 100); // 延遲 100 毫秒確保前端元件已渲染完畢
 
             }
-        } catch (err) { console.warn('進入離線/空白模式'); }
+        } catch (err) { 
+            console.warn('進入離線/空白模式', err); 
+        }
     }
 
     // B. Logo 上傳連動
@@ -477,6 +496,43 @@ setTimeout(() => {
         });
     }
 
+    // ==========================================
+    // 🎨 🚀 【修正版】：右側主題配色 4 色動態注入監聽
+    // ==========================================
+    const themes = {
+        '冷靜石板': { '--c-accent': '#64748b', '--c-theme-1': '#64748b', '--c-theme-2': '#94a3b8', '--c-theme-3': '#cbd5e1', '--c-theme-4': '#f1f5f9' },
+        '鼠尾草綠': { '--c-accent': '#869489', '--c-theme-1': '#869489', '--c-theme-2': '#a3ad9e', '--c-theme-3': '#c2c9bd', '--c-theme-4': '#e8ebe4' },
+        '陶土橘': { '--c-accent': '#b38b7d', '--c-theme-1': '#b38b7d', '--c-theme-2': '#d1b4a6', '--c-theme-3': '#e5d3c8', '--c-theme-4': '#f5efea' },
+        '北歐沙色': { '--c-accent': '#a8a29e', '--c-theme-1': '#a8a29e', '--c-theme-2': '#d6d3d1', '--c-theme-3': '#e7e5e4', '--c-theme-4': '#f5f5f4' }
+    };
+
+    document.querySelectorAll('.theme-option').forEach(option => {
+        option.addEventListener('click', () => {
+            document.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('selected'));
+            option.classList.add('selected');
+
+            const themeName = option.querySelector('.theme-option__name')?.textContent.trim();
+            if (themes[themeName]) {
+                const colors = themes[themeName];
+                for (const [varName, colorValue] of Object.entries(colors)) {
+                    document.documentElement.style.setProperty(varName, colorValue);
+                }
+                console.log(`🎨 [Theme Engine] 後台即時切換 4 色成功：${themeName}`);
+            }
+            
+            // 💡 確保重新渲染時，商品資料保持不動，直接安心重繪
+            if (typeof renderAll === 'function') {
+                renderAll();
+            }
+        });
+    });
+
+    // 如果畫面載入時沒有任何被選中的主題，預設幫它選第一個，避免抓不到 .selected
+    if (!document.querySelector('.theme-option.selected')) {
+        const firstTheme = document.querySelector('.theme-option');
+        if (firstTheme) firstTheme.classList.add('selected');
+    }
+    
     // D. 儲存按鈕監聽 
     const btnDraft = document.querySelector('.btn-draft'); 
     const btnPublish = document.querySelector('.btn-publish');

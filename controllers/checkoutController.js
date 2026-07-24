@@ -169,6 +169,11 @@ exports.checkout = async (req, res) => {
     const UTM_Source = body.UTM_Source !== undefined ? body.UTM_Source : body.utm_source;
     const SessionID = body.SessionID !== undefined ? body.SessionID : body.sessionId;
 
+    // --- 🎟️ 新增：接收前端傳過來的優惠券相關資訊（支援大小寫兼容） ---
+    const CouponID = body.CouponID !== undefined ? body.CouponID : body.couponId;
+    const CouponCode = body.CouponCode !== undefined ? body.CouponCode : body.couponCode;
+    const DiscountValue = body.DiscountValue !== undefined ? body.DiscountValue : (body.discountValue !== undefined ? body.discountValue : 0);
+
     if (!rawItems || rawItems.length === 0) throw new Error("購物車項目不可為空");
 
     let totalAmount = 0;
@@ -195,10 +200,23 @@ exports.checkout = async (req, res) => {
       details.push({ ProductID, Quantity, UnitPrice: price });
     }
 
+    // --- 🎟️ 新增：計算扣除優惠券折扣後的最終金額，並防呆避免變成負數 ---
+    let finalTotalAmount = totalAmount - parseFloat(DiscountValue || 0);
+    if (finalTotalAmount < 0) {
+      finalTotalAmount = 0;
+    }
+
     // --- 📝 建立訂單主檔 ---
     const newOrder = await OrderModel.create({
-      SellerID, BuyerName, BuyerPhone, BuyerEmail, BuyerAddress,
-      TotalAmount: totalAmount,
+      SellerID, 
+      BuyerName, 
+      BuyerPhone, 
+      BuyerEmail, 
+      BuyerAddress,
+      TotalAmount: finalTotalAmount, // 使用扣完優惠券折抵後的總金額
+      CouponID: CouponID || null,         // 🎟️ 新增：寫入優惠券 ID
+      CouponCode: CouponCode || null,     // 🎟️ 新增：寫入優惠券代碼字串
+      DiscountValue: DiscountValue || 0,  // 🎟️ 新增：寫入實際折抵金額
       OrderStatus: 0,
       PaymentStatus: 0,
       UTM_Source,
@@ -215,7 +233,7 @@ exports.checkout = async (req, res) => {
     res.status(201).json({ 
       Success: true, 
       OrderID: newOrder.OrderID, 
-      TotalAmount: totalAmount 
+      TotalAmount: finalTotalAmount 
     });
 
   } catch (error) {
@@ -224,4 +242,3 @@ exports.checkout = async (req, res) => {
     res.status(500).json({ Success: false, error: error.message });
   }
 };
-

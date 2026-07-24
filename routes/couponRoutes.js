@@ -8,7 +8,10 @@ router.get('/', couponController.getCoupons);
 // 2. 新增優惠券 (POST /api/coupons)
 router.post('/', couponController.createCoupon);
 
-// 3. 刪除優惠券 (DELETE /api/coupons/:id) —— 順便把刪除也寫進去
-router.delete('/:id', couponController.deleteCoupon);
+// 3. 刪除優惠券 (DELETE /api/coupons/:CouponID) —— 順便把刪除也寫進去
+router.delete('/:CouponID', couponController.deleteCoupon);
+
+// 4. 驗證並套用優惠券 (POST /api/coupons/apply)
+router.post('/apply', couponController.applyCoupon);
 
 module.exports = router;

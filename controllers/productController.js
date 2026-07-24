@@ -1,3 +1,4 @@
+//包含product與seller控制
 const sequelize = require('../config/database')
 const {Product, PageContent, PageProduct, StorePage} = require('../models')
 const { readMock } = require('../src/mocks/utils')
@@ -341,6 +342,15 @@ async function deleteProduct(req, res) {
     }
     const row = await Product.findByPk(ProductID)
     if (!row) return res.status(404).json({ error: 'Not Found' })
+
+    // 👇 【新增】在刪除主商品前，先清除關聯表的資料，避開外鍵約束錯誤
+    // 請依你們專案實際的 Model 名稱調整（例如 PageContent, PageProduct 等）
+    await PageContent.destroy({ where: { ProductID } });
+    if (typeof PageProduct !== 'undefined') {
+        await PageProduct.destroy({ where: { ProductID } });
+    }
+
+    // 接著再安全刪除商品主表
     await row.destroy()
     return res.status(204).send()
   } catch (err) {
@@ -348,7 +358,6 @@ async function deleteProduct(req, res) {
     return res.status(500).json({ error: 'Internal Server Error' })
   }
 }
-
 module.exports = {
   listProducts,
   getProduct,

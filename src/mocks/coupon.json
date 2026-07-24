@@ -1,7 +1,8 @@
 {
   "list": [
     {
-      "Id": 1,
+      "CouponID": 1,
+      "SellerID": 123,
       "Title": "2026年終優惠",
       "Code": "SAVE2026",
       "DiscountType": "滿額折抵",
@@ -15,7 +16,8 @@
     }
   ],
   "detail": {
-    "Id": 1,
+    "CouponID": 1,
+    "SellerID": 123,
     "Title": "2026年終優惠",
     "Code": "SAVE2026",
     "DiscountType": "滿額折抵",

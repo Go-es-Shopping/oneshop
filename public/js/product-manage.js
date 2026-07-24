@@ -11,6 +11,7 @@
  * 將原本的 Form 'submit' 監聽，升級為獨立 Button 'click' 監聽。
  * 徹底解除外層網頁 HTML5 原生表單（如 required）造成的攔截干擾！
  * ====================================================================
+ * 由goez-store.html引用
  */
 
 (function () {
@@ -95,6 +96,15 @@
         
         // 整合 Mock 模式或真實模式的資料結構
         const finalData = result.data || result;
+
+        // 💡 【Backend Lead 終極修復】：立刻將新商品安全推入前端全域記憶體陣列！
+        if (typeof window.currentStoreData !== 'undefined') {
+            if (!window.currentStoreData.products) {
+                window.currentStoreData.products = [];
+            }
+            window.currentStoreData.products.push(finalData);
+            console.log("📦 [Memory Sync] 新商品已成功同步至 window.currentStoreData.products 陣列！現有商品數：", window.currentStoreData.products.length);
+        }
 
         // 觸發自訂事件，通知右側編輯器重繪畫面（相容你們原本的渲染架構）
         document.dispatchEvent(new CustomEvent('product:add', { detail: finalData }));
@@ -232,8 +242,12 @@ const cardHtml = `
         
         <!-- 價格與購物車按鈕同一行 (右下角獨立按鈕) -->
         <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px;">
-          <span style="font-family: 'Noto Sans TC', sans-serif; font-weight: 900; font-size: 18px; color: ${activeColor}; line-height: 1;">$${displayPrice}</span>
+        <div style="display: flex; align-items: center; gap: 8px;">  
+        <span style="font-family: 'Noto Sans TC', sans-serif; font-weight: 900; font-size: 18px; color: ${activeColor}; line-height: 1;">$${displayPrice}</span>
           
+          <!-- 👇 【新增】刪除按鈕，點擊時帶有該商品的 ProductID -->
+            <button class="delete-product-btn" data-id="${prod.ProductID}" style="background: #ff4d4f; color: white; border: none; padding: 4px 8px; border-radius: 8px; cursor: pointer; font-size: 12px;">刪除</button>
+
           <!-- 購物車按鈕 -->
           <button class="add-to-cart-btn" style="position: absolute; right: 16px; bottom: 16px; background: var(--c-theme-1, #2b4c7e); border-radius: 14px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.12); flex-shrink: 0; transition: transform 0.15s ease;">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -290,5 +304,49 @@ const cardHtml = `
         }
       }
     }
+  });
+  // ─────────────────────────────────────────────────────────────────
+  // 【核心功能三：全域攔截商品刪除按鈕事件】
+  // ─────────────────────────────────────────────────────────────────
+  document.addEventListener('click', async (e) => {
+      if (e.target.classList.contains('delete-product-btn')) {
+          const productId = e.target.getAttribute('data-id');
+          
+          if (!confirm("確定要刪除這個商品嗎？")) return;
+
+          try {
+              // 發送 DELETE 請求給後端 API
+              const response = await fetch(`/api/products/${productId}`, {
+                  method: 'DELETE'
+              });
+
+              if (response.ok || response.status === 204) {
+                  showToast("✅ 商品刪除成功！");
+
+                  // 1. 從前端全域記憶體陣列中同步濾除該商品
+                  if (window.currentStoreData && window.currentStoreData.products) {
+                      window.currentStoreData.products = window.currentStoreData.products.filter(
+                          p => Number(p.ProductID) !== Number(productId)
+                      );
+                  }
+
+                  // 2. 直接從畫面上移除該張卡片
+                  const card = e.target.closest('.product-card');
+                  if (card) card.remove();
+
+                  // 3. 如果全部刪光了，補上「目前尚無商品」提示
+                  const targetContainer = document.getElementById('product-list');
+                  if (targetContainer && targetContainer.querySelectorAll('.product-card').length === 0) {
+                      targetContainer.innerHTML = `<div style="color: #888; text-align: center; width: 100%; padding: 40px;">目前尚無商品</div>`;
+                  }
+              } else {
+                  const errData = await response.json().catch(() => ({}));
+                  alert("❌ 刪除失敗：" + (errData.error || "伺服器錯誤"));
+              }
+          } catch (err) {
+              console.error("刪除請求失敗:", err);
+              alert("⚠️ 連線伺服器失敗，請檢查後端狀態。");
+          }
+      }
   });
 })();

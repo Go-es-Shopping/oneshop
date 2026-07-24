@@ -3,11 +3,16 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database'); 
 
 const Coupon = sequelize.define('Coupon', {
-  Id: { 
+  CouponID: { 
     type: DataTypes.INTEGER, 
     autoIncrement: true, // 對應 SQL Server 的 Identity
     primaryKey: true,
-    field: 'Id' 
+    field: 'CouponID' 
+  },
+  SellerID: { 
+    type: DataTypes.INTEGER, 
+    allowNull: true,
+    field: 'SellerID'
   },
   Title: { 
     type: DataTypes.STRING(100), // 對應 nvarchar(100)
@@ -29,6 +34,11 @@ const Coupon = sequelize.define('Coupon', {
     type: DataTypes.DECIMAL(10, 2), 
     allowNull: true,
     field: 'MinSpend'
+  },
+  DiscountValue: { 
+    type: DataTypes.DECIMAL(10, 2), 
+    allowNull: true,
+    field: 'DiscountValue'
   },
   UsageLimit: { 
     type: DataTypes.INTEGER, 
@@ -62,7 +72,7 @@ const Coupon = sequelize.define('Coupon', {
     field: 'CreatedAt'
   }
 }, {
-  tableName: 'Coupons', // 鎖定表名，防止變複數
+  tableName: 'Coupon', // 鎖定表名，防止變複數
   timestamps: false,    // 由資料庫 DEFAULT GETDATE() 接管日期
 });
 
