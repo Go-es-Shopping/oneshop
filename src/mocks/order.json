@@ -2,6 +2,9 @@
   "created": {
     "OrderID": 70001,
     "SellerID": 123,
+    "CouponID": 1,
+    "CouponCode": "SAVE2026",
+    "DiscountValue": "100.00",
     "BuyerName": "王小明",
     "BuyerPhone": "+886912345678",
     "BuyerEmail": "buyer@example.com",

@@ -682,7 +682,7 @@
           <!-- Column 1 -->
           <div class="image-gallery__col fade-in-left delay-1">
             <div class="gallery-card"
-              onclick="location.href='http://localhost:3000/goez-shop-ai-assistant.html'" 
+              onclick="location.href='http://localhost:3000/goez-ai-assistant.html'" 
             style="cursor: pointer;">
               <img
                 class="gallery-card__img"
@@ -877,7 +877,7 @@ async function handleCreateShop() {
         if (result.success && result.pageId) {
             // 3. 拿到新 ID 了，自動跳轉到編輯頁，並帶上 pageId
             console.log("申請成功，ID 為:", result.pageId);
-            window.location.href = `http://localhost:3000/goez-shop-store.html?pageId=${result.pageId}`;
+            window.location.href = `http://localhost:3000/goez-store.html?pageId=${result.pageId}`;
         } else {
             alert("建立失敗：" + (result.message || "未知錯誤"));
         }

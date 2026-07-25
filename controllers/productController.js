@@ -1,3 +1,4 @@
+//包含product與seller控制
 const sequelize = require('../config/database')
 const {Product, PageContent, PageProduct, StorePage} = require('../models')
 const { readMock } = require('../src/mocks/utils')
@@ -179,47 +180,113 @@ async function getProduct(req, res) {
 }
 
 async function createProduct(req, res) {
+  const { Sequelize } = require('sequelize'); // 確保能使用 GETDATE()
+  
   try {
     const Mock = await useMock()
     const body = req.body || {}
+    const Lang = req.query.lang || 'zh-TW'
+    
+    // 💡 為了配合前端，如果前端沒傳，預設綁定到與 store.js 一致的 SellerID: 15
+    const finalSellerID = body.SellerID ? Number(body.SellerID) : 15;
+
+    // 🚀 【Backend Lead 智慧防禦修正】：防止前端沒帶 PageID 導致髒資料流向 PageID: 1
+    let finalPageID = body.PageID ? Number(body.PageID) : null;
+    
+    // 如果 body 沒傳，我們貼心地去檢查前端的網址來源（Referer），試圖撈出 ?pageId=19
+    if (!finalPageID && req.headers.referer) {
+      try {
+        const refUrl = new URL(req.headers.referer);
+        const urlPageId = refUrl.searchParams.get('pageId');
+        if (urlPageId) finalPageID = Number(urlPageId);
+      } catch (e) { 
+        console.error("解析來源網址的 pageId 失敗", e); 
+      }
+    }
+
+    // 萬一通通拿不到（連來源網址都沒有），就直接攔截報錯，不讓它進去髒了資料庫！
+    if (!finalPageID) {
+      return res.status(400).json({ 
+        success: false, 
+        error: '缺少 PageID！請確認請求中包含 PageID，或者確認您是從店鋪編輯頁面發送請求。' 
+      });
+    }
+
+    // 1. Mock 測試邏輯
     if (Mock) {
       const base = readMock('product.json').detail
       const newId = 2002
       const data = {
         ProductID: newId,
-        SellerID: body.SellerID ?? base.SellerID,
+        SellerID: finalSellerID,
         ProductImg: body.ProductImg ?? base.ProductImg,
         Price: dec2(body.Price ?? base.Price),
         Stock: body.Stock ?? base.Stock,
         IsActive: toBoolBit(body.IsActive ?? base.IsActive),
-        LanguageCode: body.lang || base.LanguageCode,
-        ProductName: base.ProductName,
-        ProductDescription: base.ProductDescription
+        LanguageCode: Lang,
+        ProductName: body.ProductName || base.ProductName,
+        ProductDescription: body.ProductDescription || base.ProductDescription
       }
       return res.status(201).json(data)
     }
-    const createData = {
-      SellerID: Number(body.SellerID),
-      ProductImg: body.ProductImg,
-      Price: dec2(body.Price),
-      Stock: Number(body.Stock),
-      IsActive: toBoolBit(body.IsActive ?? 1),
-      CreatedAt: new Date(),
-      UpdatedAt: new Date()
-    }
-    const created = await Product.create(createData)
-    const result = {
-      ProductID: created.ProductID,
-      SellerID: created.SellerID,
-      ProductImg: created.ProductImg,
-      Price: typeof created.Price === 'string' ? created.Price : dec2(created.Price),
-      Stock: created.Stock,
-      IsActive: created.IsActive
-    }
-    return res.status(201).json(result)
+
+    // 2. 正式資料庫環境：使用資料庫交易 (Transaction)
+    const result = await sequelize.transaction(async (t) => {
+      
+      // 【第一張表】新增商品主資訊到 dbo.Product
+      const createdProduct = await Product.create({
+        SellerID: finalSellerID,
+        ProductImg: body.ProductImg || "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=300", 
+        Price: dec2(body.Price || 0),
+        Stock: body.Stock !== undefined ? Number(body.Stock) : 0,
+        IsActive: toBoolBit(body.IsActive ?? 1),
+        CreatedAt: Sequelize.literal('GETDATE()'),
+        UpdatedAt: Sequelize.literal('GETDATE()')
+      }, { transaction: t });
+
+      // 【第二張表】將多語系名稱與簡介塞入 dbo.PageContent (💡 已修正 PageID 綁定)
+      await PageContent.create({
+        PageID: finalPageID, // 👈 完美綁定精准的 PageID
+        LanguageCode: Lang,
+        ProductID: createdProduct.ProductID, 
+        ProductName: body.ProductName || '未命名商品',
+        ProductDescription: body.ProductDescription || '',
+        CTA_Text: '立即購買', 
+        UpdatedAt: Sequelize.literal('GETDATE()')
+      }, { transaction: t });
+
+      // 【第三張表】建立賣場與商品的關聯 dbo.PageProduct (💡 已修正 PageID 綁定)
+      await PageProduct.create({
+        PageID: finalPageID, // 👈 完美綁定精准的 PageID
+        ProductID: createdProduct.ProductID,
+        DisplayOrder: 0, 
+        IsFeatured: 1,   
+        UpdatedAt: Sequelize.literal('GETDATE()')
+      }, { transaction: t });
+
+      return {
+        ProductID: createdProduct.ProductID,
+        SellerID: createdProduct.SellerID,
+        ProductImg: createdProduct.ProductImg,
+        Price: createdProduct.Price,
+        Stock: createdProduct.Stock,
+        IsActive: createdProduct.IsActive,
+        LanguageCode: Lang,
+        ProductName: body.ProductName || '未命名商品',
+        ProductDescription: body.ProductDescription || ''
+      };
+    });
+
+    // 3. 成功回傳
+    return res.status(201).json({
+      success: true,
+      message: '商品三表連動並成功與賣場綁定！',
+      data: result
+    });
+
   } catch (err) {
-    console.error('createProduct error:', err)
-    return res.status(500).json({ error: 'Internal Server Error' })
+    console.error('createProduct 錯誤，已自動回滾:', err)
+    return res.status(500).json({ success: false, error: 'Internal Server Error', details: err.message })
   }
 }
 
@@ -275,6 +342,15 @@ async function deleteProduct(req, res) {
     }
     const row = await Product.findByPk(ProductID)
     if (!row) return res.status(404).json({ error: 'Not Found' })
+
+    // 👇 【新增】在刪除主商品前，先清除關聯表的資料，避開外鍵約束錯誤
+    // 請依你們專案實際的 Model 名稱調整（例如 PageContent, PageProduct 等）
+    await PageContent.destroy({ where: { ProductID } });
+    if (typeof PageProduct !== 'undefined') {
+        await PageProduct.destroy({ where: { ProductID } });
+    }
+
+    // 接著再安全刪除商品主表
     await row.destroy()
     return res.status(204).send()
   } catch (err) {
@@ -282,7 +358,6 @@ async function deleteProduct(req, res) {
     return res.status(500).json({ error: 'Internal Server Error' })
   }
 }
-
 module.exports = {
   listProducts,
   getProduct,

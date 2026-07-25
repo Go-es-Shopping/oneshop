@@ -47,6 +47,11 @@ const uploadDir = path.join(__dirname, 'public/images/logos');
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
+// 📦 【Backend Lead 擴充】：確保商品圖片目錄存在
+const productUploadDir = path.join(__dirname, 'public/images/products');
+if (!fs.existsSync(productUploadDir)) {
+    fs.mkdirSync(productUploadDir, { recursive: true });
+}
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -63,6 +68,21 @@ const upload = multer({
     storage: storage,
     limits: { fileSize: 5 * 1024 * 1024 } // 限制 5MB
 });
+// 📦 【Backend Lead 擴充】：商品圖片的獨立儲存引擎
+const productStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'public/images/products'); // 丟到專屬的 products 資料夾
+    },
+    filename: (req, file, cb) => {
+        // 檔名：product-時間戳記-隨機數.副檔名
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, 'product-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+const uploadProduct = multer({ 
+    storage: productStorage,
+    limits: { fileSize: 5 * 1024 * 1024 } // 限制 5MB，對電商圖片來說非常夠用
+});
 
 
 // 1. 路由引入
@@ -73,6 +93,7 @@ const orderRouter = require('./routes/order')
 const adminRoutes = require('./routes/adminRoutes')
 const checkoutRoutes = require('./routes/checkoutRoutes')
 const analyticsRoutes = require('./routes/analyticsRoutes')
+const couponRoutes = require('./routes/couponRoutes');
 
 app.use(cors());
 app.use(express.json());
@@ -88,9 +109,11 @@ app.use('/api/seller', require('./routes/sellerRoutes'));
 app.use('/api/admin', adminRoutes)
 app.use('/api/checkout', checkoutRoutes)
 app.use('/api/track', analyticsRoutes)
+// 掛載優惠券路由
+app.use('/api/coupons', couponRoutes);
 
 
-// --- 🚀 新增：圖片上傳 API 路由 ---
+// --- 🚀 新增：商標圖片上傳 API 路由 ---
 app.post('/api/upload-logo', upload.single('logo'), (req, res) => {
     try {
         if (!req.file) return res.status(400).json({ success: false, message: '未選擇檔案' });
@@ -100,6 +123,23 @@ app.post('/api/upload-logo', upload.single('logo'), (req, res) => {
     } catch (err) {
         console.error("上傳失敗:", err);
         res.status(500).json({ success: false, message: '伺服器上傳錯誤' });
+    }
+});
+
+//  【商品圖片上傳 API 路由擴充】
+// 這裡前端上傳時的 input 欄位 name 要叫做 'product_file'
+app.post('/api/upload-product-img', uploadProduct.single('product_file'), (req, res) => {
+    try {
+        if (!req.file) return res.status(400).json({ success: false, message: '未選擇檔案' });
+        
+        // 生成給前端用的虛擬網址 (上市平台標準：隱藏後端真實路徑 public)
+        const productImgUrl = `/images/products/${req.file.filename}`;
+        
+        console.log(`[System] 商品圖片背景上傳成功，暫存路徑為: ${productImgUrl}`);
+        return res.json({ success: true, url: productImgUrl });
+    } catch (err) {
+        console.error("商品圖片上傳失敗:", err);
+        return res.status(500).json({ success: false, message: '伺服器上傳錯誤' });
     }
 });
 
