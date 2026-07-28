@@ -1,6 +1,6 @@
 # oneshop
 ## 資料庫關聯圖 (Database Schema)
-![資料庫圖表](./images/Shopping-db-diagram.jpg)
+![資料庫圖表](./sources-images/Shopping-db-diagram.jpg)
 ## API規格書
 👉 [點此查看路由清單](./API_LIST.md)
 
@@ -17,6 +17,8 @@
 - ShipmentStatus：0=準備中；1=已出貨；2=配送中；3=已送達；4=退貨中
 - BuyerPhone 需採 E.164 標準格式（例：+886912345678）
 - Price、TotalAmount、UnitPrice 為小數（兩位）
+- IsExclusive：0=可與其他優惠券並用；1=不可與其他優惠券並用
+- MinSpend、TotalQuantity、UsageLimit：未填或無限制時為 null
 
 ### Auth 模組（賣家帳戶）
 登入
@@ -209,6 +211,9 @@
 {
   "OrderID": 70001,
   "SellerID": 123,
+  "CouponID": 1,
+  "CouponCode": "SAVE2026",
+  "DiscountValue": "100.00",
   "BuyerName": "王小明",
   "BuyerPhone": "+886912345678",
   "BuyerEmail": "buyer@example.com",
@@ -378,4 +383,83 @@
   ]
 }
 ```
+### Coupon 模組（優惠券管理）
+取得優惠券列表
+- Method: GET
+- Endpoint: /api/coupons
+- Query Parameters: 無
+- Response JSON 範例
+```json
+{
+  "success": true,
+  "list": [
+    {
+      "CouponID": 1,
+      "SellerID": 123,
+      "Title": "2026年終優惠",
+      "Code": "SAVE2026",
+      "DiscountType": "滿額折抵",
+      "MinSpend": 1000.00,
+      "UsageLimit": 100,
+      "TotalQuantity": 500,
+      "IsExclusive": 0,
+      "StartDate": "2026-01-01",
+      "EndDate": "2026-12-31",
+      "CreatedAt": "2026-03-02T10:00:00Z"
+    }
+  ]
+}
+```
+新增優惠券
+- Method: POST
+- Endpoint: /api/coupons
+- Request Body 範例
+```json
+{
+  "CouponID": 2,
+  "SellerID": 123,
+  "Title": "新會員首購 9 折",
+  "Code": "NEW10",
+  "DiscountType": "打折 (9折)",
+  "MinSpend": 0,
+  "UsageLimit": 1,
+  "TotalQuantity": null,
+  "IsExclusive": 1,
+  "StartDate": "2026-01-01",
+  "EndDate": "2026-12-31"
+}
+```
+- Response JSON 範例
+```json
+{
+  "success": true,
+  "message": "優惠券建立成功",
+  "data": {
+    "CouponID": 2,
+    "SellerID": 123,
+    "Title": "新會員首購 9 折",
+    "Code": "NEW10",
+    "DiscountType": "打折 (9折)",
+    "MinSpend": 0,
+    "UsageLimit": 1,
+    "TotalQuantity": null,
+    "IsExclusive": 1,
+    "StartDate": "2026-01-01",
+    "EndDate": "2026-12-31"
+  }
+}
+```
+刪除優惠券
+- Method: DELETE
+- Endpoint: /api/coupons/:id
+- Query Parameters: 無
+- Response JSON 範例
+```json
+{
+  "success": true,
+  "message": "優惠券刪除成功"
+}
+```
+- 狀態代碼說明
+  - IsExclusive：0=可與其他優惠券並用；1=不可與其他優惠券並
 

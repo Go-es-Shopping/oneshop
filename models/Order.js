@@ -15,6 +15,36 @@ const Order = sequelize.define('Order', {
     allowNull: false,
     field: 'SellerID'
   },
+  // 優惠卷 ID
+  CouponID: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    field: 'CouponID'
+  },
+  // 優惠卷代碼
+  CouponCode: {
+    type: DataTypes.STRING(50),  // 對應 varchar(50)
+    allowNull: true,
+    field: 'CouponCode'
+  },
+  // 折抵金額
+  DiscountValue: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true,
+    field: 'DiscountValue'
+  },
+  // 優惠卷代碼
+  CouponCode: {
+    type: DataTypes.STRING(50),
+    allowNull: true,
+    field: 'CouponCode'
+  },
+  // 折抵金額
+  DiscountValue: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true,
+    field: 'DiscountValue'
+  },
   // 買家姓名，支援中文 (nvarchar)
   BuyerName: {
     type: DataTypes.STRING(100),
