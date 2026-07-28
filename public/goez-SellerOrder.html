@@ -97,7 +97,7 @@
                             <th scope="col" class="px-4 py-4 font-semibold text-center sticky right-0 bg-gray-100/80 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)] z-10">操作</th>
                         </tr>
                     </thead>
-                    <tbody id="table-body" class="divide-y divide-gray-100 bg-white">
+                    <tbody id="orderTableBody" class="divide-y divide-gray-100 bg-white">
                         <!-- Table rows will be populated by JavaScript -->
                     </tbody>
                 </table>
@@ -116,43 +116,39 @@
     </main>
 
     <script>
-        function getOrderStatusBadge(statusInt) {
-            const statusMap = {
-                0: { label: '處理中', dot: 'bg-blue-400', bg: 'bg-blue-50', text: 'text-blue-700' },
-                1: { label: '待出貨', dot: 'bg-yellow-400', bg: 'bg-yellow-50', text: 'text-yellow-700' },
-                2: { label: '已出貨', dot: 'bg-purple-400', bg: 'bg-purple-50', text: 'text-purple-700' },
-                3: { label: '已送達', dot: 'bg-indigo-400', bg: 'bg-indigo-50', text: 'text-indigo-700' },
-                4: { label: '完成取貨', dot: 'bg-green-500', bg: 'bg-green-50', text: 'text-green-700' },
-                5: { label: '已取消', dot: 'bg-red-500', bg: 'bg-red-50', text: 'text-red-700' }
-            };
-            const s = statusMap[statusInt] || { label: '未知狀態', dot: 'bg-gray-400', bg: 'bg-gray-50', text: 'text-gray-700' };
-            return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${s.bg} ${s.text}">
-                        <span class="w-1.5 h-1.5 rounded-full ${s.dot}"></span>
-                        ${s.label}
-                    </span>`;
+        // 1. 當網頁開好後，立馬執行抓資料
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchSellerOrders();
+        });
+
+        // 2. 向後端 API 發送 Fetch 請求
+        async function fetchSellerOrders() {
+            const tableBody = document.getElementById('orderTableBody');
+            if (tableBody) {
+                tableBody.innerHTML = `<tr><td colspan="11" class="px-4 py-12 text-center text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i>資料載入中...</td></tr>`;
+            }
+            
+            try {
+                const response = await fetch('/api/orders?SellerID=15');
+                const orders = await response.json();
+                
+                if (Array.isArray(orders) && orders.length > 0) {
+                    renderOrderTable(orders);
+                    document.getElementById('pagination-info').innerText = `顯示 ${orders.length} 筆訂單`;
+                } else {
+                    showNoDataMessage();
+                }
+            } catch (error) {
+                console.error('前端抓取訂單發生錯誤:', error);
+                showNoDataMessage();
+            }
         }
 
-        function getPaymentStatusBadge(statusInt) {
-            const statusMap = {
-                0: { label: '未付款', dot: 'bg-gray-400', bg: 'bg-gray-100', text: 'text-gray-700' },
-                1: { label: '已付款', dot: 'bg-teal-500', bg: 'bg-teal-50', text: 'text-teal-700' },
-                2: { label: '退款中', dot: 'bg-orange-400', bg: 'bg-orange-50', text: 'text-orange-700' },
-                3: { label: '已退款', dot: 'bg-red-400', bg: 'bg-red-50', text: 'text-red-700' },
-                4: { label: '失敗', dot: 'bg-rose-600', bg: 'bg-rose-50', text: 'text-rose-700' }
-            };
-            const s = statusMap[statusInt] || { label: '未知', dot: 'bg-gray-400', bg: 'bg-gray-100', text: 'text-gray-700' };
-            return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${s.bg} ${s.text}">
-                        <span class="w-1.5 h-1.5 rounded-full ${s.dot}"></span>
-                        ${s.label}
-                    </span>`;
-        }
-
-        function renderTable(orderData) {
-            const tbody = document.getElementById('table-body');
-            tbody.innerHTML = '';
-
-            if (!orderData || orderData.length === 0) {
-                tbody.innerHTML = `
+        // 沒資料時的防禦防呆畫面
+        function showNoDataMessage() {
+            const tableBody = document.getElementById('orderTableBody');
+            if (tableBody) {
+                tableBody.innerHTML = `
                     <tr>
                         <td colspan="11" class="px-4 py-12 text-center text-gray-500 bg-gray-50/50">
                             <div class="flex flex-col items-center justify-center">
@@ -162,10 +158,18 @@
                         </td>
                     </tr>
                 `;
-                return;
             }
+            document.getElementById('pagination-info').innerText = `顯示 0 筆訂單`;
+        }
 
-            orderData.forEach(order => {
+        // 3. 把資料庫欄位完美「撈進去」HTML 表格中
+        function renderOrderTable(orders) {
+            const tableBody = document.getElementById('orderTableBody');
+            if (!tableBody) return;
+            
+            tableBody.innerHTML = ''; 
+            
+            orders.forEach(order => {
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-gray-50/80 transition-colors group';
                 
@@ -189,41 +193,77 @@
                     <td class="px-4 py-4">${getOrderStatusBadge(order.OrderStatus)}</td>
                     <td class="px-4 py-4 font-semibold text-gray-800">${formatter.format(order.TotalAmount || 0)}</td>
                     <td class="px-4 py-4">${getPaymentStatusBadge(order.PaymentStatus)}</td>
-                    <td class="px-4 py-4 text-xs text-gray-500">${order.CreatedAt || '-'}</td>
-                    <td class="px-4 py-4 text-xs text-gray-500">${order.UpdatedAt || '-'}</td>
+                    <td class="px-4 py-4 text-xs text-gray-500">${order.CreatedAt ? new Date(order.CreatedAt).toLocaleString() : '-'}</td>
+                    <td class="px-4 py-4 text-xs text-gray-500">${order.UpdatedAt ? new Date(order.UpdatedAt).toLocaleString() : '-'}</td>
                     <td class="px-4 py-4 sticky right-0 bg-white group-hover:bg-gray-50/90 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)] transition-colors z-10">
                         <div class="flex items-center justify-center gap-3 text-gray-400">
-                            <a href="seller-order-detail.html?orderId=${order.OrderID}" class="hover:text-indigo-600 transition-colors cursor-pointer" title="查看明細"><i class="fa-solid fa-eye text-lg"></i></a>
+                            <a href="goez-SellerOrder-detail.html?orderId=${order.OrderID}" class="hover:text-indigo-600 transition-colors cursor-pointer" title="查看明細"><i class="fa-solid fa-eye text-lg"></i></a>
                             <button class="hover:text-blue-600 transition-colors cursor-pointer" title="編輯訂單"><i class="fa-regular fa-pen-to-square text-lg"></i></button>
-                            <button class="hover:text-red-500 transition-colors cursor-pointer" title="刪除訂單"><i class="fa-regular fa-trash-can text-lg"></i></button>
+                            <button onclick="deleteOrder(${order.OrderID})" class="hover:text-red-500 transition-colors cursor-pointer" title="刪除訂單"><i class="fa-regular fa-trash-can text-lg"></i></button>
                         </div>
                     </td>
                 `;
-                tbody.appendChild(tr);
+                tableBody.appendChild(tr);
             });
         }
 
-        async function fetchOrders() {
-            const tbody = document.getElementById('table-body');
-            tbody.innerHTML = `<tr><td colspan="11" class="px-4 py-12 text-center text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i>資料載入中...</td></tr>`;
+        // --- 🌟 新增：刪除訂單的前端非同步請求函式 ---
+        async function deleteOrder(orderId) {
+            if (!confirm(`確定要刪除訂單 #${orderId} 嗎？此動作將會一併刪除對應的明細，且無法復原！`)) {
+                return;
+            }
 
             try {
-                await new Promise(resolve => setTimeout(resolve, 600)); 
-                
-                const data = []; 
+                const response = await fetch(`/api/orders/${orderId}`, {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
 
-                renderTable(data);
-                document.getElementById('pagination-info').innerText = `顯示 ${data.length} 筆訂單`;
-
+                if (response.ok) {
+                    alert('訂單已成功刪除！');
+                    // 刪除成功後，重新整理列表資料
+                    fetchSellerOrders();
+                } else {
+                    alert('刪除失敗：' + (result.Error || '未知錯誤'));
+                }
             } catch (error) {
-                console.error(error);
-                tbody.innerHTML = `<tr><td colspan="11" class="px-4 py-12 text-center text-red-500">資料載入失敗，請檢查網路連線。</td></tr>`;
+                console.error('刪除請求發生錯誤:', error);
+                alert('網路連線或伺服器發生錯誤');
             }
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            fetchOrders();
-        });
+        // --- 讓畫面更好看的狀態 Badge 轉換函式 ---
+        function getOrderStatusBadge(statusInt) {
+            const statusMap = {
+                0: { label: '處理中', dot: 'bg-blue-400', bg: 'bg-blue-50', text: 'text-blue-700' },
+                1: { label: '待出貨', dot: 'bg-yellow-400', bg: 'bg-yellow-50', text: 'text-yellow-700' },
+                2: { label: '已出貨', dot: 'bg-purple-400', bg: 'bg-purple-50', text: 'text-purple-700' },
+                3: { label: '已送達', dot: 'bg-indigo-400', bg: 'bg-indigo-50', text: 'text-indigo-700' },
+                4: { label: '完成取貨', dot: 'bg-green-500', bg: 'bg-green-50', text: 'text-green-700' },
+                5: { label: '已取消', dot: 'bg-red-500', bg: 'bg-red-50', text: 'text-red-700' },
+                9: { label: '已取消', dot: 'bg-red-500', bg: 'bg-red-50', text: 'text-red-700' }
+            };
+            const s = statusMap[statusInt] || { label: '未知狀態', dot: 'bg-gray-400', bg: 'bg-gray-50', text: 'text-gray-700' };
+            return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${s.bg} ${s.text}">
+                        <span class="w-1.5 h-1.5 rounded-full ${s.dot}"></span>
+                        ${s.label}
+                    </span>`;
+        }
+
+        function getPaymentStatusBadge(statusInt) {
+            const statusMap = {
+                0: { label: '未付款', dot: 'bg-gray-400', bg: 'bg-gray-100', text: 'text-gray-700' },
+                1: { label: '已付款', dot: 'bg-teal-500', bg: 'bg-teal-50', text: 'text-teal-700' },
+                2: { label: '退款中', dot: 'bg-orange-400', bg: 'bg-orange-50', text: 'text-orange-700' },
+                3: { label: '已退款', dot: 'bg-red-400', bg: 'bg-red-50', text: 'text-red-700' },
+                4: { label: '失敗', dot: 'bg-rose-600', bg: 'bg-rose-50', text: 'text-rose-700' }
+            };
+            const s = statusMap[statusInt] || { label: '未知', dot: 'bg-gray-400', bg: 'bg-gray-100', text: 'text-gray-700' };
+            return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${s.bg} ${s.text}">
+                        <span class="w-1.5 h-1.5 rounded-full ${s.dot}"></span>
+                        ${s.label}
+                    </span>`;
+        }
     </script>
 </body>
 </html>

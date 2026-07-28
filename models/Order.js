@@ -39,9 +39,9 @@ const Order = sequelize.define('Order', {
     allowNull: false,
     field: 'BuyerAddress'
   },
-  // 訂單狀態 (如：待處理、已完成)
+  // 💡 修正點：將 STRING(30) 改為 INTEGER，完美對接 Controller 的 0, 1, 2, 3, 9 狀態數字
   OrderStatus: {
-    type: DataTypes.STRING(30),
+    type: DataTypes.INTEGER,
     allowNull: false,
     field: 'OrderStatus'
   },
