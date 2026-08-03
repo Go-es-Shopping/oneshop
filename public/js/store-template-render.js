@@ -240,7 +240,9 @@ function renderProducts(category = 'all') {
           <div class="product-card__body">
             <div class="product-card__meta">
               <div class="product-card__tag"><span class="product-card__tag-text">${p.tag}</span></div>
-              <span class="product-card__stock ${p.stock <= 5 ? 'low' : ''}">剩餘 ${p.stock}</span>
+              <span class="product-card__stock ${p.stock === 0 ? 'out-of-stock' : (p.stock <= 5 ? 'low' : '')}">
+  ${p.stock === 0 ? '已售完' : `剩餘 ${p.stock}`}
+</span>
             </div>
             <div class="product-card__name">${p.name}</div>
             <div style="color: var(--c-theme-2); font-size: 13px; font-family: 'Noto Sans TC', sans-serif; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; margin-top: -2px;">${p.desc}</div>
@@ -250,7 +252,7 @@ function renderProducts(category = 'all') {
                 ${p.origPrice ? `<span class="product-card__price-orig">$${p.origPrice.toLocaleString()}</span>` : ''}
               </div>
               <button class="product-card__cart-btn" type="button" aria-label="加入購物車"
-                onclick="event.stopPropagation(); addToCart(${p.id})">
+  ${p.stock === 0 ? 'disabled style="background-color: #cbd5e1; cursor: not-allowed;"' : `onclick="event.stopPropagation(); addToCart(${p.id})"`}>
                 <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.33333 14.6667C5.70152 14.6667 6 14.3682 6 14C6 13.6318 5.70152 13.3333 5.33333 13.3333C4.96514 13.3333 4.66666 13.6318 4.66666 14C4.66666 14.3682 4.96514 14.6667 5.33333 14.6667Z" stroke="white" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M12.6667 14.6667C13.0349 14.6667 13.3333 14.3682 13.3333 14C13.3333 13.6318 13.0349 13.3333 12.6667 13.3333C12.2985 13.3333 12 13.6318 12 14C12 14.3682 12.2985 14.6667 12.6667 14.6667Z" stroke="white" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M1.36667 1.36667H2.7L4.47334 9.64667C4.53839 9.94991 4.70712 10.221 4.95048 10.4132C5.19384 10.6055 5.49661 10.7069 5.80667 10.7H12.3267C12.6301 10.6995 12.9243 10.5955 13.1607 10.4052C13.397 10.2149 13.5614 9.94969 13.6267 9.65333L14.7267 4.7H3.41334" stroke="white" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </button>
             </div>
@@ -279,7 +281,15 @@ function openProductModal(productId) {
     if (modalPrice) modalPrice.textContent = `$${p.price.toLocaleString()}.00`;
 
     const modalStock = document.getElementById('modalStock');
-    if (modalStock) modalStock.textContent = `剩餘 ${p.stock} 件`;
+if (modalStock) {
+    if (p.stock === 0) {
+        modalStock.textContent = '已售完';
+        modalStock.style.color = '#ef4444'; // 顯示紅色警示
+    } else {
+        modalStock.textContent = `剩餘 ${p.stock} 件`;
+        modalStock.style.color = '';
+    }
+}
 
     const modalQty = document.getElementById('modalQty');
     if (modalQty) modalQty.textContent = '1';

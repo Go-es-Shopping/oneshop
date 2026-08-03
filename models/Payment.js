@@ -32,6 +32,12 @@ const Payment = sequelize.define('Payment', {
     type: DataTypes.DATE,
     allowNull: true,
     field: 'PaidAt'
+  },
+  // 💡 新增：藍新金流官方交易序號（對帳用）
+  TradeNo: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+    field: 'TradeNo'
   }
 }, {
   tableName: 'Payment',
