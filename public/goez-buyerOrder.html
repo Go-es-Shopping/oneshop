@@ -42,14 +42,10 @@
     <header class="flex-shrink-0 bg-gradient-to-r from-slate-200 via-slate-100 to-blue-100/80 backdrop-blur-sm">
       <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
-          <a href="../sign-up/index.html" class="flex items-center gap-2">
-            <span class="text-xl font-bold text-slate-800 tracking-tight">Goez Shop</span>
-          </a>
-          <div class="w-9 h-9 rounded-full bg-slate-300 flex items-center justify-center text-slate-600" role="img" aria-label="買家中心">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-            </svg>
-          </div>
+          <!-- 返回前台按鈕（灰色框框） -->
+      <a href="#" id="backToStoreBtn" class="px-4 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-medium transition-colors flex items-center gap-1 shadow-sm">
+  &larr; 返回賣場
+</a>
         </div>
       </div>
     </header>
@@ -129,7 +125,7 @@
     </main>
   </div>
 
-  <script src="./demo-orders.js"></script>
+  <script src="./js/demo-orders.js"></script>
   <script>
     (function () {
       var form = document.getElementById('order-lookup-form');
@@ -188,6 +184,23 @@
       requestAnimationFrame(function () {
         document.querySelector('.page-enter').classList.add('is-entered');
       });
+      // ==========================================
+      // ✨ 新增：自動帶回原本賣場的返回按鈕邏輯
+      // ==========================================
+      const urlParams = new URLSearchParams(window.location.search);
+      const backUrl = urlParams.get('from');
+      const backBtn = document.getElementById('backToStoreBtn');
+
+      if (backBtn) {
+        if (backUrl) {
+          // 如果有抓到來源（包含原本的 pageId），解碼並賦值給返回按鈕
+          backBtn.href = decodeURIComponent(backUrl);
+        } else {
+          // 如果沒有來源（例如直接輸入網址），給予預設的返回頁面
+          backBtn.href = "goez-store-template.html"; 
+        }
+      }
+
     })();
   </script>
 </body>

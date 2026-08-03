@@ -960,122 +960,27 @@
     .delay-3 { transition-delay: 0.24s; }
     .delay-4 { transition-delay: 0.32s; }
 
-    /* ── AUTH MODAL ── */
-    .auth-overlay {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,.5); z-index: 500;
-      backdrop-filter: blur(4px);
-      align-items: center; justify-content: center; padding: 20px;
-    }
-    .auth-overlay.open { display: flex; }
-    .auth-modal {
-      background: var(--c-white); border-radius: var(--r-24);
-      box-shadow: 0 32px 64px rgba(0,0,0,.2);
-      width: 100%; max-width: 420px;
-      animation: modalIn 0.35s cubic-bezier(.22,1,.36,1) both;
-      overflow: hidden;
-    }
-    .auth-modal__head {
-      padding: 24px 24px 0;
-      display: flex; align-items: flex-start; justify-content: space-between;
-    }
-    .auth-tabs { display: flex; gap: 4px; background: var(--c-bg-page); padding: 4px; border-radius: var(--r-full); }
-    .auth-tab {
-      height: 36px; padding: 0 20px; border-radius: var(--r-full);
-      font-family: 'Noto Sans TC', sans-serif; font-weight: 600; font-size: 14px;
-      color: var(--c-text-muted); transition: all 0.2s ease;
-    }
-    .auth-tab.active { background: var(--c-white); color: var(--c-text-heading); box-shadow: var(--shadow-sm); }
-    .auth-modal__close {
-      width: 32px; height: 32px; border-radius: var(--r-full);
-      display: flex; align-items: center; justify-content: center;
-      color: var(--c-text-faint); font-size: 16px;
-      transition: background 0.2s ease; flex-shrink: 0;
-    }
-    .auth-modal__close:hover { background: var(--c-bg-page); }
-    .auth-form { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
-    .auth-form.hidden { display: none; }
-    .auth-field { display: flex; flex-direction: column; gap: 6px; }
-    .auth-field label { font-family: 'Noto Sans TC', sans-serif; font-weight: 600; font-size: 13px; color: var(--c-text-heading); }
-    .auth-field input {
-      height: 44px; border: 1.5px solid var(--c-border);
-      border-radius: var(--r-14); padding: 0 14px;
-      font-family: 'Noto Sans TC', sans-serif; font-size: 15px;
-      color: var(--c-text-heading); background: var(--c-white);
-      outline: none; transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-    .auth-field input:focus { border-color: var(--c-accent); box-shadow: 0 0 0 3px rgba(101,136,166,.12); }
-    .auth-field__hint { font-size: 12px; color: #e07046; display: none; }
-    .auth-field.has-error .auth-field__hint { display: block; }
-    .auth-field.has-error input { border-color: #e07046; }
-    .auth-row { display: flex; align-items: center; justify-content: space-between; }
-    .auth-remember { display: flex; align-items: center; gap: 6px; font-family: 'Noto Sans TC', sans-serif; font-size: 13px; color: var(--c-text-muted); cursor: pointer; }
-    .auth-remember input { width: 15px; height: 15px; accent-color: var(--c-accent); }
-    .auth-forgot { font-family: 'Noto Sans TC', sans-serif; font-size: 13px; color: var(--c-accent); }
-    .auth-submit {
-      height: 48px; background: var(--c-accent); color: var(--c-white);
-      border-radius: var(--r-full); font-family: 'Noto Sans TC', sans-serif;
-      font-weight: 700; font-size: 15px;
-      display: flex; align-items: center; justify-content: center;
-      transition: filter 0.2s ease; margin-top: 4px;
-    }
-    .auth-submit:hover { filter: brightness(0.9); }
-    .auth-submit:disabled { opacity: 0.6; pointer-events: none; }
-    .auth-divider { display: flex; align-items: center; gap: 12px; color: var(--c-text-faint); font-size: 12px; }
-    .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--c-border); }
-    .auth-social {
-      height: 44px; border: 1.5px solid var(--c-border); border-radius: var(--r-full);
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-      font-family: 'Noto Sans TC', sans-serif; font-weight: 600; font-size: 14px;
-      color: var(--c-text-heading); transition: background 0.2s ease;
-    }
-    .auth-social:hover { background: var(--c-bg-page); }
-    .auth-switch { text-align: center; font-family: 'Noto Sans TC', sans-serif; font-size: 13px; color: var(--c-text-muted); padding-top: 4px; }
-    .auth-switch a { color: var(--c-accent); font-weight: 600; cursor: pointer; }
-    .auth-terms { display: flex; align-items: flex-start; gap: 8px; font-family: 'Noto Sans TC', sans-serif; font-size: 13px; color: var(--c-text-muted); cursor: pointer; }
-    .auth-terms input { width: 15px; height: 15px; flex-shrink: 0; margin-top: 1px; accent-color: var(--c-accent); }
-    .auth-terms a { color: var(--c-accent); }
-    @media (max-width: 380px) { .auth-modal { border-radius: var(--r-16); } }
-
-    /* ── 使用者按鈕 & 下拉選單 ── */
-    .user-btn {
-      display: flex; align-items: center; gap: 8px;
-      height: 36px; padding: 0 12px; border-radius: var(--r-full);
-      font-family: 'Noto Sans TC', sans-serif; font-weight: 600; font-size: 13px;
-      color: var(--c-text-heading); transition: background 0.2s ease; position: relative;
-    }
-    .user-btn:hover { background: var(--c-bg-page); }
-    .user-btn__avatar {
-      width: 28px; height: 28px; border-radius: var(--r-full);
-      background: var(--c-accent); color: var(--c-white);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 900; flex-shrink: 0;
-    }
-    .user-btn__name { max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .login-btn {
-      height: 36px; padding: 0 16px; border-radius: var(--r-full);
-      border: 1.5px solid var(--c-border);
-      font-family: 'Noto Sans TC', sans-serif; font-weight: 600; font-size: 13px;
-      color: var(--c-text-heading); transition: all 0.2s ease;
-    }
-    .login-btn:hover { border-color: var(--c-accent); color: var(--c-accent); }
-    .user-dropdown {
-      display: none; position: absolute; top: calc(100% + 8px); right: 0;
-      background: var(--c-white); border: 1px solid var(--c-border-light);
-      border-radius: var(--r-16); box-shadow: var(--shadow-lg);
-      min-width: 160px; overflow: hidden; z-index: 200;
-    }
-    .user-btn:focus-within .user-dropdown,
-    .user-dropdown.open { display: block; }
-    .user-dropdown__item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 12px 16px; font-family: 'Noto Sans TC', sans-serif;
-      font-size: 14px; font-weight: 500; color: var(--c-text-heading);
-      transition: background 0.15s ease; cursor: pointer; width: 100%;
-    }
-    .user-dropdown__item:hover { background: var(--c-bg-page); }
-    .user-dropdown__item--danger { color: #e07046; }
-    .user-dropdown__divider { height: 1px; background: var(--c-border-light); margin: 4px 0; }
+    /* 查詢訂單按鈕樣式 */
+.order-query-btn {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: var(--r-full, 9999px);
+  border: 1.5px solid var(--c-border, #ddd);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--c-text-heading, #333);
+  background: var(--c-white, #fff);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+.order-query-btn:hover {
+  border-color: var(--c-accent, #6588a6);
+  color: var(--c-accent, #6588a6);
+}
   </style>
 </head>
 <body>
@@ -1204,8 +1109,8 @@
           </div>
         </div>
       </div>
-      <!-- 登入/使用者按鈕 -->
-      <div id="navAuthArea"></div>
+      <!-- 查詢訂單按鈕 -->
+<a href="goez-buyerOrder.html?store=" id="orderLink" class="order-query-btn">查詢訂單</a>
       <button class="store-nav__hamburger" aria-label="選單" onclick="toggleMobileMenu()">
         <span></span><span></span><span></span>
       </button>
@@ -1392,9 +1297,17 @@ const PRODUCTS = [
 ];
 
 /* ══════════════════════════════════
-    CART STATE (自動修復圖片版)
+    CART STATE (各賣場獨立隔離版)
 ══════════════════════════════════ */
-let cart = JSON.parse(localStorage.getItem('goez_cart') || '[]');
+
+// 1. 動態抓取當前網址的 pageId，作為該賣場購物車的獨立辨識碼
+const urlParams = new URLSearchParams(window.location.search);
+const currentStoreId = urlParams.get('pageId') || 'default';
+
+// 2. 讓每個賣場擁有自己獨立的 localStorage Key (例如: goez_cart_19, goez_cart_26)
+const CART_STORAGE_KEY = `goez_cart_${currentStoreId}`;
+
+let cart = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) || '[]');
 
 // 自動同步後端商品圖片到現有購物車中
 function syncCartImages() {
@@ -1422,7 +1335,8 @@ function syncCartImages() {
 }
 
 function saveCart() {
-  localStorage.setItem('goez_cart', JSON.stringify(cart));
+  // 💡 存入專屬於當前賣場的 Key
+  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
 }
 
 function getTotalItems() {
@@ -1521,7 +1435,6 @@ function renderCartItems() {
   footer.style.display = 'block';
 
   container.innerHTML = cart.map(item => {
-    // 判斷有圖片網址就顯示 <img>，否則才顯示 emoji
     const imageContent = (item.imageUrl && item.imageUrl.trim() !== '')
       ? `<img src="${item.imageUrl}" alt="${item.name}">` 
       : (item.emoji || '📦');
@@ -1567,7 +1480,12 @@ function closeCart() {
   if (drawer) drawer.classList.remove('open');
   document.body.style.overflow = '';
 }
-
+// 自動抓取當前整串網址，並組裝到查詢訂單的按鈕上
+  const currentUrl = window.encodeURIComponent(window.location.href);
+  const orderLink = document.getElementById('orderLink');
+  if (orderLink) {
+    orderLink.href = `goez-buyerOrder.html?from=${currentUrl}`;
+  }
 function checkout() {
   if (cart.length === 0) return;
 
@@ -1575,10 +1493,12 @@ function checkout() {
     id:    item.id,
     name:    item.name,
     price:    item.price,
-    qty:      item.qty,
+    qty:       item.qty,
     imageUrl: item.imageUrl || ''
   }));
-  localStorage.setItem('goez_cart_v2', JSON.stringify(cartForCheckout));
+  
+  // 💡 結帳頁面也存入專屬於當前賣場的 Key
+  localStorage.setItem(`goez_checkout_cart_${currentStoreId}`, JSON.stringify(cartForCheckout));
 
   const storeName  = document.title || '風格生活選物';
   const accentColor = getComputedStyle(document.documentElement)
@@ -1590,7 +1510,9 @@ function checkout() {
   }));
 
   closeCart();
-  window.location.href = 'goez-checkout.html';
+  
+  // 跳轉到結帳頁並帶上正確的 pageId
+  window.location.href = `goez-checkout.html?pageId=${currentStoreId}`;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -1729,182 +1651,10 @@ const observer = new IntersectionObserver(entries => {
 ══════════════════════════════════ */
 (function init() {
   updateCartUI();
-  renderAuthNav();
   document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 })();
-/* ══════════════════════════════════
-   AUTH 系統
-══════════════════════════════════ */
-function getUser()   { try { return JSON.parse(localStorage.getItem('goez_user') || 'null'); } catch { return null; } }
-function saveUser(u) { localStorage.setItem('goez_user', JSON.stringify(u)); }
-function clearUser() { localStorage.removeItem('goez_user'); }
-
-function openAuth(tab='login') {
-  switchTab(tab);
-  document.getElementById('authOverlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeAuth() {
-  document.getElementById('authOverlay').classList.remove('open');
-  document.body.style.overflow = '';
-}
-function handleAuthBg(e) { if (e.target === document.getElementById('authOverlay')) closeAuth(); }
-
-function switchTab(tab) {
-  const isLogin = tab === 'login';
-  document.getElementById('tabLogin').classList.toggle('active', isLogin);
-  document.getElementById('tabRegister').classList.toggle('active', !isLogin);
-  document.getElementById('loginForm').classList.toggle('hidden', !isLogin);
-  document.getElementById('registerForm').classList.toggle('hidden', isLogin);
-}
-
-function setFieldError(id, hasError) { document.getElementById(id).classList.toggle('has-error', hasError); }
-function clearFieldErrors(...ids) { ids.forEach(id => setFieldError(id, false)); }
-
-function submitLogin(e) {
-  e.preventDefault();
-  const email    = document.getElementById('loginEmail').value.trim();
-  const password = document.getElementById('loginPassword').value;
-  let valid = true;
-  clearFieldErrors('lf-email','lf-password');
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setFieldError('lf-email', true); valid = false; }
-  if (!password) { setFieldError('lf-password', true); valid = false; }
-  if (!valid) return;
-  const btn = document.getElementById('loginSubmitBtn');
-  btn.disabled = true; btn.textContent = '登入中…';
-  setTimeout(() => {
-    btn.disabled = false; btn.textContent = '登入';
-    const name = email.split('@')[0].replace(/[._]/g,' ').replace(/\b\w/g, c=>c.toUpperCase());
-    saveUser({ name, email, joinedAt: new Date().toISOString().slice(0,10) });
-    closeAuth(); renderAuthNav();
-    showToast(`👋 歡迎回來，${name}！`, 'success');
-  }, 800);
-}
-
-function submitRegister(e) {
-  e.preventDefault();
-  const name     = document.getElementById('regName').value.trim();
-  const email    = document.getElementById('regEmail').value.trim();
-  const password = document.getElementById('regPassword').value;
-  const confirm  = document.getElementById('regConfirm').value;
-  const agreed   = document.getElementById('agreeTerms').checked;
-  let valid = true;
-  clearFieldErrors('rf-name','rf-email','rf-password','rf-confirm');
-  if (!name)  { setFieldError('rf-name', true); valid = false; }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setFieldError('rf-email', true); valid = false; }
-  if (password.length < 8) { setFieldError('rf-password', true); valid = false; }
-  if (password !== confirm) { setFieldError('rf-confirm', true); valid = false; }
-  if (!agreed) { showToast('請勾選同意服務條款'); return; }
-  if (!valid) return;
-  const btn = document.getElementById('registerSubmitBtn');
-  btn.disabled = true; btn.textContent = '建立中…';
-  setTimeout(() => {
-    btn.disabled = false; btn.textContent = '建立帳號';
-    saveUser({ name, email, joinedAt: new Date().toISOString().slice(0,10) });
-    closeAuth(); renderAuthNav();
-    showToast(`🎉 歡迎加入，${name}！`, 'success');
-  }, 900);
-}
-
-function socialLogin() { showToast('Google 登入功能串接中…'); }
-
-function renderAuthNav() {
-  const area = document.getElementById('navAuthArea');
-  const user = getUser();
-  if (!user) {
-    area.innerHTML = `<button class="login-btn" onclick="openAuth('login')">登入 / 註冊</button>`;
-  } else {
-    const initial = user.name.charAt(0).toUpperCase();
-    area.innerHTML = `
-      <div class="user-btn" tabindex="0" onclick="toggleUserMenu(event)">
-        <div class="user-btn__avatar">${initial}</div>
-        <span class="user-btn__name">${user.name}</span>
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <div class="user-dropdown" id="userDropdown">
-          <button class="user-dropdown__item" onclick="event.stopPropagation();showToast('訂單功能即將上線')">📦 我的訂單</button>
-          <button class="user-dropdown__item" onclick="event.stopPropagation();showToast('設定功能即將上線')">⚙️ 帳戶設定</button>
-          <div class="user-dropdown__divider"></div>
-          <button class="user-dropdown__item user-dropdown__item--danger" onclick="event.stopPropagation();logout()">登出</button>
-        </div>
-      </div>`;
-  }
-}
-
-function toggleUserMenu(e) {
-  const dd = document.getElementById('userDropdown');
-  if (dd) { dd.classList.toggle('open'); e.stopPropagation(); }
-}
-document.addEventListener('click', () => {
-  const dd = document.getElementById('userDropdown');
-  if (dd) dd.classList.remove('open');
-});
-
-function logout() { clearUser(); renderAuthNav(); showToast('已登出'); }
 </script>
 
-<!-- 登入 / 註冊 Modal -->
-<div class="auth-overlay" id="authOverlay" onclick="handleAuthBg(event)">
-  <div class="auth-modal" id="authModal">
-    <div class="auth-modal__head">
-      <div class="auth-tabs">
-        <button class="auth-tab active" id="tabLogin"    onclick="switchTab('login')">登入</button>
-        <button class="auth-tab"        id="tabRegister" onclick="switchTab('register')">註冊</button>
-      </div>
-      <button class="auth-modal__close" onclick="closeAuth()">✕</button>
-    </div>
-    <!-- 登入表單 -->
-    <form class="auth-form" id="loginForm" onsubmit="submitLogin(event)">
-      <div class="auth-field" id="lf-email">
-        <label for="loginEmail">電子郵件</label>
-        <input id="loginEmail" type="email" placeholder="your@email.com" autocomplete="email" />
-        <span class="auth-field__hint">請輸入有效的電子郵件</span>
-      </div>
-      <div class="auth-field" id="lf-password">
-        <label for="loginPassword">密碼</label>
-        <input id="loginPassword" type="password" placeholder="••••••••" autocomplete="current-password" />
-        <span class="auth-field__hint">請輸入密碼</span>
-      </div>
-      <div class="auth-row">
-        <label class="auth-remember"><input type="checkbox" id="rememberMe"> 記住我</label>
-        <a class="auth-forgot" href="#">忘記密碼？</a>
-      </div>
-      <button type="submit" class="auth-submit" id="loginSubmitBtn">登入</button>
-      <div class="auth-divider"><span>或</span></div>
-      <button type="button" class="auth-social" onclick="socialLogin()">
-        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-3.59-13.46-8.83l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-        以 Google 繼續
-      </button>
-      <div class="auth-switch">還沒有帳號？ <a onclick="switchTab('register')">立即註冊</a></div>
-    </form>
-    <!-- 註冊表單 -->
-    <form class="auth-form hidden" id="registerForm" onsubmit="submitRegister(event)">
-      <div class="auth-field" id="rf-name">
-        <label for="regName">姓名</label>
-        <input id="regName" type="text" placeholder="您的姓名" autocomplete="name" />
-        <span class="auth-field__hint">請輸入姓名</span>
-      </div>
-      <div class="auth-field" id="rf-email">
-        <label for="regEmail">電子郵件</label>
-        <input id="regEmail" type="email" placeholder="your@email.com" autocomplete="email" />
-        <span class="auth-field__hint">請輸入有效的電子郵件</span>
-      </div>
-      <div class="auth-field" id="rf-password">
-        <label for="regPassword">密碼</label>
-        <input id="regPassword" type="password" placeholder="至少 8 個字元" autocomplete="new-password" />
-        <span class="auth-field__hint">密碼至少需要 8 個字元</span>
-      </div>
-      <div class="auth-field" id="rf-confirm">
-        <label for="regConfirm">確認密碼</label>
-        <input id="regConfirm" type="password" placeholder="再次輸入密碼" autocomplete="new-password" />
-        <span class="auth-field__hint">兩次密碼輸入不一致</span>
-      </div>
-      <label class="auth-terms">
-        <input type="checkbox" id="agreeTerms">
-        我已閱讀並同意 <a href="#" onclick="event.stopPropagation()">服務條款</a> 及 <a href="#" onclick="event.stopPropagation()">隱私政策</a>
-      </label>
-      <button type="submit" class="auth-submit" id="registerSubmitBtn">建立帳號</button>
-      <div class="auth-switch">已有帳號？ <a onclick="switchTab('login')">立即登入</a></div>
-    </form>
   </div>
 </div>
 <script src="./js/store-template-render.js"></script>

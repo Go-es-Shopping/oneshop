@@ -147,6 +147,10 @@ exports.checkout = async (req, res) => {
   const OrderModel = db.Order;
   const OrderDetailModel = db.Orderdetail || db.OrderDetail; 
   const ProductModel = db.Product;
+  // 💡 確保引入 Shipment 與 Payment 模型
+  const ShipmentModel = db.Shipment;
+  const PaymentModel = db.Payment;
+  const StorePageModel = db.StorePage;
 
   let t;
   try {
@@ -159,8 +163,12 @@ exports.checkout = async (req, res) => {
 
     const body = req.body || {};
     
-    // 支援雙命名 (PascalCase / camelCase) 與 購物車欄位兼容性
-    const SellerID = body.SellerID !== undefined ? body.SellerID : body.sellerId;
+    // 💡 印出前端傳來的完整內容，方便對照除錯
+    console.log('🔍 收到前端結帳請求 req.body:', JSON.stringify(body, null, 2));
+
+    // 支援雙命名 (PascalCase / camelCase)
+    const PageID = body.PageID !== undefined ? body.PageID : body.pageId;
+    let SellerID = body.SellerID !== undefined ? body.SellerID : body.sellerId;
     const BuyerName = body.BuyerName !== undefined ? body.BuyerName : body.buyerName;
     const BuyerPhone = body.BuyerPhone !== undefined ? body.BuyerPhone : body.buyerPhone;
     const BuyerEmail = body.BuyerEmail !== undefined ? body.BuyerEmail : body.buyerEmail;
@@ -169,14 +177,39 @@ exports.checkout = async (req, res) => {
     const UTM_Source = body.UTM_Source !== undefined ? body.UTM_Source : body.utm_source;
     const SessionID = body.SessionID !== undefined ? body.SessionID : body.sessionId;
 
-    // --- 🎟️ 新增：接收前端傳過來的優惠券相關資訊（支援大小寫兼容） ---
-    const CouponID = body.CouponID !== undefined ? body.CouponID : body.couponId;
+    // 物流與付款相關欄位接收
+    const ShippingMethod = body.ShippingMethod || body.shippingMethod || '宅配';
+    const StoreInfo = body.StoreInfo || body.storeInfo || null;
+    const PaymentMethod = body.PaymentMethod || body.paymentMethod || 'CashOnDelivery';
+
+    // --- 🎟️ 接收前端傳過來的優惠券相關資訊 ---
+    const rawCouponID = body.CouponID !== undefined ? body.CouponID : body.couponId;
+    let resolvedCouponID = rawCouponID ? Number(rawCouponID) : null;
     const CouponCode = body.CouponCode !== undefined ? body.CouponCode : body.couponCode;
     const DiscountValue = body.DiscountValue !== undefined ? body.DiscountValue : (body.discountValue !== undefined ? body.discountValue : 0);
 
+    // 💡 關鍵保險：如果前端只傳了 CouponCode 卻沒傳 CouponID，我們直接去資料庫把對應的 ID 查出來！
+    if (!resolvedCouponID && CouponCode && db.Coupon) {
+      const foundCoupon = await db.Coupon.findOne({
+        where: { CouponCode: CouponCode },
+        transaction: t
+      });
+      if (foundCoupon) {
+        resolvedCouponID = foundCoupon.CouponID; // 對應資料庫的主鍵欄位
+      }
+    }
+
     if (!rawItems || rawItems.length === 0) throw new Error("購物車項目不可為空");
 
-    let totalAmount = 0;
+    // 如果前端沒有傳 SellerID，但有傳 PageID，可以透過 StorePage 自動查出 SellerID
+    if (!SellerID && PageID && StorePageModel) {
+      const storePage = await StorePageModel.findByPk(PageID, { transaction: t });
+      if (storePage) {
+        SellerID = storePage.SellerID;
+      }
+    }
+
+    let subTotal = 0;
     const details = [];
 
     // --- 📦 處理庫存檢查與扣除 ---
@@ -192,31 +225,43 @@ exports.checkout = async (req, res) => {
 
       // 執行扣庫存
       product.Stock -= Quantity;
+      
+      // 🚀 【完美電商自動下架邏輯】：如果扣完之後庫存見底 (<= 0)
+      if (product.Stock <= 0) {
+        product.Stock = 0;    // 確保庫存不會變成負數
+        product.IsActive = 0; // 自動設為下架！
+      }
+
       await product.save({ transaction: t });
 
       const price = parseFloat(product.Price || 0);
-      totalAmount += price * Quantity;
+      subTotal += price * Quantity;
       
       details.push({ ProductID, Quantity, UnitPrice: price });
     }
 
-    // --- 🎟️ 新增：計算扣除優惠券折扣後的最終金額，並防呆避免變成負數 ---
-    let finalTotalAmount = totalAmount - parseFloat(DiscountValue || 0);
+    // 計算運費
+    let shippingFee = (ShippingMethod === '宅配') ? 100 : 60;
+    if (subTotal >= 1000) shippingFee = 0;
+
+    // --- 🎟️ 計算扣除優惠券折扣後的最終金額 ---
+    const discount = parseFloat(DiscountValue || 0);
+    let finalTotalAmount = subTotal + shippingFee - discount;
     if (finalTotalAmount < 0) {
       finalTotalAmount = 0;
     }
 
     // --- 📝 建立訂單主檔 ---
     const newOrder = await OrderModel.create({
-      SellerID, 
+      SellerID: SellerID || 1, 
       BuyerName, 
       BuyerPhone, 
       BuyerEmail, 
       BuyerAddress,
-      TotalAmount: finalTotalAmount, // 使用扣完優惠券折抵後的總金額
-      CouponID: CouponID || null,         // 🎟️ 新增：寫入優惠券 ID
-      CouponCode: CouponCode || null,     // 🎟️ 新增：寫入優惠券代碼字串
-      DiscountValue: DiscountValue || 0,  // 🎟️ 新增：寫入實際折抵金額
+      TotalAmount: finalTotalAmount, 
+      CouponID: (isNaN(resolvedCouponID) || resolvedCouponID === 0) ? null : resolvedCouponID, // 🎟️ 寫入解析或查詢到的 CouponID
+      CouponCode: CouponCode || null,     // 🎟️ 寫入優惠券代碼
+      DiscountValue: discount,            // 🎟️ 寫入實際折抵金額
       OrderStatus: 0,
       PaymentStatus: 0,
       UTM_Source,
@@ -226,6 +271,25 @@ exports.checkout = async (req, res) => {
     // --- 📑 建立訂單明細 ---
     const finalDetails = details.map(d => ({ ...d, OrderID: newOrder.OrderID }));
     await OrderDetailModel.bulkCreate(finalDetails, { transaction: t });
+
+    // --- 🚚 建立物流記錄 (Shipment) ---
+    if (ShipmentModel) {
+      await ShipmentModel.create({
+        OrderID: newOrder.OrderID,
+        ShippingMethod: ShippingMethod,
+        StoreInfo: StoreInfo,
+        ShipmentStatus: 0
+      }, { transaction: t });
+    }
+
+    // --- 💳 建立付款記錄 (Payment) ---
+    if (PaymentModel) {
+      await PaymentModel.create({
+        OrderID: newOrder.OrderID,
+        PaymentMethod: PaymentMethod,
+        PaymentStatus: 0
+      }, { transaction: t });
+    }
 
     // --- ✅ 提交所有變更 ---
     await t.commit();

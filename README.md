@@ -38,7 +38,7 @@
 }
 ```
  - 狀態代碼說明
-   - PlanType：0=免費；1=進階付費
+   - PlanType：0=免費；1=進階付費(未來優化空間)
    - Status：0=審核中；1=營運中；2=停權；3=已關閉
 
 - Method: GET
@@ -220,6 +220,8 @@
   "BuyerAddress": "台北市中正區 XX 路 1 號",
   "OrderStatus": 0,
   "PaymentStatus": 0,
+  "InvoiceType": "member",
+  "CarrierCode": "ACME123456",
   "TotalAmount": 1990.00,
   "Items": [
     {
@@ -236,6 +238,8 @@
  - 狀態代碼說明
    - OrderStatus：0=處理中；1=待出貨；2=已出貨；3=已送達；4=完成取貨；5=已取消訂單
    - PaymentStatus：0=未付款；1=已付款；2=退款中；3=已退款；4=失敗
+   - InvoiceType：member=會員載具；barcode=手機條碼
+   - CarrierCode：手機條碼字串（當 InvoiceType 為 barcode 時填寫，格式為 / 開頭共 8 碼）
  - 欄位備註
    - Quantity 必須大於 0
    - TotalAmount、UnitPrice 為 decimal(12,2)

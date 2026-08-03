@@ -64,9 +64,20 @@ async function listProducts(req, res) {
       return res.json(List)
     }
 
+    // 🚀 【完美電商邏輯】設定查詢條件
+    const whereCondition = {};
+    if (SellerID !== undefined) whereCondition.SellerID = SellerID;
+    
+    // 如果前台沒有特別指定 IsActive，我們預設「只抓 IsActive = true (上架中)」的商品
+    if (IsActive !== undefined) {
+      whereCondition.IsActive = IsActive;
+    } else {
+      whereCondition.IsActive = 1; 
+    }
+
     // 1. 抓取商品基本資訊，並在 include 時就把 PageTitle 撈出來
     const rows = await Product.findAll({
-      where: SellerID !== undefined ? { SellerID } : {},
+      where: whereCondition,
       include: [
         {
           model: PageContent,
@@ -83,7 +94,7 @@ async function listProducts(req, res) {
         }
       ]
     })
-
+    
     // 2. 整理輸出資料
     const data = await Promise.all(rows.map(async (row) => {
       const p = row.get({ plain: true });
