@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>購意思 Goez Shop 輕鬆打造專屬線上商店</title>
+    <!-- 引入 FontAwesome 作為 Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 引入思源黑體 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS 變數設定 (明亮主題) */
+        :root {
+            --primary-blue: #1A3E7A;
+            --text-dark: #2C4A7C;
+            --glass-bg: rgba(255, 255, 255, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.7);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: "Noto Sans TC", sans-serif;
+        }
+
+        body {
+            /* 網站背景設定 */
+            background-color: #eaf4fc; 
+            
+            /* =========================================
+               【修正重點】：依照同學建議，更新為 GitHub 標準的相對資料夾路徑
+               請確保你的 GitHub 專案中真的有 public/images/decoration/ 這個結構喔！
+               ========================================= */
+            background-image: url('public/images/decoration/landing-bg.png'); 
+            
+            background-size: 100% auto;
+            background-position: center top;
+            background-repeat: no-repeat;
+            background-attachment: fixed; 
+            
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* =========================================
+           標題與按鈕區塊
+           ========================================= */
+        .hero-section {
+            text-align: center;
+            margin-top: 80px;
+            margin-bottom: 40px;
+            width: 100%;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 5px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            letter-spacing: 1px; 
+        }
+
+        h1 {
+            font-size: 3.6rem;
+            line-height: 1.3;
+            color: var(--primary-blue);
+            font-weight: 700;
+            margin-bottom: 12px; 
+            letter-spacing: 1px; 
+            text-shadow: 0 10px 30px rgba(0, 50, 150, 0.1);
+        }
+
+        .subtitle {
+            font-size: 1.15rem;
+            margin-bottom: 35px;
+            letter-spacing: 1px; 
+            font-weight: 400;
+        }
+
+        .cta-btn {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 15px 45px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 30px rgba(0, 50, 150, 0.15);
+            letter-spacing: 1px; 
+        }
+
+        .cta-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-4px);
+            box-shadow: 0 15px 40px rgba(0, 50, 150, 0.2);
+        }
+
+        /* =========================================
+           核心內容佈局
+           ========================================= */
+        .content-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 50px;
+            width: 100%;
+            max-width: 1300px;
+            padding: 0 30px;
+            position: relative;
+            margin-bottom: 60px;
+            z-index: 10;
+        }
+
+        /* 左右功能列表 */
+        .features-column {
+            display: flex;
+            flex-direction: column;
+            gap: 45px;
+            flex: 1;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .features-column.left .feature-item {
+            flex-direction: row-reverse;
+            text-align: right;
+        }
+
+        .icon-glass {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            color: var(--primary-blue);
+            box-shadow: 0 15px 35px rgba(0, 50, 150, 0.1);
+            transition: all 0.4s ease;
+        }
+
+        .feature-item:hover .icon-glass {
+            transform: scale(1.08) translateY(-5px);
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .feature-text h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .feature-text p {
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+
+        /* =========================================
+           3D Isometric 玻璃圖層解析 
+           ========================================= */
+        .center-mockup {
+            flex: 1.5;
+            max-width: 500px;
+            height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 1200px; 
+        }
+
+        .iso-container {
+            width: 280px;
+            height: 280px;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateX(55deg) rotateZ(-45deg);
+            animation: iso-float 6s ease-in-out infinite;
+            transition: transform 0.5s ease;
+        }
+
+        .center-mockup:hover .iso-container .layer-top { transform: translateZ(120px); }
+        .center-mockup:hover .iso-container .layer-bottom { transform: translateZ(-120px); }
+
+        .iso-layer {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: var(--glass-bg);
+            border: 2px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: -15px 15px 35px rgba(0, 50, 150, 0.15);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        /* 最上層 */
+        .layer-top {
+            transform: translateZ(80px);
+            background: rgba(255, 255, 255, 0.6); 
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 3;
+            padding: 20px;
+            align-items: flex-start;
+        }
+        
+        .ui-nav { width: 100%; display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .ui-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--primary-blue); opacity: 0.5; }
+        .ui-line { height: 8px; width: 30px; background: rgba(26, 62, 122, 0.2); border-radius: 4px; }
+        .ui-img { width: 100%; height: 100px; background: rgba(255,255,255,0.7); border-radius: 12px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--primary-blue);}
+        .ui-text-1 { width: 80%; height: 10px; background: rgba(26, 62, 122, 0.2); border-radius: 5px; margin-bottom: 10px; }
+        .ui-text-2 { width: 50%; height: 10px; background: rgba(26, 62, 122, 0.1); border-radius: 5px; margin-bottom: 20px; }
+        .ui-btn { width: 100px; height: 25px; background: var(--primary-blue); border-radius: 20px; opacity: 0.8; }
+
+        /* 中間層 */
+        .layer-middle {
+            transform: translateZ(0px);
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(5px);
+            z-index: 2;
+        }
+        .layer-middle i { font-size: 4rem; color: #ffbd2e; margin-bottom: 15px; text-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .design-palette { display: flex; gap: 10px; }
+        .design-palette span { width: 20px; height: 20px; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.1);}
+        .design-palette span:nth-child(1) { background: #ff9a9e; }
+        .design-palette span:nth-child(2) { background: #a1c4fd; }
+        .design-palette span:nth-child(3) { background: #a8e063; }
+
+        /* 最底層 */
+        .layer-bottom {
+            transform: translateZ(-80px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px dashed rgba(26, 62, 122, 0.3);
+            z-index: 1;
+        }
+        .layer-bottom i { font-size: 3rem; color: var(--primary-blue); opacity: 0.5; margin-bottom: 15px; }
+        .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 60%; }
+        .data-box { height: 20px; background: rgba(26, 62, 122, 0.15); border-radius: 4px; }
+
+        @keyframes iso-float {
+            0%, 100% { transform: rotateX(55deg) rotateZ(-45deg) translateZ(0px); }
+            50% { transform: rotateX(55deg) rotateZ(-45deg) translateZ(20px); }
+        }
+
+        /* 底部探索更多 */
+        .scroll-down {
+            margin-top: auto;
+            padding: 40px 0;
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 1px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        /* =========================================
+           響應式設計 (RWD) 
+           ========================================= */
+        @media (max-width: 1100px) {
+            .content-wrapper { flex-direction: column; }
+            .center-mockup {
+                order: -1; 
+                width: 100%;
+                margin-bottom: 50px;
+            }
+            .features-column {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 30px;
+            }
+            .features-column.left .feature-item, .feature-item {
+                flex-direction: column;
+                text-align: center;
+                width: 40%;
+            }
+        }
+
+        @media (max-width: 799px) {
+            .hero-section { padding: 0 20px; } 
+            h1 { font-size: 2.4rem; letter-spacing: 1px; } 
+            
+            .content-wrapper { padding: 0 20px; } 
+            
+            .center-mockup { height: 250px; margin-bottom: 15px;}
+            
+            .iso-container { 
+                animation: iso-float-mobile 6s ease-in-out infinite; 
+            }
+            
+            .features-column { flex-direction: column; gap: 15px; width: 100%; }
+            .feature-item, .features-column.left .feature-item {
+                flex-direction: row;
+                text-align: left;
+                width: 100%;
+                background: var(--glass-bg);
+                backdrop-filter: blur(15px);
+                border: 1px solid var(--glass-border);
+                border-radius: 16px;
+                padding: 15px; 
+            }
+            .icon-glass {
+                border: none;
+                background: rgba(255, 255, 255, 0.4);
+                box-shadow: none;
+                width: 45px; 
+                height: 45px;
+            }
+        }
+
+        @keyframes iso-float-mobile {
+            0%, 100% { transform: scale(0.75) rotateX(55deg) rotateZ(-45deg) translateZ(0px); }
+            50% { transform: scale(0.75) rotateX(55deg) rotateZ(-45deg) translateZ(20px); }
+        }
+    </style>
+</head>
+<body>
+
+    <section class="hero-section">
+        <div class="logo"><i class="fa-solid fa-bag-shopping"></i> 購意思</div>
+        <h1>Goez Shop</h1>
+        <p class="subtitle">輕鬆打造您的專屬線上商店</p>
+        <button class="cta-btn">立即開始 <i class="fa-solid fa-arrow-right"></i></button>
+    </section>
+
+    <section class="content-wrapper">
+        
+        <!-- 左側功能 -->
+        <div class="features-column left">
+            <div class="feature-item">
+                <div class="icon-glass"><i class="fa-solid fa-store"></i></div>
+                <div class="feature-text">
+                    <h3>建立一頁式商店</h3>
+                    <p>快速建立品牌專屬商店</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="icon-glass"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                <div class="feature-text">
+                    <h3>AI 功能輔助開店創意</h3>
+                    <p>智慧生成文案與設計靈感建議</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="icon-glass"><i class="fa-solid fa-chart-column"></i></div>
+                <div class="feature-text">
+                    <h3>Power BI 數據分析</h3>
+                    <p>即時掌握營運數據與趨勢</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3D 玻璃圖層解析 -->
+        <div class="center-mockup">
+            <div class="iso-container">
+                <!-- 最底層 -->
+                <div class="iso-layer layer-bottom">
+                    <i class="fa-solid fa-database"></i>
+                    <div class="data-grid">
+                        <div class="data-box"></div><div class="data-box"></div>
+                        <div class="data-box"></div><div class="data-box"></div>
+                    </div>
+                </div>
+
+                <!-- 中間層 -->
+                <div class="iso-layer layer-middle">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <div class="design-palette">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+
+                <!-- 最上層 -->
+                <div class="iso-layer layer-top">
+                    <div class="ui-nav">
+                        <div class="ui-dot"></div><div class="ui-line"></div>
+                    </div>
+                    <div class="ui-img"><i class="fa-solid fa-store"></i></div>
+                    <div class="ui-text-1"></div>
+                    <div class="ui-text-2"></div>
+                    <div class="ui-btn"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右側功能 -->
+        <div class="features-column right">
+            <div class="feature-item">
+                <div class="icon-glass"><i class="fa-solid fa-palette"></i></div>
+                <div class="feature-text">
+                    <h3>質感主題與字體</h3>
+                    <p>一鍵套用品牌風格設計</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="icon-glass"><i class="fa-regular fa-credit-card"></i></div>
+                <div class="feature-text">
+                    <h3>訂單與金物流串接</h3>
+                    <p>管理訂單物流資訊與藍新金流</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="icon-glass"><i class="fa-solid fa-globe"></i></div>
+                <div class="feature-text">
+                    <h3>中・日・英三國語言切換</h3>
+                    <p>輕鬆拓展海外市場</p>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <footer class="scroll-down">
+        <i class="fa-solid fa-chevron-down"></i>
+        探索更多功能
+    </footer>
+
+</body>
+</html>
