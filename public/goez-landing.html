@@ -4,12 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>購意思 Goez Shop 輕鬆打造專屬線上商店</title>
-    <!-- 引入 FontAwesome 作為 Icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- 引入思源黑體 -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
-        /* CSS 變數設定 (明亮主題) */
         :root {
             --primary-blue: #1A3E7A;
             --text-dark: #2C4A7C;
@@ -25,20 +22,12 @@
         }
 
         body {
-            /* 網站背景設定 */
             background-color: #eaf4fc; 
-            
-            /* =========================================
-               【修正重點】：依照同學建議，更新為 GitHub 標準的相對資料夾路徑
-               請確保你的 GitHub 專案中真的有 public/images/decoration/ 這個結構喔！
-               ========================================= */
             background-image: url('public/images/decoration/landing-bg.png'); 
-            
             background-size: 100% auto;
             background-position: center top;
             background-repeat: no-repeat;
             background-attachment: fixed; 
-            
             color: var(--text-dark);
             min-height: 100vh;
             display: flex;
@@ -124,7 +113,6 @@
             z-index: 10;
         }
 
-        /* 左右功能列表 */
         .features-column {
             display: flex;
             flex-direction: column;
@@ -218,7 +206,6 @@
             transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
-        /* 最上層 */
         .layer-top {
             transform: translateZ(80px);
             background: rgba(255, 255, 255, 0.6); 
@@ -237,7 +224,6 @@
         .ui-text-2 { width: 50%; height: 10px; background: rgba(26, 62, 122, 0.1); border-radius: 5px; margin-bottom: 20px; }
         .ui-btn { width: 100px; height: 25px; background: var(--primary-blue); border-radius: 20px; opacity: 0.8; }
 
-        /* 中間層 */
         .layer-middle {
             transform: translateZ(0px);
             background: rgba(255, 255, 255, 0.3);
@@ -251,7 +237,6 @@
         .design-palette span:nth-child(2) { background: #a1c4fd; }
         .design-palette span:nth-child(3) { background: #a8e063; }
 
-        /* 最底層 */
         .layer-bottom {
             transform: translateZ(-80px);
             background: rgba(255, 255, 255, 0.1);
@@ -267,7 +252,6 @@
             50% { transform: rotateX(55deg) rotateZ(-45deg) translateZ(20px); }
         }
 
-        /* 底部探索更多 */
         .scroll-down {
             margin-top: auto;
             padding: 40px 0;
@@ -360,7 +344,6 @@
 
     <section class="content-wrapper">
         
-        <!-- 左側功能 -->
         <div class="features-column left">
             <div class="feature-item">
                 <div class="icon-glass"><i class="fa-solid fa-store"></i></div>
@@ -385,10 +368,8 @@
             </div>
         </div>
 
-        <!-- 3D 玻璃圖層解析 -->
         <div class="center-mockup">
             <div class="iso-container">
-                <!-- 最底層 -->
                 <div class="iso-layer layer-bottom">
                     <i class="fa-solid fa-database"></i>
                     <div class="data-grid">
@@ -397,7 +378,6 @@
                     </div>
                 </div>
 
-                <!-- 中間層 -->
                 <div class="iso-layer layer-middle">
                     <i class="fa-solid fa-wand-magic-sparkles"></i>
                     <div class="design-palette">
@@ -405,7 +385,6 @@
                     </div>
                 </div>
 
-                <!-- 最上層 -->
                 <div class="iso-layer layer-top">
                     <div class="ui-nav">
                         <div class="ui-dot"></div><div class="ui-line"></div>
@@ -418,7 +397,6 @@
             </div>
         </div>
 
-        <!-- 右側功能 -->
         <div class="features-column right">
             <div class="feature-item">
                 <div class="icon-glass"><i class="fa-solid fa-palette"></i></div>
