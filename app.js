@@ -1,5 +1,8 @@
 const express = require('express')
 const cors = require('cors')
+const path = require('path') // 👈 補上 path 模組
+const fs = require('fs')     // 👈 補上 fs 模組（檢查資料夾需要用到）
+const multer = require('multer') // 👈 補上 multer 模組
 require('dotenv').config()
 const sequelize = require('./config/database')
 

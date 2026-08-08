@@ -116,28 +116,27 @@
             maximumFractionDigits: 2
         });
 
-        // 1. 當網頁開好後，立馬執行抓資料
         document.addEventListener('DOMContentLoaded', () => {
             fetchOrderDetails();
         });
 
-        // 2. 向後端 API 發送 Fetch 請求
         async function fetchOrderDetails() {
             const tbody = document.getElementById('detail-table-body');
             tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i>明細載入中...</td></tr>`;
 
             try {
                 const urlParams = new URLSearchParams(window.location.search);
-                const orderId = urlParams.get('orderId') || '';
+                const orderId = urlParams.get('orderid') || urlParams.get('orderId') || '';
                 
                 if (orderId) {
-                    // 修正：對應我們在後端寫好的 /api/orders/:OrderID
-                    const response = await fetch(`/api/orders/${orderId}`);
+                    const response = await fetch(`/api/orders/${orderId}/details`);
                     const orderData = await response.json();
                     
-                    // 檢查是否有抓到資料且內部包含 Orderdetails 陣列
-                    if (orderData && orderData.Orderdetails && Array.isArray(orderData.Orderdetails) && orderData.Orderdetails.length > 0) {
-                        renderDetailTable(orderData.OrderID, orderData.Orderdetails);
+                    // 相容各種可能的屬性名稱
+                    const details = orderData.Orderdetails || orderData.orderdetails || orderData.details;
+
+                    if (orderData && details && Array.isArray(details) && details.length > 0) {
+                        renderDetailTable(orderData.OrderID || orderId, details);
                     } else {
                         showNoDataMessage(orderId);
                     }
@@ -151,7 +150,6 @@
             }
         }
 
-        // 沒資料時的防禦防呆畫面
         function showNoDataMessage(orderId) {
             const tbody = document.getElementById('detail-table-body');
             if (tbody) {
@@ -171,7 +169,6 @@
             document.getElementById('table-grand-total').innerText = formatter.format(0);
         }
 
-        // 3. 把資料庫欄位完美「撈進去」HTML 表格中
         function renderDetailTable(orderId, details) {
             const tbody = document.getElementById('detail-table-body');
             tbody.innerHTML = '';
@@ -185,13 +182,22 @@
                 const quantity = item.Quantity || 0;
                 const unitPrice = item.UnitPrice || 0;
                 const subtotal = quantity * unitPrice;
-                
                 grandTotal += subtotal;
+
+                // 抓取關聯過來的 Product 資料（相容不同的屬性大小寫）
+                const product = item.Product || item.product || {};
+                const productName = product.ProductName || product.productName || `商品 ID: ${item.ProductID}`;
+                const productImage = product.ProductImage || product.productImage || 'https://via.placeholder.com/40';
 
                 tr.innerHTML = `
                     <td class="px-6 py-4 text-gray-500">#${item.OrderdetailID || '-'}</td>
                     <td class="px-6 py-4 font-medium text-gray-900">#${orderId || '-'}</td>
-                    <td class="px-6 py-4 text-slate-600 font-medium">${item.ProductID || '-'}</td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <img src="${productImage}" alt="" class="w-10 h-10 object-cover rounded-lg border border-gray-200 bg-gray-50" onerror="this.src='https://via.placeholder.com/40'">
+                            <span class="text-slate-700 font-medium">${productName}</span>
+                        </div>
+                    </td>
                     <td class="px-6 py-4 text-right font-mono">${quantity}</td>
                     <td class="px-6 py-4 text-right text-gray-600">${formatter.format(unitPrice)}</td>
                     <td class="px-6 py-4 text-right font-semibold text-gray-800">${formatter.format(subtotal)}</td>

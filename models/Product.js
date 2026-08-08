@@ -9,6 +9,12 @@ const Product = sequelize.define('Product', {
     primaryKey: true,
     field: 'ProductID'
   },
+  // 商品名稱
+  ProductName: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    field: 'ProductName'
+  },
   // 關聯賣家 ID
   SellerID: {
     type: DataTypes.INTEGER,
@@ -17,7 +23,7 @@ const Product = sequelize.define('Product', {
   },
   // 商品圖路徑 (可能很長，使用 STRING 支援 nvarchar(MAX))
   ProductImg: {
-    type: DataTypes.STRING, 
+    type: DataTypes.STRING,
     allowNull: true,
     field: 'ProductImg'
   },

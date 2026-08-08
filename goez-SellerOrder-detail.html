@@ -131,12 +131,13 @@
                 const orderId = urlParams.get('orderId') || '';
                 
                 if (orderId) {
-                    // 從 API 獲取訂單明細
-                    const response = await fetch(`/orders/${orderId}/details`);
-                    const data = await response.json();
+                    // 修正：對應我們在後端寫好的 /api/orders/:OrderID
+                    const response = await fetch(`/api/orders/${orderId}`);
+                    const orderData = await response.json();
                     
-                    if (Array.isArray(data) && data.length > 0) {
-                        renderDetailTable(data);
+                    // 檢查是否有抓到資料且內部包含 Orderdetails 陣列
+                    if (orderData && orderData.Orderdetails && Array.isArray(orderData.Orderdetails) && orderData.Orderdetails.length > 0) {
+                        renderDetailTable(orderData.OrderID, orderData.Orderdetails);
                     } else {
                         showNoDataMessage(orderId);
                     }
@@ -171,18 +172,13 @@
         }
 
         // 3. 把資料庫欄位完美「撈進去」HTML 表格中
-        function renderDetailTable(detailData) {
+        function renderDetailTable(orderId, details) {
             const tbody = document.getElementById('detail-table-body');
             tbody.innerHTML = '';
             
             let grandTotal = 0;
 
-            if (!detailData || detailData.length === 0) {
-                showNoDataMessage(detailData.length > 0 ? detailData[0].OrderID : '');
-                return;
-            }
-
-            detailData.forEach(item => {
+            details.forEach(item => {
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-gray-50/80 transition-colors group';
                 
@@ -194,7 +190,7 @@
 
                 tr.innerHTML = `
                     <td class="px-6 py-4 text-gray-500">#${item.OrderdetailID || '-'}</td>
-                    <td class="px-6 py-4 font-medium text-gray-900">#${item.OrderID || '-'}</td>
+                    <td class="px-6 py-4 font-medium text-gray-900">#${orderId || '-'}</td>
                     <td class="px-6 py-4 text-slate-600 font-medium">${item.ProductID || '-'}</td>
                     <td class="px-6 py-4 text-right font-mono">${quantity}</td>
                     <td class="px-6 py-4 text-right text-gray-600">${formatter.format(unitPrice)}</td>
@@ -203,8 +199,8 @@
                 tbody.appendChild(tr);
             });
 
-            document.getElementById('summary-order-id').innerText = detailData.length > 0 ? `#${detailData[0].OrderID}` : '-';
-            document.getElementById('summary-total-items').innerText = `${detailData.length} 件`;
+            document.getElementById('summary-order-id').innerText = `#${orderId}`;
+            document.getElementById('summary-total-items').innerText = `${details.length} 件`;
             document.getElementById('table-grand-total').innerText = formatter.format(grandTotal);
         }
     </script>
