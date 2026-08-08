@@ -80,11 +80,19 @@ exports.register = async (req, res) => {
 // ==========================================
 exports.login = async (req, res) => {
   const Mock = await useMock()
-  const { Email, Password } = req.body || {}
-  
+
+  // 💡 相容大小寫欄位（前端傳 email 或 Email 皆可抓到）
+  const Email = req.body?.email || req.body?.Email
+  const Password = req.body?.password || req.body?.Password
+
   if (Mock) {
-    const SellerData = readMock('seller.json')
-    return res.json({ ...SellerData, AccessToken: 'JWT_TOKEN' })
+    const SellerData = readMock('seller.json') || {}
+    return res.json({
+      success: true,               // 確保前端 data.success 為 true
+      seller: SellerData,
+      token: 'JWT_TOKEN',          // 相容前端的 localStorage token 命名
+      AccessToken: 'JWT_TOKEN'
+    })
   }
 
   if (!Email || !Password) {
@@ -94,13 +102,12 @@ exports.login = async (req, res) => {
   try {
     // 從資料庫撈取該 Email 的賣家資料
     const SellerRow = await Seller.findOne({ where: { Email: Email } })
-    
+
     if (!SellerRow) {
       return res.status(401).json({ success: false, message: '登入失敗，帳號或密碼錯誤' })
     }
 
     // 比對輸入的明文密碼與資料庫中的 PasswordHash
-    // (相容舊測試資料，如果不是 bcrypt 格式則直接比對，否則用 bcrypt.compare)
     let isPasswordValid = false
     if (SellerRow.PasswordHash && SellerRow.PasswordHash.startsWith('$2b$')) {
       isPasswordValid = await bcrypt.compare(Password, SellerRow.PasswordHash)
@@ -114,7 +121,8 @@ exports.login = async (req, res) => {
 
     return res.json({
       success: true,
-      ...shapeSeller(SellerRow),
+      seller: shapeSeller(SellerRow),
+      token: 'JWT_TOKEN',
       AccessToken: 'JWT_TOKEN'
     })
   } catch (error) {
