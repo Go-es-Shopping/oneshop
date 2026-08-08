@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>風格生活選物</title>
+  <title>我的店舖</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet" />
@@ -119,7 +119,7 @@
       transition: background 0.2s ease, color 0.2s ease;
     }
     .store-nav__link:hover { background: var(--c-bg-page); color: var(--c-text-heading); }
-    .store-nav__link.active { color: var(--c-accent); font-weight: 700; }
+    .store-nav__link.active { color: var(--c-text-nav); font-weight: 700; }
 
     .store-nav__actions { display: flex; align-items: center; gap: 4px; }
     .store-nav__action-btn {
@@ -186,7 +186,7 @@
        HERO
     ═══════════════════════════════════ */
     .store-hero {
-      background: var(--c-white);
+      background:var(--c-theme-4); /* 讓前台的 hero 區塊也吃最淺的主題色 */
       padding: 64px 32px 48px;
       display: flex; flex-direction: column;
       align-items: center; gap: 24px;
@@ -314,7 +314,8 @@
 
     .store-products__grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      /* 改成自動填滿：每個卡片最小約 240px，空間夠就會一直往右排，塞不下就自動換行 */
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
       gap: 16px;
     }
 
@@ -368,7 +369,7 @@
       letter-spacing: 0.5px;
     }
 
-    .product-card__body { padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 8px; }
+    .product-card__body { padding: 12px 16px 16px; display: flex; flex-direction: column; gap: 4px; }
 
     .product-card__meta { display: flex; align-items: center; justify-content: space-between; }
     .product-card__tag {
@@ -392,11 +393,12 @@
 
     .product-card__name {
       font-family: 'Noto Sans TC', sans-serif;
-      font-weight: 700; font-size: 16px;
+      font-weight: 700; font-size: 18px;
       color: var(--c-text-heading);
       line-height: 1.4;
       display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
       overflow: hidden;
+      margin-top: -6px; /* 讓商品名稱往上移動，貼近上方空間 */
     }
 
     .product-card__footer {
@@ -433,8 +435,9 @@
     ═══════════════════════════════════ */
     .promo-banner {
       margin: 0 24px 40px;
-      background: linear-gradient(135deg, var(--c-accent) 0%, var(--c-accent-dark) 100%);
-      border-radius: var(--r-24);
+      /* 讓漸層自動抓取你們的主題色變數，並帶有優雅的深淺變化 */
+      background: linear-gradient(135deg, var(--c-accent, #869489) 0%, var(--c-accent-dark, #657367) 100%) !important;
+      border-radius: var(--r-24, 24px);
       padding: 32px;
       display: flex; align-items: center; justify-content: space-between;
       gap: 16px;
@@ -483,7 +486,7 @@
        STORE FOOTER
     ═══════════════════════════════════ */
     .store-footer {
-      background: var(--c-accent);
+      background: var(--c-theme-2);
       border-radius: 48px 48px 0 0;
       padding: 56px 40px 36px;
       display: flex; flex-direction: column; gap: 32px;
@@ -590,7 +593,7 @@
       display: flex; align-items: center; gap: 8px;
     }
     .cart-drawer__count {
-      background: var(--c-accent); color: var(--c-white);
+      background: var(--c-theme-2); color: var(--c-white);
       font-size: 11px; font-weight: 700;
       padding: 2px 7px; border-radius: var(--r-full);
     }
@@ -865,7 +868,7 @@
       min-width: 24px; text-align: center;
     }
     .product-modal__add-btn {
-      background: var(--c-accent); color: var(--c-white);
+      background: var(--c-accent); color: var(--c-theme-3);
       border-radius: var(--r-full);
       height: 44px; padding: 0 24px;
       font-family: 'Noto Sans TC', sans-serif;
@@ -957,122 +960,27 @@
     .delay-3 { transition-delay: 0.24s; }
     .delay-4 { transition-delay: 0.32s; }
 
-    /* ── AUTH MODAL ── */
-    .auth-overlay {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,.5); z-index: 500;
-      backdrop-filter: blur(4px);
-      align-items: center; justify-content: center; padding: 20px;
-    }
-    .auth-overlay.open { display: flex; }
-    .auth-modal {
-      background: var(--c-white); border-radius: var(--r-24);
-      box-shadow: 0 32px 64px rgba(0,0,0,.2);
-      width: 100%; max-width: 420px;
-      animation: modalIn 0.35s cubic-bezier(.22,1,.36,1) both;
-      overflow: hidden;
-    }
-    .auth-modal__head {
-      padding: 24px 24px 0;
-      display: flex; align-items: flex-start; justify-content: space-between;
-    }
-    .auth-tabs { display: flex; gap: 4px; background: var(--c-bg-page); padding: 4px; border-radius: var(--r-full); }
-    .auth-tab {
-      height: 36px; padding: 0 20px; border-radius: var(--r-full);
-      font-family: 'Noto Sans TC', sans-serif; font-weight: 600; font-size: 14px;
-      color: var(--c-text-muted); transition: all 0.2s ease;
-    }
-    .auth-tab.active { background: var(--c-white); color: var(--c-text-heading); box-shadow: var(--shadow-sm); }
-    .auth-modal__close {
-      width: 32px; height: 32px; border-radius: var(--r-full);
-      display: flex; align-items: center; justify-content: center;
-      color: var(--c-text-faint); font-size: 16px;
-      transition: background 0.2s ease; flex-shrink: 0;
-    }
-    .auth-modal__close:hover { background: var(--c-bg-page); }
-    .auth-form { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
-    .auth-form.hidden { display: none; }
-    .auth-field { display: flex; flex-direction: column; gap: 6px; }
-    .auth-field label { font-family: 'Noto Sans TC', sans-serif; font-weight: 600; font-size: 13px; color: var(--c-text-heading); }
-    .auth-field input {
-      height: 44px; border: 1.5px solid var(--c-border);
-      border-radius: var(--r-14); padding: 0 14px;
-      font-family: 'Noto Sans TC', sans-serif; font-size: 15px;
-      color: var(--c-text-heading); background: var(--c-white);
-      outline: none; transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-    .auth-field input:focus { border-color: var(--c-accent); box-shadow: 0 0 0 3px rgba(101,136,166,.12); }
-    .auth-field__hint { font-size: 12px; color: #e07046; display: none; }
-    .auth-field.has-error .auth-field__hint { display: block; }
-    .auth-field.has-error input { border-color: #e07046; }
-    .auth-row { display: flex; align-items: center; justify-content: space-between; }
-    .auth-remember { display: flex; align-items: center; gap: 6px; font-family: 'Noto Sans TC', sans-serif; font-size: 13px; color: var(--c-text-muted); cursor: pointer; }
-    .auth-remember input { width: 15px; height: 15px; accent-color: var(--c-accent); }
-    .auth-forgot { font-family: 'Noto Sans TC', sans-serif; font-size: 13px; color: var(--c-accent); }
-    .auth-submit {
-      height: 48px; background: var(--c-accent); color: var(--c-white);
-      border-radius: var(--r-full); font-family: 'Noto Sans TC', sans-serif;
-      font-weight: 700; font-size: 15px;
-      display: flex; align-items: center; justify-content: center;
-      transition: filter 0.2s ease; margin-top: 4px;
-    }
-    .auth-submit:hover { filter: brightness(0.9); }
-    .auth-submit:disabled { opacity: 0.6; pointer-events: none; }
-    .auth-divider { display: flex; align-items: center; gap: 12px; color: var(--c-text-faint); font-size: 12px; }
-    .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--c-border); }
-    .auth-social {
-      height: 44px; border: 1.5px solid var(--c-border); border-radius: var(--r-full);
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-      font-family: 'Noto Sans TC', sans-serif; font-weight: 600; font-size: 14px;
-      color: var(--c-text-heading); transition: background 0.2s ease;
-    }
-    .auth-social:hover { background: var(--c-bg-page); }
-    .auth-switch { text-align: center; font-family: 'Noto Sans TC', sans-serif; font-size: 13px; color: var(--c-text-muted); padding-top: 4px; }
-    .auth-switch a { color: var(--c-accent); font-weight: 600; cursor: pointer; }
-    .auth-terms { display: flex; align-items: flex-start; gap: 8px; font-family: 'Noto Sans TC', sans-serif; font-size: 13px; color: var(--c-text-muted); cursor: pointer; }
-    .auth-terms input { width: 15px; height: 15px; flex-shrink: 0; margin-top: 1px; accent-color: var(--c-accent); }
-    .auth-terms a { color: var(--c-accent); }
-    @media (max-width: 380px) { .auth-modal { border-radius: var(--r-16); } }
-
-    /* ── 使用者按鈕 & 下拉選單 ── */
-    .user-btn {
-      display: flex; align-items: center; gap: 8px;
-      height: 36px; padding: 0 12px; border-radius: var(--r-full);
-      font-family: 'Noto Sans TC', sans-serif; font-weight: 600; font-size: 13px;
-      color: var(--c-text-heading); transition: background 0.2s ease; position: relative;
-    }
-    .user-btn:hover { background: var(--c-bg-page); }
-    .user-btn__avatar {
-      width: 28px; height: 28px; border-radius: var(--r-full);
-      background: var(--c-accent); color: var(--c-white);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 900; flex-shrink: 0;
-    }
-    .user-btn__name { max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .login-btn {
-      height: 36px; padding: 0 16px; border-radius: var(--r-full);
-      border: 1.5px solid var(--c-border);
-      font-family: 'Noto Sans TC', sans-serif; font-weight: 600; font-size: 13px;
-      color: var(--c-text-heading); transition: all 0.2s ease;
-    }
-    .login-btn:hover { border-color: var(--c-accent); color: var(--c-accent); }
-    .user-dropdown {
-      display: none; position: absolute; top: calc(100% + 8px); right: 0;
-      background: var(--c-white); border: 1px solid var(--c-border-light);
-      border-radius: var(--r-16); box-shadow: var(--shadow-lg);
-      min-width: 160px; overflow: hidden; z-index: 200;
-    }
-    .user-btn:focus-within .user-dropdown,
-    .user-dropdown.open { display: block; }
-    .user-dropdown__item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 12px 16px; font-family: 'Noto Sans TC', sans-serif;
-      font-size: 14px; font-weight: 500; color: var(--c-text-heading);
-      transition: background 0.15s ease; cursor: pointer; width: 100%;
-    }
-    .user-dropdown__item:hover { background: var(--c-bg-page); }
-    .user-dropdown__item--danger { color: #e07046; }
-    .user-dropdown__divider { height: 1px; background: var(--c-border-light); margin: 4px 0; }
+    /* 查詢訂單按鈕樣式 */
+.order-query-btn {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: var(--r-full, 9999px);
+  border: 1.5px solid var(--c-border, #ddd);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--c-text-heading, #333);
+  background: var(--c-white, #fff);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+.order-query-btn:hover {
+  border-color: var(--c-accent, #6588a6);
+  color: var(--c-accent, #6588a6);
+}
   </style>
 </head>
 <body>
@@ -1178,9 +1086,9 @@
   <nav class="store-nav" aria-label="店鋪導覽" id="storeNav">
     <div class="store-nav__brand">
       <div class="store-nav__logo">
-        <div class="store-nav__logo-placeholder">風</div>
+        <div class="store-nav__logo-placeholder">無</div>
       </div>
-      <span class="store-nav__name">風格生活選物</span>
+      <span class="store-nav__name">載入中..</span>
     </div>
     <div class="store-nav__right">
       <div class="store-nav__links">
@@ -1201,8 +1109,8 @@
           </div>
         </div>
       </div>
-      <!-- 登入/使用者按鈕 -->
-      <div id="navAuthArea"></div>
+      <!-- 查詢訂單按鈕 -->
+<a href="goez-buyerOrder.html?store=" id="orderLink" class="order-query-btn">查詢訂單</a>
       <button class="store-nav__hamburger" aria-label="選單" onclick="toggleMobileMenu()">
         <span></span><span></span><span></span>
       </button>
@@ -1212,7 +1120,7 @@
   <!-- Store Hero -->
   <div class="store-hero fade-up" id="heroSection">
     <div class="store-hero__eyebrow">精選好物 · 品味生活</div>
-    <p class="store-hero__tagline">為您挑選來自世界各地的質感生活好物，讓日常充滿美感。</p>
+    <p class="store-hero__tagline">載入中..</p>
     <div class="store-hero__cta-wrap">
       <button class="store-hero__cta-btn" type="button" onclick="scrollToProducts()">立即選購</button>
       <button class="store-hero__cta-secondary" type="button" onclick="scrollToAbout()">瞭解品牌</button>
@@ -1220,7 +1128,8 @@
   </div>
 
   <!-- Category Chips -->
-  <div class="store-categories fade-up">
+  <!-- 暫時隱藏分類按鈕，未來可進行優化(需增加資料庫欄位與增加賣場設計頁內容) -->
+  <div class="store-categories fade-up" style="display: none;">
     <button class="category-chip active" onclick="filterCategory('all', this)">全部商品</button>
     <button class="category-chip" onclick="filterCategory('居家生活', this)">居家生活</button>
     <button class="category-chip" onclick="filterCategory('科技配件', this)">科技配件</button>
@@ -1242,21 +1151,15 @@
     </div>
   </section>
 
-  <!-- Promo Banner -->
-  <div class="promo-banner fade-up">
-    <div class="promo-banner__text">
-      <div class="promo-banner__title">新會員首購 9 折優惠</div>
-      <div class="promo-banner__sub">現在加入會員，立即享有首購優惠<br>精選商品任選，品質保證</div>
-    </div>
-    <button class="promo-banner__btn" onclick="showToast('優惠碼已複製：NEW10', 'success')">立即領取</button>
-  </div>
+  <!-- 動態載入優惠券專用容器 -->
+<div id="coupon-banner-container"></div>
 
   <!-- Store Footer -->
   <footer class="store-footer" id="about" aria-label="頁尾">
     <div class="store-footer__cols">
       <div class="store-footer__about">
-        <span class="store-footer__brand">風格生活選物</span>
-        <p class="store-footer__desc">為您挑選來自世界各地的質感生活好物，讓日常充滿美感。</p>
+        <span class="store-footer__brand">載入中..</span>
+        <p class="store-footer__desc">載入中..</p>
       </div>
       <div class="store-footer__links">
         <div class="store-footer__col-title">快速連結</div>
@@ -1267,15 +1170,7 @@
           </li>
           <li class="store-footer__col-item">
             <span class="store-footer__col-dot"></span>
-            <a class="store-footer__col-link" href="#">會員中心</a>
-          </li>
-          <li class="store-footer__col-item">
-            <span class="store-footer__col-dot"></span>
             <a class="store-footer__col-link" href="#">隱私條款</a>
-          </li>
-          <li class="store-footer__col-item">
-            <span class="store-footer__col-dot"></span>
-            <a class="store-footer__col-link" href="#">退換貨政策</a>
           </li>
         </ul>
       </div>
@@ -1286,19 +1181,19 @@
             <div class="store-footer__contact-icon">
               <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 14C0 6.26801 6.26801 0 14 0H22C29.732 0 36 6.26801 36 14V22C36 29.732 29.732 36 22 36H14C6.26801 36 0 29.732 0 22V14Z" fill="white" fill-opacity="0.1"/><path d="M23.3294 12.6666H12.6627C11.9264 12.6666 11.3294 13.2636 11.3294 14V22C11.3294 22.7363 11.9264 23.3333 12.6627 23.3333H23.3294C24.0658 23.3333 24.6627 22.7363 24.6627 22V14C24.6627 13.2636 24.0658 12.6666 23.3294 12.6666Z" stroke="white" stroke-opacity="0.7" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M24.6627 14.6666L18.6827 18.4666C18.4769 18.5956 18.239 18.664 17.9961 18.664C17.7532 18.664 17.5152 18.5956 17.3094 18.4666L11.3294 14.6666" stroke="white" stroke-opacity="0.7" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
-            <span class="store-footer__contact-email">service@shop.com</span>
+            <span class="store-footer__contact-email">載入中..</span>
           </div>
           <div class="store-footer__contact-row">
             <div class="store-footer__contact-icon">
               <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 14C0 6.26801 6.26801 0 14 0H22C29.732 0 36 6.26801 36 14V22C36 29.732 29.732 36 22 36H14C6.26801 36 0 29.732 0 22V14Z" fill="white" fill-opacity="0.1"/><path d="M24.6666 21.28V23.28C24.6674 23.4657 24.6294 23.6494 24.555 23.8195C24.4806 23.9897 24.3715 24.1424 24.2347 24.2679C24.0979 24.3934 23.9364 24.489 23.7605 24.5485C23.5846 24.6079 23.3982 24.63 23.2133 24.6133C21.1619 24.3904 19.1913 23.6894 17.46 22.5667C15.8492 21.5431 14.4835 20.1774 13.46 18.5667C12.3333 16.8275 11.6321 14.8473 11.4133 12.7866C11.3966 12.6023 11.4186 12.4165 11.4776 12.2411C11.5367 12.0656 11.6317 11.9044 11.7565 11.7677C11.8813 11.631 12.0332 11.5218 12.2025 11.447C12.3718 11.3722 12.5549 11.3335 12.74 11.3333H14.74C15.0635 11.3301 15.3772 11.4447 15.6225 11.6557C15.8678 11.8666 16.028 12.1596 16.0733 12.48C16.1577 13.12 16.3143 13.7485 16.54 14.3533C16.6297 14.5919 16.6491 14.8513 16.5959 15.1006C16.5427 15.3499 16.4192 15.5787 16.24 15.76L15.3933 16.6066C16.3423 18.2757 17.7243 19.6576 19.3933 20.6067L20.24 19.76C20.4212 19.5807 20.6501 19.4572 20.8994 19.404C21.1487 19.3509 21.408 19.3703 21.6466 19.46C22.2515 19.6857 22.8799 19.8422 23.52 19.9267C23.8438 19.9723 24.1396 20.1355 24.351 20.385C24.5624 20.6345 24.6748 20.953 24.6666 21.28Z" stroke="white" stroke-opacity="0.7" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
-            <span class="store-footer__contact-phone">0800-000-000</span>
+            <span class="store-footer__contact-phone">載入中..</span>
           </div>
         </div>
       </div>
     </div>
     <div class="store-footer__bottom">
-      <p class="store-footer__copyright">© 2026 風格生活選物. All rights reserved. Powered by Goez Shop.</p>
+      <p class="store-footer__copyright">© 2026 載入中... All rights reserved. Powered by Goez Shop.</p>
     </div>
   </footer>
 
@@ -1402,12 +1297,46 @@ const PRODUCTS = [
 ];
 
 /* ══════════════════════════════════
-   CART STATE
+    CART STATE (各賣場獨立隔離版)
 ══════════════════════════════════ */
-let cart = JSON.parse(localStorage.getItem('goez_cart') || '[]');
+
+// 1. 動態抓取當前網址的 pageId，作為該賣場購物車的獨立辨識碼
+const urlParams = new URLSearchParams(window.location.search);
+const currentStoreId = urlParams.get('pageId') || 'default';
+
+// 2. 讓每個賣場擁有自己獨立的 localStorage Key (例如: goez_cart_19, goez_cart_26)
+const CART_STORAGE_KEY = `goez_cart_${currentStoreId}`;
+
+let cart = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) || '[]');
+
+// 自動同步後端商品圖片到現有購物車中
+function syncCartImages() {
+  const allProducts = window.PRODUCTS || window.allProducts || [];
+  if (allProducts.length === 0) return;
+
+  let updated = false;
+  cart = cart.map(item => {
+    const product = allProducts.find(p => 
+      (p.id === item.id) || (p.ProductID === item.id) || (p.id == item.id) || (p.ProductID == item.id)
+    );
+    if (product) {
+      const realImg = product.imageUrl || product.ImageUrl || product.image || product.img;
+      if (realImg && item.imageUrl !== realImg) {
+        item.imageUrl = realImg;
+        updated = true;
+      }
+    }
+    return item;
+  });
+
+  if (updated) {
+    saveCart();
+  }
+}
 
 function saveCart() {
-  localStorage.setItem('goez_cart', JSON.stringify(cart));
+  // 💡 存入專屬於當前賣場的 Key
+  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
 }
 
 function getTotalItems() {
@@ -1419,17 +1348,36 @@ function getTotalPrice() {
 }
 
 function addToCart(productId, qty = 1) {
-  const product = PRODUCTS.find(p => p.id === productId);
-  if (!product) return;
-  const existing = cart.find(i => i.id === productId);
-  if (existing) {
-    existing.qty = Math.min(existing.qty + qty, product.stock);
-  } else {
-    cart.push({ id: productId, name: product.name, price: product.price, emoji: product.emoji, qty });
+  const allProducts = window.PRODUCTS || window.allProducts || [];
+  const product = allProducts.find(p => 
+    (p.id === productId) || (p.ProductID === productId) || (p.id == productId) || (p.ProductID == productId)
+  );
+
+  if (!product) {
+    console.error('找不到商品資料，ID:', productId);
+    return;
   }
+
+  const pId = product.id !== undefined ? product.id : product.ProductID;
+  const pName = product.name !== undefined ? product.name : product.ProductName;
+  const pPrice = product.price !== undefined ? product.price : product.Price;
+  const pStock = product.stock !== undefined ? product.stock : (product.Stock !== undefined ? product.Stock : 999);
+  const pImg = product.imageUrl || product.ImageUrl || product.image || product.img || '';
+
+  const existing = cart.find(i => i.id === pId);
+  if (existing) {
+    existing.qty = Math.min(existing.qty + qty, pStock);
+    if (pImg) existing.imageUrl = pImg; // 更新圖片
+  } else {
+    cart.push({ id: pId, name: pName, price: Number(pPrice), imageUrl: pImg, qty });
+  }
+  
   saveCart();
   updateCartUI();
-  showToast(`✓ ${product.name} 已加入購物車`, 'success');
+  
+  if (typeof showToast === 'function') {
+    showToast(`✓ ${pName} 已加入購物車`, 'success');
+  }
 }
 
 function removeFromCart(productId) {
@@ -1442,8 +1390,14 @@ function removeFromCart(productId) {
 function updateQty(productId, delta) {
   const item = cart.find(i => i.id === productId);
   if (!item) return;
-  const product = PRODUCTS.find(p => p.id === productId);
-  item.qty = Math.max(1, Math.min(item.qty + delta, product.stock));
+
+  const allProducts = window.PRODUCTS || window.allProducts || [];
+  const product = allProducts.find(p => 
+    (p.id === productId) || (p.ProductID === productId) || (p.id == productId) || (p.ProductID == productId)
+  );
+  const pStock = product ? (product.stock !== undefined ? product.stock : (product.Stock !== undefined ? product.Stock : 999)) : 999;
+
+  item.qty = Math.max(1, Math.min(item.qty + delta, pStock));
   saveCart();
   updateCartUI();
   renderCartItems();
@@ -1451,16 +1405,24 @@ function updateQty(productId, delta) {
 
 function updateCartUI() {
   const count = getTotalItems();
-  document.getElementById('navCartCount').textContent = count;
-  document.getElementById('cartCountBadge').textContent = count;
+  const navCartCount = document.getElementById('navCartCount');
+  const cartCountBadge = document.getElementById('cartCountBadge');
   const badge = document.getElementById('navCartBadge');
-  badge.style.display = count > 0 ? 'flex' : 'none';
+
+  if (navCartCount) navCartCount.textContent = count;
+  if (cartCountBadge) cartCountBadge.textContent = count;
+  if (badge) badge.style.display = count > 0 ? 'flex' : 'none';
 }
 
 function renderCartItems() {
+  // 渲染前先嘗試同步圖片
+  syncCartImages();
+
   const container = document.getElementById('cartItems');
   const empty = document.getElementById('cartEmpty');
   const footer = document.getElementById('cartFooter');
+
+  if (!container || !empty || !footer) return;
 
   if (cart.length === 0) {
     empty.style.display = 'flex';
@@ -1472,57 +1434,72 @@ function renderCartItems() {
   empty.style.display = 'none';
   footer.style.display = 'block';
 
-  container.innerHTML = cart.map(item => `
-    <div class="cart-item">
-      <div class="cart-item__img">${item.emoji}</div>
-      <div class="cart-item__info">
-        <div class="cart-item__name">${item.name}</div>
-        <div class="cart-item__price">$${(item.price * item.qty).toLocaleString()}</div>
-      </div>
-      <div class="cart-item__controls">
-        <button class="cart-item__remove" onclick="removeFromCart(${item.id})" aria-label="移除">✕</button>
-        <div class="cart-item__qty">
-          <button class="cart-item__qty-btn" onclick="updateQty(${item.id}, -1)">−</button>
-          <span class="cart-item__qty-num">${item.qty}</span>
-          <button class="cart-item__qty-btn" onclick="updateQty(${item.id}, 1)">+</button>
+  container.innerHTML = cart.map(item => {
+    const imageContent = (item.imageUrl && item.imageUrl.trim() !== '')
+      ? `<img src="${item.imageUrl}" alt="${item.name}">` 
+      : (item.emoji || '📦');
+
+    return `
+      <div class="cart-item">
+        <div class="cart-item__img">${imageContent}</div>
+        <div class="cart-item__info">
+          <div class="cart-item__name">${item.name}</div>
+          <div class="cart-item__price">$${(item.price * item.qty).toLocaleString()}</div>
+        </div>
+        <div class="cart-item__controls">
+          <button class="cart-item__remove" onclick="removeFromCart(${item.id})" aria-label="移除">✕</button>
+          <div class="cart-item__qty">
+            <button class="cart-item__qty-btn" onclick="updateQty(${item.id}, -1)">−</button>
+            <span class="cart-item__qty-num">${item.qty}</span>
+            <button class="cart-item__qty-btn" onclick="updateQty(${item.id}, 1)">+</button>
+          </div>
         </div>
       </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 
-  document.getElementById('cartTotal').textContent = `$${getTotalPrice().toLocaleString()}`;
+  const cartTotal = document.getElementById('cartTotal');
+  if (cartTotal) {
+    cartTotal.textContent = `$${getTotalPrice().toLocaleString()}`;
+  }
 }
 
-/* ══════════════════════════════════
-   CART DRAWER OPEN/CLOSE
-══════════════════════════════════ */
 function openCart() {
   renderCartItems();
-  document.getElementById('cartOverlay').classList.add('open');
-  document.getElementById('cartDrawer').classList.add('open');
+  const overlay = document.getElementById('cartOverlay');
+  const drawer = document.getElementById('cartDrawer');
+  if (overlay) overlay.classList.add('open');
+  if (drawer) drawer.classList.add('open');
   document.body.style.overflow = 'hidden';
 }
 
 function closeCart() {
-  document.getElementById('cartOverlay').classList.remove('open');
-  document.getElementById('cartDrawer').classList.remove('open');
+  const overlay = document.getElementById('cartOverlay');
+  const drawer = document.getElementById('cartDrawer');
+  if (overlay) overlay.classList.remove('open');
+  if (drawer) drawer.classList.remove('open');
   document.body.style.overflow = '';
 }
-
+// 自動抓取當前整串網址，並組裝到查詢訂單的按鈕上
+  const currentUrl = window.encodeURIComponent(window.location.href);
+  const orderLink = document.getElementById('orderLink');
+  if (orderLink) {
+    orderLink.href = `goez-buyerOrder.html?from=${currentUrl}`;
+  }
 function checkout() {
   if (cart.length === 0) return;
 
-  /* 1. 將購物車寫入 goez_cart_v2（checkout 頁讀取的 key） */
   const cartForCheckout = cart.map(item => ({
-    id:       item.id,
-    name:     item.name,
+    id:    item.id,
+    name:    item.name,
     price:    item.price,
-    qty:      item.qty,
-    imageUrl: item.imageUrl || ''   // store.html 商品含 emoji，無 imageUrl 時留空
+    qty:       item.qty,
+    imageUrl: item.imageUrl || ''
   }));
-  localStorage.setItem('goez_cart_v2', JSON.stringify(cartForCheckout));
+  
+  // 💡 結帳頁面也存入專屬於當前賣場的 Key
+  localStorage.setItem(`goez_checkout_cart_${currentStoreId}`, JSON.stringify(cartForCheckout));
 
-  /* 2. 寫入店鋪資訊供 checkout 頁顯示品牌 */
   const storeName  = document.title || '風格生活選物';
   const accentColor = getComputedStyle(document.documentElement)
                         .getPropertyValue('--c-accent').trim() || '#6588A6';
@@ -1532,13 +1509,18 @@ function checkout() {
     logoUrl:     ''
   }));
 
-  /* 3. 關閉購物車抽屜，跳轉至結帳頁 */
   closeCart();
-  window.location.href = 'goez-shop-checkout.html';
+  
+  // 跳轉到結帳頁並帶上正確的 pageId
+  window.location.href = `goez-checkout.html?pageId=${currentStoreId}`;
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+  updateCartUI();
+});
+
 /* ══════════════════════════════════
-   SEARCH
+    SEARCH
 ══════════════════════════════════ */
 function openSearch() {
   document.getElementById('searchOverlay').classList.add('open');
@@ -1564,137 +1546,50 @@ function doSearch(query) {
     results.innerHTML = '<div class="search-no-results">輸入關鍵字搜尋商品</div>';
     return;
   }
-  const matches = PRODUCTS.filter(p =>
-    p.name.toLowerCase().includes(q) || p.tag.toLowerCase().includes(q)
+
+  // 🚀 關鍵修改：明確強制讀取 window.PRODUCTS
+  const targetProducts = window.PRODUCTS || [];
+
+  const matches = targetProducts.filter(p =>
+    (p.name && p.name.toLowerCase().includes(q)) || 
+    (p.tag && p.tag.toLowerCase().includes(q)) || 
+    (p.category && p.category.toLowerCase().includes(q)) ||
+    (p.desc && p.desc.toLowerCase().includes(q)) ||
+    (p.description && p.description.toLowerCase().includes(q))
   );
+
   if (matches.length === 0) {
     results.innerHTML = `<div class="search-no-results">找不到「${query}」的相關商品</div>`;
     return;
   }
-  results.innerHTML = matches.map(p => `
-    <div class="search-result-item" onclick="openProductModal(${p.id}); closeSearch();">
-      <div class="search-result-item__img">${p.emoji}</div>
-      <span class="search-result-item__name">${p.name}</span>
-      <span class="search-result-item__price">$${p.price.toLocaleString()}</span>
-    </div>
-  `).join('');
+
+  results.innerHTML = matches.map(p => {
+    const imgSrc = p.img || p.imageUrl || '';
+    const itemTag = p.tag || p.category || '';
+    const itemPrice = p.price ? Number(p.price).toLocaleString() : '0';
+
+    return `
+      <div class="search-result-item" onclick="openProductModal(${p.id}); closeSearch();">
+        <div class="search-result-item__img ${imgSrc ? '' : (p.gradientClass || '')}">
+          ${imgSrc ? `<img src="${imgSrc}" alt="${p.name}">` : (p.emoji || '📦')}
+        </div>
+        <div style="flex: 1; display: flex; flex-direction: column;">
+          <span class="search-result-item__name">${p.name}</span>
+          <span style="font-size: 12px; color: var(--c-text-faint);">${itemTag}</span>
+        </div>
+        <span class="search-result-item__price">$${itemPrice}.00</span>
+      </div>
+    `;
+  }).join('');
 }
 
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     closeSearch();
-    closeModal();
-    closeCart();
+    if (typeof closeModal === 'function') closeModal();
+    if (typeof closeCart === 'function') closeCart();
   }
 });
-
-/* ══════════════════════════════════
-   PRODUCT MODAL
-══════════════════════════════════ */
-let modalProductId = null;
-let modalQtyVal = 1;
-
-function openProductModal(productId) {
-  const p = PRODUCTS.find(pr => pr.id === productId);
-  if (!p) return;
-  modalProductId = productId;
-  modalQtyVal = 1;
-
-  document.getElementById('modalTag').textContent = p.tag;
-  document.getElementById('modalName').textContent = p.name;
-  document.getElementById('modalDesc').textContent = p.desc;
-  document.getElementById('modalPrice').textContent = `$${p.price.toLocaleString()}`;
-  document.getElementById('modalStock').textContent = `剩餘 ${p.stock} 件`;
-  document.getElementById('modalQty').textContent = '1';
-
-  const imgArea = document.getElementById('modalImg');
-  imgArea.className = 'product-modal__img ' + p.gradientClass;
-  document.getElementById('modalImgPlaceholder').textContent = p.emoji;
-
-  document.getElementById('productModalOverlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeModal() {
-  document.getElementById('productModalOverlay').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-function handleModalOverlayClick(e) {
-  if (e.target === document.getElementById('productModalOverlay')) closeModal();
-}
-
-function changeModalQty(delta) {
-  const p = PRODUCTS.find(pr => pr.id === modalProductId);
-  if (!p) return;
-  modalQtyVal = Math.max(1, Math.min(modalQtyVal + delta, p.stock));
-  document.getElementById('modalQty').textContent = modalQtyVal;
-}
-
-function addModalToCart() {
-  addToCart(modalProductId, modalQtyVal);
-  closeModal();
-}
-
-/* ══════════════════════════════════
-   PRODUCTS RENDERING
-══════════════════════════════════ */
-let currentCategory = 'all';
-
-function renderProducts(category = 'all') {
-  const grid = document.getElementById('productsGrid');
-  const products = category === 'all'
-    ? PRODUCTS
-    : PRODUCTS.filter(p => p.tag === category);
-
-  if (products.length === 0) {
-    grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:40px;color:var(--c-text-faint);font-family:\'Noto Sans TC\',sans-serif;">此分類暫無商品</p>';
-    return;
-  }
-
-  grid.innerHTML = products.map((p, i) => `
-    <article class="product-card fade-up delay-${(i % 4) + 1}" aria-label="${p.name}" onclick="openProductModal(${p.id})">
-      <div class="product-card__image-area product-card__image-area--empty ${p.gradientClass}">
-        <div class="placeholder-art">${p.emoji}</div>
-        ${p.badge ? `<span class="product-card__badge">${p.badge}</span>` : ''}
-      </div>
-      <div class="product-card__body">
-        <div class="product-card__meta">
-          <div class="product-card__tag"><span class="product-card__tag-text">${p.tag}</span></div>
-          <span class="product-card__stock ${p.stock <= 5 ? 'low' : ''}">剩餘 ${p.stock}</span>
-        </div>
-        <div class="product-card__name">${p.name}</div>
-        <div class="product-card__footer">
-          <div>
-            <span class="product-card__price">$${p.price.toLocaleString()}</span>
-            ${p.origPrice ? `<span class="product-card__price-orig">$${p.origPrice.toLocaleString()}</span>` : ''}
-          </div>
-          <button class="product-card__cart-btn" type="button" aria-label="加入購物車"
-            onclick="event.stopPropagation(); addToCart(${p.id})">
-            <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.33333 14.6667C5.70152 14.6667 6 14.3682 6 14C6 13.6318 5.70152 13.3333 5.33333 13.3333C4.96514 13.3333 4.66666 13.6318 4.66666 14C4.66666 14.3682 4.96514 14.6667 5.33333 14.6667Z" stroke="white" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M12.6667 14.6667C13.0349 14.6667 13.3333 14.3682 13.3333 14C13.3333 13.6318 13.0349 13.3333 12.6667 13.3333C12.2985 13.3333 12 13.6318 12 14C12 14.3682 12.2985 14.6667 12.6667 14.6667Z" stroke="white" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M1.36667 1.36667H2.7L4.47334 9.64667C4.53839 9.94991 4.70712 10.221 4.95048 10.4132C5.19384 10.6055 5.49661 10.7069 5.80667 10.7H12.3267C12.6301 10.6995 12.9243 10.5955 13.1607 10.4052C13.397 10.2149 13.5614 9.94969 13.6267 9.65333L14.7267 4.7H3.41334" stroke="white" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-        </div>
-      </div>
-    </article>
-  `).join('');
-
-  /* re-observe newly rendered cards */
-  grid.querySelectorAll('.fade-up').forEach(el => {
-    el.classList.remove('visible');
-    observer.observe(el);
-  });
-}
-
-function filterCategory(category, btn) {
-  currentCategory = category;
-  document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
-  btn.classList.add('active');
-  renderProducts(category);
-}
-
-function showAllProducts() {
-  showToast('已顯示全部商品');
-}
 
 /* ══════════════════════════════════
    TOAST
@@ -1755,185 +1650,13 @@ const observer = new IntersectionObserver(entries => {
    INIT
 ══════════════════════════════════ */
 (function init() {
-  renderProducts();
   updateCartUI();
-  renderAuthNav();
   document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 })();
-/* ══════════════════════════════════
-   AUTH 系統
-══════════════════════════════════ */
-function getUser()   { try { return JSON.parse(localStorage.getItem('goez_user') || 'null'); } catch { return null; } }
-function saveUser(u) { localStorage.setItem('goez_user', JSON.stringify(u)); }
-function clearUser() { localStorage.removeItem('goez_user'); }
-
-function openAuth(tab='login') {
-  switchTab(tab);
-  document.getElementById('authOverlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeAuth() {
-  document.getElementById('authOverlay').classList.remove('open');
-  document.body.style.overflow = '';
-}
-function handleAuthBg(e) { if (e.target === document.getElementById('authOverlay')) closeAuth(); }
-
-function switchTab(tab) {
-  const isLogin = tab === 'login';
-  document.getElementById('tabLogin').classList.toggle('active', isLogin);
-  document.getElementById('tabRegister').classList.toggle('active', !isLogin);
-  document.getElementById('loginForm').classList.toggle('hidden', !isLogin);
-  document.getElementById('registerForm').classList.toggle('hidden', isLogin);
-}
-
-function setFieldError(id, hasError) { document.getElementById(id).classList.toggle('has-error', hasError); }
-function clearFieldErrors(...ids) { ids.forEach(id => setFieldError(id, false)); }
-
-function submitLogin(e) {
-  e.preventDefault();
-  const email    = document.getElementById('loginEmail').value.trim();
-  const password = document.getElementById('loginPassword').value;
-  let valid = true;
-  clearFieldErrors('lf-email','lf-password');
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setFieldError('lf-email', true); valid = false; }
-  if (!password) { setFieldError('lf-password', true); valid = false; }
-  if (!valid) return;
-  const btn = document.getElementById('loginSubmitBtn');
-  btn.disabled = true; btn.textContent = '登入中…';
-  setTimeout(() => {
-    btn.disabled = false; btn.textContent = '登入';
-    const name = email.split('@')[0].replace(/[._]/g,' ').replace(/\b\w/g, c=>c.toUpperCase());
-    saveUser({ name, email, joinedAt: new Date().toISOString().slice(0,10) });
-    closeAuth(); renderAuthNav();
-    showToast(`👋 歡迎回來，${name}！`, 'success');
-  }, 800);
-}
-
-function submitRegister(e) {
-  e.preventDefault();
-  const name     = document.getElementById('regName').value.trim();
-  const email    = document.getElementById('regEmail').value.trim();
-  const password = document.getElementById('regPassword').value;
-  const confirm  = document.getElementById('regConfirm').value;
-  const agreed   = document.getElementById('agreeTerms').checked;
-  let valid = true;
-  clearFieldErrors('rf-name','rf-email','rf-password','rf-confirm');
-  if (!name)  { setFieldError('rf-name', true); valid = false; }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setFieldError('rf-email', true); valid = false; }
-  if (password.length < 8) { setFieldError('rf-password', true); valid = false; }
-  if (password !== confirm) { setFieldError('rf-confirm', true); valid = false; }
-  if (!agreed) { showToast('請勾選同意服務條款'); return; }
-  if (!valid) return;
-  const btn = document.getElementById('registerSubmitBtn');
-  btn.disabled = true; btn.textContent = '建立中…';
-  setTimeout(() => {
-    btn.disabled = false; btn.textContent = '建立帳號';
-    saveUser({ name, email, joinedAt: new Date().toISOString().slice(0,10) });
-    closeAuth(); renderAuthNav();
-    showToast(`🎉 歡迎加入，${name}！`, 'success');
-  }, 900);
-}
-
-function socialLogin() { showToast('Google 登入功能串接中…'); }
-
-function renderAuthNav() {
-  const area = document.getElementById('navAuthArea');
-  const user = getUser();
-  if (!user) {
-    area.innerHTML = `<button class="login-btn" onclick="openAuth('login')">登入 / 註冊</button>`;
-  } else {
-    const initial = user.name.charAt(0).toUpperCase();
-    area.innerHTML = `
-      <div class="user-btn" tabindex="0" onclick="toggleUserMenu(event)">
-        <div class="user-btn__avatar">${initial}</div>
-        <span class="user-btn__name">${user.name}</span>
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <div class="user-dropdown" id="userDropdown">
-          <button class="user-dropdown__item" onclick="event.stopPropagation();showToast('訂單功能即將上線')">📦 我的訂單</button>
-          <button class="user-dropdown__item" onclick="event.stopPropagation();showToast('設定功能即將上線')">⚙️ 帳戶設定</button>
-          <div class="user-dropdown__divider"></div>
-          <button class="user-dropdown__item user-dropdown__item--danger" onclick="event.stopPropagation();logout()">登出</button>
-        </div>
-      </div>`;
-  }
-}
-
-function toggleUserMenu(e) {
-  const dd = document.getElementById('userDropdown');
-  if (dd) { dd.classList.toggle('open'); e.stopPropagation(); }
-}
-document.addEventListener('click', () => {
-  const dd = document.getElementById('userDropdown');
-  if (dd) dd.classList.remove('open');
-});
-
-function logout() { clearUser(); renderAuthNav(); showToast('已登出'); }
 </script>
 
-<!-- 登入 / 註冊 Modal -->
-<div class="auth-overlay" id="authOverlay" onclick="handleAuthBg(event)">
-  <div class="auth-modal" id="authModal">
-    <div class="auth-modal__head">
-      <div class="auth-tabs">
-        <button class="auth-tab active" id="tabLogin"    onclick="switchTab('login')">登入</button>
-        <button class="auth-tab"        id="tabRegister" onclick="switchTab('register')">註冊</button>
-      </div>
-      <button class="auth-modal__close" onclick="closeAuth()">✕</button>
-    </div>
-    <!-- 登入表單 -->
-    <form class="auth-form" id="loginForm" onsubmit="submitLogin(event)">
-      <div class="auth-field" id="lf-email">
-        <label for="loginEmail">電子郵件</label>
-        <input id="loginEmail" type="email" placeholder="your@email.com" autocomplete="email" />
-        <span class="auth-field__hint">請輸入有效的電子郵件</span>
-      </div>
-      <div class="auth-field" id="lf-password">
-        <label for="loginPassword">密碼</label>
-        <input id="loginPassword" type="password" placeholder="••••••••" autocomplete="current-password" />
-        <span class="auth-field__hint">請輸入密碼</span>
-      </div>
-      <div class="auth-row">
-        <label class="auth-remember"><input type="checkbox" id="rememberMe"> 記住我</label>
-        <a class="auth-forgot" href="#">忘記密碼？</a>
-      </div>
-      <button type="submit" class="auth-submit" id="loginSubmitBtn">登入</button>
-      <div class="auth-divider"><span>或</span></div>
-      <button type="button" class="auth-social" onclick="socialLogin()">
-        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-3.59-13.46-8.83l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-        以 Google 繼續
-      </button>
-      <div class="auth-switch">還沒有帳號？ <a onclick="switchTab('register')">立即註冊</a></div>
-    </form>
-    <!-- 註冊表單 -->
-    <form class="auth-form hidden" id="registerForm" onsubmit="submitRegister(event)">
-      <div class="auth-field" id="rf-name">
-        <label for="regName">姓名</label>
-        <input id="regName" type="text" placeholder="您的姓名" autocomplete="name" />
-        <span class="auth-field__hint">請輸入姓名</span>
-      </div>
-      <div class="auth-field" id="rf-email">
-        <label for="regEmail">電子郵件</label>
-        <input id="regEmail" type="email" placeholder="your@email.com" autocomplete="email" />
-        <span class="auth-field__hint">請輸入有效的電子郵件</span>
-      </div>
-      <div class="auth-field" id="rf-password">
-        <label for="regPassword">密碼</label>
-        <input id="regPassword" type="password" placeholder="至少 8 個字元" autocomplete="new-password" />
-        <span class="auth-field__hint">密碼至少需要 8 個字元</span>
-      </div>
-      <div class="auth-field" id="rf-confirm">
-        <label for="regConfirm">確認密碼</label>
-        <input id="regConfirm" type="password" placeholder="再次輸入密碼" autocomplete="new-password" />
-        <span class="auth-field__hint">兩次密碼輸入不一致</span>
-      </div>
-      <label class="auth-terms">
-        <input type="checkbox" id="agreeTerms">
-        我已閱讀並同意 <a href="#" onclick="event.stopPropagation()">服務條款</a> 及 <a href="#" onclick="event.stopPropagation()">隱私政策</a>
-      </label>
-      <button type="submit" class="auth-submit" id="registerSubmitBtn">建立帳號</button>
-      <div class="auth-switch">已有帳號？ <a onclick="switchTab('login')">立即登入</a></div>
-    </form>
   </div>
 </div>
+<script src="./js/store-template-render.js"></script>
 </body>
 </html>

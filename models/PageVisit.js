@@ -20,10 +20,11 @@ SellerID: {
   allowNull: true, // 既然你設了 FK，通常這裡不能為空
   references: {
     model: 'Seller', // 對應資料庫的表名
-    key: 'SellerID'
+    key: 'SellerID',
+    field: 'SellerID'
   }
 },
-  // 頁面類型 (例如 'Home', 'Product')
+  // 頁面類型 (例如 'Home', 'Product','About')
   PageType: {
     type: DataTypes.STRING(50),
     allowNull: false,

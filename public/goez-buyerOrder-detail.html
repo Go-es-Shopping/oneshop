@@ -39,20 +39,7 @@
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
   <div class="flex flex-col min-h-screen">
-    <header class="flex-shrink-0 bg-gradient-to-r from-slate-200 via-slate-100 to-blue-100/80 backdrop-blur-sm">
-      <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16">
-          <a href="../sign-up/index.html" class="flex items-center gap-2">
-            <span class="text-xl font-bold text-slate-800 tracking-tight">Goez Shop</span>
-          </a>
-          <div class="w-9 h-9 rounded-full bg-slate-300 flex items-center justify-center text-slate-600" role="img" aria-label="買家中心">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-            </svg>
-          </div>
-        </div>
-      </div>
-    </header>
+    
 
     <main class="flex-1">
       <div class="page-enter max-w-2xl mx-auto px-4 sm:px-6 py-8 lg:py-10">
@@ -63,7 +50,7 @@
             <div id="result-badges" class="flex flex-wrap gap-2 mt-3"></div>
           </div>
           <a
-            href="index.html"
+            href="goez-buyerOrder.html"
             id="back-to-lookup"
             class="flex-shrink-0 px-5 py-2.5 rounded-xl bg-slate-100 text-slate-700 text-sm font-medium hover:bg-slate-200 transition self-start text-center"
           >
@@ -311,7 +298,7 @@
       });
 
       document.getElementById('back-to-lookup').addEventListener('click', function () {
-        window.location.href = 'index.html'; // 回到查詢主頁
+        window.location.href = 'goez-buyerOrder.html'; // 回到查詢主頁
       });
 
       detailBody.addEventListener('click', function (e) {
