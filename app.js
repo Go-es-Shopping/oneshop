@@ -94,6 +94,7 @@ const adminRoutes = require('./routes/adminRoutes')
 const checkoutRoutes = require('./routes/checkoutRoutes')
 const analyticsRoutes = require('./routes/analyticsRoutes')
 const couponRoutes = require('./routes/couponRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
 
 app.use(cors());
 app.use(express.json());
@@ -111,6 +112,7 @@ app.use('/api/checkout', checkoutRoutes)
 app.use('/api/track', analyticsRoutes)
 // 掛載優惠券路由
 app.use('/api/coupons', couponRoutes);
+app.use('/api/payment', paymentRoutes);
 
 
 // --- 🚀 新增：商標圖片上傳 API 路由 ---

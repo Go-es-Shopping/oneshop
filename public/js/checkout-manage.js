@@ -358,14 +358,39 @@ async function submitOrder() {
     const result = await response.json();
 
     if (response.ok && result.Success) {
-      alert(`下單成功！您的訂單編號為：${result.OrderID}`);
-      
       // 清空該賣場的購物車紀錄
       localStorage.removeItem(`goez_checkout_cart_${pageId}`);
       localStorage.removeItem(`goez_cart_${pageId}`);
 
-      // 跳轉到訂單完成頁或首頁（可依需求調整）
-      // window.location.href = `/order-success.html?orderId=${result.OrderID}`;
+      // 🚀 核心分流邏輯：依據後端回傳的 Type 決定下一步
+      if (result.Type === 'redirect') {
+        // 如果是藍新金流（信用卡 / ATM），動態建立隱藏表單並送出跳轉
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = result.PaymentGatewayUrl;
+
+        const params = {
+          MerchantID: result.MerchantID,
+          TradeInfo: result.TradeInfo,
+          TradeSha: result.TradeSha,
+          Version: result.Version
+        };
+
+        for (const key in params) {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = params[key];
+          form.appendChild(input);
+        }
+
+        document.body.appendChild(form);
+        form.submit(); // 自動發送表單前往藍新付款頁面！
+      } else {
+        // 如果是貨到付款 (cod) 或一般下單，直接導向原本的完成頁面
+        alert(`下單成功！您的訂單編號為：${result.OrderID}`);
+        window.location.href = `/goez-order-complete.html?orderId=${result.OrderID}`;
+      }
     } else {
       alert('下單失敗：' + (result.Error || result.message || '發生未知錯誤'));
     }

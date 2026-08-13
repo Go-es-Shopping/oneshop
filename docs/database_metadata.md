@@ -43,6 +43,7 @@
 | ThemeFont   | varchar(50)        | 是        | 頁面主題字體，初始設置"現代黑體"                                             |
 | StoreEmail   | nvarchar(255)        | 是        | 商家賣場聯絡郵件(聯絡我們)                                                  |
 | StorePhone   | nvarchar(50)        | 是        | 商家賣場聯絡電話(聯絡我們)                                                   |
+| StoreBankAccount   | nvarchar(100)        | 是        | 商家賣場收款銀行帳戶(由平台統一代收顧客消費，在每月5號撥款轉帳到此帳戶，請填寫正確的銀行代碼和帳號)                      |
 
 ## PageContent
 
@@ -115,8 +116,8 @@
 |--------------|-----------------|-----------|----------------------|
 | PaymentID    | int             | 否        | 付款紀錄主鍵         |
 | OrderID      | int             | 否        | 所屬訂單             |
-| PaymentMethod| nvarchar(50)    | 否        | 支付方式('card'信用卡, 'atm'轉帳, 'cod'貨到付款)      |
-| PaymentStatus| nvarchar(50)    | 否        | 支付狀態文字描述     |
+| PaymentMethod| nvarchar(50)    | 否        | 支付方式('CreditCard'信用卡, 'atm'轉帳, 'cod'貨到付款)      |
+| PaymentStatus| int             | 否        | 支付狀態（0=未付款；1=已付款；2=退款中；3=已退款；4=失敗）     |
 | PaidAt       | datetime        | 否        | 實際完成付款時間     |
 | TradeNo      | nvarchar(100)   | 是        | 蓝新金流官方交易序號（對帳用） |
 

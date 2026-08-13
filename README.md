@@ -88,6 +88,9 @@
     "TemplateName": "OnePageV1",
     "IsPublished": 1,
     "PageUrl": "acme",
+    "StoreEmail": "",
+    "StorePhone": "",
+    "StoreBankAccount": "812-1234567890",
     "CreatedAt": "2026-03-02",
     "UpdatedAt": "2026-03-02",
     "PageContent": {
@@ -126,6 +129,9 @@
   "TemplateName": "OnePageV1",
   "IsPublished": 1,
   "PageUrl": "acme",
+  "StoreEmail": "",
+  "StorePhone": "",
+  "StoreBankAccount": "812-1234567890",
   "CreatedAt": "2026-03-02",
   "UpdatedAt": "2026-03-02",
   "PageContent": {

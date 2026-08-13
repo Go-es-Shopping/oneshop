@@ -1,4 +1,5 @@
 const db = require('../models');
+const { createAesEncrypt, createSha256Encrypt } = require('../utils/newebpay'); // 請依你的實際檔案路徑調整
 const { readMock } = require('../src/mocks/utils');
 
 /**
@@ -294,10 +295,66 @@ exports.checkout = async (req, res) => {
     // --- ✅ 提交所有變更 ---
     await t.commit();
 
-    res.status(201).json({ 
+    // --- 🚀 依據付款方式進行分流處理 (完美對齊資料庫與前端) ---
+    const rawPayment = PaymentMethod ? PaymentMethod.toLowerCase() : 'cod';
+    
+    let dbPaymentMethod = 'cod';
+    if (rawPayment.includes('atm')) {
+      dbPaymentMethod = 'atm';
+    } else if (rawPayment.includes('card') || rawPayment.includes('credit')) {
+      dbPaymentMethod = 'CreditCard'; // 對齊資料庫現有的格式
+    }
+
+    // 1. 如果是貨到付款 (cod)
+    if (dbPaymentMethod === 'cod') {
+      return res.status(201).json({ 
+        Success: true, 
+        Type: 'normal',
+        OrderID: newOrder.OrderID, 
+        TotalAmount: finalTotalAmount,
+        Message: '下單成功'
+      });
+    }
+
+    // 2. 如果是藍新金流支援的線上支付 (CreditCard 或 atm)
+    const tradeInfoObj = {
+      MerchantID: process.env.MERCHANT_ID,
+      RespondType: 'JSON',
+      TimeStamp: Math.floor(Date.now() / 1000).toString(),
+      Version: '2.0',
+      LangType: 'zh-tw',
+      MerchantOrderNo: `GOEZ_${newOrder.OrderID}_${Date.now()}`, // 確保訂單編號唯一
+      Amt: Math.round(finalTotalAmount),
+      ItemDesc: `Goezshop 訂單 #${newOrder.OrderID}`,
+      Email: BuyerEmail || 'test@example.com',
+      // 設定藍新付款完成後的背景通知網址與前端導回網址
+      NotifyURL: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/api/payment/notify`,
+      ReturnURL: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/goez-order-complete.html?orderId=${newOrder.OrderID}`,
+    };
+
+    // 根據付款方式指定藍新參數
+    if (dbPaymentMethod === 'atm') {
+      tradeInfoObj.VACC = 1; // 啟用虛擬帳號
+    } else if (dbPaymentMethod === 'CreditCard') {
+      tradeInfoObj.CREDIT = 1; // 啟用信用卡一次付清
+    }
+
+    // 進行 AES 加密
+    const encryptedTradeInfo = createAesEncrypt(tradeInfoObj);
+    // 進行 SHA256 檢查碼加密
+    const hashValue = createSha256Encrypt(encryptedTradeInfo);
+
+    // 回傳給前端，讓前端可以動態組裝 Form 表單自動跳轉至藍新測試網址
+    return res.status(201).json({ 
       Success: true, 
-      OrderID: newOrder.OrderID, 
-      TotalAmount: finalTotalAmount 
+      Type: 'redirect', // 告訴前端要進行頁面跳轉
+      PaymentGatewayUrl: process.env.NEWEBPAY_GATEWAY_URL || 'https://core.newebpay.com/MPG/mpg_gateway', // 藍新測試環境網址
+      MerchantID: process.env.MERCHANT_ID,
+      TradeInfo: encryptedTradeInfo,
+      TradeSha: hashValue,
+      Version: '2.0',
+      OrderID: newOrder.OrderID,
+      TotalAmount: finalTotalAmount
     });
 
   } catch (error) {

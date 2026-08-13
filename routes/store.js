@@ -58,7 +58,9 @@ router.get('/pages/:PageID', async (req, res) => {
         ThemeFont: base.ThemeFont || 'gothic',
         //從 (StorePage) 結構層級抓取聯絡資訊！
         StoreEmail: base.StoreEmail || "", 
-        StorePhone: base.StorePhone || ""
+        StorePhone: base.StorePhone || "",
+        StoreBankAccount: base.StoreBankAccount || "" ,
+        PageUrl: base.PageUrl || "" // 🔗 【新增這裡】Mock 模式回傳專屬網址後綴
       }
     });
   }
@@ -81,6 +83,7 @@ router.get('/pages/:PageID', async (req, res) => {
         IsPublished: false,
         StoreEmail: "", 
         StorePhone: "",
+        StoreBankAccount: "", // 💡 預設值也補上
         UpdatedAt: sqlLiteral
       }
     });
@@ -161,6 +164,8 @@ router.get('/pages/:PageID', async (req, res) => {
         ThemeFont: page.ThemeFont || 'gothic',
         StoreEmail: page.StoreEmail || "", 
         StorePhone: page.StorePhone || "",
+        StoreBankAccount: page.StoreBankAccount || "", // 💡 實體讀取這裡也要補上！
+        PageUrl: page.PageUrl || "", // 🔗 【新增這裡】實體資料庫讀取回傳 PageUrl 給前端初始化
         PageProducts: PageProductsResult
       }
     });
@@ -174,6 +179,7 @@ router.get('/pages/:PageID', async (req, res) => {
    ★ 消費者前台專用動態 API (從goez-shop-store.html對接 goez-shop-store-template.html)
    動態撈取資料庫，絕不寫死！
 ═══════════════════════════════════════════════════════════════════ */
+// 舊路由：吃數字 ID
 router.get('/template/:pageId', async (req, res) => {
   const Mock = await useMock();
   const Lang = req.query.lang || 'zh-TW';
@@ -238,7 +244,8 @@ router.get('/template/:pageId', async (req, res) => {
       ],
       // 🚀 核心修正：Mock 模式的前台聯絡資訊連動
       StoreEmail: base.StoreEmail || "",
-      StorePhone: base.StorePhone || ""
+      StorePhone: base.StorePhone || "",
+      StoreBankAccount: base.StoreBankAccount || "" // 💡 Mock 模式補上銀行帳號
     });
   }
 
@@ -260,6 +267,7 @@ router.get('/template/:pageId', async (req, res) => {
         IsPublished: false,
         StoreEmail: "", 
         StorePhone: "", 
+        StoreBankAccount: "", // 💡 預設值補上銀行帳號
         UpdatedAt: sqlLiteral
       }
     });
@@ -336,11 +344,168 @@ router.get('/template/:pageId', async (req, res) => {
       products: formattedProducts, // 這邊就是 100% 來自資料庫 page19 的實體商品列表
       // 絕不寫死！動態映射資料庫 StorePage 的實體新欄位
       StoreEmail: page.StoreEmail || "",
-      StorePhone: page.StorePhone || ""
+      StorePhone: page.StorePhone || "",
+      StoreBankAccount: page.StoreBankAccount || "" // 💡 實體資料庫查詢結果補上銀行帳號
     });
 
   } catch (err) {
     console.error("[Backend Lead] 前台動態路由對接發生錯誤:", err);
+    return res.status(500).json({ success: false, message: "伺服器內部發生錯誤", details: err.message });
+  }
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   ★ 新增的專屬文字網址 (Slug) 前台動態路由
+   對應網址：GET /store/:slug (例如 /store/sweet-shop)
+═══════════════════════════════════════════════════════════════ */
+router.get('/store/:slug', async (req, res) => {
+  const Mock = await useMock();
+  const Lang = req.query.lang || 'zh-TW';
+  const slug = req.params.slug; // 🔗 抓取網址上的文字代稱
+
+  // 1. 顏色映射表
+  const colorMap = {
+        '冷靜石板': {
+            '--c-accent': '#64748b',
+            '--c-theme-1': '#64748b',
+            '--c-theme-2': '#94a3b8',
+            '--c-theme-3': '#cbd5e1',
+            '--c-theme-4': '#f1f5f9'
+        },
+        '鼠尾草綠': {
+            '--c-accent': '#869489',
+            '--c-theme-1': '#869489',
+            '--c-theme-2': '#a3ad9e',
+            '--c-theme-3': '#c2c9bd',
+            '--c-theme-4': '#e8ebe4'
+        },
+        '陶土橘': {
+            '--c-accent': '#b38b7d',
+            '--c-theme-1': '#b38b7d',
+            '--c-theme-2': '#d1b4a6',
+            '--c-theme-3': '#e5d3c8',
+            '--c-theme-4': '#f5efea'
+        },
+        '北歐沙色': {
+            '--c-accent': '#a8a29e',
+            '--c-theme-1': '#a8a29e',
+            '--c-theme-2': '#d6d3d1',
+            '--c-theme-3': '#e7e5e4',
+            '--c-theme-4': '#f5f5f4'
+        }
+    };
+
+  // Mock 模式處理
+  if (Mock) {
+    const { pages, page: template } = readMock('storepage.json');
+    // 🔗 透過 PageUrl 尋找對應的 Mock 資料
+    const found = (pages || []).find((p) => p.PageUrl === slug);
+    const base = found || template;
+    
+    const rawColor = base.ThemeColor || '冷靜石板';
+    const rawFont = base.ThemeFont || 'gothic';
+    
+    return res.json({
+      name: base.PageContent?.PageTitle || "Mock 商店",
+      tagline: base.PageContent?.PageDescription || "",
+      logoUrl: base.StoreLogo || "",
+      accentColor: colorMap[rawColor] || '#2b4c7e',
+      ThemeColor: rawColor,
+      ThemeFont: rawFont,
+      SellerID: base.SellerID || 15,
+      categories: ['全部', '古著', '磁帶'],
+      products: [
+        { id: 1, name: '古著襯衫(Mock)', category: '古著', price: 1200, stock: 5, imageUrl: '' },
+        { id: 2, name: '復古磁帶(Mock)', category: '磁帶', price: 350, stock: 12, imageUrl: '' }
+      ],
+      StoreEmail: base.StoreEmail || "",
+      StorePhone: base.StorePhone || "",
+      StoreBankAccount: base.StoreBankAccount || ""
+    });
+  }
+
+  // 2. 實體資料庫動態查詢 (透過 PageUrl 尋找)
+  try {
+    const db = require('../models');
+    const { StorePage, PageContent, PageProduct, Product } = db;
+
+    // 🔗 核心差異：用 PageUrl (slug) 去資料庫找出該店家主檔
+    const page = await StorePage.findOne({ where: { PageUrl: slug } });
+    
+    if (!page) {
+      return res.status(404).json({ success: false, message: "找不到此賣場專屬網址" });
+    }
+
+    const PageID = page.PageID; // 取得該賣場的實際數字 ID
+
+    // 撈取語系內容
+    let content = await PageContent.findOne({
+      where: { PageID: PageID, LanguageCode: Lang, ProductID: null }
+    });
+
+    if (!content) {
+      content = await PageContent.findOne({
+        where: { PageID: PageID, LanguageCode: Lang }
+      });
+    }
+
+    if (!content) {
+      content = await PageContent.create({
+        PageID: PageID, LanguageCode: Lang,
+        PageTitle: "", PageDescription: "",
+        ProductID: null, CTA_Text: "立即購買", ThemeColor: "冷靜石板", ThemeFont: "gothic",    
+        UpdatedAt: new Date()
+      });
+    }
+
+    // 動態撈取 PageID 關聯的所有商品
+    const rawPageProducts = await PageProduct.findAll({
+      where: { PageID: PageID },
+      order: [['DisplayOrder', 'ASC']]
+    });
+
+    const formattedProducts = [];
+    
+    for (const pp of rawPageProducts) {
+      const prodMain = await Product.findOne({ where: { ProductID: pp.ProductID } });
+      const prodContent = await PageContent.findOne({ 
+        where: { PageID: PageID, ProductID: pp.ProductID, LanguageCode: Lang } 
+      });
+
+      if (prodMain) {
+        formattedProducts.push({
+          id: pp.ProductID,
+          name: prodContent?.ProductName || prodMain?.ProductName || '未命名商品',
+          description: prodContent?.ProductDescription || prodMain?.ProductDescription || '',
+          category: prodMain?.Category || '熱門商品',
+          price: prodMain?.Price || 0,
+          stock: prodMain?.Stock || 0,
+          imageUrl: prodMain?.ProductImg || ''
+        });
+      }
+    }
+
+    const dbThemeColor = page.ThemeColor || '冷靜石板';
+    const dbThemeFont = page.ThemeFont || 'gothic';
+    const finalAccentColor = colorMap[dbThemeColor] || '#2b4c7e';
+
+    return res.json({
+      name: content.PageTitle || "",
+      tagline: content.PageDescription || "",
+      logoUrl: page.StoreLogo || "",
+      accentColor: finalAccentColor,
+      ThemeColor: dbThemeColor,
+      ThemeFont: dbThemeFont,
+      SellerID: page.SellerID || 15,
+      categories: [...new Set(formattedProducts.map(p => p.category))].filter(Boolean),
+      products: formattedProducts,
+      StoreEmail: page.StoreEmail || "",
+      StorePhone: page.StorePhone || "",
+      StoreBankAccount: page.StoreBankAccount || ""
+    });
+
+  } catch (err) {
+    console.error("[Backend Slug Route] 專屬網址前台動態路由發生錯誤:", err);
     return res.status(500).json({ success: false, message: "伺服器內部發生錯誤", details: err.message });
   }
 });
@@ -355,7 +520,7 @@ router.post('/pages/:PageID/update', async (req, res) => {
   }
 
   // 🎨 🚀 確保這裡完整接收前端打包帶過來的 themeColor 與 themeFont
-  const { isPublished, shopName, shopDesc, logoUrl, themeColor, themeFont, storeEmail, storePhone } = req.body || {}; 
+  const { isPublished, shopName, shopDesc, logoUrl, themeColor, themeFont, storeEmail, storePhone, storeBankAccount, pageUrl } = req.body || {}; 
   const Mock = await useMock();
 
   if (Mock) {
@@ -372,6 +537,7 @@ router.post('/pages/:PageID/update', async (req, res) => {
           // 新增：Mock 模式寫入主表聯絡資訊
           p.StoreEmail = storeEmail || "";
           p.StorePhone = storePhone || "";
+          p.StoreBankAccount = storeBankAccount || ""; // 💡 Mock 模式寫入銀行帳號
           // 🎨 ✅ 確保 Mock 模式確實寫入收到的 themeColor 與 themeFont
           p.ThemeColor = themeColor || '冷靜石板';
           p.ThemeFont = themeFont || 'gothic';
@@ -410,6 +576,8 @@ router.post('/pages/:PageID/update', async (req, res) => {
         // 新增：成功將前台傳回的聯絡資訊塞入實體主表！
         StoreEmail: storeEmail || "", 
         StorePhone: storePhone || "",
+        StoreBankAccount: storeBankAccount || "", // 💡 成功將前台傳回的銀行帳號塞入實體主表！
+        PageUrl: pageUrl || "", // 🔗 【新增這裡】成功將前台傳回的專屬網址存入實體主表！
         UpdatedAt: Sequelize.literal('GETDATE()') 
       },
       { where: { PageID: PageID } }
@@ -431,6 +599,7 @@ router.post('/pages/:PageID/update', async (req, res) => {
     return res.status(500).json({ success: false, message: '伺服器寫入失敗' });
   }
 });
+
 
 router.post('/create-new-shop', async (req, res) => {
   try {

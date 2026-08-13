@@ -1,5 +1,6 @@
 // 💡 記得確定有把 StorePage 從 ../models 引入進來
 const { Order, Orderdetail, Product, Shipment, Payment, StorePage, sequelize } = require('../models');
+const { createAesEncrypt, createSha256Encrypt } = require('../utils/newebpay'); // 請依你的檔案實際路徑調整
 
 // 一、定義狀態常數 (組長任務：核心共享基礎)
 const ORDER_STATUS = {
@@ -122,12 +123,66 @@ const orderController = {
       await Orderdetail.bulkCreate(finalDetails, { transaction: t });
 
       await t.commit();
-      res.status(201).json({ 
+
+      // --- 🚀 依據付款方式進行分流處理 (對齊資料庫與前端) ---
+      const rawPayment = PaymentMethod ? PaymentMethod.toLowerCase() : 'cod';
+      
+      let dbPaymentMethod = 'cod';
+      if (rawPayment.includes('atm')) {
+        dbPaymentMethod = 'atm';
+      } else if (rawPayment.includes('card') || rawPayment.includes('credit')) {
+        dbPaymentMethod = 'CreditCard'; // 對齊資料庫現有格式
+      }
+
+      // 1. 如果是貨到付款 (cod)
+      if (dbPaymentMethod === 'cod') {
+        return res.status(201).json({ 
+          Success: true, 
+          Type: 'normal',
+          OrderID: newOrder.OrderID, 
+          SubTotal: subTotal,
+          ShippingFee: shippingFee,
+          DiscountValue: discount,
+          TotalAmount: totalAmount,
+          Message: '下單成功'
+        });
+      }
+
+      // 2. 如果是藍新金流支援的線上支付 (CreditCard 或 atm)
+      const tradeInfoObj = {
+        MerchantID: process.env.MERCHANT_ID,
+        RespondType: 'JSON',
+        TimeStamp: Math.floor(Date.now() / 1000).toString(),
+        Version: '2.0',
+        LangType: 'zh-tw',
+        MerchantOrderNo: `GOEZ_${newOrder.OrderID}_${Date.now()}`,
+        Amt: Math.round(totalAmount),
+        ItemDesc: `Goezshop 訂單 #${newOrder.OrderID}`,
+        Email: BuyerEmail || 'test@example.com',
+        NotifyURL: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/api/payment/notify`,
+        ReturnURL: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/goez-order-complete.html?orderId=${newOrder.OrderID}`,
+      };
+
+      if (dbPaymentMethod === 'atm') {
+        tradeInfoObj.VACC = 1; // 啟用虛擬帳號
+      } else if (dbPaymentMethod === 'CreditCard') {
+        tradeInfoObj.CREDIT = 1; // 啟用信用卡一次付清
+      }
+
+      // 進行 AES 加密與 SHA256 驗證碼計算
+      const encryptedTradeInfo = createAesEncrypt(tradeInfoObj);
+      const hashValue = createSha256Encrypt(encryptedTradeInfo);
+
+      // 回傳給前端，讓前端進行頁面跳轉
+      return res.status(201).json({ 
         Success: true, 
-        OrderID: newOrder.OrderID, 
-        SubTotal: subTotal,
-        ShippingFee: shippingFee,
-        DiscountValue: discount,
+        Type: 'redirect', 
+        PaymentGatewayUrl: process.env.NEWEBPAY_GATEWAY_URL || 'https://core.newebpay.com/MPG/mpg_gateway',
+        MerchantID: process.env.MERCHANT_ID,
+        TradeInfo: encryptedTradeInfo,
+        TradeSha: hashValue,
+        Version: '2.0',
+        OrderID: newOrder.OrderID,
         TotalAmount: totalAmount
       });
     } catch (error) {
