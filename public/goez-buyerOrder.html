@@ -42,7 +42,7 @@
     <header class="flex-shrink-0 bg-gradient-to-r from-slate-200 via-slate-100 to-blue-100/80 backdrop-blur-sm">
       <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
-          <a href="../sign-up/index.html" class="flex items-center gap-2">
+          <a href="./goez-buyerOrder.html" class="flex items-center gap-2">
             <span class="text-xl font-bold text-slate-800 tracking-tight">Goez Shop</span>
           </a>
           <div class="w-9 h-9 rounded-full bg-slate-300 flex items-center justify-center text-slate-600" role="img" aria-label="買家中心">
@@ -148,7 +148,7 @@
 
       function goToDetail(order) {
         GoezBuyerOrders.saveOrderForDetail(order);
-        window.location.href = 'order-detail.html';
+        window.location.href = 'goez-buyerOrder-detail.html';
       }
 
       function submitLookup() {
@@ -170,8 +170,8 @@
   console.log('🚀 買家送出查詢，正在連線真後端... 編號:', idValue, '電話:', phoneValue);
   
   // 2. ✨ 直接把編號帶在網址參數後面，跳轉到詳情頁！
-  // 網址會變成像這樣：order-detail.html?orderId=14
-  window.location.href = 'order-detail.html?orderId=' + idValue;
+  // 網址會變成像這樣：goez-buyerOrder-detail.html?orderId=14
+  window.location.href = 'goez-buyerOrder-detail.html?orderId=' + idValue;
 }
 
       form.addEventListener('submit', function (e) {
