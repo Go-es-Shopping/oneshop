@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Goez Shop – AI 商店助手</title>
@@ -8,10 +9,69 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet" />
   <style>
+    /* =========================================
+   AI 修圖 - 特效專用樣式
+   ========================================= */
+
+/* 基礎圖片樣式 */
+.retouch-img-base {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: all 0.5s ease;
+}
+
+/* 模擬去背 (白底疊加) */
+.retouch-remove-bg {
+  mix-blend-mode: multiply;
+  background-color: #ffffff;
+}
+
+/* 景深效果外框 */
+.depth-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* 景深效果 - 底層模糊背景 */
+.depth-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(8px);
+}
+
+/* 景深效果 - 表層清晰聚焦 */
+.depth-focus {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 75%);
+  mask-image: radial-gradient(circle at center, black 40%, transparent 75%);
+}
     /* ══════════════════════════════════════════════
        Design Tokens
     ══════════════════════════════════════════════ */
     :root {
+      .custom-select {
+      margin-top: 8px;
+      padding-right: 40px;
+      
+      /* 關閉預設箭頭 */
+      appearance: none;
+      -webkit-appearance: none;
+      
+      /* 自訂SVG 箭頭 */
+      background-image: url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23333\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'/%3E%3C/svg%3E');
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      background-size: 16px;
+    }
       /* Colors */
       --c-white:       #ffffff;
       --c-black:       #000000;
@@ -669,6 +729,15 @@
                 <button type="button" class="chip" data-tone="professional" role="radio" aria-checked="false">專業</button>
               </div>
             </div>
+            <div class="field" style="margin-top: 16px;">
+              <label class="field__label" for="wordCountSelect">字數限制</label>
+              <select id="wordCountSelect" class="field__input custom-select">
+                <option value="5 到 10">5-10字 (極短標題)</option>
+                <option value="10 到 15">10-15字 (簡短口號)</option>
+                <option value="15 到 20">15-20字 (社群短文)</option>
+                <option value="50 到 100" selected>50-100字 (標準內文)</option>
+              </select>
+            </div>
             <button class="btn-indigo" aria-label="使用 AI 魔法生成文案">
               <img src="https://www.figma.com/api/mcp/asset/89f5e432-57a7-46f5-ae26-16a2272e3300" alt="" aria-hidden="true" />
               ✨ 魔法生成
@@ -707,7 +776,6 @@
               <div class="chip-group" id="retouchTagGroup">
                 <button type="button" class="chip" data-tag="去背景">去背景</button>
                 <button type="button" class="chip" data-tag="模糊背景">模糊背景</button>
-                <button type="button" class="chip" data-tag="提亮">提亮</button>
               </div>
               <input class="field__input" id="editDesc" type="text" maxlength="100" placeholder="例如：模糊背景、將背景改為純白色、移除背景" />
               <div class="field__meta">
@@ -743,8 +811,6 @@
             </div>
             <div class="dark-panel__actions" id="retouchActions" hidden>
               <button type="button" class="dark-panel__action-btn" id="downloadBtn">下載圖片</button>
-              <button type="button" class="dark-panel__action-btn dark-panel__action-btn--primary" id="applyBtn">套用為商品圖片</button>
-            </div>
           </div>
         </div>
       </article>
@@ -872,12 +938,7 @@
 
   const KEYWORD_MAX = 50;
   const TONE_LABELS = { formal: '正式', playful: '活潑', professional: '專業' };
-  const TONE_TEMPLATES = {
-    formal: (kw) => `本產品「${kw}」以嚴謹工藝與穩定品質為核心，致力於提供值得信賴的使用體驗，是您理性決策的最佳選擇。`,
-    playful: (kw) => `哇！這款「${kw}」也太讚了吧！${kw} 控看過來，用過一次就回不去，趕快把它帶回家，跟我們一起玩起來！`,
-    professional: (kw) => `這款「${kw}」整合業界領先技術與嚴謹品管流程，於效能、耐用度與穩定性上皆通過專業測試，專為追求極致表現的您量身打造。`,
-  };
-
+ 
   let selectedTone = 'formal';
   let copyHistory = []; // { id, text, tone, keyword }
   let nextVersionId = 1;
@@ -961,10 +1022,11 @@
     if (e.target.closest('#retryGenBtn')) magicGenBtn.click();
   });
 
-  // 模擬 AI 文案生成
+  // 真實 API 串接：AI 文案生成
   magicGenBtn.addEventListener('click', async () => {
     if (magicGenBtn.disabled) return;
     const text = keywordInput.value.trim();
+    const selectedWordCount = document.getElementById('wordCountSelect').value;
     if(!text) {
       showFieldError(keywordError, "請先輸入產品關鍵字");
       keywordInput.classList.add('is-invalid');
@@ -982,26 +1044,39 @@
     copyResultBox.classList.remove('text-gen__result--filled');
     copyResultBox.innerHTML = '<p class="text-gen__result-placeholder">生成中...</p>';
 
-    // 模擬 2 秒延遲
-    await new Promise(r => setTimeout(r, 2000));
+    try {
+      // 呼叫你的 Node.js 後端 API
+      const response = await fetch('/api/ai/generate-copy', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        // 將關鍵字和選擇的語氣傳給後端
+       body: JSON.stringify({ keywords: text, tone: selectedTone, wordCount: selectedWordCount })
+      });
 
-    // 恢復按鈕狀態
-    magicGenBtn.disabled = false;
-    magicGenBtn.style.opacity = "1";
-    magicGenBtn.innerHTML = `<img src="${MAGIC_ICON}" /> ✨ 魔法生成`;
+      const data = await response.json();
 
-    if (Math.random() < FAILURE_RATE) {
+      if (data.success) {
+        // 顯示真實 AI 生成的文案，並存入版本歷史
+        const resultText = data.text;
+        const version = { id: nextVersionId++, text: resultText, tone: selectedTone, keyword: text };
+        copyHistory.push(version);
+        if (copyHistory.length > 5) copyHistory.shift();
+        showCopyVersion(version.id);
+        incrementQuota();
+      } else {
+        throw new Error(data.message || "生成失敗");
+      }
+    } catch (error) {
+      console.error(error);
       renderCopyGenerationError();
-      return;
+    } finally {
+      // 恢復按鈕狀態
+      magicGenBtn.disabled = false;
+      magicGenBtn.style.opacity = "1";
+      magicGenBtn.innerHTML = `<img src="${MAGIC_ICON}" /> ✨ 魔法生成`;
     }
-
-    // 顯示生成後的文案內容，並存入版本歷史
-    const resultText = TONE_TEMPLATES[selectedTone](text);
-    const version = { id: nextVersionId++, text: resultText, tone: selectedTone, keyword: text };
-    copyHistory.push(version);
-    if (copyHistory.length > 5) copyHistory.shift();
-    showCopyVersion(version.id);
-    incrementQuota();
   });
 
   // ══════════════════════════════════════════════
@@ -1020,7 +1095,6 @@
   const mainUploadZone = document.getElementById('mainUpload');
   const retouchActions = document.getElementById('retouchActions');
   const downloadBtn = document.getElementById('downloadBtn');
-  const applyBtn = document.getElementById('applyBtn');
   const RETOUCH_PLACEHOLDER_IMG = 'https://www.figma.com/api/mcp/asset/bbcd1057-42eb-4cf4-8e37-e5c331be565c';
   const EDIT_DESC_MAX = 100;
   let uploadedImageUrl = null;
@@ -1137,6 +1211,7 @@
 
     const desc = editDescInput.value.trim();
 
+    // 更新 UI 為載入中狀態
     retouchBtn.disabled = true;
     retouchBtn.style.opacity = "0.6";
     retouchBtn.innerHTML = "✨ 修圖中...";
@@ -1145,51 +1220,148 @@
     progressVal.textContent = "0%";
     retouchActions.hidden = true;
 
-    // 模擬 2 秒延遲
-    await new Promise(r => setTimeout(r, 2000));
+    try {
+      // 呼叫 Node.js 後端的修圖 API，將圖片 Base64 與指令傳送過去
+      const response = await fetch('/api/ai/edit-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          image: uploadedImageUrl, 
+          prompt: desc 
+        })
+      });
 
-    if (Math.random() < FAILURE_RATE) {
+      const data = await response.json();
+
+      if (data.success) {
+        // 1. 正確更新狀態與進度條 (修復 0% 的 Bug)
+        window.currentRetouchData = data;
+        statusVal.textContent = "已完成";
+        editItemVal.textContent = data.text;
+        progressVal.textContent = "100%"; 
+        
+        // 渲染圖片
+        if (data.action === "blur_bg") {
+          retouchResultBox.innerHTML = `
+            <div style="position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: 8px;">
+              <img src="${data.originalUrl}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(12px); z-index: 1;" />
+              <img src="${data.imageUrl}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 2;" />
+            </div>
+          `;
+        } else {
+          // 一般濾鏡與無法實現的去背 (改為純白底色展示)
+          let imgStyle = "width: 100%; height: 100%; object-fit: cover; border-radius: 8px;";
+          
+          if (data.action === "remove_bg") {
+            // 坦承極限：加上背景色，不強求去背，保留原圖質感
+            imgStyle += " background-color: #ffffff;";
+          } else if (data.action === "filter") {
+            // 提亮、鮮豔等 CSS 濾鏡
+            imgStyle += ` filter: ${data.cssFilter};`;
+          }
+          
+          retouchResultBox.innerHTML = `<img src="${data.imageUrl}" style="${imgStyle}" />`;
+        }
+
+        retouchActions.hidden = false;
+        incrementQuota();
+      } else {
+        throw new Error(data.message || "修圖發生錯誤");
+      }
+    } catch (error) {
+      console.error("前端請求錯誤:", error);
       statusVal.textContent = "處理失敗，請重試";
       statusVal.classList.add('dark-panel__stat-value--error');
       progressVal.textContent = "0%";
+    } finally {
+      // 恢復按鈕狀態
       retouchBtn.disabled = false;
       retouchBtn.style.opacity = "1";
-      retouchBtn.innerHTML = `<img src="${MAGIC_ICON}" /> 重試修圖`;
-      return;
+      retouchBtn.innerHTML = `✨ 開始修圖`;
     }
-
-    statusVal.textContent = "已完成";
-    editItemVal.textContent = desc || "-";
-    progressVal.textContent = "100%";
-    retouchResultBox.innerHTML = `<img src="${uploadedImageUrl}" style="width:100%; height:100%; object-fit:cover;" />`;
-    retouchActions.hidden = false;
-    incrementQuota();
-
-    retouchBtn.disabled = false;
-    retouchBtn.style.opacity = "1";
-    retouchBtn.innerHTML = `<img src="${MAGIC_ICON}" /> 開始修圖`;
   });
 
   // 下載修圖結果
-  downloadBtn.addEventListener('click', () => {
-    if (!uploadedImageUrl) return;
-    const a = document.createElement('a');
-    a.href = uploadedImageUrl;
-    a.download = 'goez-shop-retouched.png';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-  });
+  downloadBtn.addEventListener('click', async () => {
+    // 檢查有沒有修圖資料
+    if (!window.currentRetouchData) {
+        alert("請先修改圖片後再下載喔！");
+        return;
+    }
 
-  // 套用為商品圖片（模擬）
-  applyBtn.addEventListener('click', () => {
-    if (applyBtn.disabled) return;
-    applyBtn.disabled = true;
-    applyBtn.textContent = '已套用 ✓';
-    setTimeout(() => {
-      applyBtn.disabled = false;
-      applyBtn.textContent = '套用為商品圖片';
-    }, 1500);
+    const data = window.currentRetouchData;
+    console.log("準備下載的修圖資料：", data);
+    const originalText = downloadBtn.textContent;
+    downloadBtn.textContent = "高畫質打包中...";
+    downloadBtn.disabled = true;
+
+    try {
+        // 1. 建立一個存在於記憶體中的虛擬畫布 (Canvas)
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // 用來載入圖片的 Promise 小幫手
+        const loadImage = (src) => new Promise((resolve, reject) => {
+            const img = new Image();
+            img.crossOrigin = "Anonymous"; // 確保不會被瀏覽器阻擋
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = src;
+        });
+
+        // 2. 決定畫布的大小 (直接使用原圖的超大解析度！)
+        const baseImgUrl = data.originalUrl || data.imageUrl;
+        const baseImg = await loadImage(baseImgUrl);
+        canvas.width = baseImg.width;
+        canvas.height = baseImg.height;
+
+        // 3. 根據 AI 的動作，像畫家一樣一層層畫上去
+        if (data.action === "blur_bg") {
+            // 底層：畫上模糊的原圖 (Canvas 支援真實的像素模糊)
+            ctx.filter = 'blur(15px)'; 
+            ctx.drawImage(baseImg, 0, 0, canvas.width, canvas.height);
+            ctx.filter = 'none'; // 畫完底層要把畫筆洗乾淨
+
+            // 表層：畫上 Remove.bg 去背好的清晰主體
+            const topImg = await loadImage(data.imageUrl);
+            ctx.drawImage(topImg, 0, 0, canvas.width, canvas.height);
+        }
+        else if (data.action === "remove_bg") {
+            // 底層：鋪上一層純白背景
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 表層：畫上去背的主體
+            const transparentImg = await loadImage(data.imageUrl);
+            ctx.drawImage(transparentImg, 0, 0, canvas.width, canvas.height);
+        }
+        else if (data.action === "filter") {
+            // 套用提亮或鮮豔濾鏡
+            ctx.filter = data.cssFilter;
+            ctx.drawImage(baseImg, 0, 0, canvas.width, canvas.height);
+        }
+        else {
+            ctx.drawImage(baseImg, 0, 0, canvas.width, canvas.height);
+        }
+
+        // 4. 將畫布轉換成圖片檔案並觸發下載
+        const link = document.createElement('a');
+        link.href = canvas.toDataURL("image/png");
+        link.download = "GoezShop_AI_Edited.png";
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+    } catch (err) {
+        console.error("Canvas 繪圖下載失敗:", err);
+        alert("下載圖片時發生錯誤！");
+    } finally {
+        downloadBtn.textContent = originalText;
+        downloadBtn.disabled = false;
+    }
   });
 </script>
 </body>
