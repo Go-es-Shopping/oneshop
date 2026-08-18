@@ -28,10 +28,12 @@
 | **後台管理** | POST | `/api/admin/login` | `PlatformAdmin` | 平台管理員登入 |
 | | GET | `/api/admin/analytics` | `PageVisit`, `Order`, `Product` | 營運數據分析 (含轉換率、UTM 來源分布，瀏覽器可測) |
 | **購物與結帳** | POST | `/api/checkout/calculate` | `Product` | 購物車金額計算 (含庫存檢查、滿額折扣) |
+| | POST | `/api/checkout` | `Order`, `Orderdetail`, `Product` | 結帳並建立訂單 (包含優惠券套用) |
 | **數據追蹤** | POST | `/api/track/view` | `PageVisit` , `Product` , `Seller` | 瀏覽紀錄追蹤 (支援商品 ID、來源網址、SessionID 與 Metadata 擴充) |
 | **優惠券管理** | GET | `/api/coupons` | `Coupon` | 取得賣家已設定的所有優惠券列表 |
 | | POST | `/api/coupons` | `Coupon` | 新增一筆優惠券設定（包含折扣種類、門檻與時間限制） |
 | | DELETE | `/api/coupons/:CouponID` | `Coupon` | 刪除指定的優惠券 |
 | | POST | `/api/coupons/apply` | `Coupon` | 驗證並套用優惠券 |
-| | POST | `/api/checkout` | `Order`, `Orderdetail`, `Product` | 結帳並建立訂單 (包含優惠券套用) |
 | **金流服務** | POST | `/api/payment/notify` | `Payment`, `Order` | 接收藍新金流幕後背景通知 (Webhook)，自動解密並更新訂單付款狀態、寫入 TradeNo 與付款時間 |
+| **AI 功能** | POST | `/api/ai/generate-copy` | `無` | 透過AI自動生成文案 |
+| | POST | `/api/ai/edit-image` | `無` | 透過AI編輯處理圖片 |
