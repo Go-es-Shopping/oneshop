@@ -41,6 +41,9 @@ const sequelize = require('./config/database')
 const app = express()
 console.log('目前 FORCE_MOCK 的值是:', process.env.FORCE_MOCK);
 
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
 // --- 🚀 新增：Multer 圖片上傳設定 ---
 // 確保目錄存在：public/images/logos
 const uploadDir = path.join(__dirname, 'public/images/logos');
@@ -95,6 +98,7 @@ const checkoutRoutes = require('./routes/checkoutRoutes')
 const analyticsRoutes = require('./routes/analyticsRoutes')
 const couponRoutes = require('./routes/couponRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+const aiRoutes = require('./routes/aiRoutes');
 
 app.use(cors());
 app.use(express.json());
@@ -119,6 +123,8 @@ app.get('/store/:slug', (req, res) => {
     // 讓伺服器回傳你的前台樣板檔案 (請確認你的前台消費者樣板檔名是否為 goez-store-template.html)
     res.sendFile(path.join(__dirname, 'public', 'goez-store-template.html'));
 });
+
+app.use('/api/ai', aiRoutes);
 
 
 // --- 🚀 新增：商標圖片上傳 API 路由 ---
