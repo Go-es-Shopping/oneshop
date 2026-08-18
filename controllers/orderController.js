@@ -124,15 +124,22 @@ const orderController = {
 
       await t.commit();
 
-      // --- 🚀 依據付款方式進行分流處理 (對齊資料庫與前端) ---
-      const rawPayment = PaymentMethod ? PaymentMethod.toLowerCase() : 'cod';
-      
-      let dbPaymentMethod = 'cod';
-      if (rawPayment.includes('atm')) {
-        dbPaymentMethod = 'atm';
-      } else if (rawPayment.includes('card') || rawPayment.includes('credit')) {
-        dbPaymentMethod = 'CreditCard'; // 對齊資料庫現有格式
-      }
+      // --- 🚀 依據付款方式進行分流處理 (強化字串比對容錯力) ---
+    const rawPayment = PaymentMethod ? String(PaymentMethod).toLowerCase() : 'cod';
+    
+    let dbPaymentMethod = 'cod';
+    if (rawPayment.includes('atm') || rawPayment.includes('轉帳')) {
+      dbPaymentMethod = 'atm';
+    } else if (
+      rawPayment.includes('card') || 
+      rawPayment.includes('credit') || 
+      rawPayment.includes('信用卡') || 
+      rawPayment.includes('creditcard')
+    ) {
+      dbPaymentMethod = 'CreditCard';
+    }
+
+    console.log(`💳 前端傳入 PaymentMethod: [${PaymentMethod}], 解析結果為: [${dbPaymentMethod}]`);
 
       // 1. 如果是貨到付款 (cod)
       if (dbPaymentMethod === 'cod') {
@@ -149,19 +156,40 @@ const orderController = {
       }
 
       // 2. 如果是藍新金流支援的線上支付 (CreditCard 或 atm)
-      const tradeInfoObj = {
-        MerchantID: process.env.MERCHANT_ID,
-        RespondType: 'JSON',
-        TimeStamp: Math.floor(Date.now() / 1000).toString(),
-        Version: '2.0',
-        LangType: 'zh-tw',
-        MerchantOrderNo: `GOEZ_${newOrder.OrderID}_${Date.now()}`,
-        Amt: Math.round(totalAmount),
-        ItemDesc: `Goezshop 訂單 #${newOrder.OrderID}`,
-        Email: BuyerEmail || 'test@example.com',
-        NotifyURL: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/api/payment/notify`,
-        ReturnURL: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/goez-order-complete.html?orderId=${newOrder.OrderID}`,
-      };
+    const merchantID = process.env.MERCHANT_ID || 'MS12345678';
+    const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+
+    // 💡 嘗試查詢該賣場是否有設定專屬網址 (Slug)
+    let storeSlug = null;
+    if (PageID && StorePageModel) {
+      const foundStore = await StorePageModel.findByPk(PageID, { transaction: t });
+      if (foundStore && foundStore.PageUrl) {
+        storeSlug = foundStore.PageUrl;
+      }
+    }
+
+    // 💡 智慧決定 ReturnURL：優先使用漂亮的專屬網址，若無則使用傳統的 pageId 路由
+    const returnUrl = storeSlug 
+      ? `${baseUrl}/store/${storeSlug}` 
+      : `${baseUrl}/goez-store-template.html?pageId=${PageID || 1}`;
+
+    const tradeInfoObj = {
+      MerchantID: merchantID,
+      RespondType: 'JSON',
+      TimeStamp: Math.floor(Date.now() / 1000).toString(),
+      Version: '2.0',
+      LangType: 'zh-tw',
+      MerchantOrderNo: `GOEZ_${newOrder.OrderID}_${Date.now()}`, // 確保訂單編號唯一
+      Amt: Math.round(finalTotalAmount),
+      ItemDesc: `Goezshop 訂單 #${newOrder.OrderID}`,
+      Email: BuyerEmail || 'test@example.com',
+      
+      // 背景通知網址（讓後端更新訂單狀態）
+      NotifyURL: `${baseUrl}/api/payment/notify`,
+      
+      // 付款完成後，讓瀏覽器依據賣場設定自動跳回對應的專屬網址或範本頁
+      ReturnURL: returnUrl,
+    };
 
       if (dbPaymentMethod === 'atm') {
         tradeInfoObj.VACC = 1; // 啟用虛擬帳號

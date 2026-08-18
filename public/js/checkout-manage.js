@@ -388,8 +388,8 @@ async function submitOrder() {
         form.submit(); // 自動發送表單前往藍新付款頁面！
       } else {
         // 如果是貨到付款 (cod) 或一般下單，直接導向原本的完成頁面
-        alert(`下單成功！您的訂單編號為：${result.OrderID}`);
-        window.location.href = `/goez-order-complete.html?orderId=${result.OrderID}`;
+        alert(`下單成功！請記住!!您的訂單編號為：${result.OrderID}`);
+        window.location.href = `/goez-store-template.html?pageId=${pageId || 1}`;
       }
     } else {
       alert('下單失敗：' + (result.Error || result.message || '發生未知錯誤'));

@@ -176,14 +176,19 @@ router.get('/pages/:PageID', async (req, res) => {
   }
   });
   /* ═══════════════════════════════════════════════════════════════
-   ★ 消費者前台專用動態 API (從goez-shop-store.html對接 goez-shop-store-template.html)
+   ★ 消費者前台專用動態 API (從goez-store.html對接 goez-store-template.html)
    動態撈取資料庫，絕不寫死！
 ═══════════════════════════════════════════════════════════════════ */
 // 舊路由：吃數字 ID
 router.get('/template/:pageId', async (req, res) => {
   const Mock = await useMock();
   const Lang = req.query.lang || 'zh-TW';
-  const PageID = Number(req.params.pageId);
+  const param = req.params.pageId;
+
+  // 🛡️ 判斷傳進來的是純數字 ID 還是字串網址 (PageUrl)
+  const isNumeric = /^\d+$/.test(param);
+  const PageID = isNumeric ? Number(param) : null;
+  const PageUrl = !isNumeric ? param : null;
 
   // 1. 為了防止兩邊主題色名稱對不上有色差，做一個簡單的 CSS 十六進位顏色映射表
   const colorMap = {
@@ -220,7 +225,11 @@ router.get('/template/:pageId', async (req, res) => {
   // Mock 模式處理
   if (Mock) {
     const { pages, page: template } = readMock('storepage.json');
-    const found = (pages || []).find((p) => Number(p.PageID) === PageID);
+    // 支援用數字 PageID 或字串 PageUrl 去 Mock 資料裡面找
+    const found = (pages || []).find((p) => {
+      if (isNumeric) return Number(p.PageID) === PageID;
+      return p.PageUrl === PageUrl;
+    });
     const base = found || template;
     
     // 🎨 ✅ 統一：Mock 模式只從 StorePage 層級讀取 ThemeColor 和 ThemeFont
@@ -255,46 +264,68 @@ router.get('/template/:pageId', async (req, res) => {
     const { StorePage, PageContent, PageProduct, Product } = db;
     const sqlLiteral = db.sequelize ? db.sequelize.literal('GETDATE()') : new Date();
 
+    let page = null;
+    let activePageID = null;
 
-    // 撈取主頁面
-    const [page, created] = await StorePage.findOrCreate({
-      where: { PageID: PageID },
-      defaults: {
-        SellerID: 15, 
-        TemplateName: "default",
-        PageUrl: `shop-${PageID}-${Date.now()}`, 
-        StoreLogo: "", 
-        IsPublished: false,
-        StoreEmail: "", 
-        StorePhone: "", 
-        StoreBankAccount: "", // 💡 預設值補上銀行帳號
-        UpdatedAt: sqlLiteral
+    // 🛡️ 步驟 A：精確判斷數字 ID 還是字串網址，並確保抓到正確的 activePageID
+    if (isNumeric) {
+      [page] = await StorePage.findOrCreate({
+        where: { PageID: PageID },
+        defaults: {
+          SellerID: 15, 
+          TemplateName: "default",
+          PageUrl: `shop-${PageID}-${Date.now()}`, 
+          StoreLogo: "", 
+          IsPublished: false,
+          StoreEmail: "", 
+          StorePhone: "", 
+          StoreBankAccount: "", 
+          UpdatedAt: sqlLiteral
+        }
+      });
+      activePageID = page.PageID;
+    } else {
+      page = await StorePage.findOne({ where: { PageUrl: PageUrl } });
+      if (!page) {
+        return res.status(404).json({ success: false, message: "找不到該頁面網址" });
       }
-    });
+      activePageID = page.PageID;
+    }
 
-    // 撈取語系內容
+    // 🛡️ 步驟 B：嚴格防禦，若 activePageID 依然為空則直接擋下
+    if (!activePageID) {
+      return res.status(404).json({ success: false, message: "無法解析有效的 PageID" });
+    }
+
+    // 3. 撈取語系內容 (統一使用明確有值的 activePageID)
     let content = await PageContent.findOne({
-      where: { PageID: PageID, LanguageCode: Lang, ProductID: null }
+      where: { PageID: activePageID, LanguageCode: Lang, ProductID: null }
     });
 
     if (!content) {
       content = await PageContent.findOne({
-        where: { PageID: PageID, LanguageCode: Lang }
+        where: { PageID: activePageID, LanguageCode: Lang }
       });
     }
 
     if (!content) {
+      // 🛡️ 步驟 C：補齊資料庫規定的非空欄位 (PageID, ProductID, ProductName)
       content = await PageContent.create({
-        PageID: PageID, LanguageCode: Lang,
-        PageTitle: "", PageDescription: "",
-        ProductID: null, CTA_Text: "立即購買", ThemeColor: "冷靜石板", ThemeFont: "gothic",    
+        PageID: activePageID,          // 確保這裡絕對不是 null
+        LanguageCode: Lang,
+        PageTitle: "", 
+        PageDescription: "",
+        ProductID: 0,                  // 配合資料庫 NotNull 限制給予預設值
+        ProductName: "商店主頁",         // 配合資料庫 NotNull 限制給予預設名稱
+        CTA_Text: "立即購買", 
+        ThemeColor: "冷靜石板", 
+        ThemeFont: "gothic",    
         UpdatedAt: sqlLiteral
       });
     }
-
     // 動態撈取 PageID 關聯的所有商品
     const rawPageProducts = await PageProduct.findAll({
-      where: { PageID: PageID },
+      where: { PageID: activePageID }, // 💡 確保這裡用 activePageID
       order: [['DisplayOrder', 'ASC']]
     });
 
@@ -304,13 +335,13 @@ router.get('/template/:pageId', async (req, res) => {
     for (const pp of rawPageProducts) {
       const prodMain = await Product.findOne({ where: { ProductID: pp.ProductID } });
       const prodContent = await PageContent.findOne({ 
-        where: { PageID: PageID, ProductID: pp.ProductID, LanguageCode: Lang } 
+        where: { PageID: activePageID, ProductID: pp.ProductID, LanguageCode: Lang } // 💡 確保這裡用 activePageID
       });
 
       if (prodMain) {
         // 將你原本資料庫的 ProductImg、Price、Stock 欄位映射到前台小寫駝峰
         formattedProducts.push({
-          id: pp.ProductID, // 對應前端 product.id
+          id: pp.ProductID,
           name: prodContent?.ProductName || prodMain?.ProductName || '未命名商品',
           description: prodContent?.ProductDescription || prodMain?.ProductDescription || '',
           category: prodMain?.Category || '熱門商品', // 根據你商品主表欄位動態抓
@@ -358,6 +389,7 @@ router.get('/template/:pageId', async (req, res) => {
    ★ 新增的專屬文字網址 (Slug) 前台動態路由
    對應網址：GET /store/:slug (例如 /store/sweet-shop)
 ═══════════════════════════════════════════════════════════════ */
+//新路由
 router.get('/store/:slug', async (req, res) => {
   const Mock = await useMock();
   const Lang = req.query.lang || 'zh-TW';
@@ -513,7 +545,20 @@ router.get('/store/:slug', async (req, res) => {
 router.post('/pages/:PageID/update', async (req, res) => {
   console.log('收到 Body內容:', req.body);
   const Sequelize = require('sequelize'); 
-  const PageID = Number(req.params.PageID);
+  const { StorePage, PageContent } = require('../models');
+
+  let rawPageID = req.params.PageID;
+  let PageID = Number(rawPageID);
+
+  // 🛡️ 防禦機制：如果傳進來的不是數字（例如是 'retro' 這種 slug），自動去資料庫查出真正的數字 PageID
+  if (isNaN(PageID)) {
+    const foundPage = await StorePage.findOne({ where: { PageUrl: rawPageID } });
+    if (foundPage) {
+      PageID = foundPage.PageID;
+    } else {
+      return res.status(404).json({ success: false, message: '找不到對應的賣場代號' });
+    }
+  }
   
   if (!req.body || Object.keys(req.body).length === 0) {
     return res.status(400).json({ success: false, message: '後端沒收到資料，請檢查前端格式' });

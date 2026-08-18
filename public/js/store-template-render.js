@@ -24,14 +24,23 @@ let modalProductId = null;
 let modalQtyVal = 1;
 
 document.addEventListener('DOMContentLoaded', async () => {
+    // 1. 先試著從網址查詢參數（Query String）抓取 pageId (例如 ?pageId=19)
     const urlParams = new URLSearchParams(window.location.search);
-    const pageId = urlParams.get('pageId');
+    let pageId = urlParams.get('pageId');
 
+    // 2. 如果沒有，就從路徑（Pathname）中解析（例如 /store/retro -> 抓出 retro）
     if (!pageId) {
-        console.error('網址沒有 pageId！');
-        return;
+        const pathParts = window.location.pathname.split('/');
+        // 如果路徑是 /store/retro，pathParts 會是 ['', 'store', 'retro']
+        if (pathParts.length >= 3 && pathParts[1] === 'store') {
+            pageId = pathParts[2];
+        }
     }
 
+    if (!pageId) {
+        console.error('網址沒有 pageId 或有效代號！');
+        return;
+    }
     try {
         const response = await fetch(`/api/store/template/${pageId}`);
         const result = await response.json();
@@ -227,7 +236,7 @@ function renderProducts(category = 'all') {
         : window.PRODUCTS.filter(p => p.tag === category);
 
     if (products.length === 0) {
-        grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:40px;color:var(--c-text-faint);font-family:\'Noto Sans TC\',sans-serif;">此分類暫無商品</p>';
+        grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:40px;color:var(--c-text-faint);font-family:\'Noto Sans TC\',sans-serif;">此區域暫無商品</p>';
         return;
     }
 

@@ -114,6 +114,12 @@ app.use('/api/track', analyticsRoutes)
 app.use('/api/coupons', couponRoutes);
 app.use('/api/payment', paymentRoutes);
 
+// --- 🚀 新增：處理前台專屬網址動態路由 (/store/:slug)，可以正確對應到你的前台樣板頁面 ---
+app.get('/store/:slug', (req, res) => {
+    // 讓伺服器回傳你的前台樣板檔案 (請確認你的前台消費者樣板檔名是否為 goez-store-template.html)
+    res.sendFile(path.join(__dirname, 'public', 'goez-store-template.html'));
+});
+
 
 // --- 🚀 新增：商標圖片上傳 API 路由 ---
 app.post('/api/upload-logo', upload.single('logo'), (req, res) => {
