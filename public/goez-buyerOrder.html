@@ -42,14 +42,10 @@
     <header class="flex-shrink-0 bg-gradient-to-r from-slate-200 via-slate-100 to-blue-100/80 backdrop-blur-sm">
       <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
-          <a href="./goez-buyerOrder.html" class="flex items-center gap-2">
-            <span class="text-xl font-bold text-slate-800 tracking-tight">Goez Shop</span>
-          </a>
-          <div class="w-9 h-9 rounded-full bg-slate-300 flex items-center justify-center text-slate-600" role="img" aria-label="買家中心">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-            </svg>
-          </div>
+          <!-- 返回前台按鈕（灰色框框） -->
+      <a href="#" id="backToStoreBtn" class="px-4 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-medium transition-colors flex items-center gap-1 shadow-sm">
+  &larr; 返回賣場
+</a>
         </div>
       </div>
     </header>
@@ -129,7 +125,7 @@
     </main>
   </div>
 
-  <script src="./demo-orders.js"></script>
+  <script src="./js/demo-orders.js"></script>
   <script>
     (function () {
       var form = document.getElementById('order-lookup-form');
@@ -146,48 +142,80 @@
         lookupError.classList.add('hidden');
       }
 
-      function goToDetail(order) {
-        GoezBuyerOrders.saveOrderForDetail(order);
-        window.location.href = 'goez-buyerOrder-detail.html';
-      }
-
+      // ✨ 查詢送出事件：改為非同步預先驗證（驗證成功才跳轉，失敗留在原頁報錯）
       function submitLookup() {
-  clearLookupError();
-  
-  var idValue = orderIdInput.value.trim();
-  var phoneValue = phoneInput.value.trim();
+        clearLookupError();
+        
+        var idValue = orderIdInput.value.trim();
+        var phoneValue = phoneInput.value.trim();
 
-  // 1. 基本前端防禦性檢查
-  if (!idValue) {
-    showLookupError("請輸入訂單編號");
-    return;
-  }
-  if (!phoneValue) {
-    showLookupError("請輸入手機號碼");
-    return;
-  }
+        // 1. 基本防禦性檢查
+        if (!idValue) {
+          showLookupError("請輸入訂單編號");
+          return;
+        }
+        if (!phoneValue) {
+          showLookupError("請輸入手機號碼");
+          return;
+        }
 
-  console.log('🚀 買家送出查詢，正在連線真後端... 編號:', idValue, '電話:', phoneValue);
-  
-  // 2. ✨ 直接把編號帶在網址參數後面，跳轉到詳情頁！
-  // 網址會變成像這樣：goez-buyerOrder-detail.html?orderId=14
-  window.location.href = 'goez-buyerOrder-detail.html?orderId=' + idValue;
-}
+        console.log('🔍 買家送出查詢，正在連線後端預先驗證... 編號:', idValue, '電話:', phoneValue);
+
+        // 2. ✨ 發送 fetch 向後端驗證編號與手機
+        var verifyUrl = 'http://localhost:3000/api/orders/' + encodeURIComponent(idValue) + '?phone=' + encodeURIComponent(phoneValue);
+
+        fetch(verifyUrl)
+          .then(function (res) {
+            if (!res.ok) {
+              // 404 或 500 代表找不到或電話不符
+              throw new Error('查無此訂單，請確認訂單編號與手機號碼是否正確');
+            }
+            return res.json();
+          })
+          .then(function (data) {
+            console.log('✅ 驗證成功，正在跳轉至詳情頁...');
+            // 3. 🎯 帶著 orderId 參數跳轉至訂單詳情頁，同時帶上訂單編號與手機號碼
+            window.location.href = 'goez-buyerOrder-detail.html?orderId=' + encodeURIComponent(idValue) + '&phone=' + encodeURIComponent(phoneValue);
+          })
+          .catch(function (err) {
+            console.warn('❌ 驗證失敗，停留在本頁:', err.message);
+            // 4. 🎯 留在本頁顯示紅字錯誤提示，不進行跳轉
+            showLookupError(err.message || '查無此訂單，請確認訂單編號與手機號碼是否正確');
+          });
+      }
 
       form.addEventListener('submit', function (e) {
         e.preventDefault();
         submitLookup();
       });
 
+      // 支援 demo 測試參數
       if (new URLSearchParams(window.location.search).get('demo') === '1') {
-        orderIdInput.value = String(GoezBuyerOrders.DEMO_ORDER_ID);
-        phoneInput.value = '0987654321';
+        orderIdInput.value = '14';
+        phoneInput.value = '0912345678';
         submitLookup();
       }
 
       requestAnimationFrame(function () {
-        document.querySelector('.page-enter').classList.add('is-entered');
+        var pageEnter = document.querySelector('.page-enter');
+        if (pageEnter) pageEnter.classList.add('is-entered');
       });
+
+      // ==========================================
+      // ✨ 自動帶回原本賣場的返回按鈕邏輯
+      // ==========================================
+      const urlParams = new URLSearchParams(window.location.search);
+      const backUrl = urlParams.get('from');
+      const backBtn = document.getElementById('backToStoreBtn');
+
+      if (backBtn) {
+        if (backUrl) {
+          backBtn.href = decodeURIComponent(backUrl);
+        } else {
+          backBtn.href = "goez-store-template.html"; 
+        }
+      }
+
     })();
   </script>
 </body>
