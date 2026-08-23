@@ -139,22 +139,6 @@
       align-items: center;
       justify-content: center;
     }
-    .btn--secondary {
-      background: transparent;
-      color: var(--color-white);
-      padding: var(--spacing-12) var(--spacing-16);
-      border-radius: var(--radius-12);
-      border: 2px solid var(--color-white-15);
-      font-size: var(--fs-18);
-      font-weight: var(--fw-medium);
-      line-height: var(--lh-body);
-      letter-spacing: var(--ls-xs);
-      white-space: nowrap;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
     .btn--dark {
       background: var(--color-black);
       color: var(--color-white);
@@ -294,18 +278,10 @@
       color: var(--color-black);
       width: 100%;
     }
-    .faq__subtext {
-      font-size: var(--fs-16);
-      font-weight: var(--fw-medium);
-      line-height: var(--lh-body);
-      letter-spacing: var(--ls-sm);
-      color: var(--color-black-55);
-      width: 100%;
-    }
     .faq__cards {
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
       gap: var(--spacing-32);
-      align-items: flex-start;
       width: 100%;
     }
     .faq-card {
@@ -316,70 +292,25 @@
       padding: var(--spacing-32);
       display: flex;
       flex-direction: column;
-      gap: var(--spacing-24);
-      align-items: flex-start;
-      flex: 1 0 0;
-      min-width: 0;
-      overflow: hidden;
-    }
-    .faq-card__header {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-    }
-    .faq-card__author {
-      display: flex;
       gap: var(--spacing-16);
       align-items: flex-start;
-      flex: 1 0 0;
       min-width: 0;
-    }
-    .faq-card__avatar {
-      position: relative;
-      width: 48px;
-      height: 48px;
-      flex-shrink: 0;
-      border-radius: var(--radius-8);
       overflow: hidden;
-    }
-    .faq-card__avatar img {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      pointer-events: none;
-      border-radius: var(--radius-8);
-    }
-    .faq-card__author-info {
-      display: flex;
-      flex: 1 0 0;
-      flex-direction: column;
-      gap: var(--spacing-4);
-      align-items: flex-start;
-      min-width: 0;
-      font-size: var(--fs-16);
-      letter-spacing: var(--ls-sm);
-    }
-    .faq-card__author-name {
-      font-weight: var(--fw-semibold);
-      line-height: var(--lh-tight);
-      color: var(--color-black);
-      width: 100%;
-    }
-    .faq-card__author-role {
-      font-weight: var(--fw-medium);
-      line-height: var(--lh-sm);
-      color: var(--color-black-55);
-      width: 100%;
     }
     .faq-card__question {
       font-size: var(--fs-16);
-      font-weight: var(--fw-medium);
+      font-weight: var(--fw-bold);
       line-height: var(--lh-body);
       letter-spacing: var(--ls-sm);
       color: var(--color-black);
+      width: 100%;
+    }
+    .faq-card__answer {
+      font-size: var(--fs-16);
+      font-weight: var(--fw-regular);
+      line-height: var(--lh-body);
+      letter-spacing: var(--ls-sm);
+      color: var(--color-black-55);
       width: 100%;
     }
 
@@ -407,58 +338,28 @@
       position: relative;
       display: flex;
       flex: 1 0 0;
-      align-items: flex-start;
-      justify-content: space-between;
+      align-items: center;
+      justify-content: center;
       border-top: 1px solid var(--color-white-15);
       padding-top: var(--spacing-80);
       padding-bottom: var(--spacing-80);
       z-index: 1;
       min-width: 0;
     }
-    .footer__brand {
-      font-size: var(--fs-24);
+    .footer__contact {
+      font-size: var(--fs-16);
+      font-weight: var(--fw-medium);
+      line-height: var(--lh-body);
+      letter-spacing: var(--ls-sm);
+      color: var(--color-white);
+      text-align: center;
+      max-width: 640px;
+    }
+    .footer__contact-link {
+      color: var(--color-white);
       font-weight: var(--fw-semibold);
-      line-height: var(--lh-heading);
-      letter-spacing: var(--ls-brand);
-      color: var(--color-white);
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    .footer__nav {
-      display: flex;
-      gap: var(--spacing-96);
-      align-items: flex-start;
-      flex-shrink: 0;
-    }
-    .footer__nav-col {
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-8);
-      align-items: flex-start;
-      justify-content: center;
-      width: 130px;
-    }
-    .footer__nav-header {
-      display: flex;
-      align-items: flex-start;
-      padding-bottom: var(--spacing-16);
-      width: 100%;
-    }
-    .footer__nav-title {
-      font-size: var(--fs-16);
-      font-weight: var(--fw-bold);
-      line-height: var(--lh-body);
-      letter-spacing: var(--ls-sm);
-      color: var(--color-white);
-      white-space: nowrap;
-    }
-    .footer__nav-link {
-      font-size: var(--fs-16);
-      font-weight: var(--fw-regular);
-      line-height: var(--lh-body);
-      letter-spacing: var(--ls-sm);
-      color: var(--color-white-60);
-      width: 100%;
+      text-decoration: underline;
+      text-underline-offset: 2px;
     }
 
     /* ─── Animations & Transitions ──────────────────────────────── */
@@ -524,16 +425,6 @@
     }
     .btn--primary:active { transform: translateY(0); }
 
-    .btn--secondary {
-      transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
-    }
-    .btn--secondary:hover {
-      transform: translateY(-2px);
-      background: rgba(255,255,255,0.12);
-      border-color: rgba(255,255,255,0.4);
-    }
-    .btn--secondary:active { transform: translateY(0); }
-
     .btn--dark {
       transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
     }
@@ -579,14 +470,12 @@
       box-shadow: 0 12px 32px rgba(0,0,0,0.08);
     }
 
-    /* Footer nav link hover */
-    .footer__nav-link {
-      transition: color 0.2s ease, transform 0.2s ease;
-      display: inline-block;
+    /* Footer contact link hover */
+    .footer__contact-link {
+      transition: color 0.2s ease;
     }
-    .footer__nav-link:hover {
-      color: rgba(255,255,255,0.95);
-      transform: translateX(4px);
+    .footer__contact-link:hover {
+      color: rgba(255,255,255,0.75);
     }
 
     /* ─── Responsive: Tablet ─────────────────────────────────────── */
@@ -606,10 +495,8 @@
       .gallery-card { height: 260px; }
       .faq { padding: 64px 48px 80px; }
       .faq__heading { font-size: 28px; }
-      .faq__cards { flex-direction: column; }
+      .faq__cards { grid-template-columns: 1fr; }
       .footer { padding: 0 48px 80px; }
-      .footer__nav { gap: 48px; }
-      .footer__nav-col { width: 110px; }
     }
 
     /* ─── Responsive: Mobile ─────────────────────────────────────── */
@@ -621,7 +508,7 @@
       }
       .hero__title { font-size: 36px; letter-spacing: -1px; }
       .hero__buttons { flex-direction: column; align-items: center; width: 100%; }
-      .btn--primary, .btn--secondary { width: 100%; justify-content: center; }
+      .btn--primary { width: 100%; justify-content: center; }
       .feature-gallery { padding: 48px 24px; }
       .feature-gallery__heading { font-size: 22px; letter-spacing: 2px; }
       .feature-gallery__desc { font-size: 15px; }
@@ -632,12 +519,9 @@
       .gallery-card__label { font-size: 18px; letter-spacing: 6px; }
       .faq { padding: 48px 24px 64px; }
       .faq__heading { font-size: 22px; letter-spacing: 2px; }
-      .faq__cards { flex-direction: column; }
+      .faq__cards { grid-template-columns: 1fr; }
       .faq-card { padding: 24px; }
       .footer { padding: 0 24px 64px; }
-      .footer__content { flex-direction: column; gap: 40px; }
-      .footer__nav { flex-wrap: wrap; gap: 32px; }
-      .footer__nav-col { width: calc(50% - 16px); }
     }
   </style>
 </head>
@@ -657,8 +541,7 @@
       <div class="hero__content">
         <h1 class="hero__title">Goez Shop</h1>
         <div class="hero__buttons">
-          <button class="btn--primary">一鍵開店</button>
-          <button class="btn--secondary">認識我們</button>
+          <button class="btn--primary" onclick="location.href='goez-shop-login.html'">一鍵開店</button>
         </div>
       </div>
     </div>
@@ -682,7 +565,7 @@
           <!-- Column 1 -->
           <div class="image-gallery__col fade-in-left delay-1">
             <div class="gallery-card"
-              onclick="location.href='http://localhost:3000/goez-ai-assistant.html'" 
+              onclick="location.href='http://localhost:3000/goez-shop-ai-assistant.html'" 
             style="cursor: pointer;">
               <img
                 class="gallery-card__img"
@@ -730,46 +613,31 @@
     <section class="faq" aria-label="常見問題">
       <div class="faq__header fade-in">
         <h2 class="faq__heading">常見問題</h2>
-        <p class="faq__subtext">我們整理了大家在開店路上最常遇到的疑問。如果還有其他想了解的，隨時留言！</p>
       </div>
 
       <div class="faq__cards">
         <!-- Card 1 -->
         <article class="faq-card fade-in-left delay-1">
-          <div class="faq-card__header">
-            <div class="faq-card__author">
-              <div class="faq-card__avatar">
-                <img
-                  src="images/decorations/user1.svg"
-                  alt="User 1 avatar"
-                />
-              </div>
-              <div class="faq-card__author-info">
-                <p class="faq-card__author-name">User 1</p>
-                <p class="faq-card__author-role">Growth at Cocoon &amp; Co.</p>
-              </div>
-            </div>
-          </div>
-          <p class="faq-card__question">手機拍照背景很亂怎麼辦？</p>
+          <p class="faq-card__question">Q. 手機拍照背景很亂怎麼辦？</p>
+          <p class="faq-card__answer">A. 使用 Goez Shop 內建的 AI 去背與美化工具，一鍵清除雜亂背景、自動優化光線與色調，讓商品照片瞬間變得專業。</p>
         </article>
 
         <!-- Card 2 -->
         <article class="faq-card fade-in-right delay-2">
-          <div class="faq-card__header">
-            <div class="faq-card__author">
-              <div class="faq-card__avatar">
-                <img
-                  src="images/decorations/user2.svg"
-                  alt="User2 avatar"
-                />
-              </div>
-              <div class="faq-card__author-info">
-                <p class="faq-card__author-name">User2</p>
-                <p class="faq-card__author-role">Lepidopterist</p>
-              </div>
-            </div>
-          </div>
-          <p class="faq-card__question">寫不出那種很有質感、會讓人想下單的文案怎麼辦？</p>
+          <p class="faq-card__question">Q. 寫不出那種很有質感、會讓人想下單的文案怎麼辦？</p>
+          <p class="faq-card__answer">A. 交給 AI 開店助手，只要輸入商品重點，就能自動生成吸引人的商品文案與標題，你也能再依自己的語氣微調。</p>
+        </article>
+
+        <!-- Card 3 -->
+        <article class="faq-card fade-in-left delay-3">
+          <p class="faq-card__question">Q. 不會寫程式，也能架設自己的線上商店嗎？</p>
+          <p class="faq-card__answer">A. 完全不需要！Goez Shop 提供一鍵開店與拖拉式版面編輯器，不用寫任何程式碼，幾分鐘內就能打造出專屬賣場。</p>
+        </article>
+
+        <!-- Card 4 -->
+        <article class="faq-card fade-in-right delay-4">
+          <p class="faq-card__question">Q. 商店開張後，要怎麼追蹤訂單和銷售狀況？</p>
+          <p class="faq-card__answer">A. 後台內建「訂單與物流」與「銷售成效追蹤」功能，即時掌握每筆訂單狀態與營收數據，隨時掌握店鋪表現。</p>
         </article>
       </div>
     </section>
@@ -785,51 +653,15 @@
       aria-hidden="true"
     />
     <div class="footer__content">
-      <p class="footer__brand">Namedly</p>
-
-      <div class="footer__nav">
-        <!-- Platform -->
-        <nav class="footer__nav-col" aria-label="Platform">
-          <div class="footer__nav-header">
-            <span class="footer__nav-title">Platform</span>
-          </div>
-          <a href="#" class="footer__nav-link">Individuals</a>
-          <a href="#" class="footer__nav-link">Teams</a>
-          <a href="#" class="footer__nav-link">Admins</a>
-          <a href="#" class="footer__nav-link">Developers</a>
-        </nav>
-
-        <!-- Features -->
-        <nav class="footer__nav-col" aria-label="Features">
-          <div class="footer__nav-header">
-            <span class="footer__nav-title">Features</span>
-          </div>
-          <a href="#" class="footer__nav-link">Core features</a>
-          <a href="#" class="footer__nav-link">Pro experience</a>
-          <a href="#" class="footer__nav-link">Integrations</a>
-        </nav>
-
-        <!-- Learn more -->
-        <nav class="footer__nav-col" aria-label="Learn more">
-          <div class="footer__nav-header">
-            <span class="footer__nav-title">Learn more</span>
-          </div>
-          <a href="#" class="footer__nav-link">Blog</a>
-          <a href="#" class="footer__nav-link">Case studies</a>
-          <a href="#" class="footer__nav-link">Customer stories</a>
-          <a href="#" class="footer__nav-link">Best practices</a>
-        </nav>
-
-        <!-- Support -->
-        <nav class="footer__nav-col" aria-label="Support">
-          <div class="footer__nav-header">
-            <span class="footer__nav-title">Support</span>
-          </div>
-          <a href="#" class="footer__nav-link">Contact</a>
-          <a href="#" class="footer__nav-link">Support</a>
-          <a href="#" class="footer__nav-link">Legal</a>
-        </nav>
-      </div>
+      <p class="footer__contact">
+        若有操作上問題 請寄信至
+        <a
+          href="https://mail.google.com/mail/?view=cm&fs=1&to=goez-shop@gmail.com"
+          class="footer__contact-link"
+          target="_blank"
+          rel="noopener noreferrer"
+        >goez-shop@gmail.com</a> 客服將為您服務
+      </p>
     </div>
   </footer>
 </div>
@@ -877,7 +709,7 @@ async function handleCreateShop() {
         if (result.success && result.pageId) {
             // 3. 拿到新 ID 了，自動跳轉到編輯頁，並帶上 pageId
             console.log("申請成功，ID 為:", result.pageId);
-            window.location.href = `http://localhost:3000/goez-store.html?pageId=${result.pageId}`;
+            window.location.href = `http://localhost:3000/goez-shop-store.html?pageId=${result.pageId}`;
         } else {
             alert("建立失敗：" + (result.message || "未知錯誤"));
         }
