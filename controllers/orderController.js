@@ -23,7 +23,7 @@ const orderController = {
 
       if (!items || items.length === 0) throw new Error("購物車不可為空");
 
-      let subTotal = 0; // 修正 1：宣告 subTotal
+      let subTotal = 0;
       const details = [];
 
       for (const item of items) {
@@ -49,7 +49,7 @@ const orderController = {
       let shippingFee = (ShippingMethod === '宅配') ? 100 : 60;
       if (subTotal >= 1000) shippingFee = 0;
 
-      const totalAmount = subTotal + shippingFee; // 修正 2：不要用 const 重複宣告，直接賦值或改用 let
+      const totalAmount = subTotal + shippingFee;
 
       console.log('--- 金額計算過程 ---');
       console.log('商品小計 (subTotal):', subTotal);
@@ -59,7 +59,7 @@ const orderController = {
 
       // 建立訂單
       const newOrder = await Order.create({
-        SellerID: SellerID || 15, // 修正 3：改用正確的參數
+        SellerID: SellerID || 15,
         BuyerName, BuyerPhone, BuyerEmail, BuyerAddress,
         TotalAmount: totalAmount,
         OrderStatus: ORDER_STATUS.PENDING_PAYMENT,
@@ -132,17 +132,18 @@ const orderController = {
     }
   },
 
-  // 3.5. 查詢單筆訂單的「明細列表」
+  // 3.5. 查詢單筆訂單的「明細列表」 (已透過 JOIN pagecontent 抓取真實商品名稱)
   getOrderDetailsList: async (req, res) => {
     try {
       const orderId = Number(req.params.OrderID);
       if (isNaN(orderId)) return res.status(400).json({ Success: false, Error: 'OrderID 必須是數字' });
 
       const sql = `
-        SELECT OrderdetailID, OrderID, ProductID, Quantity, UnitPrice 
-        FROM Orderdetail 
-        WHERE OrderID = :orderId 
-        ORDER BY OrderdetailID ASC
+        SELECT od.*, pc.ProductName, pc.PageTitle, pc.PageDescription 
+        FROM Orderdetail od
+        LEFT JOIN pagecontent pc ON od.ProductID = pc.ProductID AND pc.LanguageCode = 'zh-TW'
+        WHERE od.OrderID = :orderId 
+        ORDER BY od.OrderdetailID ASC
       `;
       
       const details = await sequelize.query(sql, {
@@ -150,27 +151,17 @@ const orderController = {
         type: QueryTypes.SELECT
       });
 
-      for (let item of details) {
-        item.ProductName = `商品 #${item.ProductID}`;
-        item.ProductImg = '';
-        try {
-          const prods = await sequelize.query(`SELECT TOP 1 * FROM Product WHERE ProductID = :productId`, {
-            replacements: { productId: item.ProductID },
-            type: QueryTypes.SELECT
-          });
-          if (prods && prods.length > 0) {
-            const p = prods[0];
-            item.ProductName = p.ProductName || p.Name || p.Title || `商品 #${item.ProductID}`;
-            item.ProductImg = p.ProductImg || p.ProductImage || p.Img || '';
-          }
-        } catch (e) {}
-      }
+      const formattedDetails = details.map(item => ({
+        ...item,
+        ProductName: item.ProductName || `商品 #${item.ProductID}`,
+        ProductImg: item.ProductImg || 'https://via.placeholder.com/40'
+      }));
 
       const order = await Order.findByPk(orderId, { attributes: ['OrderID', 'TotalAmount', 'CreatedAt'] });
       res.json({
         Order: order || null,
-        Orderdetails: details,
-        Items: details
+        Orderdetails: formattedDetails,
+        Items: formattedDetails
       });
     } catch (error) {
       console.error('查詢訂單明細列表錯誤:', error);
@@ -196,7 +187,6 @@ const orderController = {
         return res.status(404).json({ Success: false, Error: "找不到該訂單" });
       }
 
-      // 修正 4：如果要回補庫存，必須去資料庫把該訂單的明細撈出來
       if (Number(OrderStatus) === ORDER_STATUS.CANCELLED) {
         const orderItems = await Orderdetail.findAll({ where: { OrderID: orderId }, transaction: t });
         for (const item of orderItems) {
@@ -208,16 +198,13 @@ const orderController = {
         }
       }
 
-      // 整理要更新的欄位
       const updateData = {};
       if (OrderStatus !== undefined) updateData.OrderStatus = Number(OrderStatus);
       if (PaymentStatus !== undefined) updateData.PaymentStatus = Number(PaymentStatus);
 
-      // 修正 5：把 orderID 改成正確的小寫 orderId
       await Order.update(updateData, { where: { OrderID: orderId }, transaction: t });
       
       await t.commit();
-      // 修正 6：改回正確的成功提示文字
       res.json({ Success: true, Message: '更新狀態成功' });
     } catch (error) {
       await t.rollback();

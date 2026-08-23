@@ -22,7 +22,13 @@
         "OrderID": 70001,
         "ProductID": 2001,
         "Quantity": 1,
-        "UnitPrice": "1990.00"
+        "UnitPrice": "1990.00",
+        "ProductName": "ACME 經典組合",
+        "ProductImg": "https://cdn.example.com/p/2001.png",
+        "Product": {
+          "ProductName": "ACME 經典組合",
+          "ProductImg": "https://cdn.example.com/p/2001.png"
+        }
       }
     ]
   },
@@ -57,7 +63,28 @@
         "OrderID": 70001,
         "ProductID": 2001,
         "Quantity": 1,
-        "UnitPrice": "1990.00"
+        "UnitPrice": "1990.00",
+        "ProductName": "ACME 經典組合",
+        "ProductImg": "https://cdn.example.com/p/2001.png",
+        "Product": {
+          "ProductName": "ACME 經典組合",
+          "ProductImg": "https://cdn.example.com/p/2001.png"
+        }
+      }
+    ],
+    "Orderdetails": [
+      {
+        "OrderdetailID": 1,
+        "OrderID": 70001,
+        "ProductID": 2001,
+        "Quantity": 1,
+        "UnitPrice": "1990.00",
+        "ProductName": "ACME 經典組合",
+        "ProductImg": "https://cdn.example.com/p/2001.png",
+        "Product": {
+          "ProductName": "ACME 經典組合",
+          "ProductImg": "https://cdn.example.com/p/2001.png"
+        }
       }
     ]
   },
