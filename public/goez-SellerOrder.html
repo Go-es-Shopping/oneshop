@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>訂單管理</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <script>
         tailwind.config = {
             theme: {
@@ -15,13 +16,15 @@
             }
         }
     </script>
+    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', 'Noto Sans TC', sans-serif;
-            background-color: #f1f5f9;
+            background-color: #f1f5f9; 
         }
+        
         .custom-scrollbar::-webkit-scrollbar {
             height: 8px;
             width: 8px;
@@ -37,6 +40,7 @@
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
+        
         .tab-btn.active {
             color: #4f46e5;
             background-color: rgba(238, 242, 255);
@@ -55,6 +59,7 @@
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
+
     <header class="bg-white border-b border-gray-200 px-4 md:px-6 py-3 md:py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
         <div class="flex items-center gap-2.5">
             <i class="fa-solid fa-bag-shopping text-indigo-600 text-xl md:text-2xl"></i>
@@ -62,11 +67,12 @@
         </div>
     </header>
 
-    <main class="flex-1 p-3 md:p-6 xl:p-8">
+    <main class="flex-1 p-3 md:p-6 xl:p-8" id="mainContainer">
         <div class="max-w-[1600px] mx-auto">
+            
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <h1 class="text-2xl font-bold text-gray-800 tracking-tight">訂單管理</h1>
-                <button onclick="exportOrdersToCSV()" class="w-full md:w-auto bg-slate-600 hover:bg-slate-700 active:bg-slate-800 active:scale-95 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm flex items-center justify-center gap-2">
+                <button class="w-full md:w-auto bg-slate-600 hover:bg-slate-700 active:bg-slate-800 active:scale-95 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm flex items-center justify-center gap-2">
                     <i class="fa-solid fa-arrow-up-right-from-square"></i> 匯出訂單
                 </button>
             </div>
@@ -91,6 +97,7 @@
                             <th scope="col" class="px-4 py-4 font-semibold">Email</th>
                             <th scope="col" class="px-4 py-4 font-semibold">地址</th>
                             <th scope="col" class="px-4 py-4 font-semibold">訂單處理狀態</th>
+                            <th scope="col" class="px-4 py-4 font-semibold">優惠券</th> <!-- 新增的優惠券欄位 -->
                             <th scope="col" class="px-4 py-4 font-semibold">訂單總金額</th>
                             <th scope="col" class="px-4 py-4 font-semibold">支付狀態</th>
                             <th scope="col" class="px-4 py-4 font-semibold">建立時間</th>
@@ -98,10 +105,11 @@
                             <th scope="col" class="px-4 py-4 font-semibold text-center sticky right-0 bg-gray-100/80 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)] z-10">操作</th>
                         </tr>
                     </thead>
-                    <tbody id="orderTableBody" class="divide-y divide-gray-100 bg-white"></tbody>
+                    <tbody id="orderTableBody" class="divide-y divide-gray-100 bg-white">
+                    </tbody>
                 </table>
             </div>
-
+            
             <div class="px-6 py-4 flex items-center justify-between border-t border-gray-100 text-sm text-gray-500 bg-gray-50/30 rounded-b-xl">
                 <div id="pagination-info">顯示 0 筆訂單</div>
                 <div class="flex gap-1">
@@ -114,14 +122,58 @@
     </main>
 
     <script>
+        // ==========================================
+        // 嚴格檢核函數：一載入就執行，若格式不符直接攔截阻斷
+        // ==========================================
+        function getValidatedSellerIdOrBlock() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sellerIdParam = urlParams.get('sellerId');
+
+            if (!sellerIdParam) {
+                renderAccessDenied("錯誤：網址缺少賣家編號 (sellerId)");
+                return null;
+            }
+
+            const isValidInteger = /^[1-9]\d*$/.test(sellerIdParam);
+            if (!isValidInteger) {
+                renderAccessDenied(`錯誤：賣家編號「${sellerIdParam}」格式不正確，必須為大於 0 的整數。`);
+                return null;
+            }
+
+            return sellerIdParam;
+        }
+
+        function renderAccessDenied(message) {
+            window.addEventListener('DOMContentLoaded', () => {
+                const mainContainer = document.getElementById('mainContainer');
+                if (mainContainer) {
+                    mainContainer.innerHTML = `
+                        <div class="max-w-md mx-auto mt-20 p-8 bg-white rounded-2xl shadow-sm border border-gray-100 text-center">
+                            <div class="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto mb-4 text-xl">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                            <h2 class="text-xl font-bold text-gray-800 mb-2">存取被拒絕</h2>
+                            <p class="text-gray-600 text-sm mb-6">${message}</p>
+                            <a href="goez-SellerOrder.html?sellerId=1" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
+                                帶入正確範例測試 (ID: 1)
+                            </a>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        const activeSellerId = getValidatedSellerIdOrBlock();
         let currentStatusFilter = '';
 
         document.addEventListener('DOMContentLoaded', () => {
+            if (!activeSellerId) return;
             fetchSellerOrders();
         });
 
         function filterOrders(status) {
             currentStatusFilter = status;
+            
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 if (btn.getAttribute('data-status') === status) {
                     btn.classList.remove('inactive');
@@ -131,21 +183,27 @@
                     btn.classList.add('inactive');
                 }
             });
+
             fetchSellerOrders(status);
         }
 
         async function fetchSellerOrders(status = '') {
+            if (!activeSellerId) return; 
+
             const tableBody = document.getElementById('orderTableBody');
             if (tableBody) {
-                tableBody.innerHTML = `<tr><td colspan="11" class="px-4 py-12 text-center text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i>資料載入中...</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="12" class="px-4 py-12 text-center text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i>資料載入中...</td></tr>`;
             }
+            
             try {
-                let url = '/api/orders?SellerID=15';
+                let url = `/api/orders?SellerID=${activeSellerId}`;
                 if (status !== '') {
                     url += `&OrderStatus=${status}`;
                 }
+
                 const response = await fetch(url);
                 const orders = await response.json();
+                
                 if (Array.isArray(orders) && orders.length > 0) {
                     renderOrderTable(orders);
                     document.getElementById('pagination-info').innerText = `顯示 ${orders.length} 筆訂單`;
@@ -163,7 +221,7 @@
             if (tableBody) {
                 tableBody.innerHTML = `
                     <tr>
-                        <td colspan="11" class="px-4 py-12 text-center text-gray-500 bg-gray-50/50">
+                        <td colspan="12" class="px-4 py-12 text-center text-gray-500 bg-gray-50/50">
                             <div class="flex flex-col items-center justify-center">
                                 <i class="fa-solid fa-inbox text-3xl text-gray-300 mb-3"></i>
                                 <p>目前尚無訂單資料</p>
@@ -178,16 +236,34 @@
         function renderOrderTable(orders) {
             const tableBody = document.getElementById('orderTableBody');
             if (!tableBody) return;
-            tableBody.innerHTML = '';
+            
+            tableBody.innerHTML = ''; 
+            if (!activeSellerId) return;
+            
             orders.forEach(order => {
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-gray-50/80 transition-colors group';
+                
                 const formatter = new Intl.NumberFormat('zh-TW', {
                     style: 'currency',
                     currency: 'TWD',
                     minimumFractionDigits: 0,
                     maximumFractionDigits: 2
                 });
+
+                // 處理優惠券顯示邏輯 (對應後端回傳的 CouponCode 與 DiscountValue)
+                const couponCode = order.CouponCode || '';
+                const discountValue = order.DiscountValue || 0;
+                let couponHtml = `<span class="text-gray-400">無</span>`;
+                if (couponCode) {
+                    couponHtml = `
+                        <div class="text-xs">
+                            <span class="bg-purple-100 text-purple-700 font-semibold px-2 py-0.5 rounded">${couponCode}</span>
+                            <div class="text-red-500 mt-1">-$${discountValue}</div>
+                        </div>
+                    `;
+                }
+
                 tr.innerHTML = `
                     <td class="px-4 py-4 font-medium text-gray-900">#${order.OrderID || '-'}</td>
                     <td class="px-4 py-4">${order.BuyerName || '-'}</td>
@@ -199,14 +275,15 @@
                         </div>
                     </td>
                     <td class="px-4 py-4 status-cell">${getOrderStatusBadge(order.OrderStatus)}</td>
+                    <td class="px-4 py-4">${couponHtml}</td> <!-- 插入優惠券欄位 -->
                     <td class="px-4 py-4 font-semibold text-gray-800">${formatter.format(order.TotalAmount || 0)}</td>
-                    <td class="px-4 py-4 payment-cell">${getPaymentStatusBadge(order.PaymentStatus)}</td>
+                    <td class="px-4 py-4">${getPaymentStatusBadge(order.PaymentStatus)}</td>
                     <td class="px-4 py-4 text-xs text-gray-500">${order.CreatedAt ? new Date(order.CreatedAt).toLocaleString() : '-'}</td>
                     <td class="px-4 py-4 text-xs text-gray-500">${order.UpdatedAt ? new Date(order.UpdatedAt).toLocaleString() : '-'}</td>
                     <td class="px-4 py-4 sticky right-0 bg-white group-hover:bg-gray-50/90 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)] transition-colors z-10">
                         <div class="flex items-center justify-center gap-3 text-gray-400">
-                            <a href="goez-SellerOrder-detail.html?orderId=${order.OrderID}" class="hover:text-indigo-600 transition-colors cursor-pointer" title="查看明細"><i class="fa-solid fa-eye text-lg"></i></a>
-                            <button onclick="enableEdit(${order.OrderID}, ${order.OrderStatus}, ${order.PaymentStatus}, this)" class="hover:text-blue-600 transition-colors cursor-pointer" title="編輯訂單與支付狀態"><i class="fa-regular fa-pen-to-square text-lg"></i></button>
+                            <a href="goez-SellerOrder-detail.html?orderId=${order.OrderID}&sellerId=${activeSellerId}" class="hover:text-indigo-600 transition-colors cursor-pointer" title="查看明細"><i class="fa-solid fa-eye text-lg"></i></a>
+                            <button onclick="enableEdit(${order.OrderID}, ${order.OrderStatus}, this)" class="hover:text-blue-600 transition-colors cursor-pointer" title="編輯訂單狀態"><i class="fa-regular fa-pen-to-square text-lg"></i></button>
                             <button onclick="deleteOrder(${order.OrderID})" class="hover:text-red-500 transition-colors cursor-pointer" title="刪除訂單"><i class="fa-regular fa-trash-can text-lg"></i></button>
                         </div>
                     </td>
@@ -215,94 +292,52 @@
             });
         }
 
-        // 匯出訂單成 CSV 功能
-        function exportOrdersToCSV() {
-            const rows = document.querySelectorAll('#orderTableBody tr');
-            if (rows.length === 0 || rows[0].innerText.includes('目前尚無訂單資料') || rows[0].innerText.includes('資料載入中')) {
-                alert('目前沒有可匯出的訂單資料！');
-                return;
-            }
-            let csvContent = "\uFEFF"; // 加入 BOM 以支援 Excel 中文不亂碼
-            csvContent += "訂單編號,買家姓名,電話,Email,地址,訂單處理狀態,訂單總金額,支付狀態,建立時間,更新時間\n";
-            rows.forEach(row => {
-                const cols = row.querySelectorAll('td');
-                if (cols.length >= 11) {
-                    const orderId = cols[0].innerText.trim();
-                    const name = cols[1].innerText.trim();
-                    const phone = cols[2].innerText.trim();
-                    const email = cols[3].innerText.trim();
-                    const address = cols[4].innerText.trim().replace(/,/g, ' ');
-                    const status = cols[5].innerText.trim();
-                    const amount = cols[6].innerText.trim();
-                    const payment = cols[7].innerText.trim();
-                    const createdAt = cols[8].innerText.trim();
-                    const updatedAt = cols[9].innerText.trim();
-                    const rowData = [orderId, name, phone, email, `"${address}"`, status, amount, payment, createdAt, updatedAt];
-                    csvContent += rowData.join(",") + "\n";
-                }
-            });
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.setAttribute("href", url);
-            const dateStr = new Date().toISOString().slice(0, 10);
-            link.setAttribute("download", `訂單報表_${dateStr}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        function enableEdit(orderId, currentStatus, currentPaymentStatus, btnElement) {
+        function enableEdit(orderId, currentStatus, btnElement) {
             const tr = btnElement.closest('tr');
             const statusCell = tr.querySelector('.status-cell');
-            const paymentCell = tr.querySelector('.payment-cell');
-
+            
             statusCell.innerHTML = `
-                <select id="status-select-${orderId}" class="border border-gray-300 rounded px-2 py-1 text-xs bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <option value="0" ${currentStatus == 0 ? 'selected' : ''}>處理中</option>
-                    <option value="1" ${currentStatus == 1 ? 'selected' : ''}>待出貨</option>
-                    <option value="2" ${currentStatus == 2 ? 'selected' : ''}>已出貨</option>
-                    <option value="3" ${currentStatus == 3 ? 'selected' : ''}>已送達</option>
-                    <option value="4" ${currentStatus == 4 ? 'selected' : ''}>完成取貨</option>
-                    <option value="5" ${currentStatus == 5 ? 'selected' : ''}>已取消</option>
-                </select>
+                <div class="flex items-center gap-2">
+                    <select id="status-select-${orderId}" class="border border-gray-300 rounded px-2 py-1 text-xs bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="0" ${currentStatus == 0 ? 'selected' : ''}>處理中</option>
+                        <option value="1" ${currentStatus == 1 ? 'selected' : ''}>待出貨</option>
+                        <option value="2" ${currentStatus == 2 ? 'selected' : ''}>已出貨</option>
+                        <option value="3" ${currentStatus == 3 ? 'selected' : ''}>已送達</option>
+                        <option value="4" ${currentStatus == 4 ? 'selected' : ''}>完成取貨</option>
+                        <option value="5" ${currentStatus == 5 ? 'selected' : ''}>已取消</option>
+                    </select>
+                    <button onclick="saveOrderStatus(${orderId})" class="bg-indigo-600 text-white px-2 py-1 rounded text-xs hover:bg-indigo-700">儲存</button>
+                    <button onclick="cancelEdit(${orderId}, ${currentStatus}, this)" class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs hover:bg-gray-300">取消</button>
+                </div>
             `;
+        }
 
-            paymentCell.innerHTML = `
-                <select id="payment-select-${orderId}" class="border border-gray-300 rounded px-2 py-1 text-xs bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <option value="0" ${currentPaymentStatus == 0 ? 'selected' : ''}>未付款</option>
-                    <option value="1" ${currentPaymentStatus == 1 ? 'selected' : ''}>已付款</option>
-                    <option value="2" ${currentPaymentStatus == 2 ? 'selected' : ''}>退款中</option>
-                    <option value="3" ${currentPaymentStatus == 3 ? 'selected' : ''}>已退款</option>
-                    <option value="4" ${currentPaymentStatus == 4 ? 'selected' : ''}>失敗</option>
-                </select>
-            `;
-
-            const actionCell = btnElement.closest('td').querySelector('.flex');
-            actionCell.innerHTML = `
-                <button onclick="saveOrderStatus(${orderId})" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1 rounded text-xs font-medium">儲存</button>
-                <button onclick="fetchSellerOrders(currentStatusFilter)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-2 py-1 rounded text-xs font-medium">取消</button>
-            `;
+        function cancelEdit(orderId, originalStatus, btnElement) {
+            const tr = btnElement.closest('tr');
+            const statusCell = tr.querySelector('.status-cell');
+            statusCell.innerHTML = getOrderStatusBadge(originalStatus);
         }
 
         async function saveOrderStatus(orderId) {
-            const newStatus = parseInt(document.getElementById(`status-select-${orderId}`).value);
-            const newPaymentStatus = parseInt(document.getElementById(`payment-select-${orderId}`).value);
+            const selectElement = document.getElementById(`status-select-${orderId}`);
+            const newStatus = parseInt(selectElement.value);
+
             try {
                 const response = await fetch(`/api/orders/${orderId}/status`, {
                     method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        OrderStatus: newStatus,
-                        PaymentStatus: newPaymentStatus
-                    })
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ OrderStatus: newStatus })
                 });
+
                 const result = await response.json();
+
                 if (response.ok && result.Success) {
                     alert('訂單狀態更新成功！');
                     fetchSellerOrders(currentStatusFilter);
                 } else {
-                    alert('更新失敗：' + (result.Error || result.Message || '未知錯誤'));
+                    alert('更新失敗：' + (result.Error || '未知錯誤'));
                 }
             } catch (error) {
                 console.error('更新狀態發生錯誤:', error);
@@ -314,9 +349,13 @@
             if (!confirm(`確定要刪除訂單 #${orderId} 嗎？此動作將會一併刪除對應的明細，且無法復原！`)) {
                 return;
             }
+
             try {
-                const response = await fetch(`/api/orders/${orderId}`, { method: 'DELETE' });
+                const response = await fetch(`/api/orders/${orderId}`, {
+                    method: 'DELETE'
+                });
                 const result = await response.json();
+
                 if (response.ok) {
                     alert('訂單已成功刪除！');
                     fetchSellerOrders(currentStatusFilter);

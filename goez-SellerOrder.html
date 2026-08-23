@@ -67,7 +67,7 @@
         </div>
     </header>
 
-    <main class="flex-1 p-3 md:p-6 xl:p-8">
+    <main class="flex-1 p-3 md:p-6 xl:p-8" id="mainContainer">
         <div class="max-w-[1600px] mx-auto">
             
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
@@ -121,9 +121,57 @@
     </main>
 
     <script>
+        // ==========================================
+        // 嚴格檢核函數：一載入就執行，若格式不符直接攔截阻斷
+        // ==========================================
+        function getValidatedSellerIdOrBlock() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sellerIdParam = urlParams.get('sellerId');
+
+            if (!sellerIdParam) {
+                renderAccessDenied("錯誤：網址缺少賣家編號 (sellerId)");
+                return null;
+            }
+
+            const isValidInteger = /^[1-9]\d*$/.test(sellerIdParam);
+            if (!isValidInteger) {
+                renderAccessDenied(`錯誤：賣家編號「${sellerIdParam}」格式不正確，必須為大於 0 的整數。`);
+                return null;
+            }
+
+            return sellerIdParam;
+        }
+
+        function renderAccessDenied(message) {
+            // 立即在 DOM 載入後（或執行中）將 main 內容替換為拒絕訪問卡片
+            window.addEventListener('DOMContentLoaded', () => {
+                const mainContainer = document.getElementById('mainContainer');
+                if (mainContainer) {
+                    mainContainer.innerHTML = `
+                        <div class="max-w-md mx-auto mt-20 p-8 bg-white rounded-2xl shadow-sm border border-gray-100 text-center">
+                            <div class="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto mb-4 text-xl">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                            <h2 class="text-xl font-bold text-gray-800 mb-2">存取被拒絕</h2>
+                            <p class="text-gray-600 text-sm mb-6">${message}</p>
+                            <a href="goez-SellerOrder.html?sellerId=1" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
+                                帶入正確範例測試 (ID: 1)
+                            </a>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        // 執行驗證
+        const activeSellerId = getValidatedSellerIdOrBlock();
+
         let currentStatusFilter = '';
 
         document.addEventListener('DOMContentLoaded', () => {
+            // 如果驗證失敗，阻斷後續資料抓取
+            if (!activeSellerId) return;
+
             fetchSellerOrders();
         });
 
@@ -144,13 +192,15 @@
         }
 
         async function fetchSellerOrders(status = '') {
+            if (!activeSellerId) return; 
+
             const tableBody = document.getElementById('orderTableBody');
             if (tableBody) {
                 tableBody.innerHTML = `<tr><td colspan="11" class="px-4 py-12 text-center text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i>資料載入中...</td></tr>`;
             }
             
             try {
-                let url = '/api/orders?SellerID=15';
+                let url = `/api/orders?SellerID=${activeSellerId}`;
                 if (status !== '') {
                     url += `&OrderStatus=${status}`;
                 }
@@ -192,6 +242,7 @@
             if (!tableBody) return;
             
             tableBody.innerHTML = ''; 
+            if (!activeSellerId) return;
             
             orders.forEach(order => {
                 const tr = document.createElement('tr');
@@ -221,7 +272,7 @@
                     <td class="px-4 py-4 text-xs text-gray-500">${order.UpdatedAt ? new Date(order.UpdatedAt).toLocaleString() : '-'}</td>
                     <td class="px-4 py-4 sticky right-0 bg-white group-hover:bg-gray-50/90 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)] transition-colors z-10">
                         <div class="flex items-center justify-center gap-3 text-gray-400">
-                            <a href="goez-SellerOrder-detail.html?orderId=${order.OrderID}" class="hover:text-indigo-600 transition-colors cursor-pointer" title="查看明細"><i class="fa-solid fa-eye text-lg"></i></a>
+                            <a href="goez-SellerOrder-detail.html?orderId=${order.OrderID}&sellerId=${activeSellerId}" class="hover:text-indigo-600 transition-colors cursor-pointer" title="查看明細"><i class="fa-solid fa-eye text-lg"></i></a>
                             <button onclick="enableEdit(${order.OrderID}, ${order.OrderStatus}, this)" class="hover:text-blue-600 transition-colors cursor-pointer" title="編輯訂單狀態"><i class="fa-regular fa-pen-to-square text-lg"></i></button>
                             <button onclick="deleteOrder(${order.OrderID})" class="hover:text-red-500 transition-colors cursor-pointer" title="刪除訂單"><i class="fa-regular fa-trash-can text-lg"></i></button>
                         </div>
@@ -299,7 +350,7 @@
                     alert('訂單已成功刪除！');
                     fetchSellerOrders(currentStatusFilter);
                 } else {
-                    alert('刪除失敗：' + (result.Error || '未知錯誤'));
+                    alert('刪除失敗：' + (result.Error || '`未知錯誤`'));
                 }
             } catch (error) {
                 console.error('刪除請求發生錯誤:', error);

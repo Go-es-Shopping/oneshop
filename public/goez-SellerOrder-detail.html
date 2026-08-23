@@ -58,7 +58,8 @@
             <!-- Header Section -->
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <div class="flex items-center gap-4">
-                    <a href="goez-SellerOrder.html" class="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-sm transition-all shadow-sm">
+                    <!-- 修改處：改用 id="backBtn" 讓 JS 動態抓取 sellerId 帶回列表頁 -->
+                    <a href="goez-SellerOrder.html" id="backBtn" class="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-sm transition-all shadow-sm" title="返回訂單管理">
                         <i class="fa-solid fa-arrow-left"></i>
                     </a>
                     <h1 class="text-2xl font-bold text-gray-800 tracking-tight">訂單明細</h1>
@@ -117,6 +118,14 @@
         });
 
         document.addEventListener('DOMContentLoaded', () => {
+            // 自動動態處理返回按鈕的連結，保留 sellerId
+            const urlParams = new URLSearchParams(window.location.search);
+            const sellerId = urlParams.get('sellerId');
+            const backBtn = document.getElementById('backBtn');
+            if (sellerId && backBtn) {
+                backBtn.href = `goez-SellerOrder.html?sellerId=${sellerId}`;
+            }
+
             fetchOrderDetails();
         });
 
@@ -132,7 +141,6 @@
                     const response = await fetch(`/api/orders/${orderId}/details`);
                     const orderData = await response.json();
                     
-                    // 相容各種可能的屬性名稱
                     const details = orderData.Orderdetails || orderData.orderdetails || orderData.details;
 
                     if (orderData && details && Array.isArray(details) && details.length > 0) {
@@ -184,7 +192,6 @@
                 const subtotal = quantity * unitPrice;
                 grandTotal += subtotal;
 
-                // 抓取關聯過來的 Product 資料（相容不同的屬性大小寫）
                 const product = item.Product || item.product || {};
                 const productName = product.ProductName || product.productName || `商品 ID: ${item.ProductID}`;
                 const productImage = product.ProductImage || product.productImage || 'https://via.placeholder.com/40';
