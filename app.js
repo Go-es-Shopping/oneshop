@@ -9,6 +9,9 @@ const sequelize = require('./config/database')
 const app = express()
 console.log('目前 FORCE_MOCK 的值是:', process.env.FORCE_MOCK);
 
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
 // --- 🚀 新增：Multer 圖片上傳設定 ---
 // 確保目錄存在：public/images/logos
 const uploadDir = path.join(__dirname, 'public/images/logos');
@@ -42,6 +45,10 @@ const adminRoutes = require('./routes/adminRoutes')
 const checkoutRoutes = require('./routes/checkoutRoutes')
 const analyticsRoutes = require('./routes/analyticsRoutes')
 
+const couponRoutes = require('./routes/couponRoutes');
+const aiRoutes = require('./routes/aiRoutes');
+
+
 app.use(cors());
 app.use(express.json());
 // 設定靜態檔案資料夾，這樣連上網址才能看到前端網頁
@@ -56,6 +63,11 @@ app.use('/api/orders', orderRoutes)
 app.use('/api/admin', adminRoutes)
 app.use('/api/checkout', checkoutRoutes)
 app.use('/api/track', analyticsRoutes)
+
+// 掛載優惠券路由
+app.use('/api/coupons', couponRoutes);
+app.use('/api/ai', aiRoutes);
+
 
 
 // --- 🚀 新增：圖片上傳 API 路由 ---

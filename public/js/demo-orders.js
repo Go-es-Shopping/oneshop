@@ -1,5 +1,5 @@
 /**
- * 買家查詢訂單 — 示範資料與查詢邏輯（index.html / order-detail.html 共用）
+ * 買家查詢訂單 — 示範資料與查詢邏輯（goez-buyerOrder.html / goez-buyerOrder-detail.html 共用）
  */
 (function (global) {
   var STORAGE_KEY = 'goezBuyerOrderDetail';

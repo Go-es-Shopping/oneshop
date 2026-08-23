@@ -321,7 +321,7 @@ router.get('/template/:pageId', async (req, res) => {
     // 4. ★ 吐出前端完全相容的動態資料 JSON
     return res.json({
       // 基本賣場資訊
-      name: content.PageTitle || "我的店鋪",
+      name: content.PageTitle || "",
       tagline: content.PageDescription || "",
       logoUrl: page.StoreLogo || "",
       accentColor: finalAccentColor,

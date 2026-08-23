@@ -1,30 +1,79 @@
-const { Order, Orderdetail, Shipment, Payment, sequelize } = require('../models');
+const { Order, Orderdetail, Product, Shipment, Payment, sequelize } = require('../models');
+const { QueryTypes } = require('sequelize');
+
+// 一、定義狀態常數
+const ORDER_STATUS = {
+  PENDING_PAYMENT: 0, // 待付款
+  PREPARING: 1,      // 備貨中
+  SHIPPED: 2,        // 已出貨
+  DELIVERED: 3,      // 已送達
+  CANCELLED: 9       // 已取消
+};
 
 const orderController = {
-  // 1. 建立訂單 (POST /api/orders)
+  // 二、建立訂單 (POST /api/orders)
   createOrder: async (req, res) => {
     const t = await sequelize.transaction();
     try {
-      const { SellerID, BuyerName, BuyerPhone, BuyerEmail, BuyerAddress, items } = req.body;
-      if (!items || items.length === 0) throw new Error("Quantity 必須大於 0");
+      const { 
+        SellerID, BuyerName, BuyerPhone, BuyerEmail, BuyerAddress, 
+        items, UTM_Source, SessionID,
+        ShippingMethod, StoreInfo 
+      } = req.body;
 
-      let totalAmount = 0;
+      if (!items || items.length === 0) throw new Error("購物車不可為空");
+
+      let subTotal = 0; // 修正 1：宣告 subTotal
       const details = [];
 
       for (const item of items) {
-        totalAmount += (item.UnitPrice || 0) * item.Quantity;
+        const product = await Product.findByPk(item.ProductID, { transaction: t });
+        
+        console.log(`商品 ID ${item.ProductID} 單價:`, product ? product.Price : '找不到商品');
+
+        if (!product) throw new Error(`找不到商品 ID: ${item.ProductID}`);
+        if (product.Stock < item.Quantity) throw new Error(`${product.ProductName} 庫存不足`);
+
+        product.Stock -= item.Quantity;
+        await product.save({ transaction: t });
+
+        subTotal += product.Price * item.Quantity;
         details.push({
           ProductID: item.ProductID,
           Quantity: item.Quantity,
-          UnitPrice: item.UnitPrice || 0
+          UnitPrice: product.Price
         });
       }
 
+      // 運費計算
+      let shippingFee = (ShippingMethod === '宅配') ? 100 : 60;
+      if (subTotal >= 1000) shippingFee = 0;
+
+      const totalAmount = subTotal + shippingFee; // 修正 2：不要用 const 重複宣告，直接賦值或改用 let
+
+      console.log('--- 金額計算過程 ---');
+      console.log('商品小計 (subTotal):', subTotal);
+      console.log('運費 (shippingFee):', shippingFee);
+      console.log('總計 (totalAmount):', totalAmount);
+      console.log('------------------');
+
+      // 建立訂單
       const newOrder = await Order.create({
-        SellerID, BuyerName, BuyerPhone, BuyerEmail, BuyerAddress,
+        SellerID: SellerID || 15, // 修正 3：改用正確的參數
+        BuyerName, BuyerPhone, BuyerEmail, BuyerAddress,
         TotalAmount: totalAmount,
-        OrderStatus: 0,
-        PaymentStatus: 0
+        OrderStatus: ORDER_STATUS.PENDING_PAYMENT,
+        PaymentStatus: 0,
+        UTM_Source: UTM_Source || null,
+        SessionID: SessionID || null
+      }, { transaction: t });
+
+      // 建立物流
+      await Shipment.create({
+        OrderID: newOrder.OrderID,
+        ShippingMethod,
+        StoreInfo: StoreInfo || null,
+        ShippingStatus: 0
       }, { transaction: t });
 
       const finalDetails = details.map(d => ({ ...d, OrderID: newOrder.OrderID }));
@@ -34,8 +83,9 @@ const orderController = {
       res.status(201).json({ 
         Success: true, 
         OrderID: newOrder.OrderID, 
-        TotalAmount: totalAmount,
-        Items: finalDetails 
+        SubTotal: subTotal,
+        ShippingFee: shippingFee,
+        TotalAmount: totalAmount
       });
     } catch (error) {
       await t.rollback();
@@ -82,23 +132,16 @@ const orderController = {
     }
   },
 
-  // 3.5. 查詢單筆訂單的「明細列表」(GET /api/orders/:OrderID/details) - 絕對安全版
+  // 3.5. 查詢單筆訂單的「明細列表」
   getOrderDetailsList: async (req, res) => {
     try {
-      const { QueryTypes } = require('sequelize');
       const orderId = Number(req.params.OrderID);
       if (isNaN(orderId)) return res.status(400).json({ Success: false, Error: 'OrderID 必須是數字' });
 
-      // 只抓 Orderdetail 本身的欄位，絕對不會因為 Product 資料表欄位不合而噴 500
       const sql = `
-        SELECT
-          OrderdetailID,
-          OrderID,
-          ProductID,
-          Quantity,
-          UnitPrice
-        FROM Orderdetail
-        WHERE OrderID = :orderId
+        SELECT OrderdetailID, OrderID, ProductID, Quantity, UnitPrice 
+        FROM Orderdetail 
+        WHERE OrderID = :orderId 
         ORDER BY OrderdetailID ASC
       `;
       
@@ -107,13 +150,11 @@ const orderController = {
         type: QueryTypes.SELECT
       });
 
-      // 動態補上商品名稱與圖片（安全防呆）
       for (let item of details) {
         item.ProductName = `商品 #${item.ProductID}`;
         item.ProductImg = '';
         try {
-          const prodSql = `SELECT TOP 1 * FROM Product WHERE ProductID = :productId`;
-          const prods = await sequelize.query(prodSql, {
+          const prods = await sequelize.query(`SELECT TOP 1 * FROM Product WHERE ProductID = :productId`, {
             replacements: { productId: item.ProductID },
             type: QueryTypes.SELECT
           });
@@ -122,9 +163,7 @@ const orderController = {
             item.ProductName = p.ProductName || p.Name || p.Title || `商品 #${item.ProductID}`;
             item.ProductImg = p.ProductImg || p.ProductImage || p.Img || '';
           }
-        } catch (e) {
-          // 略過錯誤，維持預設名稱
-        }
+        } catch (e) {}
       }
 
       const order = await Order.findByPk(orderId, { attributes: ['OrderID', 'TotalAmount', 'CreatedAt'] });
@@ -144,7 +183,7 @@ const orderController = {
     const t = await sequelize.transaction();
     try {
       const orderId = Number(req.params.OrderID);
-      const { OrderStatus, PaymentStatus, TrackingNumber } = req.body || {};
+      const { OrderStatus, PaymentStatus } = req.body || {};
 
       if (OrderStatus === undefined && PaymentStatus === undefined) {
         await t.rollback();
@@ -157,53 +196,29 @@ const orderController = {
         return res.status(404).json({ Success: false, Error: "找不到該訂單" });
       }
 
-      let orderSetClauses = [];
-      let orderReplacements = { orderId };
-
-      if (OrderStatus !== undefined) {
-        orderSetClauses.push('OrderStatus = :orderStatus');
-        orderReplacements.orderStatus = Number(OrderStatus);
+      // 修正 4：如果要回補庫存，必須去資料庫把該訂單的明細撈出來
+      if (Number(OrderStatus) === ORDER_STATUS.CANCELLED) {
+        const orderItems = await Orderdetail.findAll({ where: { OrderID: orderId }, transaction: t });
+        for (const item of orderItems) {
+          await Product.increment('Stock', {
+            by: item.Quantity,
+            where: { ProductID: item.ProductID },
+            transaction: t
+          });
+        }
       }
-      if (PaymentStatus !== undefined) {
-        orderSetClauses.push('PaymentStatus = :paymentStatus');
-        orderReplacements.paymentStatus = Number(PaymentStatus);
-      }
-      orderSetClauses.push('UpdatedAt = GETDATE()');
 
-      const { QueryTypes } = require('sequelize');
-      await sequelize.query(`UPDATE [Order] SET ${orderSetClauses.join(', ')} WHERE OrderID = :orderId`, {
-        replacements: orderReplacements,
-        type: QueryTypes.UPDATE,
-        transaction: t
-      });
+      // 整理要更新的欄位
+      const updateData = {};
+      if (OrderStatus !== undefined) updateData.OrderStatus = Number(OrderStatus);
+      if (PaymentStatus !== undefined) updateData.PaymentStatus = Number(PaymentStatus);
 
+      // 修正 5：把 orderID 改成正確的小寫 orderId
+      await Order.update(updateData, { where: { OrderID: orderId }, transaction: t });
+      
       await t.commit();
-      res.json({ Success: true, Message: '狀態更新成功' });
-    } catch (error) {
-      await t.rollback();
-      console.error('更新訂單狀態錯誤:', error);
-      res.status(500).json({ Success: false, Error: error.message });
-    }
-  },
-
-  // 5. 刪除訂單 (DELETE /api/orders/:OrderID)
-  deleteOrder: async (req, res) => {
-    const t = await sequelize.transaction();
-    try {
-      const orderId = req.params.OrderID;
-      const order = await Order.findByPk(orderId, { transaction: t });
-      if (!order) {
-        await t.rollback();
-        return res.status(404).json({ Success: false, Error: "找不到該訂單" });
-      }
-
-      await Shipment.destroy({ where: { OrderID: orderId }, transaction: t });
-      await Payment.destroy({ where: { OrderID: orderId }, transaction: t });
-      await Orderdetail.destroy({ where: { OrderID: orderId }, transaction: t });
-      await Order.destroy({ where: { OrderID: orderId }, transaction: t });
-
-      await t.commit();
-      res.json({ Success: true, Message: '刪除成功' });
+      // 修正 6：改回正確的成功提示文字
+      res.json({ Success: true, Message: '更新狀態成功' });
     } catch (error) {
       await t.rollback();
       res.status(500).json({ Success: false, Error: error.message });

@@ -573,7 +573,7 @@
 <nav class="checkout-bar">
   <div class="checkout-bar__brand">
     <div class="checkout-bar__logo" id="barLogo"></div>
-    <span class="checkout-bar__name" id="barName">我的店鋪</span>
+    <span class="checkout-bar__name" id="barName">載入中..</span>
   </div>
   <div class="checkout-bar__secure">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -658,7 +658,7 @@
               <span class="form-field__hint">請選擇縣市</span>
             </div>
             <div class="form-field">
-              <label>鄉鎮市區</label>
+              <label>鄉鎮市區 <span class="req">*</span></label>
               <input type="text" id="fDistrict" placeholder="例：大安區" />
             </div>
             <div class="form-field full">
@@ -690,7 +690,7 @@
           </div>
           <div class="form-field" style="margin-top:16px">
             <label>取件備註（選填）</label>
-            <input type="text" id="fCvsNote" placeholder="例：請盡快通知取件" />
+            <input type="text" id="fCvsNote" placeholder="" />
           </div>
         </div>
 
@@ -820,6 +820,7 @@
   <div class="order-summary">
     <div class="order-summary__head">
       <div class="order-summary__title">訂單摘要</div>
+      <span style="font-size: 12px; color: #ec4c4c;">若要查詢訂單請至賣場點擊"查詢訂單"，輸入您的訂單編號以及連絡電話哦！</span>
     </div>
     <div class="order-summary__body" id="orderItems">
       <div class="order-empty">
@@ -902,18 +903,48 @@ const cart = (() => {
   root.style.setProperty('--accent-rgb', `${r},${g},${b}`);
 })();
 
-/* 渲染 TopBar */
-(function renderBar() {
-  const name = storeMeta.name || '我的店鋪';
-  document.getElementById('barName').textContent = name;
-  document.title = `結帳 — ${name}`;
-  const logoEl = document.getElementById('barLogo');
-  if (storeMeta.logoUrl) {
-    logoEl.innerHTML = `<img src="${storeMeta.logoUrl}" alt="${name}">`;
-  } else {
-    logoEl.textContent = name.charAt(0);
+/* 渲染 TopBar (對接後端 /api/template/:pageId) */
+async function renderBar() {
+  const urlParams = new URLSearchParams(window.location.search);
+  // 同時支援小寫 pageid 與大寫 pageId
+  const pageId = urlParams.get('pageid') || urlParams.get('pageId');
+
+  let storeName = storeMeta.name || '載入中..';
+  let storeLogo = storeMeta.logoUrl || '';
+
+  if (pageId) {
+    try {
+      // 💡 改用正確且有支援的 template API 路由
+      const response = await fetch(`/api/store/template/${pageId}`);
+      const result = await response.json();
+      
+      // /api/template/:pageId 直接回傳物件本身（包含 name 和 logoUrl）
+      if (response.ok && result) {
+        storeName = result.name || storeName;
+        storeLogo = result.logoUrl || storeLogo;
+      }
+    } catch (e) {
+      console.error('動態載入店鋪資訊失敗，使用預設暫存', e);
+    }
   }
-})();
+
+  // 填入畫面
+  const barNameEl = document.getElementById('barName');
+  if (barNameEl) barNameEl.textContent = storeName;
+  document.title = `結帳 — ${storeName}`;
+
+  const logoEl = document.getElementById('barLogo');
+  if (logoEl) {
+    if (storeLogo) {
+      logoEl.innerHTML = `<img src="${storeLogo}" alt="${storeName}">`;
+    } else {
+      logoEl.textContent = storeName.charAt(0);
+    }
+  }
+}
+
+// 執行渲染
+renderBar();
 
 /* 運費規則 */
 const FREE_SHIPPING_THRESHOLD = 1000;

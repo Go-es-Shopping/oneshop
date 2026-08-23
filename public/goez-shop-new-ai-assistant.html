@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Goez Shop – AI 商店助手</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    /* =========================================
+   AI 修圖 - 特效專用樣式
+   ========================================= */
+
+/* 基礎圖片樣式 */
+.retouch-img-base {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: all 0.5s ease;
+}
+
+/* 模擬去背 (白底疊加) */
+.retouch-remove-bg {
+  mix-blend-mode: multiply;
+  background-color: #ffffff;
+}
+
+/* 景深效果外框 */
+.depth-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* 景深效果 - 底層模糊背景 */
+.depth-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(8px);
+}
+
+/* 景深效果 - 表層清晰聚焦 */
+.depth-focus {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 75%);
+  mask-image: radial-gradient(circle at center, black 40%, transparent 75%);
+}
+    /* ══════════════════════════════════════════════
+       Design Tokens
+    ══════════════════════════════════════════════ */
+    :root {
+      .custom-select {
+      margin-top: 8px;
+      padding-right: 40px;
+      
+      /* 關閉預設箭頭 */
+      appearance: none;
+      -webkit-appearance: none;
+      
+      /* 自訂SVG 箭頭 */
+      background-image: url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23333\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'/%3E%3C/svg%3E');
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      background-size: 16px;
+    }
+      /* Colors */
+      --c-white:       #ffffff;
+      --c-black:       #000000;
+      --c-gray-50:     #f9fafb;
+      --c-gray-100:    #f3f4f6;
+      --c-gray-200:    #e5e7eb;
+      --c-gray-300:    #d1d5dc;
+      --c-gray-400:    #99a1af;
+      --c-gray-500:    #6a7282;
+      --c-gray-600:    #4a5565;
+      --c-gray-700:    #364153;
+      --c-gray-800:    #101828;
+      --c-slate-800:   #1e2939;
+      --c-indigo:      #6588A6;
+      --c-green:       #00c950;
+      --c-green-dot:   #05df72;
+      --c-green-pos:   #00a63e;
+      --c-red:         #e7000b;
+
+      /* Gradients */
+      --grad-indigo: linear-gradient(90deg, #6588A6 0%, #5a7a96 100%);
+      --grad-dark:   linear-gradient(127.73deg,#101828 0%,#1e2939 100%);
+      --grad-light:  linear-gradient(143.13deg,#f3f4f6 0%,#e5e7eb 100%);
+
+      /* Spacing */
+      --sp-4:   4px;  --sp-6:  6px;   --sp-8:  8px;
+      --sp-12: 12px;  --sp-16: 16px;  --sp-20: 20px;
+      --sp-24: 24px;  --sp-32: 32px;  --sp-33: 33px;
+      --sp-48: 48px;  --sp-64: 64px;  --sp-120:120px;
+
+      /* Font sizes */
+      --fs-8:  8px;  --fs-9:  9px;  --fs-10: 10px;
+      --fs-11: 11px; --fs-12: 12px; --fs-13: 13px;
+      --fs-14: 14px; --fs-16: 16px; --fs-18: 18px;
+      --fs-24: 24px;
+
+      /* Radii */
+      --r-10: 10px; --r-12: 12px; --r-14: 14px;
+      --r-16: 16px; --r-32: 32px; --r-40: 40px;
+      --r-full: 9999px;
+
+      /* Shadows */
+      --sh-sm: 0 1px 3px rgba(0,0,0,.1), 0 1px 2px rgba(0,0,0,.1);
+      --sh-lg: 0 10px 15px rgba(0,0,0,.1), 0 4px 6px rgba(0,0,0,.1);
+      --sh-xl: 0 25px 50px rgba(0,0,0,.25);
+    }
+
+    /* ══════════════════════════════════════════════
+       Reset
+    ══════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+      background: var(--c-white);
+      -webkit-font-smoothing: antialiased;
+      color: var(--c-gray-800);
+    }
+    img { display: block; max-width: 100%; }
+    a { text-decoration: none; color: inherit; }
+    ul, ol { list-style: none; }
+    button { cursor: pointer; font-family: inherit; border: none; background: none; }
+
+    /* ══════════════════════════════════════════════
+       Page
+    ══════════════════════════════════════════════ */
+    .page { display: flex; flex-direction: column; align-items: center; width: 100%; }
+
+    /* ══════════════════════════════════════════════
+       Navbar
+    ══════════════════════════════════════════════ */
+    .navbar {
+      position: relative; width: 100%;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 24px 64px;
+    }
+    .navbar__bg {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover; pointer-events: none;
+    }
+    .navbar__brand {
+      position: relative; z-index: 1;
+      font-size: var(--fs-24); font-weight: 800;
+      line-height: 1.45; letter-spacing: -0.48px;
+      color: var(--c-white);
+    }
+    .navbar__actions {
+      position: relative; z-index: 1;
+      display: flex; gap: 16px; align-items: center;
+    }
+    .navbar__btn--primary {
+      background: var(--c-white); color: var(--c-black);
+      border-radius: var(--r-12); padding: 12px 16px;
+      font-size: var(--fs-18); font-weight: 500;
+      line-height: 1.45; letter-spacing: -0.09px; white-space: nowrap;
+    }
+    .navbar__btn--secondary {
+      border: 2px solid rgba(255,255,255,.15);
+      border-radius: var(--r-12); padding: 12px 16px;
+      font-size: var(--fs-18); font-weight: 500;
+      line-height: 1.45; letter-spacing: -0.09px;
+      color: var(--c-white); white-space: nowrap;
+    }
+
+    /* Hamburger */
+    .navbar__hamburger {
+      display: none; position: relative; z-index: 1;
+      flex-direction: column; align-items: center; justify-content: center;
+      gap: 5px; width: 36px; height: 36px; padding: 6px; border-radius: 8px;
+    }
+    .navbar__hamburger-bar {
+      display: block; width: 22px; height: 2px;
+      background: var(--c-white); border-radius: 2px;
+      transition: transform .25s, opacity .25s;
+    }
+    .navbar__hamburger[aria-expanded="true"] .navbar__hamburger-bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .navbar__hamburger[aria-expanded="true"] .navbar__hamburger-bar:nth-child(2) { opacity: 0; }
+    .navbar__hamburger[aria-expanded="true"] .navbar__hamburger-bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .navbar__mobile-menu {
+      display: none; flex-direction: column;
+      position: absolute; top: 100%; left: 0; right: 0; z-index: 20;
+      background: rgba(16,24,40,.97);
+      max-height: 0; overflow: hidden;
+      transition: max-height .3s ease;
+    }
+    .navbar__mobile-menu.is-open { max-height: 200px; }
+    .navbar__mobile-menu a {
+      display: block; padding: 14px 24px;
+      font-size: var(--fs-16); font-weight: 500;
+      color: var(--c-white);
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+
+    /* ══════════════════════════════════════════════
+       App layout
+    ══════════════════════════════════════════════ */
+    .app {
+      background: var(--c-gray-50);
+      width: 100%;
+      display: flex;
+      align-items: flex-start;
+    }
+
+    /* ── Left / editor column ───────────────────── */
+    .editor {
+      flex: 1016 0 0; min-width: 0;
+      padding: var(--sp-32);
+      display: flex; flex-direction: column; gap: var(--sp-32);
+    }
+
+    .editor__heading {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      flex-wrap: wrap; gap: var(--sp-16);
+    }
+    .editor__heading-text { display: flex; flex-direction: column; gap: var(--sp-8); }
+    .editor__title {
+      font-size: var(--fs-24); font-weight: 600; line-height: 36px;
+      letter-spacing: .07px; color: var(--c-gray-800); white-space: nowrap;
+    }
+    .editor__subtitle {
+      font-size: var(--fs-16); font-weight: 400; line-height: 24px;
+      letter-spacing: -.31px; color: var(--c-gray-500); white-space: nowrap;
+    }
+
+    /* 使用額度顯示 */
+    .quota-badge {
+      background: var(--c-white);
+      border: 1px solid var(--c-gray-200);
+      border-radius: var(--r-14);
+      padding: 12px 16px;
+      display: flex; flex-direction: column; gap: 6px;
+      min-width: 200px;
+    }
+    .quota-badge__label {
+      font-size: var(--fs-12); font-weight: 500; color: var(--c-gray-500);
+    }
+    .quota-badge__value {
+      font-size: var(--fs-14); font-weight: 600; color: var(--c-gray-800);
+    }
+    .quota-badge__bar {
+      height: 6px; border-radius: var(--r-full);
+      background: var(--c-gray-200); overflow: hidden;
+    }
+    .quota-badge__bar-fill {
+      height: 100%; border-radius: var(--r-full);
+      background: var(--grad-indigo);
+      width: 0%; transition: width .3s ease;
+    }
+    .quota-badge__bar-fill.is-near-limit { background: var(--c-red); }
+
+    /* Card */
+    .card {
+      background: var(--c-white);
+      border: 1px solid var(--c-gray-100);
+      border-radius: var(--r-32);
+      box-shadow: var(--sh-sm);
+      padding: var(--sp-33);
+      display: flex; flex-direction: column; gap: var(--sp-24);
+    }
+    .card__title {
+      font-size: var(--fs-18); font-weight: 500; line-height: 27px;
+      letter-spacing: -.44px; color: var(--c-gray-800); white-space: nowrap;
+    }
+
+    /* Field */
+    .field { display: flex; flex-direction: column; gap: var(--sp-8); }
+    .field__label {
+      font-size: var(--fs-14); font-weight: 500; line-height: 21px;
+      letter-spacing: -.15px; color: var(--c-gray-700);
+    }
+    .field__input {
+      width: 100%;
+      background: var(--c-gray-50);
+      border: 1px solid var(--c-gray-200);
+      border-radius: var(--r-14);
+      height: 50px; padding: 12px 16px;
+      font-family: inherit;
+      font-size: var(--fs-16); font-weight: 400;
+      letter-spacing: -.31px; color: var(--c-gray-800);
+      outline: none;
+    }
+    .field__input::placeholder {
+      color: var(--c-gray-400);
+    }
+    .field__input.is-invalid {
+      border-color: var(--c-red);
+    }
+    .field__error {
+      font-size: var(--fs-12); font-weight: 500;
+      line-height: 18px; color: var(--c-red);
+    }
+    .field__error[hidden] { display: none; }
+    .field__meta { display: flex; align-items: center; gap: 8px; }
+    .field__counter {
+      margin-left: auto;
+      font-size: var(--fs-12); font-weight: 400;
+      color: var(--c-gray-400); white-space: nowrap;
+    }
+    .field__counter.is-limit { color: var(--c-red); }
+
+    /* 快速選項標籤（文案語氣 / 修圖選項） */
+    .chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      padding: 6px 14px;
+      border: 1px solid var(--c-gray-300);
+      border-radius: var(--r-full);
+      font-size: var(--fs-13); font-weight: 500;
+      color: var(--c-gray-700);
+      background: var(--c-white);
+      transition: background-color .15s, border-color .15s, color .15s;
+    }
+    .chip:hover { border-color: var(--c-indigo); }
+    .chip.is-selected {
+      background: var(--grad-indigo);
+      border-color: transparent;
+      color: var(--c-white);
+    }
+
+    .field__textarea {
+      background: var(--c-gray-50);
+      border: 1px solid var(--c-gray-200);
+      border-radius: var(--r-14);
+      padding: 12px 16px;
+      font-size: var(--fs-16); font-weight: 400;
+      line-height: 24px; letter-spacing: -.31px;
+      color: var(--c-gray-400); overflow: hidden;
+    }
+    .field__textarea--h122 { height: 122px; }
+    .field__textarea--h98  { height: 98px; }
+
+    /* Indigo gradient button */
+    .btn-indigo {
+      background: var(--grad-indigo);
+      border-radius: var(--r-14);
+      box-shadow: var(--sh-sm);
+      height: 52px;
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px;
+      font-size: var(--fs-16); font-weight: 500;
+      line-height: 24px; letter-spacing: -.31px;
+      color: var(--c-white); white-space: nowrap;
+      width: 100%;
+      transition: opacity 0.2s;
+    }
+    .btn-indigo:active { opacity: 0.8; }
+    .btn-indigo img { width: 18px; height: 18px; object-fit: contain; }
+
+    /* ── Card 1: AI Text Generator ────────────────── */
+    .text-gen__body {
+      display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start;
+    }
+    .text-gen__left {
+      flex: 2 1 260px;
+      display: flex; flex-direction: column; gap: 16px;
+      min-width: 260px;
+    }
+    .text-gen__right {
+      flex: 1 1 200px;
+      display: flex; flex-direction: column; gap: 8px;
+      min-width: 200px;
+    }
+    /* 生成後的文案內容顯示區 */
+    .text-gen__result {
+      background: var(--c-gray-50);
+      border: 1px solid var(--c-gray-200);
+      border-radius: var(--r-14);
+      min-height: 140px;
+      flex: 1 0 0;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: auto;
+    }
+    .text-gen__result--filled {
+      align-items: flex-start;
+      justify-content: flex-start;
+    }
+    .text-gen__result-placeholder {
+      font-size: var(--fs-12); font-weight: 500;
+      line-height: 18px; color: var(--c-gray-500);
+      text-align: center;
+    }
+    .text-gen__result-text {
+      font-size: var(--fs-13); font-weight: 400;
+      line-height: 1.6; letter-spacing: -.08px;
+      color: var(--c-gray-800); white-space: pre-wrap;
+    }
+    .text-gen__result-header {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 8px;
+    }
+    .text-gen__copy-btn {
+      flex-shrink: 0;
+      font-size: var(--fs-12); font-weight: 500;
+      color: var(--c-indigo);
+      padding: 4px 12px;
+      border: 1px solid var(--c-gray-300);
+      border-radius: var(--r-10);
+      background: var(--c-white);
+      transition: background-color .15s, border-color .15s, color .15s;
+    }
+    .text-gen__copy-btn:hover:not(:disabled) { background: var(--c-gray-50); }
+    .text-gen__copy-btn:disabled { color: var(--c-gray-400); cursor: not-allowed; }
+    .text-gen__copy-btn.is-copied { color: var(--c-green-pos); border-color: var(--c-green-pos); }
+
+    .text-gen__history { display: flex; flex-wrap: wrap; gap: 6px; }
+    .text-gen__history[hidden] { display: none; }
+    .text-gen__history-item {
+      font-size: var(--fs-12); font-weight: 500;
+      padding: 4px 10px;
+      border-radius: var(--r-full);
+      border: 1px solid var(--c-gray-300);
+      color: var(--c-gray-600);
+      background: var(--c-white);
+    }
+    .text-gen__history-item.is-active {
+      background: var(--grad-indigo);
+      border-color: transparent;
+      color: var(--c-white);
+    }
+
+    .text-gen__result-error {
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      text-align: center;
+    }
+    .text-gen__result-error-text {
+      font-size: var(--fs-13); font-weight: 500; color: var(--c-red);
+    }
+    .text-gen__retry-btn {
+      padding: 6px 18px;
+      border: 1px solid var(--c-red);
+      border-radius: var(--r-10);
+      color: var(--c-red);
+      font-size: var(--fs-13); font-weight: 500;
+      background: var(--c-white);
+    }
+    .text-gen__retry-btn:hover { background: #fef2f2; }
+
+    /* ── Card 3: AI Retouch ─────────────────────────── */
+    .retouch__panels { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+    .retouch__left {
+      flex: 1 1 280px;
+      min-width: 280px;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+
+    .upload-zone {
+      background: var(--c-gray-50);
+      border: 2px dashed var(--c-gray-300);
+      border-radius: var(--r-16);
+      height: 284.5px;
+      position: relative;
+      flex-shrink: 0;
+      cursor: pointer;
+      transition: background-color .15s, border-color .15s;
+    }
+    .upload-zone--dragover {
+      background: var(--c-gray-100);
+      border-color: var(--c-indigo);
+    }
+    .upload-zone__remove {
+      position: absolute; top: 8px; right: 8px; z-index: 2;
+      width: 28px; height: 28px;
+      border-radius: var(--r-full);
+      background: rgba(16,24,40,.6);
+      color: var(--c-white);
+      font-size: var(--fs-14); font-weight: 700; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      transition: background-color .15s;
+    }
+    .upload-zone__remove:hover { background: rgba(16,24,40,.85); }
+    .upload-zone__remove[hidden] { display: none; }
+    .upload-zone__icon-wrap {
+      position: absolute; top: 32px; left: calc(50% - 32px);
+      width: 64px; height: 64px;
+      background: var(--c-white); border-radius: var(--r-16);
+      box-shadow: var(--sh-sm);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .upload-zone__icon-wrap img { width: 32px; height: 32px; object-fit: contain; }
+    .upload-zone__title {
+      position: absolute; top: 112px; left: 0; right: 0; text-align: center;
+      font-size: var(--fs-16); font-weight: 500; line-height: 24px;
+      letter-spacing: -.31px; color: var(--c-gray-800);
+    }
+    .upload-zone__subtitle {
+      position: absolute; top: 144px; left: 0; right: 0; text-align: center;
+      font-size: var(--fs-13); font-weight: 400; line-height: 19.5px;
+      letter-spacing: -.08px; color: var(--c-gray-500);
+    }
+    .upload-zone__btn {
+      position: absolute; top: 179.5px; left: calc(50% - 49px);
+      width: 98px; height: 39px;
+      background: var(--c-white); border: 1px solid var(--c-gray-300);
+      border-radius: var(--r-10);
+      font-size: var(--fs-14); font-weight: 500;
+      line-height: 21px; letter-spacing: -.15px;
+      color: var(--c-gray-700);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .upload-zone__hint {
+      position: absolute; top: 230.5px; left: 0; right: 0; text-align: center;
+      font-size: var(--fs-12); font-weight: 400; line-height: 18px;
+      color: var(--c-gray-400);
+    }
+
+    .dark-panel {
+      background: var(--grad-dark);
+      border-radius: var(--r-16);
+      flex: 1 1 280px;
+      min-width: 280px;
+      padding: 24px;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .dark-panel__status { display: flex; align-items: center; gap: 8px; }
+    .dark-panel__dot {
+      width: 8px; height: 8px; border-radius: var(--r-full);
+      background: var(--c-green-dot); opacity: .58; flex-shrink: 0;
+      animation: pulse 2s infinite ease-in-out;
+    }
+    @keyframes pulse { 0%{opacity:0.3} 50%{opacity:1} 100%{opacity:0.3} }
+
+    .dark-panel__status-text {
+      font-size: var(--fs-13); font-weight: 400; line-height: 19.5px;
+      letter-spacing: -.08px; color: var(--c-white); white-space: nowrap;
+    }
+    .dark-panel__image-box {
+      background: rgba(30,41,57,.5);
+      border: 1px solid var(--c-gray-700);
+      border-radius: var(--r-14);
+      height: 383px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; overflow: hidden;
+    }
+    .dark-panel__image-box img { width: 48px; height: 48px; object-fit: contain; }
+    .dark-panel__stats { display: flex; flex-direction: column; gap: 8px; }
+    .dark-panel__stat-row {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 19.5px;
+    }
+    .dark-panel__stat-label {
+      font-size: var(--fs-13); font-weight: 400; line-height: 19.5px;
+      letter-spacing: -.08px; color: var(--c-gray-400);
+    }
+    .dark-panel__stat-value {
+      font-size: var(--fs-13); font-weight: 400; line-height: 19.5px;
+      letter-spacing: -.08px; color: var(--c-white);
+    }
+    .dark-panel__stat-value--error { color: #ff6467; }
+
+    .dark-panel__actions { display: flex; gap: 12px; }
+    .dark-panel__actions[hidden] { display: none; }
+    .dark-panel__action-btn {
+      flex: 1 1 0;
+      height: 40px;
+      border-radius: var(--r-10);
+      font-size: var(--fs-13); font-weight: 500;
+      display: flex; align-items: center; justify-content: center;
+      border: 1px solid rgba(255,255,255,.15);
+      color: var(--c-white);
+      background: rgba(255,255,255,.05);
+      transition: background-color .15s;
+      white-space: nowrap;
+    }
+    .dark-panel__action-btn:hover:not(:disabled) { background: rgba(255,255,255,.12); }
+    .dark-panel__action-btn:disabled { opacity: .6; cursor: not-allowed; }
+    .dark-panel__action-btn--primary {
+      background: var(--grad-indigo);
+      border-color: transparent;
+    }
+
+    /* ══════════════════════════════════════════════
+       Site Footer
+    ══════════════════════════════════════════════ */
+    .site-footer {
+      position: relative; width: 100%; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 var(--sp-120) var(--sp-120);
+    }
+    .site-footer__bg {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover; pointer-events: none;
+    }
+    .site-footer__inner {
+      position: relative; z-index: 1;
+      display: flex; flex: 1 0 0;
+      align-items: flex-start; justify-content: space-between;
+      border-top: 1px solid rgba(255,255,255,.15);
+      padding: var(--sp-64) 0; min-width: 0;
+    }
+    .site-footer__brand {
+      font-size: var(--fs-24); font-weight: 600;
+      line-height: 1.2; letter-spacing: -.48px;
+      color: var(--c-white); white-space: nowrap; flex-shrink: 0;
+    }
+    .site-footer__nav {
+      display: flex; align-items: flex-start;
+      justify-content: space-between;
+      flex: 1 1 auto; max-width: 808px; min-width: 0;
+    }
+    .footer-col { display: flex; flex-direction: column; gap: 8px; flex: 1 1 100px; min-width: 90px; }
+    .footer-col__hdr { padding-bottom: 16px; }
+    .footer-col__title {
+      font-size: var(--fs-16); font-weight: 700; line-height: 1.45;
+      letter-spacing: -.08px; color: var(--c-white); white-space: nowrap;
+    }
+    .footer-col__link {
+      font-size: var(--fs-16); font-weight: 400; line-height: 1.45;
+      letter-spacing: -.08px; color: rgba(255,255,255,.6);
+    }
+
+    /* ══════════════════════════════════════════════
+       Responsive
+    ══════════════════════════════════════════════ */
+    @media (max-width: 1024px) {
+      .navbar { padding: 20px 32px; }
+      .navbar__actions { display: none; }
+      .navbar__hamburger { display: flex; }
+      .navbar__mobile-menu { display: flex; }
+
+      .app { flex-direction: column; }
+      .editor { flex: none; width: 100%; }
+
+      .text-gen__body { flex-direction: column; }
+      .text-gen__left, .text-gen__right { flex: none; width: 100%; }
+      .retouch__panels { flex-direction: column; }
+      .retouch__left, .dark-panel { width: 100%; }
+      .dark-panel { height: auto; }
+
+      .site-footer { padding: 0 48px 80px; }
+      .site-footer__nav { flex-wrap: wrap; gap: 32px; max-width: none; }
+      .footer-col { flex: 0 1 120px; }
+    }
+
+    @media (max-width: 768px) {
+      .navbar { padding: 16px 24px; }
+      .editor { padding: 24px 16px; gap: 24px; }
+      .card { padding: 20px; }
+      .site-footer { padding: 0 24px 64px; }
+      .site-footer__inner { flex-direction: column; gap: 40px; }
+      .site-footer__nav { max-width: 100%; flex-wrap: wrap; gap: 24px; }
+      .footer-col { flex: 1 1 calc(50% - 12px); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <header style="width:100%;position:relative;">
+    <nav>
+      <div class="navbar">
+        <img class="navbar__bg"
+             src="https://www.figma.com/api/mcp/asset/e3ab4d4c-7f19-4465-8557-65cad340e8ac"
+             alt="" aria-hidden="true" />
+        <a class="navbar__brand" href="#">Goez Shop</a>
+        <div class="navbar__actions">
+          <button class="navbar__btn--primary">一鍵開店</button>
+          <button class="navbar__btn--secondary">認識我們</button>
+        </div>
+        <button class="navbar__hamburger" id="menuToggle"
+                aria-expanded="false" aria-controls="mobileMenu"
+                aria-label="開啟/關閉選單">
+          <span class="navbar__hamburger-bar"></span>
+          <span class="navbar__hamburger-bar"></span>
+          <span class="navbar__hamburger-bar"></span>
+        </button>
+      </div>
+      <div class="navbar__mobile-menu" id="mobileMenu" aria-label="行動導覽">
+        <a href="#">一鍵開店</a>
+        <a href="#">認識我們</a>
+      </div>
+    </nav>
+  </header>
+
+  <div class="app" style="width:100%;">
+
+    <main class="editor">
+
+      <div class="editor__heading">
+        <div class="editor__heading-text">
+          <h1 class="editor__title">AI 商店助手</h1>
+          <p class="editor__subtitle">使用 AI 工具優化您的產品內容</p>
+        </div>
+        <div class="quota-badge" aria-label="AI 使用額度">
+          <span class="quota-badge__label">本月 AI 使用量</span>
+          <span class="quota-badge__value"><span id="quotaValue">0</span> / <span id="quotaLimit">50</span> 次</span>
+          <div class="quota-badge__bar">
+            <div class="quota-badge__bar-fill" id="quotaBarFill"></div>
+          </div>
+        </div>
+      </div>
+
+      <article class="card" aria-label="AI 文案魔法生成器">
+        <h2 class="card__title">AI 文案魔法生成器</h2>
+        <div class="text-gen__body">
+          <div class="text-gen__left">
+            <div class="field">
+              <label class="field__label" for="keywords">產品關鍵字</label>
+              <input class="field__input" id="keywords" type="text" maxlength="50" placeholder="例如：無線耳機、降噪、藍牙 5.0" />
+              <div class="field__meta">
+                <p class="field__error" id="keywordError" role="alert" hidden></p>
+                <span class="field__counter" id="keywordCounter">0/50</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field__label">文案語氣</label>
+              <div class="chip-group" id="toneGroup" role="radiogroup" aria-label="文案語氣">
+                <button type="button" class="chip is-selected" data-tone="formal" role="radio" aria-checked="true">正式</button>
+                <button type="button" class="chip" data-tone="playful" role="radio" aria-checked="false">活潑</button>
+                <button type="button" class="chip" data-tone="professional" role="radio" aria-checked="false">專業</button>
+              </div>
+            </div>
+            <div class="field" style="margin-top: 16px;">
+              <label class="field__label" for="wordCountSelect">字數限制</label>
+              <select id="wordCountSelect" class="field__input custom-select">
+                <option value="5 到 10">5-10字 (極短標題)</option>
+                <option value="10 到 15">10-15字 (簡短口號)</option>
+                <option value="15 到 20">15-20字 (社群短文)</option>
+                <option value="50 到 100" selected>50-100字 (標準內文)</option>
+              </select>
+            </div>
+            <button class="btn-indigo" aria-label="使用 AI 魔法生成文案">
+              <img src="https://www.figma.com/api/mcp/asset/89f5e432-57a7-46f5-ae26-16a2272e3300" alt="" aria-hidden="true" />
+              ✨ 魔法生成
+            </button>
+          </div>
+          <div class="text-gen__right">
+            <div class="text-gen__result-header">
+              <label class="field__label">生成文案內容</label>
+              <button type="button" class="text-gen__copy-btn" id="copyBtn" disabled>複製</button>
+            </div>
+            <div class="text-gen__history" id="copyHistory" hidden></div>
+            <div class="text-gen__result" id="copyResult" aria-live="polite">
+              <p class="text-gen__result-placeholder" id="copyResultPlaceholder">文案生成後將顯示於此</p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" aria-label="AI 修圖">
+        <h2 class="card__title">AI 修圖</h2>
+        <div class="retouch__panels">
+          <div class="retouch__left">
+            <div class="upload-zone" id="mainUpload" role="button" tabindex="0" aria-label="上傳要修改的圖片">
+              <button type="button" class="upload-zone__remove" id="removeUploadBtn" aria-label="移除圖片" hidden>✕</button>
+              <div class="upload-zone__icon-wrap">
+                <img src="https://www.figma.com/api/mcp/asset/11c90714-6cc5-4667-a6a6-8fea2debf60d" alt="上傳圖示" />
+              </div>
+              <p class="upload-zone__title">上傳要修改的圖片</p>
+              <p class="upload-zone__subtitle">拖曳圖片至此或點擊選擇</p>
+              <button class="upload-zone__btn">選擇檔案</button>
+              <p class="upload-zone__hint">支援 JPG、PNG，最大 5MB</p>
+            </div>
+            <p class="field__error" id="uploadError" role="alert" hidden></p>
+            <div class="field">
+              <label class="field__label" for="editDesc">修改說明</label>
+              <div class="chip-group" id="retouchTagGroup">
+                <button type="button" class="chip" data-tag="去背景">去背景</button>
+                <button type="button" class="chip" data-tag="模糊背景">模糊背景</button>
+              </div>
+              <input class="field__input" id="editDesc" type="text" maxlength="100" placeholder="例如：模糊背景、將背景改為純白色、移除背景" />
+              <div class="field__meta">
+                <span class="field__counter" id="editDescCounter">0/100</span>
+              </div>
+            </div>
+            <button class="btn-indigo btn-indigo--h48" aria-label="開始 AI 修圖">
+              <img src="https://www.figma.com/api/mcp/asset/89f5e432-57a7-46f5-ae26-16a2272e3300" alt="" aria-hidden="true" />
+              開始修圖
+            </button>
+          </div>
+          <div class="dark-panel" aria-label="修圖結果預覽">
+            <div class="dark-panel__status">
+              <div class="dark-panel__dot"></div>
+              <span class="dark-panel__status-text">修圖結果預覽</span>
+            </div>
+            <div class="dark-panel__image-box" id="retouchResultBox">
+              <img src="https://www.figma.com/api/mcp/asset/bbcd1057-42eb-4cf4-8e37-e5c331be565c" alt="修圖結果佔位圖示" />
+            </div>
+            <div class="dark-panel__stats">
+              <div class="dark-panel__stat-row">
+                <span class="dark-panel__stat-label">處理狀態</span>
+                <span class="dark-panel__stat-value" id="statusVal">等待上傳</span>
+              </div>
+              <div class="dark-panel__stat-row">
+                <span class="dark-panel__stat-label">修改項目</span>
+                <span class="dark-panel__stat-value" id="editItemVal">-</span>
+              </div>
+              <div class="dark-panel__stat-row">
+                <span class="dark-panel__stat-label">完成度</span>
+                <span class="dark-panel__stat-value" id="progressVal">0%</span>
+              </div>
+            </div>
+            <div class="dark-panel__actions" id="retouchActions" hidden>
+              <button type="button" class="dark-panel__action-btn" id="downloadBtn">下載圖片</button>
+          </div>
+        </div>
+      </article>
+
+    </main>
+
+  </div>
+
+  <footer class="site-footer" aria-label="網站頁腳">
+    <img class="site-footer__bg"
+         src="https://www.figma.com/api/mcp/asset/60da861e-a7b0-41df-9d63-83ffd8ca8b2c"
+         alt="" aria-hidden="true" />
+    <div class="site-footer__inner">
+      <p class="site-footer__brand">Goez Shop</p>
+      <nav class="site-footer__nav" aria-label="頁腳導覽">
+        <div class="footer-col">
+          <div class="footer-col__hdr"><span class="footer-col__title">產品</span></div>
+          <a href="#" class="footer-col__link">AI 文案生成</a>
+          <a href="#" class="footer-col__link">AI 修圖</a>
+          <a href="#" class="footer-col__link">一鍵開店</a>
+          <a href="#" class="footer-col__link">價格方案</a>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col__hdr"><span class="footer-col__title">功能</span></div>
+          <a href="#" class="footer-col__link">文案優化</a>
+          <a href="#" class="footer-col__link">圖片修飾</a>
+          <a href="#" class="footer-col__link">商品上架</a>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col__hdr"><span class="footer-col__title">資源</span></div>
+          <a href="#" class="footer-col__link">使用教學</a>
+          <a href="#" class="footer-col__link">常見問題</a>
+          <a href="#" class="footer-col__link">部落格</a>
+          <a href="#" class="footer-col__link">更新日誌</a>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col__hdr"><span class="footer-col__title">支援</span></div>
+          <a href="#" class="footer-col__link">聯絡我們</a>
+          <a href="#" class="footer-col__link">客服中心</a>
+          <a href="#" class="footer-col__link">服務條款</a>
+        </div>
+      </nav>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  const MAGIC_ICON = 'https://www.figma.com/api/mcp/asset/89f5e432-57a7-46f5-ae26-16a2272e3300';
+  const FAILURE_RATE = 0.15; // 模擬 API 偶發失敗，之後接真實後端時可移除
+
+  // ─── Mobile Menu Logic ───
+  const menuBtn  = document.getElementById('menuToggle');
+  const mobileMenu = document.getElementById('mobileMenu');
+  menuBtn.addEventListener('click', () => {
+    const open = menuBtn.getAttribute('aria-expanded') === 'true';
+    menuBtn.setAttribute('aria-expanded', String(!open));
+    mobileMenu.classList.toggle('is-open', !open);
+  });
+
+  // ─── 佔位連結（href="#"）不應造成頁面跳動 ───
+  document.querySelectorAll('a[href="#"]').forEach((link) => {
+    link.addEventListener('click', (e) => e.preventDefault());
+  });
+
+  // ─── 欄位錯誤提示（取代原生 alert，避免打斷操作） ───
+  const showFieldError = (el, msg) => {
+    el.textContent = msg;
+    el.hidden = false;
+  };
+  const clearFieldError = (el) => {
+    el.hidden = true;
+    el.textContent = '';
+  };
+
+  // ─── 複製到剪貼簿（優先用 Clipboard API，失敗時退回舊版 execCommand） ───
+  const copyToClipboard = async (text) => {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+        return;
+      }
+      throw new Error('Clipboard API unavailable');
+    } catch (err) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      const ok = document.execCommand('copy');
+      textarea.remove();
+      if (!ok) throw new Error('複製失敗');
+    }
+  };
+
+  // ─── 使用額度顯示 ───
+  const QUOTA_LIMIT = 50;
+  let usageCount = 8; // 模擬本月已使用次數
+  const quotaValueEl = document.getElementById('quotaValue');
+  const quotaBarFillEl = document.getElementById('quotaBarFill');
+  const renderQuota = () => {
+    quotaValueEl.textContent = usageCount;
+    const pct = Math.min(100, (usageCount / QUOTA_LIMIT) * 100);
+    quotaBarFillEl.style.width = pct + '%';
+    quotaBarFillEl.classList.toggle('is-near-limit', usageCount >= QUOTA_LIMIT * 0.9);
+  };
+  const incrementQuota = () => {
+    usageCount = Math.min(usageCount + 1, QUOTA_LIMIT);
+    renderQuota();
+  };
+  renderQuota();
+
+  // ══════════════════════════════════════════════
+  // Card 1：AI 文案魔法生成器
+  // ══════════════════════════════════════════════
+  const keywordInput = document.getElementById('keywords');
+  const keywordError = document.getElementById('keywordError');
+  const keywordCounter = document.getElementById('keywordCounter');
+  const magicGenBtn = document.querySelector('button[aria-label="使用 AI 魔法生成文案"]');
+  const copyResultBox = document.getElementById('copyResult');
+  const copyBtn = document.getElementById('copyBtn');
+  const copyHistoryEl = document.getElementById('copyHistory');
+  const toneGroup = document.getElementById('toneGroup');
+
+  const KEYWORD_MAX = 50;
+  const TONE_LABELS = { formal: '正式', playful: '活潑', professional: '專業' };
+ 
+  let selectedTone = 'formal';
+  let copyHistory = []; // { id, text, tone, keyword }
+  let nextVersionId = 1;
+  let activeVersionId = null;
+
+  keywordInput.addEventListener('input', () => {
+    clearFieldError(keywordError);
+    keywordInput.classList.remove('is-invalid');
+    const len = keywordInput.value.length;
+    keywordCounter.textContent = `${len}/${KEYWORD_MAX}`;
+    keywordCounter.classList.toggle('is-limit', len >= KEYWORD_MAX);
+  });
+
+  toneGroup.addEventListener('click', (e) => {
+    const btn = e.target.closest('.chip');
+    if (!btn) return;
+    selectedTone = btn.dataset.tone;
+    toneGroup.querySelectorAll('.chip').forEach((chip) => {
+      const active = chip === btn;
+      chip.classList.toggle('is-selected', active);
+      chip.setAttribute('aria-checked', String(active));
+    });
+  });
+
+  const renderCopyHistory = () => {
+    if (copyHistory.length === 0) {
+      copyHistoryEl.hidden = true;
+      copyHistoryEl.innerHTML = '';
+      return;
+    }
+    copyHistoryEl.hidden = false;
+    copyHistoryEl.innerHTML = copyHistory.map((v) => `
+      <button type="button" class="text-gen__history-item${v.id === activeVersionId ? ' is-active' : ''}" data-id="${v.id}">v${v.id} · ${TONE_LABELS[v.tone]}</button>
+    `).join('');
+  };
+
+  const showCopyVersion = (id) => {
+    const version = copyHistory.find((v) => v.id === id);
+    if (!version) return;
+    activeVersionId = id;
+    copyResultBox.classList.add('text-gen__result--filled');
+    copyResultBox.innerHTML = `<p class="text-gen__result-text">${version.text}</p>`;
+    copyBtn.disabled = false;
+    renderCopyHistory();
+  };
+
+  copyHistoryEl.addEventListener('click', (e) => {
+    const btn = e.target.closest('.text-gen__history-item');
+    if (!btn) return;
+    showCopyVersion(Number(btn.dataset.id));
+  });
+
+  copyBtn.addEventListener('click', async () => {
+    if (copyBtn.disabled) return;
+    const version = copyHistory.find((v) => v.id === activeVersionId);
+    if (!version) return;
+    try {
+      await copyToClipboard(version.text);
+      copyBtn.textContent = '已複製 ✓';
+      copyBtn.classList.add('is-copied');
+    } catch (err) {
+      copyBtn.textContent = '複製失敗';
+    }
+    setTimeout(() => {
+      copyBtn.textContent = '複製';
+      copyBtn.classList.remove('is-copied');
+    }, 1500);
+  });
+
+  const renderCopyGenerationError = () => {
+    copyBtn.disabled = true;
+    copyResultBox.classList.remove('text-gen__result--filled');
+    copyResultBox.innerHTML = `
+      <div class="text-gen__result-error">
+        <p class="text-gen__result-error-text">⚠️ 生成失敗，請稍後再試</p>
+        <button type="button" class="text-gen__retry-btn" id="retryGenBtn">重試</button>
+      </div>
+    `;
+  };
+  copyResultBox.addEventListener('click', (e) => {
+    if (e.target.closest('#retryGenBtn')) magicGenBtn.click();
+  });
+
+  // 真實 API 串接：AI 文案生成
+  magicGenBtn.addEventListener('click', async () => {
+    if (magicGenBtn.disabled) return;
+    const text = keywordInput.value.trim();
+    const selectedWordCount = document.getElementById('wordCountSelect').value;
+    if(!text) {
+      showFieldError(keywordError, "請先輸入產品關鍵字");
+      keywordInput.classList.add('is-invalid');
+      keywordInput.focus();
+      return;
+    }
+    clearFieldError(keywordError);
+    keywordInput.classList.remove('is-invalid');
+
+    // UI 載入狀態
+    magicGenBtn.disabled = true;
+    magicGenBtn.style.opacity = "0.6";
+    magicGenBtn.innerHTML = "✨ 運算中...";
+    copyBtn.disabled = true;
+    copyResultBox.classList.remove('text-gen__result--filled');
+    copyResultBox.innerHTML = '<p class="text-gen__result-placeholder">生成中...</p>';
+
+    try {
+      // 呼叫你的 Node.js 後端 API
+      const response = await fetch('/api/ai/generate-copy', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        // 將關鍵字和選擇的語氣傳給後端
+       body: JSON.stringify({ keywords: text, tone: selectedTone, wordCount: selectedWordCount })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // 顯示真實 AI 生成的文案，並存入版本歷史
+        const resultText = data.text;
+        const version = { id: nextVersionId++, text: resultText, tone: selectedTone, keyword: text };
+        copyHistory.push(version);
+        if (copyHistory.length > 5) copyHistory.shift();
+        showCopyVersion(version.id);
+        incrementQuota();
+      } else {
+        throw new Error(data.message || "生成失敗");
+      }
+    } catch (error) {
+      console.error(error);
+      renderCopyGenerationError();
+    } finally {
+      // 恢復按鈕狀態
+      magicGenBtn.disabled = false;
+      magicGenBtn.style.opacity = "1";
+      magicGenBtn.innerHTML = `<img src="${MAGIC_ICON}" /> ✨ 魔法生成`;
+    }
+  });
+
+  // ══════════════════════════════════════════════
+  // Card 3：AI 修圖
+  // ══════════════════════════════════════════════
+  const editDescInput = document.getElementById('editDesc');
+  const editDescCounter = document.getElementById('editDescCounter');
+  const uploadError = document.getElementById('uploadError');
+  const retouchBtn = document.querySelector('button[aria-label="開始 AI 修圖"]');
+  const statusVal = document.getElementById('statusVal');
+  const editItemVal = document.getElementById('editItemVal');
+  const progressVal = document.getElementById('progressVal');
+  const retouchResultBox = document.getElementById('retouchResultBox');
+  const retouchTagGroup = document.getElementById('retouchTagGroup');
+  const removeUploadBtn = document.getElementById('removeUploadBtn');
+  const mainUploadZone = document.getElementById('mainUpload');
+  const retouchActions = document.getElementById('retouchActions');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const RETOUCH_PLACEHOLDER_IMG = 'https://www.figma.com/api/mcp/asset/bbcd1057-42eb-4cf4-8e37-e5c331be565c';
+  const EDIT_DESC_MAX = 100;
+  let uploadedImageUrl = null;
+
+  editDescInput.addEventListener('input', () => {
+    const len = editDescInput.value.length;
+    editDescCounter.textContent = `${len}/${EDIT_DESC_MAX}`;
+    editDescCounter.classList.toggle('is-limit', len >= EDIT_DESC_MAX);
+  });
+
+  // 修圖常用選項標籤：點擊即加入/移除「修改說明」內容
+  retouchTagGroup.addEventListener('click', (e) => {
+    const btn = e.target.closest('.chip');
+    if (!btn) return;
+    const tag = btn.dataset.tag;
+    const isSelected = btn.classList.toggle('is-selected');
+    const current = editDescInput.value.split('、').map((s) => s.trim()).filter(Boolean);
+    if (isSelected) {
+      if (!current.includes(tag)) current.push(tag);
+    } else {
+      const idx = current.indexOf(tag);
+      if (idx !== -1) current.splice(idx, 1);
+    }
+    editDescInput.value = current.join('、');
+    editDescInput.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+
+  // 圖片上傳（含點擊選擇、拖曳上傳、格式與大小驗證）
+  const MAX_UPLOAD_SIZE = 5 * 1024 * 1024; // 5MB
+  const ALLOWED_UPLOAD_TYPES = ['image/jpeg', 'image/png'];
+
+  const setupUpload = (zoneId, onImageLoad, onError) => {
+    const zone = document.getElementById(zoneId);
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'file';
+    hiddenInput.accept = 'image/*';
+
+    const handleFile = (file) => {
+      if (!file) return;
+      if (!ALLOWED_UPLOAD_TYPES.includes(file.type)) {
+        return onError("僅支援 JPG、PNG 格式的圖片");
+      }
+      if (file.size > MAX_UPLOAD_SIZE) {
+        return onError("檔案大小不可超過 5MB");
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => onImageLoad(event.target.result, zone);
+      reader.readAsDataURL(file);
+    };
+
+    zone.addEventListener('click', () => hiddenInput.click());
+    hiddenInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+
+    zone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      zone.classList.add('upload-zone--dragover');
+    });
+    zone.addEventListener('dragleave', () => {
+      zone.classList.remove('upload-zone--dragover');
+    });
+    zone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      zone.classList.remove('upload-zone--dragover');
+      handleFile(e.dataTransfer.files[0]);
+    });
+  };
+
+  const resetRetouchState = () => {
+    statusVal.textContent = "等待上傳";
+    statusVal.classList.remove('dark-panel__stat-value--error');
+    editItemVal.textContent = "-";
+    progressVal.textContent = "0%";
+    retouchResultBox.innerHTML = `<img src="${RETOUCH_PLACEHOLDER_IMG}" alt="修圖結果佔位圖示" />`;
+    retouchActions.hidden = true;
+  };
+
+  // 處理底部大圖上傳（僅標記已上傳，實際修圖狀態交由「開始修圖」按鈕觸發）
+  setupUpload('mainUpload', (url, zone) => {
+    clearFieldError(uploadError);
+    uploadedImageUrl = url;
+    const iconWrap = zone.querySelector('.upload-zone__icon-wrap');
+    if(iconWrap) iconWrap.style.display = 'none';
+    zone.style.backgroundImage = `url(${url})`;
+    zone.style.backgroundSize = 'cover';
+    zone.style.backgroundPosition = 'center';
+    removeUploadBtn.hidden = false;
+
+    statusVal.textContent = "已上傳，待處理";
+    statusVal.classList.remove('dark-panel__stat-value--error');
+    editItemVal.textContent = "-";
+    progressVal.textContent = "0%";
+    retouchActions.hidden = true;
+  }, (msg) => showFieldError(uploadError, msg));
+
+  // 移除已上傳的圖片，可重新選擇
+  removeUploadBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    uploadedImageUrl = null;
+    mainUploadZone.style.backgroundImage = '';
+    const iconWrap = mainUploadZone.querySelector('.upload-zone__icon-wrap');
+    if (iconWrap) iconWrap.style.removeProperty('display');
+    removeUploadBtn.hidden = true;
+    resetRetouchState();
+  });
+
+  // 模擬 AI 修圖
+  retouchBtn.addEventListener('click', async () => {
+    if (retouchBtn.disabled) return;
+    if (!uploadedImageUrl) {
+      showFieldError(uploadError, "請先上傳要修改的圖片");
+      return;
+    }
+    clearFieldError(uploadError);
+
+    const desc = editDescInput.value.trim();
+
+    // 更新 UI 為載入中狀態
+    retouchBtn.disabled = true;
+    retouchBtn.style.opacity = "0.6";
+    retouchBtn.innerHTML = "✨ 修圖中...";
+    statusVal.textContent = "處理中...";
+    statusVal.classList.remove('dark-panel__stat-value--error');
+    progressVal.textContent = "0%";
+    retouchActions.hidden = true;
+
+    try {
+      // 呼叫 Node.js 後端的修圖 API，將圖片 Base64 與指令傳送過去
+      const response = await fetch('/api/ai/edit-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          image: uploadedImageUrl, 
+          prompt: desc 
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // 1. 正確更新狀態與進度條 (修復 0% 的 Bug)
+        window.currentRetouchData = data;
+        statusVal.textContent = "已完成";
+        editItemVal.textContent = data.text;
+        progressVal.textContent = "100%"; 
+        
+        // 渲染圖片
+        if (data.action === "blur_bg") {
+          retouchResultBox.innerHTML = `
+            <div style="position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: 8px;">
+              <img src="${data.originalUrl}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(12px); z-index: 1;" />
+              <img src="${data.imageUrl}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 2;" />
+            </div>
+          `;
+        } else {
+          // 一般濾鏡與無法實現的去背 (改為純白底色展示)
+          let imgStyle = "width: 100%; height: 100%; object-fit: cover; border-radius: 8px;";
+          
+          if (data.action === "remove_bg") {
+            // 坦承極限：加上背景色，不強求去背，保留原圖質感
+            imgStyle += " background-color: #ffffff;";
+          } else if (data.action === "filter") {
+            // 提亮、鮮豔等 CSS 濾鏡
+            imgStyle += ` filter: ${data.cssFilter};`;
+          }
+          
+          retouchResultBox.innerHTML = `<img src="${data.imageUrl}" style="${imgStyle}" />`;
+        }
+
+        retouchActions.hidden = false;
+        incrementQuota();
+      } else {
+        throw new Error(data.message || "修圖發生錯誤");
+      }
+    } catch (error) {
+      console.error("前端請求錯誤:", error);
+      statusVal.textContent = "處理失敗，請重試";
+      statusVal.classList.add('dark-panel__stat-value--error');
+      progressVal.textContent = "0%";
+    } finally {
+      // 恢復按鈕狀態
+      retouchBtn.disabled = false;
+      retouchBtn.style.opacity = "1";
+      retouchBtn.innerHTML = `✨ 開始修圖`;
+    }
+  });
+
+  // 下載修圖結果
+  downloadBtn.addEventListener('click', async () => {
+    // 檢查有沒有修圖資料
+    if (!window.currentRetouchData) {
+        alert("請先修改圖片後再下載喔！");
+        return;
+    }
+
+    const data = window.currentRetouchData;
+    console.log("準備下載的修圖資料：", data);
+    const originalText = downloadBtn.textContent;
+    downloadBtn.textContent = "高畫質打包中...";
+    downloadBtn.disabled = true;
+
+    try {
+        // 1. 建立一個存在於記憶體中的虛擬畫布 (Canvas)
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // 用來載入圖片的 Promise 小幫手
+        const loadImage = (src) => new Promise((resolve, reject) => {
+            const img = new Image();
+            img.crossOrigin = "Anonymous"; // 確保不會被瀏覽器阻擋
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = src;
+        });
+
+        // 2. 決定畫布的大小 (直接使用原圖的超大解析度！)
+        const baseImgUrl = data.originalUrl || data.imageUrl;
+        const baseImg = await loadImage(baseImgUrl);
+        canvas.width = baseImg.width;
+        canvas.height = baseImg.height;
+
+        // 3. 根據 AI 的動作，像畫家一樣一層層畫上去
+        if (data.action === "blur_bg") {
+            // 底層：畫上模糊的原圖 (Canvas 支援真實的像素模糊)
+            ctx.filter = 'blur(15px)'; 
+            ctx.drawImage(baseImg, 0, 0, canvas.width, canvas.height);
+            ctx.filter = 'none'; // 畫完底層要把畫筆洗乾淨
+
+            // 表層：畫上 Remove.bg 去背好的清晰主體
+            const topImg = await loadImage(data.imageUrl);
+            ctx.drawImage(topImg, 0, 0, canvas.width, canvas.height);
+        }
+        else if (data.action === "remove_bg") {
+            // 底層：鋪上一層純白背景
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 表層：畫上去背的主體
+            const transparentImg = await loadImage(data.imageUrl);
+            ctx.drawImage(transparentImg, 0, 0, canvas.width, canvas.height);
+        }
+        else if (data.action === "filter") {
+            // 套用提亮或鮮豔濾鏡
+            ctx.filter = data.cssFilter;
+            ctx.drawImage(baseImg, 0, 0, canvas.width, canvas.height);
+        }
+        else {
+            ctx.drawImage(baseImg, 0, 0, canvas.width, canvas.height);
+        }
+
+        // 4. 將畫布轉換成圖片檔案並觸發下載
+        const link = document.createElement('a');
+        link.href = canvas.toDataURL("image/png");
+        link.download = "GoezShop_AI_Edited.png";
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+    } catch (err) {
+        console.error("Canvas 繪圖下載失敗:", err);
+        alert("下載圖片時發生錯誤！");
+    } finally {
+        downloadBtn.textContent = originalText;
+        downloadBtn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>
