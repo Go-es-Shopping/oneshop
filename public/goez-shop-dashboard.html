@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>會員中心 — Goez Shop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+SC:wght@400&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Design Tokens ─────────────────────────────────────────── */
+    :root {
+      --color-white: #ffffff;
+      --color-black: #000000;
+      --color-black-55: rgba(0, 0, 0, 0.55);
+      --color-black-10: rgba(0, 0, 0, 0.1);
+      --color-white-60: rgba(255, 255, 255, 0.6);
+      --color-white-15: rgba(255, 255, 255, 0.15);
+
+      --fs-36: 36px;
+      --fs-24: 24px;
+      --fs-20: 20px;
+      --fs-18: 18px;
+      --fs-16: 16px;
+
+      --fw-regular: 400;
+      --fw-medium: 500;
+      --fw-semibold: 600;
+      --fw-bold: 700;
+
+      --lh-heading: 1.2;
+      --lh-body: 1.45;
+      --lh-sm: 1.4;
+      --lh-tight: 1.5;
+
+      --ls-heading: 3.6px;
+      --ls-gallery: 10.8px;
+      --ls-brand: -0.48px;
+      --ls-sm: -0.08px;
+      --ls-xs: -0.09px;
+      --ls-base: -0.1px;
+
+      --radius-16: 16px;
+      --radius-12: 12px;
+      --radius-8: 8px;
+
+      --shadow-card: 0px 4px 8px 0px rgba(0, 0, 0, 0.02), 0px 6px 12px 0px rgba(0, 0, 0, 0.03);
+
+      --spacing-120: 120px;
+      --spacing-96: 96px;
+      --spacing-80: 80px;
+      --spacing-40: 40px;
+      --spacing-32: 32px;
+      --spacing-24: 24px;
+      --spacing-16: 16px;
+      --spacing-12: 12px;
+      --spacing-8: 8px;
+      --spacing-4: 4px;
+
+      --font-primary: 'Inter', 'Noto Sans JP', 'Noto Sans SC', sans-serif;
+    }
+
+    /* ─── Reset ─────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; }
+    body { font-family: var(--font-primary); background: var(--color-white); color: var(--color-black); }
+    img { display: block; max-width: 100%; }
+    p, h1, h2, h3 { margin: 0; }
+    ul, ol { list-style: none; }
+    a { text-decoration: none; color: inherit; }
+    button { font: inherit; }
+
+    /* ─── Top bar（改用 Background.svg 當底圖） ─────────────────── */
+    .topbar {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 96px;
+      padding: 0 var(--spacing-40);
+      overflow: hidden;
+      width: 100%;
+    }
+    .topbar__bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+    .topbar__brand {
+      position: relative;
+      z-index: 1;
+      font-size: var(--fs-20);
+      font-weight: var(--fw-bold);
+      letter-spacing: var(--ls-brand);
+      color: var(--color-white);
+    }
+    .topbar__logout {
+      position: relative;
+      z-index: 1;
+      background: var(--color-white-15);
+      border: 1px solid var(--color-white-15);
+      border-radius: var(--radius-12);
+      padding: var(--spacing-8) var(--spacing-16);
+      font-size: var(--fs-16);
+      font-weight: var(--fw-medium);
+      color: var(--color-white);
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .topbar__logout:hover {
+      background: rgba(255,255,255,0.25);
+      border-color: rgba(255,255,255,0.4);
+    }
+    .topbar__actions {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-12);
+    }
+    .topbar__member {
+      background: transparent;
+      border: 1px solid var(--color-white-15);
+      border-radius: var(--radius-12);
+      padding: var(--spacing-8) var(--spacing-16);
+      font-size: var(--fs-16);
+      font-weight: var(--fw-medium);
+      color: var(--color-white);
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .topbar__member:hover {
+      background: rgba(255,255,255,0.15);
+      border-color: rgba(255,255,255,0.4);
+    }
+
+    /* ─── Page Wrapper ───────────────────────────────────────────── */
+    .page { display: flex; flex-direction: column; align-items: center; width: 100%; }
+    .container { display: flex; flex-direction: column; align-items: flex-start; width: 100%; }
+
+    /* ─── Quick Access：管理已建立賣場 / 優惠券設定 ─────────────── */
+    .quick-access {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: var(--spacing-80) var(--spacing-120);
+      width: 100%;
+    }
+    .quick-access__cards {
+      display: flex;
+      gap: var(--spacing-32);
+      align-items: flex-start;
+      width: 100%;
+    }
+    .quick-access__cards .gallery-card {
+      flex: 1 0 0;
+    }
+    .btn--dark {
+      background: var(--color-black);
+      color: var(--color-white);
+      padding: var(--spacing-12) var(--spacing-24);
+      border-radius: var(--radius-12);
+      font-size: var(--fs-18);
+      font-weight: var(--fw-medium);
+      line-height: var(--lh-body);
+      letter-spacing: var(--ls-xs);
+      white-space: nowrap;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ─── Feature Gallery ────────────────────────────────────────── */
+    .feature-gallery {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: var(--spacing-80) var(--spacing-120);
+      width: 100%;
+    }
+    .feature-gallery__inner {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+    }
+    .feature-gallery__content {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-40);
+      align-items: flex-start;
+      padding-bottom: var(--spacing-80);
+      width: 100%;
+    }
+    .feature-gallery__text {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-16);
+      width: 100%;
+    }
+    .feature-gallery__heading {
+      font-size: var(--fs-36);
+      font-weight: var(--fw-bold);
+      line-height: var(--lh-heading);
+      letter-spacing: var(--ls-heading);
+      color: var(--color-black);
+      width: 100%;
+    }
+    .feature-gallery__desc {
+      font-size: var(--fs-20);
+      font-weight: var(--fw-medium);
+      line-height: var(--lh-body);
+      letter-spacing: var(--ls-base);
+      color: var(--color-black-55);
+      width: 100%;
+    }
+
+    /* ─── Image Gallery Grid ─────────────────────────────────────── */
+    .image-gallery {
+      display: flex;
+      gap: var(--spacing-32);
+      align-items: flex-start;
+      width: 100%;
+    }
+    .image-gallery__col {
+      display: flex;
+      flex: 1 0 0;
+      flex-direction: column;
+      gap: var(--spacing-32);
+      align-items: flex-start;
+      min-width: 0;
+    }
+    .image-gallery__col--offset {
+      padding-top: var(--spacing-96);
+    }
+    .gallery-card {
+      position: relative;
+      height: 390px;
+      width: 100%;
+      flex-shrink: 0;
+      overflow: hidden;
+      border-radius: var(--radius-16);
+      background: var(--color-white);
+    }
+    .gallery-card__img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+      border-radius: var(--radius-16);
+      opacity: 0.6;
+    }
+    .gallery-card__label {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: var(--fs-24);
+      font-weight: var(--fw-bold);
+      line-height: var(--lh-body);
+      letter-spacing: var(--ls-gallery);
+      color: var(--color-black);
+      text-align: center;
+      white-space: nowrap;
+      z-index: 1;
+    }
+
+    /* ─── Testimonial / FAQ ──────────────────────────────────────── */
+    .faq {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-32);
+      align-items: center;
+      justify-content: center;
+      padding: var(--spacing-80) var(--spacing-120) var(--spacing-120);
+      width: 100%;
+    }
+    .faq__header {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-16);
+      align-items: flex-start;
+      width: 100%;
+    }
+    .faq__heading {
+      font-size: var(--fs-36);
+      font-weight: var(--fw-bold);
+      line-height: var(--lh-heading);
+      letter-spacing: var(--ls-heading);
+      color: var(--color-black);
+      width: 100%;
+    }
+    .faq__cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-32);
+      width: 100%;
+    }
+    .faq-card {
+      background: var(--color-white);
+      border: 1px solid var(--color-black-10);
+      border-radius: var(--radius-16);
+      box-shadow: var(--shadow-card);
+      padding: var(--spacing-32);
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-16);
+      align-items: flex-start;
+      min-width: 0;
+      overflow: hidden;
+    }
+    .faq-card__question {
+      font-size: var(--fs-16);
+      font-weight: var(--fw-bold);
+      line-height: var(--lh-body);
+      letter-spacing: var(--ls-sm);
+      color: var(--color-black);
+      width: 100%;
+    }
+    .faq-card__answer {
+      font-size: var(--fs-16);
+      font-weight: var(--fw-regular);
+      line-height: var(--lh-body);
+      letter-spacing: var(--ls-sm);
+      color: var(--color-black-55);
+      width: 100%;
+    }
+
+    /* ─── Footer ─────────────────────────────────────────────────── */
+    .footer {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding-bottom: var(--spacing-120);
+      padding-left: var(--spacing-120);
+      padding-right: var(--spacing-120);
+      width: 100%;
+    }
+    .footer__bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+    .footer__content {
+      position: relative;
+      display: flex;
+      flex: 1 0 0;
+      align-items: center;
+      justify-content: center;
+      border-top: 1px solid var(--color-white-15);
+      padding-top: var(--spacing-80);
+      padding-bottom: var(--spacing-80);
+      z-index: 1;
+      min-width: 0;
+    }
+    .footer__contact {
+      font-size: var(--fs-16);
+      font-weight: var(--fw-medium);
+      line-height: var(--lh-body);
+      letter-spacing: var(--ls-sm);
+      color: var(--color-white);
+      text-align: center;
+      max-width: 640px;
+    }
+    .footer__contact-link {
+      color: var(--color-white);
+      font-weight: var(--fw-semibold);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    /* ─── Animations & Transitions ──────────────────────────────── */
+
+    /* Scroll fade-in */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .fade-in-left {
+      opacity: 0;
+      transform: translateX(-32px);
+      transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .fade-in-left.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .fade-in-right {
+      opacity: 0;
+      transform: translateX(32px);
+      transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .fade-in-right.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* Stagger delays */
+    .delay-1 { transition-delay: 0.1s; }
+    .delay-2 { transition-delay: 0.2s; }
+    .delay-3 { transition-delay: 0.3s; }
+    .delay-4 { transition-delay: 0.4s; }
+
+    /* Button hover effects */
+    .btn--dark {
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    .btn--dark:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      background: #222;
+    }
+    .btn--dark:active { transform: translateY(0); }
+
+    /* Gallery card hover */
+    .gallery-card {
+      cursor: pointer;
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                  box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .gallery-card:hover {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.12);
+    }
+    .gallery-card__img {
+      transition: opacity 0.35s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .gallery-card:hover .gallery-card__img {
+      opacity: 0.8;
+      transform: scale(1.06);
+    }
+    .gallery-card__label {
+      transition: letter-spacing 0.35s ease, color 0.35s ease;
+    }
+    .gallery-card:hover .gallery-card__label {
+      letter-spacing: 14px;
+      color: #000;
+    }
+
+    /* FAQ card hover */
+    .faq-card {
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+                  box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .faq-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+    }
+
+    /* Footer contact link hover */
+    .footer__contact-link {
+      transition: color 0.2s ease;
+    }
+    .footer__contact-link:hover {
+      color: rgba(255,255,255,0.75);
+    }
+
+    /* ─── Responsive: Tablet ─────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .topbar { padding: 0 48px; height: 80px; }
+      .quick-access { padding: 64px 48px; }
+      .quick-access__cards { flex-direction: column; }
+      .feature-gallery { padding: var(--spacing-64, 64px) 48px; }
+      .feature-gallery { padding: 64px 48px; }
+      .feature-gallery__heading { font-size: 28px; }
+      .feature-gallery__desc { font-size: 17px; }
+      .image-gallery { flex-direction: column; }
+      .image-gallery__col--offset { padding-top: 0; }
+      .gallery-card { height: 260px; }
+      .faq { padding: 64px 48px 80px; }
+      .faq__heading { font-size: 28px; }
+      .faq__cards { grid-template-columns: 1fr; }
+      .footer { padding: 0 48px 80px; }
+    }
+
+    /* ─── Responsive: Mobile ─────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .topbar { padding: 0 24px; height: 72px; }
+      .topbar__brand { font-size: 18px; }
+      .quick-access { padding: 40px 24px; }
+      .quick-access__cards { flex-direction: column; }
+      .feature-gallery { padding: 48px 24px; }
+      .feature-gallery__heading { font-size: 22px; letter-spacing: 2px; }
+      .feature-gallery__desc { font-size: 15px; }
+      .feature-gallery__content { padding-bottom: 40px; }
+      .image-gallery { flex-direction: column; }
+      .image-gallery__col--offset { padding-top: 0; }
+      .gallery-card { height: 200px; }
+      .gallery-card__label { font-size: 18px; letter-spacing: 6px; }
+      .faq { padding: 48px 24px 64px; }
+      .faq__heading { font-size: 22px; letter-spacing: 2px; }
+      .faq__cards { grid-template-columns: 1fr; }
+      .faq-card { padding: 24px; }
+      .footer { padding: 0 24px 64px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Top bar：改用 Background.svg 當底圖，只保留品牌與登出 ── -->
+<header class="topbar">
+  <img class="topbar__bg" src="images/decorations/Background.svg" alt="" aria-hidden="true" />
+  <a href="goez-shop-dashboard.html" class="topbar__brand">Goez Shop</a>
+  <div class="topbar__actions">
+    <button class="topbar__member" onclick="location.href='goez-shop-member.html'">會員中心</button>
+    <button class="topbar__logout" onclick="handleLogout()">登出</button>
+  </div>
+</header>
+
+<div class="page">
+  <main class="container">
+
+    <!-- ── Quick Access：管理已建立賣場 / 優惠券設定 ─── -->
+    <section class="quick-access" aria-label="會員快速功能">
+      <div class="quick-access__cards fade-in">
+        <div class="gallery-card"
+          onclick="location.href='goez-shop-my-stores.html'"
+        style="cursor: pointer;">
+          <img
+            class="gallery-card__img"
+            src="images/decorations/complete-store.png"
+            alt="管理已建立賣場"
+          />
+          <span class="gallery-card__label">管理已建立賣場</span>
+        </div>
+        <div class="gallery-card"
+          onclick="location.href='goez-shop-coupons.html'"
+        style="cursor: pointer;">
+          <img
+            class="gallery-card__img"
+            src="images/decorations/coupong.png"
+            alt="優惠券設定"
+          />
+          <span class="gallery-card__label">優惠券設定</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Feature Gallery ───────────────────────────── -->
+    <section class="feature-gallery" aria-label="Feature gallery">
+      <div class="feature-gallery__inner">
+        <div class="feature-gallery__content fade-in">
+          <div class="feature-gallery__text">
+            <h2 class="feature-gallery__heading">快來建立屬於自己的專屬賣場～</h2>
+            <p class="feature-gallery__desc">
+              打造會自動賺錢的一頁式商店。<br>
+              內建多種優化工具，讓流量不再流失，<br>
+              輕鬆開啟你的電商生意。
+            </p>
+          </div>
+          <button class="btn--dark">瞭解更多</button>
+        </div>
+
+        <div class="image-gallery">
+          <!-- Column 1 -->
+          <div class="image-gallery__col fade-in-left delay-1">
+            <div class="gallery-card"
+              onclick="location.href='http://localhost:3000/goez-shop-ai-assistant.html'"
+            style="cursor: pointer;">
+              <img
+                class="gallery-card__img"
+                src="images/decorations/ai-function.svg"
+                alt="AI 開店助手"
+              />
+              <span class="gallery-card__label">ＡＩ開店助手</span>
+            </div>
+            <div class="gallery-card"
+            onclick="handleCreateShop()"
+            style="cursor: pointer;">
+              <img
+                class="gallery-card__img"
+                src="images/decorations/store-function.svg"
+                alt="設計我的賣場"
+              />
+              <span class="gallery-card__label">設計我的賣場</span>
+            </div>
+          </div>
+
+          <!-- Column 2 (offset) -->
+          <div class="image-gallery__col image-gallery__col--offset fade-in-right delay-2">
+            <div class="gallery-card">
+              <img
+                class="gallery-card__img"
+                src="images/decorations/order-function.svg"
+                alt="訂單與物流"
+              />
+              <span class="gallery-card__label">訂單與物流</span>
+            </div>
+            <div class="gallery-card">
+              <img
+                class="gallery-card__img"
+                src="images/decorations/sale-function.svg"
+                alt="銷售成效追蹤"
+              />
+              <span class="gallery-card__label">銷售成效追蹤</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FAQ ───────────────────────────────────────── -->
+    <section class="faq" aria-label="常見問題">
+      <div class="faq__header fade-in">
+        <h2 class="faq__heading">常見問題</h2>
+      </div>
+
+      <div class="faq__cards">
+        <!-- Card 1 -->
+        <article class="faq-card fade-in-left delay-1">
+          <p class="faq-card__question">Q. 手機拍照背景很亂怎麼辦？</p>
+          <p class="faq-card__answer">A. 使用 Goez Shop 內建的 AI 去背與美化工具，一鍵清除雜亂背景、自動優化光線與色調，讓商品照片瞬間變得專業。</p>
+        </article>
+
+        <!-- Card 2 -->
+        <article class="faq-card fade-in-right delay-2">
+          <p class="faq-card__question">Q. 寫不出那種很有質感、會讓人想下單的文案怎麼辦？</p>
+          <p class="faq-card__answer">A. 交給 AI 開店助手，只要輸入商品重點，就能自動生成吸引人的商品文案與標題，你也能再依自己的語氣微調。</p>
+        </article>
+
+        <!-- Card 3 -->
+        <article class="faq-card fade-in-left delay-3">
+          <p class="faq-card__question">Q. 不會寫程式，也能架設自己的線上商店嗎？</p>
+          <p class="faq-card__answer">A. 完全不需要！Goez Shop 提供一鍵開店與拖拉式版面編輯器，不用寫任何程式碼，幾分鐘內就能打造出專屬賣場。</p>
+        </article>
+
+        <!-- Card 4 -->
+        <article class="faq-card fade-in-right delay-4">
+          <p class="faq-card__question">Q. 商店開張後，要怎麼追蹤訂單和銷售狀況？</p>
+          <p class="faq-card__answer">A. 後台內建「訂單與物流」與「銷售成效追蹤」功能，即時掌握每筆訂單狀態與營收數據，隨時掌握店鋪表現。</p>
+        </article>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── Footer ─────────────────────────────────────── -->
+  <footer class="footer" aria-label="Footer">
+    <img
+      class="footer__bg"
+      src="images/decorations/footer.svg"
+      alt=""
+      aria-hidden="true"
+    />
+    <div class="footer__content">
+      <p class="footer__contact">
+        若有操作上問題 請寄信至
+        <a
+          href="https://mail.google.com/mail/?view=cm&fs=1&to=goez-shop@gmail.com"
+          class="footer__contact-link"
+          target="_blank"
+          rel="noopener noreferrer"
+        >goez-shop@gmail.com</a> 客服將為您服務
+      </p>
+    </div>
+  </footer>
+</div>
+
+<script>
+  // ── Scroll-triggered fade-in via Intersection Observer ──────────
+  const animatedEls = document.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target); // animate once
+      }
+    });
+  }, { threshold: 0.15 });
+
+  animatedEls.forEach(el => observer.observe(el));
+
+  async function handleLogout() {
+    try {
+      // TODO: 串接後端登出 API
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch (error) {
+      console.error('登出請求失敗:', error);
+    } finally {
+      window.location.href = 'goez-shop-login.html';
+    }
+  }
+</script>
+<script>
+async function handleCreateShop() {
+    try {
+        // 1. 顯示載入中（選配，增加儀式感）
+        console.log("正在為您申請新賣場 ID...");
+
+        // 2. 呼叫後端剛寫好的 POST 路由
+        const response = await fetch('/api/store/create-new-shop', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const result = await response.json();
+
+        if (result.success && result.pageId) {
+            // 3. 拿到新 ID 了，自動跳轉到編輯頁，並帶上 pageId
+            console.log("申請成功，ID 為:", result.pageId);
+            window.location.href = `http://localhost:3000/goez-shop-store.html?pageId=${result.pageId}`;
+        } else {
+            alert("建立失敗：" + (result.message || "未知錯誤"));
+        }
+    } catch (error) {
+        console.error("網路請求失敗:", error);
+        alert("伺服器連線失敗，請檢查後端是否啟動");
+    }
+}
+</script>
+</body>
+</html>
