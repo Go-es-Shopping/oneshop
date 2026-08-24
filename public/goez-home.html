@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>會員中心 — Goez Shop</title>
+  <title>登入後首頁 — Goez Shop</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+SC:wght@400&display=swap" rel="stylesheet" />
@@ -520,9 +520,9 @@
 <!-- ── Top bar：改用 Background.svg 當底圖，只保留品牌與登出 ── -->
 <header class="topbar">
   <img class="topbar__bg" src="images/decorations/Background.svg" alt="" aria-hidden="true" />
-  <a href="goez-shop-dashboard.html" class="topbar__brand">Goez Shop</a>
+  <a href="goez-home.html" class="topbar__brand">Goez Shop</a>
   <div class="topbar__actions">
-    <button class="topbar__member" onclick="location.href='goez-shop-member.html'">會員中心</button>
+    <button class="topbar__member" onclick="location.href='goez-member.html'">會員中心</button>
     <button class="topbar__logout" onclick="handleLogout()">登出</button>
   </div>
 </header>
@@ -534,7 +534,7 @@
     <section class="quick-access" aria-label="會員快速功能">
       <div class="quick-access__cards fade-in">
         <div class="gallery-card"
-          onclick="location.href='goez-shop-my-stores.html'"
+          onclick="location.href='goez-mystores-management.html'"
         style="cursor: pointer;">
           <img
             class="gallery-card__img"
@@ -544,7 +544,7 @@
           <span class="gallery-card__label">管理已建立賣場</span>
         </div>
         <div class="gallery-card"
-          onclick="location.href='goez-shop-coupons.html'"
+          onclick="location.href='goez-shop-mycoupons-management.html'"
         style="cursor: pointer;">
           <img
             class="gallery-card__img"
@@ -574,9 +574,8 @@
         <div class="image-gallery">
           <!-- Column 1 -->
           <div class="image-gallery__col fade-in-left delay-1">
-            <div class="gallery-card"
-              onclick="location.href='http://localhost:3000/goez-shop-ai-assistant.html'"
-            style="cursor: pointer;">
+            <a href="goez-ai-assistant.html" style="text-decoration: none; color: inherit; display: block;">
+            <div class="gallery-card"style="cursor: pointer;">
               <img
                 class="gallery-card__img"
                 src="images/decorations/ai-function.svg"
