@@ -1083,6 +1083,9 @@ function renderOrderSummary() {
     return;
   }
 
+  // 💡 記得這裡如果 cart 有資料，要同時把按鈕解鎖！
+    document.getElementById('confirmBtn').disabled = false;
+    document.getElementById('mobileConfirmBtn').disabled = false;
   el.innerHTML = cart.map(item => {
     const thumb = item.imageUrl
       ? `<img src="${item.imageUrl}" alt="${item.name}">`
@@ -1202,7 +1205,7 @@ function validateForm() {
   }
   return valid;
 }
-
+/*
 function submitOrder() {
   if (!cart.length) return;
   if (!validateForm()) {
@@ -1218,6 +1221,7 @@ function submitOrder() {
     document.getElementById('successOverlay').classList.add('show');
   }, 1800);
 }
+  */
 
 function setConfirmLoading(loading) {
   ['confirmBtn','mobileConfirmBtn'].forEach(id => {

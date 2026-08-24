@@ -291,6 +291,17 @@ exports.checkout = async (req, res) => {
         PaymentStatus: 0
       }, { transaction: t });
     }
+    // ==========================================
+    // 💡：在 Commit 交易之前，先把 storeSlug 查好！
+    // ==========================================
+    // 💡 嘗試查詢該賣場是否有設定專屬網址 (Slug)
+    let storeSlug = null;
+    if (PageID && StorePageModel) {
+      const foundStore = await StorePageModel.findByPk(PageID, { transaction: t });
+      if (foundStore && foundStore.PageUrl) {
+        storeSlug = foundStore.PageUrl;
+      }
+    }
 
     // --- ✅ 提交所有變更 ---
     await t.commit();
@@ -324,16 +335,8 @@ exports.checkout = async (req, res) => {
 
     // 2. 如果是藍新金流支援的線上支付 (CreditCard 或 atm)
     const merchantID = process.env.MERCHANT_ID || 'MS12345678';
-    const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-
-    // 💡 嘗試查詢該賣場是否有設定專屬網址 (Slug)
-    let storeSlug = null;
-    if (PageID && StorePageModel) {
-      const foundStore = await StorePageModel.findByPk(PageID, { transaction: t });
-      if (foundStore && foundStore.PageUrl) {
-        storeSlug = foundStore.PageUrl;
-      }
-    }
+   // 優先讀取 FRONTEND_URL，如果沒有就讀取 NOTIFY_URL 的網域部分，再沒有就使用固定的 ngrok 網址
+    const baseUrl = process.env.FRONTEND_URL || process.env.NOTIFY_URL || 'https://niece-eel-casket.ngrok-free.dev';
 
     // 💡 智慧決定 ReturnURL：優先使用漂亮的專屬網址，若無則使用傳統的 pageId 路由
     const returnUrl = storeSlug 
@@ -384,7 +387,9 @@ exports.checkout = async (req, res) => {
     });
 
   } catch (error) {
-    if (t) await t.rollback();
+    if (t && !t.finished) {
+      await t.rollback();
+    }
     console.error('🔴 結帳失敗:', error);
     res.status(500).json({ Success: false, error: error.message });
   }

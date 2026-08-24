@@ -14,7 +14,7 @@
 - Seller.Status：0=審核中；1=營運中；2=停權；3=已關閉
 - OrderStatus：0=處理中；1=待出貨；2=已出貨；3=已送達；4=完成取貨；5=已取消訂單
 - PaymentStatus：0=未付款；1=已付款；2=退款中；3=已退款；4=失敗
-- ShipmentStatus：0=準備中；1=已出貨；2=配送中；3=已送達；4=退貨中
+- ShipmentStatus：0=處理中；1=待出貨；2=已出貨；3=已送達；4=完成取貨；5=已取消
 - BuyerPhone 需採 E.164 標準格式（例：+886912345678）
 - Price、TotalAmount、UnitPrice 為小數（兩位）
 - IsExclusive：0=可與其他優惠券並用；1=不可與其他優惠券並用
@@ -292,7 +292,7 @@
  - 狀態代碼說明
    - OrderStatus：0=處理中；1=待出貨；2=已出貨；3=已送達；4=完成取貨；5=已取消訂單
    - PaymentStatus：0=未付款；1=已付款；2=退款中；3=已退款；4=失敗
-   - ShipmentStatus：0=準備中；1=已出貨；2=配送中；3=已送達；4=退貨中
+   - ShipmentStatus：0=處理中；1=待出貨；2=已出貨；3=已送達；4=完成取貨；5=已取消
  - 欄位備註
   - TrackingNumber 不可為 null
    - ShippedAt 為 ISO8601 時間
