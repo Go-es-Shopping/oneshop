@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>會員資料 — Goez Shop</title>
+  <title>會員中心資料 — Goez Shop</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+SC:wght@400&display=swap" rel="stylesheet" />
@@ -245,12 +245,12 @@
 
   <header class="topbar">
     <img class="topbar__bg" src="images/decorations/Background.svg" alt="" aria-hidden="true">
-    <a href="goez-shop-dashboard.html" class="topbar__brand">Goez Shop</a>
+    <a href="goez-home.html" class="topbar__brand">Goez Shop</a>
     <button class="topbar__logout" onclick="handleLogout()">登出</button>
   </header>
 
   <main class="page">
-    <a href="goez-shop-dashboard.html" class="breadcrumb">‹ 返回會員中心</a>
+    <a href="goez-home.html" class="breadcrumb">‹ 返回會員首頁</a>
 
     <div class="page__header">
       <h1 class="page__title">會員資料</h1>
@@ -433,7 +433,7 @@
       } catch (error) {
         console.error('登出請求失敗:', error);
       } finally {
-        window.location.href = 'goez-shop-login.html';
+        window.location.href = 'goez-landing.html';
       }
     }
 
