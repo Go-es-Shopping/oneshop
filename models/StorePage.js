@@ -69,6 +69,12 @@ const StorePage = sequelize.define('StorePage', {
     type: DataTypes.STRING(50),  // nvarchar(50)，容納市話或手機與分機
     allowNull: true,              // 允許為空
     field: 'StorePhone'           // 顯式映射資料庫欄位
+  },
+  // 核心新增：收款銀行帳戶欄位
+  StoreBankAccount: {
+    type: DataTypes.STRING(100), // nvarchar(100)，足夠容納銀行代碼加帳號（例如: 812-1234567890）
+    allowNull: true,             // 允許為空，配合賣家可稍後再填的邏輯
+    field: 'StoreBankAccount'    // 顯式映射資料庫欄位
   }
 }, {
   tableName: 'StorePage', // 鎖定表名，防止變複數

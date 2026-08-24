@@ -746,27 +746,9 @@
               </div>
             </div>
             <div class="payment-option__detail">
-              <div class="form-field">
-                <label>卡號</label>
-                <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19"
-                  oninput="formatCard(this)" />
-              </div>
-              <div class="card-row">
-                <div class="form-field">
-                  <label>有效期限</label>
-                  <input type="text" id="cardExpiry" placeholder="MM / YY" maxlength="7" oninput="formatExpiry(this)" />
-                </div>
-                <div class="form-field">
-                  <label>安全碼 CVV</label>
-                  <input type="text" id="cardCvv" placeholder="123" maxlength="4" />
-                </div>
-              </div>
-              <div class="card-row">
-                <div class="form-field" style="grid-column:1/-1">
-                  <label>持卡人姓名</label>
-                  <input type="text" id="cardName" placeholder="同身分證姓名（英文）" autocomplete="cc-name" />
-                </div>
-              </div>
+              <div style="padding: 12px 0; color: #666; font-size: 14px; line-height: 1.5;">
+          🔒 點擊「確認下單」後，將自動跳轉至<strong>藍新金流安全刷卡頁面</strong>完成付款（支援 Visa, Mastercard, JCB）。
+          </div>
             </div>
           </div>
 
@@ -783,9 +765,9 @@
               </div>
             </div>
             <div class="payment-option__detail">
-              <div class="payment-info">
-                ✅ 確認訂單後，系統將產生<strong>虛擬帳號</strong>並寄至您的 Email。<br>
-                請於 <strong>72 小時</strong>內完成轉帳，逾期訂單將自動取消。
+              <div class="payment-info" style="padding: 12px 0; color: #666; font-size: 14px; line-height: 1.5;">
+    🔒 點擊「確認下單」後，將自動跳轉至藍新金流取得<strong>專屬虛擬轉帳帳號</strong>。<br>
+    請於 <strong>72 小時</strong>內至 ATM 或網路銀行完成轉帳，逾期訂單將自動取消。
               </div>
             </div>
           </div>
@@ -1101,6 +1083,9 @@ function renderOrderSummary() {
     return;
   }
 
+  // 💡 記得這裡如果 cart 有資料，要同時把按鈕解鎖！
+    document.getElementById('confirmBtn').disabled = false;
+    document.getElementById('mobileConfirmBtn').disabled = false;
   el.innerHTML = cart.map(item => {
     const thumb = item.imageUrl
       ? `<img src="${item.imageUrl}" alt="${item.name}">`
@@ -1220,7 +1205,7 @@ function validateForm() {
   }
   return valid;
 }
-
+/*
 function submitOrder() {
   if (!cart.length) return;
   if (!validateForm()) {
@@ -1236,6 +1221,7 @@ function submitOrder() {
     document.getElementById('successOverlay').classList.add('show');
   }, 1800);
 }
+  */
 
 function setConfirmLoading(loading) {
   ['confirmBtn','mobileConfirmBtn'].forEach(id => {

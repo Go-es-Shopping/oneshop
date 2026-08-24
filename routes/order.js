@@ -15,9 +15,11 @@ async function useMock() {
   }
 }
 
-// 1. 建立訂單 (POST /)
+const checkoutController = require('../controllers/checkoutController'); // 引入新的 controller
+
+// 1. 建立訂單 (POST /) -> 改為走新版 checkoutController
 router.post('/', async (req, res) => {
-  const mock = await useMock()
+  const mock = await useMock();
   if (mock) {
     const { items, ShippingMethod } = req.body;
     
@@ -53,7 +55,7 @@ router.post('/', async (req, res) => {
       Message: "模擬下單成功 (資料庫未連線)"
     });
   }
-  return orderController.createOrder(req, res);
+  return checkoutController.checkout(req, res); // 👈 關鍵：把這裡改成 checkoutController
 });
 
 // 2. 查詢單筆訂單詳情 (GET /:OrderID)

@@ -23,7 +23,7 @@
 | PasswordHash | varchar(255)  | 否        | 雜湊後密碼                                                           |
 | Phone      | varchar(20)     | 否        | 聯絡電話（E.164 國際格式，例：+886912345678）                        |
 | CreatedAt  | datetime        | 否        | 建立時間                                                             |
-| PlanType   | varchar(20)     | 否        | 訂閱方案類型（0=免費；1=進階付費）(保留資料庫欄位 未來可優化做付費功能進階)                 |
+| PlanType   | varchar(20)     | 否        | 訂閱方案類型（free=免費；premium=進階付費）(保留資料庫欄位 未來可優化做付費功能進階)                 |
 | Status     | int             | 否        | 帳號狀態（0=審核中；1=營運中；2=停權；3=已關閉）(保留資料庫欄位 未來可優化使平台管理員審核機制)    |
 | UpdatedAt  | datetime        | 否        | 最後更新時間                                                         |
 
@@ -43,6 +43,7 @@
 | ThemeFont   | varchar(50)        | 是        | 頁面主題字體，初始設置"現代黑體"                                             |
 | StoreEmail   | nvarchar(255)        | 是        | 商家賣場聯絡郵件(聯絡我們)                                                  |
 | StorePhone   | nvarchar(50)        | 是        | 商家賣場聯絡電話(聯絡我們)                                                   |
+| StoreBankAccount   | nvarchar(100)        | 是        | 商家賣場收款銀行帳戶(由平台統一代收顧客消費，在每月5號撥款轉帳到此帳戶，請填寫正確的銀行代碼和帳號)                      |
 
 ## PageContent
 
@@ -115,8 +116,8 @@
 |--------------|-----------------|-----------|----------------------|
 | PaymentID    | int             | 否        | 付款紀錄主鍵         |
 | OrderID      | int             | 否        | 所屬訂單             |
-| PaymentMethod| nvarchar(50)    | 否        | 支付方式('card'信用卡, 'atm'轉帳, 'cod'貨到付款)      |
-| PaymentStatus| nvarchar(50)    | 否        | 支付狀態文字描述     |
+| PaymentMethod| nvarchar(50)    | 否        | 支付方式('CreditCard'信用卡, 'atm'轉帳, 'cod'貨到付款)      |
+| PaymentStatus| int             | 否        | 支付狀態（0=未付款；1=已付款；2=退款中；3=已退款；4=失敗）     |
 | PaidAt       | datetime        | 否        | 實際完成付款時間     |
 | TradeNo      | nvarchar(100)   | 是        | 蓝新金流官方交易序號（對帳用） |
 
@@ -128,7 +129,7 @@
 | OrderID       | int             | 否        | 所屬訂單                                                     |
 | ShippingMethod| nvarchar(50)    | 否        | 物流方式（例：7-11、宅配等）                                 |
 | TrackingNumber| nvarchar(100)   | 是        | 物流單號（便於買家查詢）                                     |
-| ShipmentStatus| nvarchar(30)    | 否        | 物流狀態（0=準備中；1=已出貨；2=配送中；3=已送達；4=退貨中） |
+| ShipmentStatus| nvarchar(30)    | 否        | 物流狀態（0=處理中；1=待出貨；2=已出貨；3=已送達；4=完成取貨；5=已取消） |
 | ShippedAt     | datetime        | 否        | 賣家按下出貨的時間                                           |
 
 ## Orderdetail

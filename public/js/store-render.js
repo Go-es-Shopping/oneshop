@@ -2,18 +2,21 @@
  * Goezshop 店鋪動態渲染與同步引擎
  * ====================================================================
  * 【核心定位】
- * 負責店鋪裝潢外觀（店名、描述、Logo商標）的「所見即所得」即時預覽與同步。
- * * 【運作流程】
+ * 負責店鋪裝潢外觀（店名、描述、Logo商標、銀行帳號、專屬網址）的「所見即所得」即時預覽與同步。
+ * 
+ * 【運作流程】
  * 1. 狀態中心：暫存於 window.currentStoreData 全域物件中（UI與資料分離）。
  * 2. 渲染引擎：監聽左側輸入，動態生成 HTML 模具並重繪雙端（桌面/行動）預覽。
  * 3. 圖片上傳：選取Logo後，非同步背景上傳至 /api/upload-logo 並回傳網址。
  * 4. API 對接：負責載入賣場初始化資料，並將裝潢草稿/發布 JSON 送回後端更新。
- * 5. 更新文字欄位 (同步引擎)，打通桌面與行動雙端「信箱/電話」即時預覽連動
- * * 【注意事項】
- * * 本檔案僅負責「店鋪外觀裝潢」。
- * * 依據單一職責原則，任何「商品新增/刪除/管理」功能請一律寫在獨立的新檔案中。
+ * 5. 更新文字欄位 (同步引擎)，打通桌面與行動雙端「信箱/電話」即時預覽連動。
+ * 6. 網址設定：動態抓取網域、即時網址預覽與店家 ID 格式防呆驗證。
+ * 
+ * 【注意事項】
+ * - 本檔案僅負責「店鋪外觀裝潢與網址設定」。
+ * - 依據單一職責原則，任何「商品新增/刪除/管理」功能請一律寫在獨立的新檔案中。
  * ====================================================================
- *  由goez-store.html引用
+ *  由 goez-store.html 引用
  */
 
 // 1. 全域資料中心：存放店鋪狀態
@@ -23,6 +26,8 @@ window.currentStoreData = {
     logoUrl: "", // 存放圖片網址
     storeEmail: "", // 店鋪全域信箱狀態
     storePhone: "", // 店鋪全域電話狀態
+    storeBankAccount: "", // 💳 補上銀行帳號全域狀態
+    storeSlug: "", // 🔗 補上專屬網址/店家ID全域狀態
     products: []
 };
 
@@ -136,7 +141,7 @@ function createMobileHTML(p) {
     return `
     <div class="mobile-product-card" data-id="${p.ProductID || ''}" style="background: #fff; border: 1px solid #eaeaea; border-radius: 16px; padding: 12px; display: flex; gap: 12px; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
         <div style="width: 80px; height: 80px; border-radius: 12px; overflow: hidden; flex-shrink: 0; background: #f5f5f5;">
-            <img src="${img}" alt="${name}" style="width: 100%; height: 1005; object-fit: cover;" />
+            <img src="${img}" alt="${name}" style="width: 100%; height: 100%; object-fit: cover;" />
         </div>
         <div style="display: flex; flex-direction: column; gap: 4px; flex-grow: 1; overflow: hidden;">
             <div style="font-weight: 700; font-size: 14px; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${name}</div>
@@ -284,7 +289,11 @@ async function sendUpdateToBackend(isPublished) {
         themeFont: themeFont,
         // 🚀 修正：改用 innerText 抓取 div 的文字
         storeEmail: document.getElementById('store-email-input') ? document.getElementById('store-email-input').innerText.trim() : "",
-        storePhone: document.getElementById('store-phone-input') ? document.getElementById('store-phone-input').innerText.trim() : ""
+        storePhone: document.getElementById('store-phone-input') ? document.getElementById('store-phone-input').innerText.trim() : "",
+        // 💳 補上將銀行帳號打包送往後端的邏輯
+        storeBankAccount: document.getElementById('store-bank-input') ? document.getElementById('store-bank-input').innerText.trim() : "",
+    // 🔗 補上將專屬網址/店家 ID 打包送往後端的邏輯
+        pageUrl: document.getElementById('storeSlugInput') ? document.getElementById('storeSlugInput').value.trim() : ""
     };
 
     try {
@@ -298,9 +307,15 @@ async function sendUpdateToBackend(isPublished) {
             alert(isPublished ? "🚀 發布成功！即將跳轉至買家前台查看成果。" : "草稿儲存成功！");
             
             // 💡 莊組長流暢加分點：如果是正式發布 (isPublished === true)，立刻執行跳轉
+            // 💡 莊組長流暢加分點：如果是正式發布 (isPublished === true)，立刻跳轉至全新的 Slug 專屬網址
             if (isPublished) {
-                window.location.href = `goez-store-template.html?pageId=${pageId}`;
-            }
+            const slug = window.currentStoreData.storeSlug || "";
+            if (slug) {
+                window.location.href = `/store/${slug}`;
+            } else {
+        window.location.href = `goez-store-template.html?pageId=${pageId}`; // 防呆備用
+    }
+}
         } else {
             alert("儲存失敗：" + result.message);
         }
@@ -335,6 +350,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 window.currentStoreData.logoUrl = data.StoreLogo || data.storeLogo || "";
                 window.currentStoreData.storeEmail = data.StoreEmail || data.storeEmail || "";
                 window.currentStoreData.storePhone = data.StorePhone || data.storePhone || "";
+                // 🛡️ 接收後端欄位防禦
+                window.currentStoreData.storeBankAccount = data.StoreBankAccount || data.storeBankAccount || "";
+                window.currentStoreData.storeSlug = data.PageUrl || data.pageUrl || "";
 
                 // 填回左側 Input（因為是 contenteditable 的 div，所以一律用 innerText！）
                 const nIn = document.getElementById('store-name-input');
@@ -353,6 +371,21 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (phoneIn && window.currentStoreData.storePhone) {
                     phoneIn.innerText = window.currentStoreData.storePhone;
                 }
+                // 填回左側 Input (假設你的輸入框 id 叫 store-bank-input)
+                const bankInput = document.getElementById('store-bank-input');
+                if (bankInput && window.currentStoreData.storeBankAccount) {
+                    bankInput.innerText = window.currentStoreData.storeBankAccount;
+                }
+                // 同步填回左側的網址輸入框
+                const slugIn = document.getElementById('storeSlugInput');
+                if (slugIn && window.currentStoreData.storeSlug) {
+                slugIn.value = window.currentStoreData.storeSlug;
+                const currentBaseUrl = window.location.origin;
+                const previewDiv = document.getElementById('fullUrlPreview');
+                if (previewDiv) {
+                previewDiv.textContent = `完整網址預覽：${currentBaseUrl}/store/${window.currentStoreData.storeSlug}`;
+                }
+            }
 
                 // 3. 同步把預覽畫面也畫出來
                 const previewEmailEl = document.querySelector('.preview-email') || document.getElementById('preview-email');
@@ -493,6 +526,67 @@ document.addEventListener('DOMContentLoaded', async () => {
             // 確保使用 innerText 抓取 div 內的文字並同步至狀態中心
             window.currentStoreData.storePhone = e.target.innerText.trim();
             updateTextFields(); // 🔥 關鍵：即時觸發上面的「顯示/隱藏與重繪」引擎！
+        });
+    }
+    
+    const bankInputEl = document.getElementById('store-bank-input');
+if (bankInputEl) {
+    bankInputEl.addEventListener('input', (e) => {
+        window.currentStoreData.storeBankAccount = e.target.innerText.trim();
+    });
+}
+// ==========================================
+    // 🔗 店家專屬網址 (Slug) 動態預覽與驗證邏輯
+    // ==========================================
+    const slugInput = document.getElementById('storeSlugInput');
+    const previewDiv = document.getElementById('fullUrlPreview');
+    const verifyBtn = document.getElementById('verifyUrlBtn');
+
+    // 動態取得當前的網基底網址（支援 localhost 與未來上線的 goezshop.tw）
+    const currentBaseUrl = window.location.origin;
+    const storePathPrefix = `${currentBaseUrl}/store/`;
+
+    // A. 如果從後端撈回了 PageUrl，初始化時要填進輸入框並更新預覽
+    if (slugInput && window.currentStoreData.storeSlug) {
+        slugInput.value = window.currentStoreData.storeSlug;
+        if (previewDiv) {
+            previewDiv.textContent = `完整網址預覽：${storePathPrefix}${window.currentStoreData.storeSlug}`;
+        }
+    }
+
+    // B. 監聽輸入框即時變動，更新預覽文字與全域狀態
+    if (slugInput) {
+        slugInput.addEventListener('input', (e) => {
+            const slug = e.target.value.trim();
+            window.currentStoreData.storeSlug = slug;
+            
+            if (previewDiv) {
+                if (slug === "") {
+                    previewDiv.textContent = `完整網址預覽：${storePathPrefix}`;
+                } else {
+                    previewDiv.textContent = `完整網址預覽：${storePathPrefix}${slug}`;
+                }
+            }
+        });
+    }
+
+    // C. 點擊「驗證您的網址」按鈕防呆與格式檢查
+    if (verifyBtn && slugInput) {
+        verifyBtn.addEventListener('click', () => {
+            const slug = slugInput.value.trim();
+            const regex = /^[a-zA-Z0-9-]{3,30}$/; // 只能是英文大小寫、數字、連字號，長度 3~30
+
+            if (!slug) {
+                alert('請先輸入店家 ID！');
+                return;
+            }
+
+            if (!regex.test(slug)) {
+                alert('格式錯誤！店家 ID 只能使用英文大小寫、數字與連字號(-)，且長度需為 3~30 字元。');
+                return;
+            }
+
+            alert(`太棒了！格式驗證通過，您的專屬網址將會是：\n${storePathPrefix}${slug}`);
         });
     }
 

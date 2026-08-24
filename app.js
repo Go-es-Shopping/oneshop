@@ -97,6 +97,7 @@ const adminRoutes = require('./routes/adminRoutes')
 const checkoutRoutes = require('./routes/checkoutRoutes')
 const analyticsRoutes = require('./routes/analyticsRoutes')
 const couponRoutes = require('./routes/couponRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
 const aiRoutes = require('./routes/aiRoutes');
 
 app.use(cors());
@@ -111,10 +112,28 @@ app.use('/api/store', storeRoutes)
 app.use('/api/orders', orderRouter)
 app.use('/api/seller', require('./routes/sellerRoutes'));
 app.use('/api/admin', adminRoutes)
-app.use('/api/checkout', checkoutRoutes)
+// 保留原本的 api 路由
+app.use('/api/checkout', checkoutRoutes);
+// 額外掛載根目錄，專門用來接住藍新重新導向的 POST 請求
+app.use('/', checkoutRoutes);
 app.use('/api/track', analyticsRoutes)
 // 掛載優惠券路由
 app.use('/api/coupons', couponRoutes);
+app.use('/api/payment', paymentRoutes);
+
+// --- 🚀 新增：處理前台專屬網址動態路由 (/store/:slug)，可以正確對應到你的前台樣板頁面 ---
+app.get('/store/:slug', (req, res) => {
+    // 讓伺服器回傳你的前台樣板檔案 (請確認你的前台消費者樣板檔名是否為 goez-store-template.html)
+    res.sendFile(path.join(__dirname, 'public', 'goez-store-template.html'));
+});
+
+// 接收藍新返回的 POST 請求，並安全地轉向回前端頁面
+app.post('/store/:slug', (req, res) => {
+    const { slug } = req.params;
+    // 轉向回你的商店頁面，並帶上支付結果參數
+    return res.redirect(`/store/${slug}?payment=result`);
+});
+
 app.use('/api/ai', aiRoutes);
 
 

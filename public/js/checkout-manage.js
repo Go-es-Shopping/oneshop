@@ -160,6 +160,11 @@ function loadCheckoutSummary() {
         </div>
       `;
     }
+    // 💡 關鍵保險：只要順利執行到這裡（代表有讀到商品），就強制解鎖下單按鈕！
+    const confirmBtn = document.getElementById('confirmBtn');
+    const mobileConfirmBtn = document.getElementById('mobileConfirmBtn');
+    if (confirmBtn) confirmBtn.disabled = false;
+    if (mobileConfirmBtn) mobileConfirmBtn.disabled = false;
   } catch (err) {
     console.error('解析結帳商品資料失敗:', err);
   }
@@ -176,7 +181,16 @@ async function applyCoupon() {
   const couponCode = couponInput ? couponInput.value.trim().toLowerCase() : '';
   
   const totalValElement = document.getElementById('totalVal');
-  const currentTotal = totalValElement ? parseInt(totalValElement.getAttribute('data-raw-total')) || 1000 : 1000;
+  
+  // 💡 修正 1：安全取得或鎖定未折抵的原始總額 (Base Total)，避免重複點擊時被連減
+  let baseTotal = totalValElement ? parseInt(totalValElement.getAttribute('data-base-total')) : NaN;
+  if (!baseTotal || isNaN(baseTotal)) {
+    const currentRaw = totalValElement ? parseInt(totalValElement.getAttribute('data-raw-total')) || 2000 : 2000;
+    if (totalValElement) {
+      totalValElement.setAttribute('data-base-total', currentRaw);
+    }
+    baseTotal = currentRaw;
+  }
 
   if (!couponCode) {
     if (couponMsg) {
@@ -190,15 +204,17 @@ async function applyCoupon() {
     const response = await fetch('/api/coupons/apply', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code: couponCode, orderTotal: currentTotal })
+      body: JSON.stringify({ code: couponCode, orderTotal: baseTotal }) // 帶入原價給後端驗證低消
     });
 
     const result = await response.json();
 
     if (response.ok && result.success) {
-      // 💡 正確抓取後端回傳的折抵金額，並計算最終金額
+      // 💡 正確抓取後端回傳的折抵金額
       const discountAmount = result.data ? result.data.discountValue : 0;
-      const finalTotal = Math.max(0, currentTotal - discountAmount);
+      
+      // 💡 修正 2：永遠用固定的 baseTotal (原價) 去減折扣，重複按幾次都安全
+      const finalTotal = Math.max(0, baseTotal - discountAmount);
 
       // 💡 紀錄成功套用的優惠券資訊（供下單時寫入資料庫）
       appliedCouponData = {
@@ -358,14 +374,39 @@ async function submitOrder() {
     const result = await response.json();
 
     if (response.ok && result.Success) {
-      alert(`下單成功！您的訂單編號為：${result.OrderID}`);
-      
       // 清空該賣場的購物車紀錄
       localStorage.removeItem(`goez_checkout_cart_${pageId}`);
       localStorage.removeItem(`goez_cart_${pageId}`);
 
-      // 跳轉到訂單完成頁或首頁（可依需求調整）
-      // window.location.href = `/order-success.html?orderId=${result.OrderID}`;
+      // 🚀 核心分流邏輯：依據後端回傳的 Type 決定下一步
+      if (result.Type === 'redirect') {
+        // 如果是藍新金流（信用卡 / ATM），動態建立隱藏表單並送出跳轉
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = result.PaymentGatewayUrl;
+
+        const params = {
+          MerchantID: result.MerchantID,
+          TradeInfo: result.TradeInfo,
+          TradeSha: result.TradeSha,
+          Version: result.Version
+        };
+
+        for (const key in params) {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = params[key];
+          form.appendChild(input);
+        }
+
+        document.body.appendChild(form);
+        form.submit(); // 自動發送表單前往藍新付款頁面！
+      } else {
+        // 如果是貨到付款 (cod) 或一般下單，直接導向原本的完成頁面
+        alert(`下單成功！請記住!!您的訂單編號為：${result.OrderID}`);
+        window.location.href = `/goez-store-template.html?pageId=${pageId || 1}`;
+      }
     } else {
       alert('下單失敗：' + (result.Error || result.message || '發生未知錯誤'));
     }

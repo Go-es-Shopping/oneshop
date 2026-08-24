@@ -1,21 +1,21 @@
 /**
- * Goezshop 店鋪動態渲染與同步引擎
+ * Goezshop 賣場前台動態渲染與資料繫結引擎
  * ====================================================================
  * 【核心定位】
- * 負責店鋪裝潢外觀（店名、描述、Logo商標）的「所見即所得」即時預覽與同步。
+ * 負責消費者前台（goez-store-template.html）的動態資料非同步撈取與介面渲染。
  * 
  * 【運作流程】
- * 1. 狀態中心：暫存於 window.currentStoreData 全域物件中（UI與資料分離）。
- * 2. 渲染引擎：監聽左側輸入，動態生成 HTML 模具並重繪雙端（桌面/行動）預覽。
- * 3. 圖片上傳：選取Logo後，非同步背景上傳至 /api/upload-logo 並回傳網址。
- * 4. API 對接：負責載入賣場初始化資料，並將裝潢草稿/發布 JSON 送回後端更新。
- * 5. 更新文字欄位 (同步引擎)，打通桌面與行動雙端「信箱/電話」即時預覽連動
+ * 1. 參數解析：從網址列抓取 pageId（或對應路由），向後端發送請求撈取該店家的完整設定。
+ * 2. 佈景與主題色套用：即時動態注入主題色（--c-accent 系列變數）與字體樣式，防止畫面閃爍。
+ * 3. 頁面元素繫結：將店名、Logo、簡介、聯絡資訊（信箱、電話）與 Copyright 注入對應的 DOM 節點。
+ * 4. 商品列表渲染：動態將後端回傳的商品陣列轉換並繪製成前台的商品卡片與互動燈箱（Modal）。
+ * 5. 優惠券動態掛載：自動依據店家真實的 SellerID 向後端撈取並渲染專屬的滿額/折扣優惠券清單。
  * 
  * 【注意事項】
- * * 本檔案僅負責「店鋪外觀裝潢」。
- * * 依據單一職責原則，任何「商品新增/刪除/管理」功能請一律寫在獨立的新檔案中。
+ * * 本檔案僅負責「前台消費者的瀏覽、商品互動與優惠券領取」。
+ * * 任何後台管理、欄位修改或裝潢儲存功能請一律參照後台對應控制檔。
  * ====================================================================
- *  由goez-store.html引用
+ *  由 goez-store-template.html 引用
  */
 
 window.PRODUCTS = window.PRODUCTS || [];
@@ -24,14 +24,23 @@ let modalProductId = null;
 let modalQtyVal = 1;
 
 document.addEventListener('DOMContentLoaded', async () => {
+    // 1. 先試著從網址查詢參數（Query String）抓取 pageId (例如 ?pageId=19)
     const urlParams = new URLSearchParams(window.location.search);
-    const pageId = urlParams.get('pageId');
+    let pageId = urlParams.get('pageId');
 
+    // 2. 如果沒有，就從路徑（Pathname）中解析（例如 /store/retro -> 抓出 retro）
     if (!pageId) {
-        console.error('網址沒有 pageId！');
-        return;
+        const pathParts = window.location.pathname.split('/');
+        // 如果路徑是 /store/retro，pathParts 會是 ['', 'store', 'retro']
+        if (pathParts.length >= 3 && pathParts[1] === 'store') {
+            pageId = pathParts[2];
+        }
     }
 
+    if (!pageId) {
+        console.error('網址沒有 pageId 或有效代號！');
+        return;
+    }
     try {
         const response = await fetch(`/api/store/template/${pageId}`);
         const result = await response.json();
@@ -227,7 +236,7 @@ function renderProducts(category = 'all') {
         : window.PRODUCTS.filter(p => p.tag === category);
 
     if (products.length === 0) {
-        grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:40px;color:var(--c-text-faint);font-family:\'Noto Sans TC\',sans-serif;">此分類暫無商品</p>';
+        grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:40px;color:var(--c-text-faint);font-family:\'Noto Sans TC\',sans-serif;">此區域暫無商品</p>';
         return;
     }
 

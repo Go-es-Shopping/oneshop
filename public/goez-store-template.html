@@ -1110,7 +1110,7 @@
         </div>
       </div>
       <!-- 查詢訂單按鈕 -->
-<a href="goez-buyerOrder.html?store=" id="orderLink" class="order-query-btn">查詢訂單</a>
+<a href="/goez-buyerOrder.html?store=" id="orderLink" class="order-query-btn">查詢訂單</a>
       <button class="store-nav__hamburger" aria-label="選單" onclick="toggleMobileMenu()">
         <span></span><span></span><span></span>
       </button>
@@ -1300,9 +1300,21 @@ const PRODUCTS = [
     CART STATE (各賣場獨立隔離版)
 ══════════════════════════════════ */
 
-// 1. 動態抓取當前網址的 pageId，作為該賣場購物車的獨立辨識碼
+// 動態抓取當前網址的 pageId，作為該賣場購物車的獨立辨識碼
+// 1-1. 先試著從網址參數抓取 pageId
 const urlParams = new URLSearchParams(window.location.search);
-const currentStoreId = urlParams.get('pageId') || 'default';
+let pageId = urlParams.get('pageId');
+
+// 1-2. 如果沒有，就從路徑（Pathname）中解析（例如 /store/retro -> 抓出 retro）
+if (!pageId) {
+    const pathParts = window.location.pathname.split('/');
+    if (pathParts.length >= 3 && pathParts[1] === 'store') {
+        pageId = pathParts[2];
+    }
+}
+
+// 1-3. 最終賦值給 currentStoreId，如果真的都沒有才用 'default'
+const currentStoreId = pageId || 'default';
 
 // 2. 讓每個賣場擁有自己獨立的 localStorage Key (例如: goez_cart_19, goez_cart_26)
 const CART_STORAGE_KEY = `goez_cart_${currentStoreId}`;
@@ -1484,7 +1496,7 @@ function closeCart() {
   const currentUrl = window.encodeURIComponent(window.location.href);
   const orderLink = document.getElementById('orderLink');
   if (orderLink) {
-    orderLink.href = `goez-buyerOrder.html?from=${currentUrl}`;
+    orderLink.href = `/goez-buyerOrder.html?from=${currentUrl}`;
   }
 function checkout() {
   if (cart.length === 0) return;
@@ -1510,9 +1522,13 @@ function checkout() {
   }));
 
   closeCart();
-  
+
+  // 動態抓取當前的域名（例如 https://niece-eel-casket.ngrok-free.dev）
+const currentOrigin = window.location.origin; 
+// 跳轉到完整路徑，確保藍新回傳時能對應到正確的 ngrok 網址，到結帳頁並帶上正確的 pageId
+window.location.href = `${currentOrigin}/goez-checkout.html?pageId=${currentStoreId}`;
   // 跳轉到結帳頁並帶上正確的 pageId
-  window.location.href = `goez-checkout.html?pageId=${currentStoreId}`;
+  //window.location.href = `goez-checkout.html?pageId=${currentStoreId}`;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -1657,6 +1673,6 @@ const observer = new IntersectionObserver(entries => {
 
   </div>
 </div>
-<script src="./js/store-template-render.js"></script>
+<script src="/js/store-template-render.js"></script>
 </body>
 </html>
