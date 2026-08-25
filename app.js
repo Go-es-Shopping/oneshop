@@ -92,7 +92,8 @@ const uploadProduct = multer({
 const authRoutes = require('./routes/auth')
 const productRoutes = require('./routes/product')
 const storeRoutes = require('./routes/store')
-const orderRouter = require('./routes/order')
+const orderRoutes = require('./routes/order')
+const sellerorderRoutes = require('./routes/sellerorder')
 const adminRoutes = require('./routes/adminRoutes')
 const checkoutRoutes = require('./routes/checkoutRoutes')
 const analyticsRoutes = require('./routes/analyticsRoutes')
@@ -109,7 +110,8 @@ app.use(express.static('public'));
 app.use('/api/auth', authRoutes)
 app.use('/api/products', productRoutes)
 app.use('/api/store', storeRoutes)
-app.use('/api/orders', orderRouter)
+app.use('/api/orders', orderRoutes)
+app.use('/api/seller/orders', sellerorderRoutes)
 app.use('/api/seller', require('./routes/sellerRoutes'));
 app.use('/api/admin', adminRoutes)
 // 保留原本的 api 路由
