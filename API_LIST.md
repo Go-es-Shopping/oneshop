@@ -23,12 +23,12 @@
 | | GET | `/api/orders/` | `Order` | 取得訂單列表 (支援 SellerID 篩選) (瀏覽器可測) |
 | | GET | `/api/orders/:OrderID` | `Order`, `Orderdetail`, `Shipment`, `Payment` | 取得訂單詳情 (包含明細、物流、付款) (瀏覽器可測) |
 | | PATCH | `/api/orders/:OrderID/status` | `Order` | 更新訂單狀態 |
-| **賣家訂單 (新增sellerorder.js)** | POST | `/` | `Order`, `Orderdetail`, `Product` | 建立訂單 (支援 Mock) |
-| | GET | `/all` <br> GET `/` | `Order` | 查詢訂單列表 (支援 `OrderStatus` 篩選與 Mock) |
-| | GET | `/:OrderID/details` | `Order`, `Orderdetail`, `Shipment`, `Payment`  | 查詢特定訂單的明細列表 |
-| | PATCH / PUT | `/:OrderID/status` | `Order` | 更新訂單狀態 |
-| | GET | `/:OrderID` | `Order`, `Orderdetail`, `Shipment`, `Payment` | 查詢單筆訂單詳情 |
-| | DELETE | `/:OrderID` |`Order` | 刪除指定訂單 |
+| **賣家訂單 (新增sellerorder.js)** | POST |`/api/orders/` | `Order`, `Orderdetail`, `Product` | 建立訂單 (支援 Mock) |
+| | GET | `/api/orders/all` <br> GET `/api/orders/` | `Order` | 查詢訂單列表 (支援 `OrderStatus` 篩選與 Mock) |
+| | GET | `/api/orders/:OrderID/details` | `Order`, `Orderdetail`, `Shipment`, `Payment`  | 查詢特定訂單的明細列表 |
+| | PATCH / PUT | `/api/orders/:OrderID/status` | `Order` | 更新訂單狀態 |
+| | GET | `/api/orders/:OrderID` | `Order`, `Orderdetail`, `Shipment`, `Payment` | 查詢單筆訂單詳情 |
+| | DELETE | `/api/orders/:OrderID` |`Order` | 刪除指定訂單 |
 | **賣家中心** | POST | `/api/seller/login` | `Seller` | 賣家中心登入 |
 | | GET | `/api/seller/me` | `Seller` | 賣家中心取得個人資料 (瀏覽器可測) |
 | **後台管理** | POST | `/api/admin/login` | `PlatformAdmin` | 平台管理員登入 |
