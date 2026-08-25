@@ -273,37 +273,47 @@ getOrderDetail: async (req, res) => {
   }
 },
 
-  // 四、更新狀態與物流 (PATCH /api/orders/:id/status)
+// 四、更新狀態與物流 (PATCH /api/orders/:OrderID/status)
   updateStatus: async (req, res) => {
     const t = await sequelize.transaction();
     try {
-      const { OrderStatus, TrackingNumber } = req.body;
-      const orderID = req.params.OrderID;
+      const orderID = Number(req.params.OrderID);
+      const { OrderStatus, PaymentStatus, TrackingNumber } = req.body || {};
+
+      if (OrderStatus === undefined && PaymentStatus === undefined && !TrackingNumber) {
+        await t.rollback();
+        return res.status(400).json({ Success: false, Error: "缺少參數" });
+      }
 
       const order = await Order.findByPk(orderID, {
-        include: [{ model: Orderdetail, as: 'Items' }]
+        include: [{ model: Orderdetail, as: 'Items' }],
+        transaction: t
       });
-      if (!order) throw new Error("找不到該訂單");
+      if (!order) {
+        await t.rollback();
+        return res.status(404).json({ Success: false, Error: "找不到該訂單" });
+      }
 
       // 任務：狀態流轉保護 (防呆)
       if (order.OrderStatus === ORDER_STATUS.CANCELLED || order.OrderStatus === ORDER_STATUS.DELIVERED) {
         throw new Error("已取消或已送達之訂單不可更改狀態");
       }
 
-      // 任務：填寫物流單號 (當狀態改為 2:已出貨)
+      // 💡 修正處：改為「若有填寫才更新單號；若沒填寫則自動給予預設值或略過」，避免前端沒欄位輸入時直接報錯崩潰
       if (Number(OrderStatus) === ORDER_STATUS.SHIPPED) {
-        if (!TrackingNumber) throw new Error("更動為已出貨時，必須填寫物流單號");
-        await Shipment.update({ TrackingNumber }, { where: { OrderID: orderID }, transaction: t });
+        const finalTrackingNumber = TrackingNumber ? TrackingNumber : '無單號';
+        await Shipment.update({ TrackingNumber: finalTrackingNumber }, { where: { OrderID: orderID }, transaction: t });
       }
 
       // 任務：關鍵例外處理 - 自動庫存回補並自動恢復上架 (狀態改為 9:已取消)
       if (Number(OrderStatus) === ORDER_STATUS.CANCELLED) {
-        for (const item of order.Items) {
+        const orderItems = await Orderdetail.findAll({ where: { OrderID: orderID }, transaction: t });
+        for (const item of orderItems) {
           const product = await Product.findByPk(item.ProductID, { transaction: t });
           if (product) {
             product.Stock += item.Quantity; // 加回庫存
 
-            // 🚀 如果加回庫存後大於 0，就自動將商品恢復上架！
+            // 如果加回庫存後大於 0，就自動將商品恢復上架！
             if (product.Stock > 0) {
               product.IsActive = 1; 
             }
@@ -312,18 +322,26 @@ getOrderDetail: async (req, res) => {
           }
         }
       }
-      //賣光自動下架：結帳買到庫存見底 ➔ Stock = 0, IsActive = 0（前台自動隱身）。
-      //取消自動上架：買家取消訂單➔ 庫存加回來 ➔ Stock > 0, IsActive = 1（前台自動復活出現）。
 
-      await Order.update({ OrderStatus }, { where: { OrderID: orderID }, transaction: t });
+      const updateData = {};
+      if (OrderStatus !== undefined) updateData.OrderStatus = Number(OrderStatus);
+      if (PaymentStatus !== undefined) updateData.PaymentStatus = Number(PaymentStatus);
+
+      if (Object.keys(updateData).length > 0) {
+        await Order.update(updateData, { where: { OrderID: orderID }, transaction: t });
+      }
       
       await t.commit();
-      res.json({ Success: true, Message: `訂單狀態已更新為 ${OrderStatus}` });
+      res.json({ Success: true, Message: '訂單狀態已更新成功！' });
     } catch (error) {
-      await t.rollback();
+      if (t && !t.finished) {
+        await t.rollback();
+      }
+      console.error('🔴 更新狀態失敗:', error);
       res.status(500).json({ Success: false, Error: error.message });
     }
   }
-};
+
+}
 
 module.exports = orderController;

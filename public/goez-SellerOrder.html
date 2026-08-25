@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>訂單管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                screens: {
+                    'md': '800px',
+                    'xl': '1280px',
+                }
+            }
+        }
+    </script>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            background-color: #f1f5f9; 
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        .tab-btn.active {
+            color: #4f46e5;
+            background-color: rgba(238, 242, 255);
+            border-bottom-width: 2px;
+            border-color: #4f46e5;
+        }
+        .tab-btn.inactive {
+            color: #6b7280;
+            border-bottom-width: 2px;
+            border-color: transparent;
+        }
+        .tab-btn.inactive:hover {
+            color: #1f2937;
+            background-color: #f9fafb;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <header class="bg-white border-b border-gray-200 px-4 md:px-6 py-3 md:py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
+        <div class="flex items-center gap-2.5">
+            <i class="fa-solid fa-bag-shopping text-indigo-600 text-xl md:text-2xl"></i>
+            <span class="font-bold text-gray-900 text-lg md:text-xl tracking-tight">goezshop</span>
+        </div>
+    </header>
+
+    <main class="flex-1 p-3 md:p-6 xl:p-8" id="mainContainer">
+        <div class="max-w-[1600px] mx-auto">
+            
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <h1 class="text-2xl font-bold text-gray-800 tracking-tight">訂單管理</h1>
+                <button class="w-full md:w-auto bg-slate-600 hover:bg-slate-700 active:bg-slate-800 active:scale-95 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> 匯出訂單
+                </button>
+            </div>
+
+            <div class="flex overflow-x-auto custom-scrollbar bg-white rounded-t-xl border-b border-gray-200 shadow-sm w-full text-sm font-medium" id="statusTabs">
+                <button onclick="filterOrders('')" class="tab-btn active flex-1 min-w-[100px] text-center px-4 py-3.5 whitespace-nowrap transition-all" data-status="">全部</button>
+                <button onclick="filterOrders('0')" class="tab-btn inactive flex-1 min-w-[100px] text-center px-4 py-3.5 whitespace-nowrap transition-all duration-200" data-status="0">處理中</button>
+                <button onclick="filterOrders('1')" class="tab-btn inactive flex-1 min-w-[100px] text-center px-4 py-3.5 whitespace-nowrap transition-all duration-200" data-status="1">待出貨</button>
+                <button onclick="filterOrders('2')" class="tab-btn inactive flex-1 min-w-[100px] text-center px-4 py-3.5 whitespace-nowrap transition-all duration-200" data-status="2">已出貨</button>
+                <button onclick="filterOrders('3')" class="tab-btn inactive flex-1 min-w-[100px] text-center px-4 py-3.5 whitespace-nowrap transition-all duration-200" data-status="3">已送達</button>
+                <button onclick="filterOrders('4')" class="tab-btn inactive flex-1 min-w-[100px] text-center px-4 py-3.5 whitespace-nowrap transition-all duration-200" data-status="4">完成取貨</button>
+                <button onclick="filterOrders('5')" class="tab-btn inactive flex-1 min-w-[100px] text-center px-4 py-3.5 whitespace-nowrap transition-all duration-200" data-status="5">已取消</button>
+            </div>
+
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full text-sm text-left whitespace-nowrap">
+                    <thead class="text-xs text-gray-600 uppercase bg-gray-100/80">
+                        <tr>
+                            <th scope="col" class="px-4 py-4 font-semibold">訂單編號</th>
+                            <th scope="col" class="px-4 py-4 font-semibold">買家姓名</th>
+                            <th scope="col" class="px-4 py-4 font-semibold">電話</th>
+                            <th scope="col" class="px-4 py-4 font-semibold">Email</th>
+                            <th scope="col" class="px-4 py-4 font-semibold">地址</th>
+                            <th scope="col" class="px-4 py-4 font-semibold">訂單處理狀態</th>
+                            <th scope="col" class="px-4 py-4 font-semibold text-indigo-600">優惠券</th>
+                            <th scope="col" class="px-4 py-4 font-semibold">訂單總金額</th>
+                            <th scope="col" class="px-4 py-4 font-semibold">支付狀態</th>
+                            <th scope="col" class="px-4 py-4 font-semibold">建立時間</th>
+                            <th scope="col" class="px-4 py-4 font-semibold">更新時間</th>
+                            <th scope="col" class="px-4 py-4 font-semibold text-center sticky right-0 bg-gray-100/80 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)] z-10">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orderTableBody" class="divide-y divide-gray-100 bg-white">
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="px-6 py-4 flex items-center justify-between border-t border-gray-100 text-sm text-gray-500 bg-gray-50/30 rounded-b-xl">
+                <div id="pagination-info">顯示 0 筆訂單</div>
+                <div class="flex gap-1">
+                    <button class="px-3 py-1 border border-gray-200 rounded hover:bg-gray-100 disabled:opacity-50" disabled>上一頁</button>
+                    <button class="px-3 py-1 border border-gray-200 rounded bg-blue-50 text-blue-600 font-medium">1</button>
+                    <button class="px-3 py-1 border border-gray-200 rounded hover:bg-gray-100 disabled:opacity-50" disabled>下一頁</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function getValidatedSellerIdOrBlock() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sellerIdParam = urlParams.get('sellerId');
+
+            if (!sellerIdParam) {
+                renderAccessDenied("錯誤：網址缺少賣家編號 (sellerId)");
+                return null;
+            }
+
+            const isValidInteger = /^[1-9]\d*$/.test(sellerIdParam);
+            if (!isValidInteger) {
+                renderAccessDenied(`錯誤：賣家編號「${sellerIdParam}」格式不正確，必須為大於 0 的整數。`);
+                return null;
+            }
+
+            return sellerIdParam;
+        }
+
+        function renderAccessDenied(message) {
+            window.addEventListener('DOMContentLoaded', () => {
+                const mainContainer = document.getElementById('mainContainer');
+                if (mainContainer) {
+                    mainContainer.innerHTML = `
+                        <div class="max-w-md mx-auto mt-20 p-8 bg-white rounded-2xl shadow-sm border border-gray-100 text-center">
+                            <div class="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto mb-4 text-xl">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                            <h2 class="text-xl font-bold text-gray-800 mb-2">存取被拒絕</h2>
+                            <p class="text-gray-600 text-sm mb-6">${message}</p>
+                            <a href="goez-SellerOrder.html?sellerId=1" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
+                                帶入正確範例測試 (ID: 1)
+                            </a>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        const activeSellerId = getValidatedSellerIdOrBlock();
+        let currentStatusFilter = '';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!activeSellerId) return;
+            fetchSellerOrders();
+        });
+
+        function filterOrders(status) {
+            currentStatusFilter = status;
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                if (btn.getAttribute('data-status') === status) {
+                    btn.classList.remove('inactive');
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                    btn.classList.add('inactive');
+                }
+            });
+
+            fetchSellerOrders(status);
+        }
+
+        async function fetchSellerOrders(status = '') {
+            if (!activeSellerId) return; 
+
+            const tableBody = document.getElementById('orderTableBody');
+            if (tableBody) {
+                tableBody.innerHTML = `<tr><td colspan="12" class="px-4 py-12 text-center text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i>資料載入中...</td></tr>`;
+            }
+            
+            try {
+                let url = `/api/seller/orders?SellerID=${activeSellerId}`;
+                if (status !== '') {
+                    url += `&OrderStatus=${status}`;
+                }
+
+                const response = await fetch(url);
+                const orders = await response.json();
+                
+                if (Array.isArray(orders) && orders.length > 0) {
+                    renderOrderTable(orders);
+                    document.getElementById('pagination-info').innerText = `顯示 ${orders.length} 筆訂單`;
+                } else {
+                    showNoDataMessage();
+                }
+            } catch (error) {
+                console.error('前端抓取訂單發生錯誤:', error);
+                showNoDataMessage();
+            }
+        }
+
+        function showNoDataMessage() {
+            const tableBody = document.getElementById('orderTableBody');
+            if (tableBody) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="12" class="px-4 py-12 text-center text-gray-500 bg-gray-50/50">
+                            <div class="flex flex-col items-center justify-center">
+                                <i class="fa-solid fa-inbox text-3xl text-gray-300 mb-3"></i>
+                                <p>目前尚無訂單資料</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }
+            document.getElementById('pagination-info').innerText = `顯示 0 筆訂單`;
+        }
+
+        function renderOrderTable(orders) {
+            const tableBody = document.getElementById('orderTableBody');
+            if (!tableBody) return;
+            
+            tableBody.innerHTML = ''; 
+            if (!activeSellerId) return;
+            
+            orders.forEach(order => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-gray-50/80 transition-colors group';
+                
+                const formatter = new Intl.NumberFormat('zh-TW', {
+                    style: 'currency',
+                    currency: 'TWD',
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 2
+                });
+
+                // 處理優惠券區塊：有 CouponCode 顯示代碼與折扣金額，沒有則顯示「無」
+                let couponHtml = '<span class="text-gray-400">無</span>';
+                if (order.CouponCode && order.CouponCode.trim() !== '') {
+                    const discountVal = order.DiscountValue ? formatter.format(order.DiscountValue) : '$0';
+                    couponHtml = `
+                        <div class="flex flex-col">
+                            <span class="px-2 py-0.5 bg-purple-100 text-purple-700 rounded text-xs font-mono font-medium w-fit mb-0.5">${order.CouponCode}</span>
+                            <span class="text-xs text-gray-500">-${discountVal}</span>
+                        </div>
+                    `;
+                }
+
+                tr.innerHTML = `
+                    <td class="px-4 py-4 font-medium text-gray-900">#${order.OrderID || '-'}</td>
+                    <td class="px-4 py-4">${order.BuyerName || '-'}</td>
+                    <td class="px-4 py-4 font-mono text-gray-600">${order.BuyerPhone || '-'}</td>
+                    <td class="px-4 py-4 text-gray-600">${order.BuyerEmail || '-'}</td>
+                    <td class="px-4 py-4">
+                        <div class="truncate max-w-[250px]" title="${order.BuyerAddress || ''}">
+                            ${order.BuyerAddress || '-'}
+                        </div>
+                    </td>
+                    <td class="px-4 py-4 status-cell">${getOrderStatusBadge(order.OrderStatus)}</td>
+                    <td class="px-4 py-4">${couponHtml}</td>
+                    <td class="px-4 py-4 font-semibold text-gray-800">${formatter.format(order.TotalAmount || 0)}</td>
+                    <td class="px-4 py-4">${getPaymentStatusBadge(order.PaymentStatus)}</td>
+                    <td class="px-4 py-4 text-xs text-gray-500">${order.CreatedAt ? new Date(order.CreatedAt).toLocaleString() : '-'}</td>
+                    <td class="px-4 py-4 text-xs text-gray-500">${order.UpdatedAt ? new Date(order.UpdatedAt).toLocaleString() : '-'}</td>
+                    <td class="px-4 py-4 sticky right-0 bg-white group-hover:bg-gray-50/90 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)] transition-colors z-10">
+                        <div class="flex items-center justify-center gap-3 text-gray-400">
+                            <a href="goez-SellerOrder-detail.html?orderId=${order.OrderID}&sellerId=${activeSellerId}" class="hover:text-indigo-600 transition-colors cursor-pointer" title="查看明細"><i class="fa-solid fa-eye text-lg"></i></a>
+                            <button onclick="enableEdit(${order.OrderID}, ${order.OrderStatus}, this)" class="hover:text-blue-600 transition-colors cursor-pointer" title="編輯訂單狀態"><i class="fa-regular fa-pen-to-square text-lg"></i></button>
+                            <button onclick="deleteOrder(${order.OrderID})" class="hover:text-red-500 transition-colors cursor-pointer" title="刪除訂單"><i class="fa-regular fa-trash-can text-lg"></i></button>
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        function enableEdit(orderId, currentStatus, btnElement) {
+            const tr = btnElement.closest('tr');
+            const statusCell = tr.querySelector('.status-cell');
+            
+            statusCell.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <select id="status-select-${orderId}" class="border border-gray-300 rounded px-2 py-1 text-xs bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="0" ${currentStatus == 0 ? 'selected' : ''}>處理中</option>
+                        <option value="1" ${currentStatus == 1 ? 'selected' : ''}>待出貨</option>
+                        <option value="2" ${currentStatus == 2 ? 'selected' : ''}>已出貨</option>
+                        <option value="3" ${currentStatus == 3 ? 'selected' : ''}>已送達</option>
+                        <option value="4" ${currentStatus == 4 ? 'selected' : ''}>完成取貨</option>
+                        <option value="5" ${currentStatus == 5 ? 'selected' : ''}>已取消</option>
+                    </select>
+                    <button onclick="saveOrderStatus(${orderId})" class="bg-indigo-600 text-white px-2 py-1 rounded text-xs hover:bg-indigo-700">儲存</button>
+                    <button onclick="cancelEdit(${orderId}, ${currentStatus}, this)" class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs hover:bg-gray-300">取消</button>
+                </div>
+            `;
+        }
+
+        function cancelEdit(orderId, originalStatus, btnElement) {
+            const tr = btnElement.closest('tr');
+            const statusCell = tr.querySelector('.status-cell');
+            statusCell.innerHTML = getOrderStatusBadge(originalStatus);
+        }
+
+        async function saveOrderStatus(orderId) {
+            const selectElement = document.getElementById(`status-select-${orderId}`);
+            const newStatus = parseInt(selectElement.value);
+
+            try {
+                const response = await fetch(`/api/orders/${orderId}/status`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ OrderStatus: newStatus })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.Success) {
+                    alert('訂單狀態更新成功！');
+                    fetchSellerOrders(currentStatusFilter);
+                } else {
+                    alert('更新失敗：' + (result.Error || '未知錯誤'));
+                }
+            } catch (error) {
+                console.error('更新狀態發生錯誤:', error);
+                alert('網路連線或伺服器發生錯誤');
+            }
+        }
+
+        async function deleteOrder(orderId) {
+            if (!confirm(`確定要刪除訂單 #${orderId} 嗎？此動作將會一併刪除對應的明細，且無法復原！`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/seller/orders/${orderId}`, {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert('訂單已成功刪除！');
+                    fetchSellerOrders(currentStatusFilter);
+                } else {
+                    alert('刪除失敗：' + (result.Error || '未知錯誤'));
+                }
+            } catch (error) {
+                console.error('刪除請求發生錯誤:', error);
+                alert('網路連線或伺服器發生錯誤');
+            }
+        }
+
+        function getOrderStatusBadge(statusInt) {
+            const statusMap = {
+                0: { label: '處理中', dot: 'bg-blue-400', bg: 'bg-blue-50', text: 'text-blue-700' },
+                1: { label: '待出貨', dot: 'bg-yellow-400', bg: 'bg-yellow-50', text: 'text-yellow-700' },
+                2: { label: '已出貨', dot: 'bg-purple-400', bg: 'bg-purple-50', text: 'text-purple-700' },
+                3: { label: '已送達', dot: 'bg-indigo-400', bg: 'bg-indigo-50', text: 'text-indigo-700' },
+                4: { label: '完成取貨', dot: 'bg-green-500', bg: 'bg-green-50', text: 'text-green-700' },
+                5: { label: '已取消', dot: 'bg-red-500', bg: 'bg-red-50', text: 'text-red-700' },
+                9: { label: '已取消', dot: 'bg-red-500', bg: 'bg-red-50', text: 'text-red-700' }
+            };
+            const s = statusMap[statusInt] || { label: '未知狀態', dot: 'bg-gray-400', bg: 'bg-gray-50', text: 'text-gray-700' };
+            return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${s.bg} ${s.text}">
+                        <span class="w-1.5 h-1.5 rounded-full ${s.dot}"></span>
+                        ${s.label}
+                    </span>`;
+        }
+
+        function getPaymentStatusBadge(statusInt) {
+            const statusMap = {
+                0: { label: '未付款', dot: 'bg-gray-400', bg: 'bg-gray-100', text: 'text-gray-700' },
+                1: { label: '已付款', dot: 'bg-teal-500', bg: 'bg-teal-50', text: 'text-teal-700' },
+                2: { label: '退款中', dot: 'bg-orange-400', bg: 'bg-orange-50', text: 'text-orange-700' },
+                3: { label: '已退款', dot: 'bg-red-400', bg: 'bg-red-50', text: 'text-red-700' },
+                4: { label: '失敗', dot: 'bg-rose-600', bg: 'bg-rose-50', text: 'text-rose-700' }
+            };
+            const s = statusMap[statusInt] || { label: '未知', dot: 'bg-gray-400', bg: 'bg-gray-100', text: 'text-gray-700' };
+            return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${s.bg} ${s.text}">
+                        <span class="w-1.5 h-1.5 rounded-full ${s.dot}"></span>
+                        ${s.label}
+                    </span>`;
+        }
+    </script>
+</body>
+</html>
