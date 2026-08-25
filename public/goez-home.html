@@ -533,9 +533,8 @@
     <!-- ── Quick Access：管理已建立賣場 / 優惠券設定 ─── -->
     <section class="quick-access" aria-label="會員快速功能">
       <div class="quick-access__cards fade-in">
-        <div class="gallery-card"
-          onclick="location.href='goez-mystores-management.html'"
-        style="cursor: pointer;">
+        <a href="goez-mystores-management.html" style="text-decoration: none; color: inherit; display: block; width: 100%; height: 100%;">
+        <div class="gallery-card" style="cursor: pointer;">
           <img
             class="gallery-card__img"
             src="images/decorations/complete-store.png"
@@ -543,9 +542,8 @@
           />
           <span class="gallery-card__label">管理已建立賣場</span>
         </div>
-        <div class="gallery-card"
-          onclick="location.href='goez-mycoupons-management.html'"
-        style="cursor: pointer;">
+          <a href="goez-mycoupons-management.html" style="text-decoration: none; color: inherit; display: block; width: 100%; height: 100%;">
+          <div class="gallery-card" style="cursor: pointer;">
           <img
             class="gallery-card__img"
             src="images/decorations/coupong.png"
@@ -574,7 +572,7 @@
         <div class="image-gallery">
           <!-- Column 1 -->
           <div class="image-gallery__col fade-in-left delay-1">
-            <a href="goez-ai-assistant.html" style="text-decoration: none; color: inherit; display: block;">
+            <a href="goez-ai-assistant.html" style="text-decoration: none; color: inherit; display: block; width: 100%; height: 100%;">
             <div class="gallery-card"style="cursor: pointer;">
               <img
                 class="gallery-card__img"
@@ -697,7 +695,7 @@
     } catch (error) {
       console.error('登出請求失敗:', error);
     } finally {
-      window.location.href = 'goez-shop-login.html';
+      window.location.href = 'goez-landing.html';
     }
   }
 </script>
