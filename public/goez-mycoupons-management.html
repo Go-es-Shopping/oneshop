@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>優惠券設定 — Goez Shop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+SC:wght@400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-white: #ffffff;
+      --color-black: #000000;
+      --color-black-55: rgba(0, 0, 0, 0.55);
+      --color-black-10: rgba(0, 0, 0, 0.1);
+      --color-black-5: rgba(0, 0, 0, 0.05);
+      --color-green: #1e7e42;
+      --color-green-bg: #eafaf0;
+      --color-grey: #6a7282;
+      --color-grey-bg: #f3f4f6;
+      --color-red: #c0392b;
+      --color-red-bg: #fdecea;
+
+      --fs-32: 32px;
+      --fs-20: 20px;
+      --fs-18: 18px;
+      --fs-16: 16px;
+      --fs-14: 14px;
+      --fs-13: 13px;
+
+      --fw-regular: 400;
+      --fw-medium: 500;
+      --fw-semibold: 600;
+      --fw-bold: 700;
+
+      --lh-heading: 1.2;
+      --lh-body: 1.45;
+
+      --ls-heading: -0.6px;
+
+      --radius-16: 16px;
+      --radius-12: 12px;
+      --radius-10: 10px;
+      --radius-full: 9999px;
+
+      --shadow-card: 0px 4px 8px 0px rgba(0, 0, 0, 0.02), 0px 6px 12px 0px rgba(0, 0, 0, 0.03);
+
+      --spacing-64: 64px;
+      --spacing-48: 48px;
+      --spacing-40: 40px;
+      --spacing-32: 32px;
+      --spacing-24: 24px;
+      --spacing-20: 20px;
+      --spacing-16: 16px;
+      --spacing-12: 12px;
+      --spacing-8: 8px;
+      --spacing-4: 4px;
+
+      --font-primary: 'Inter', 'Noto Sans JP', 'Noto Sans SC', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; }
+    body {
+      font-family: var(--font-primary);
+      background: var(--color-white);
+      color: var(--color-black);
+      min-height: 100vh;
+    }
+    p, h1, h2 { margin: 0; }
+    a { text-decoration: none; color: inherit; }
+    button { font: inherit; cursor: pointer; }
+    input, select { font: inherit; }
+
+    /* ─── Top bar（改用 Background.svg 當底圖） ─────────────────── */
+    .topbar {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 96px;
+      padding: 0 var(--spacing-40);
+      overflow: hidden;
+      width: 100%;
+    }
+    .topbar__bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+    .topbar__brand {
+      position: relative;
+      z-index: 1;
+      font-size: var(--fs-20);
+      font-weight: var(--fw-bold);
+      letter-spacing: var(--ls-heading);
+      color: var(--color-white);
+    }
+    .topbar__logout {
+      position: relative;
+      z-index: 1;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: var(--radius-12);
+      padding: var(--spacing-8) var(--spacing-16);
+      font-size: var(--fs-16);
+      font-weight: var(--fw-medium);
+      color: var(--color-white);
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .topbar__logout:hover {
+      background: rgba(255,255,255,0.25);
+      border-color: rgba(255,255,255,0.4);
+    }
+
+    /* ─── Page ──────────────────────────────────────────────────── */
+    .page { max-width: 960px; margin: 0 auto; padding: var(--spacing-48) var(--spacing-24) var(--spacing-64); }
+    .breadcrumb {
+      display: inline-block; font-size: var(--fs-14); font-weight: var(--fw-medium);
+      color: var(--color-black-55); margin-bottom: var(--spacing-24); transition: color 0.2s ease;
+    }
+    .breadcrumb:hover { color: var(--color-black); }
+
+    .page__header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: var(--spacing-16); margin-bottom: var(--spacing-32); flex-wrap: wrap;
+    }
+    .page__title-group { display: flex; flex-direction: column; gap: var(--spacing-4); }
+    .page__title { font-size: var(--fs-32); font-weight: var(--fw-bold); line-height: var(--lh-heading); letter-spacing: var(--ls-heading); }
+    .page__subtitle { font-size: var(--fs-16); font-weight: var(--fw-medium); color: var(--color-black-55); }
+
+    .btn--dark {
+      background: var(--color-black); color: var(--color-white); border: none;
+      padding: var(--spacing-12) var(--spacing-20); border-radius: var(--radius-12);
+      font-size: var(--fs-16); font-weight: var(--fw-medium); white-space: nowrap;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    .btn--dark:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); background: #222; }
+    .btn--dark:active { transform: translateY(0); }
+    .btn--ghost {
+      background: transparent; color: var(--color-black); border: 1px solid var(--color-black-10);
+      padding: var(--spacing-12) var(--spacing-20); border-radius: var(--radius-12);
+      font-size: var(--fs-16); font-weight: var(--fw-medium);
+      transition: background 0.2s ease;
+    }
+    .btn--ghost:hover { background: var(--color-black-5); }
+
+    /* ─── Form panel ────────────────────────────────────────────── */
+    .coupon-form-wrap {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+      margin-bottom: var(--spacing-24);
+    }
+    .coupon-form-wrap.is-open { max-height: 900px; }
+    .coupon-form {
+      background: var(--color-white);
+      border: 1px solid var(--color-black-10);
+      border-radius: var(--radius-16);
+      box-shadow: var(--shadow-card);
+      padding: var(--spacing-32);
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-20);
+    }
+    .coupon-form__title { font-size: var(--fs-18); font-weight: var(--fw-bold); }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-16) var(--spacing-20);
+    }
+    .field { display: flex; flex-direction: column; gap: var(--spacing-8); }
+    .field--full { grid-column: 1 / -1; }
+    .field__label { font-size: var(--fs-14); font-weight: var(--fw-semibold); }
+    .field__input {
+      width: 100%; padding: var(--spacing-12);
+      border: 1px solid var(--color-black-10); border-radius: var(--radius-10);
+      font-size: var(--fs-16); color: var(--color-black); background: var(--color-white);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .field__input:focus { outline: none; border-color: var(--color-black); box-shadow: 0 0 0 3px var(--color-black-5); }
+    .field__hint { font-size: var(--fs-13); color: var(--color-black-55); }
+    .field__error { display: none; font-size: var(--fs-13); color: var(--color-red); }
+    .field.has-error .field__input { border-color: var(--color-red); }
+    .field.has-error .field__error { display: block; }
+
+    .field-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-12); }
+
+    .switch-row { display: flex; align-items: center; gap: var(--spacing-12); }
+    .switch {
+      position: relative; width: 44px; height: 26px; flex-shrink: 0;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .switch__track {
+      position: absolute; inset: 0; background: var(--color-black-10); border-radius: var(--radius-full);
+      cursor: pointer; transition: background 0.2s ease;
+    }
+    .switch__track::before {
+      content: ""; position: absolute; width: 20px; height: 20px; left: 3px; top: 3px;
+      background: var(--color-white); border-radius: 50%; transition: transform 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .switch input:checked + .switch__track { background: var(--color-black); }
+    .switch input:checked + .switch__track::before { transform: translateX(18px); }
+    .switch-label { font-size: var(--fs-14); font-weight: var(--fw-medium); }
+
+    .form-actions { display: flex; justify-content: flex-end; gap: var(--spacing-12); }
+
+    /* ─── Coupon list ───────────────────────────────────────────── */
+    .coupon-list { display: flex; flex-direction: column; gap: var(--spacing-16); }
+    .coupon-card {
+      display: flex; align-items: center; gap: var(--spacing-16); flex-wrap: wrap;
+      background: var(--color-white); border: 1px solid var(--color-black-10); border-radius: var(--radius-16);
+      box-shadow: var(--shadow-card); padding: var(--spacing-20) var(--spacing-24);
+    }
+    .coupon-card__code {
+      flex-shrink: 0;
+      font-family: 'Inter', monospace;
+      font-size: var(--fs-16); font-weight: var(--fw-bold);
+      background: var(--color-black); color: var(--color-white);
+      padding: var(--spacing-8) var(--spacing-12);
+      border-radius: var(--radius-10);
+      letter-spacing: 1px;
+    }
+    .coupon-card__body { flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+    .coupon-card__discount { font-size: var(--fs-16); font-weight: var(--fw-semibold); }
+    .coupon-card__meta { font-size: var(--fs-13); color: var(--color-black-55); }
+
+    .badge {
+      display: inline-flex; align-items: center; font-size: var(--fs-13); font-weight: var(--fw-semibold);
+      padding: 3px 10px; border-radius: var(--radius-full); white-space: nowrap;
+    }
+    .badge--active { background: var(--color-green-bg); color: var(--color-green); }
+    .badge--inactive { background: var(--color-grey-bg); color: var(--color-grey); }
+
+    .coupon-card__actions { display: flex; align-items: center; gap: var(--spacing-8); flex-shrink: 0; }
+    .action-btn {
+      background: transparent; border: 1px solid var(--color-black-10); border-radius: var(--radius-10);
+      padding: var(--spacing-8) var(--spacing-16); font-size: var(--fs-14); font-weight: var(--fw-medium);
+      color: var(--color-black); transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .action-btn:hover { background: var(--color-black-5); }
+    .action-btn--danger { color: var(--color-red); }
+    .action-btn--danger:hover { background: var(--color-red-bg); border-color: var(--color-red-bg); }
+
+    /* ─── Empty state ───────────────────────────────────────────── */
+    .empty-state {
+      display: none; flex-direction: column; align-items: center; justify-content: center;
+      gap: var(--spacing-16); text-align: center; padding: var(--spacing-64) var(--spacing-24);
+      border: 1px dashed var(--color-black-10); border-radius: var(--radius-16);
+    }
+    .empty-state.is-visible { display: flex; }
+    .empty-state__title { font-size: var(--fs-18); font-weight: var(--fw-bold); }
+    .empty-state__desc { font-size: var(--fs-14); color: var(--color-black-55); max-width: 360px; }
+
+    /* ─── Responsive ────────────────────────────────────────────── */
+    @media (max-width: 720px) {
+      .topbar { padding: 0 var(--spacing-16); height: 72px; }
+      .page { padding: var(--spacing-32) var(--spacing-16); }
+      .page__title { font-size: 26px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .field-row-2 { grid-template-columns: 1fr; }
+      .coupon-card { padding: var(--spacing-16); }
+      .coupon-card__actions { width: 100%; justify-content: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <img class="topbar__bg" src="images/decorations/Background.svg" alt="" aria-hidden="true">
+    <a href="goez-shop-dashboard.html" class="topbar__brand">Goez Shop</a>
+    <button class="topbar__logout" onclick="handleLogout()">登出</button>
+  </header>
+
+  <main class="page">
+    <a href="goez-home.html" class="breadcrumb">‹ 返回首頁</a>
+
+    <div class="page__header">
+      <div class="page__title-group">
+        <h1 class="page__title">優惠券設定</h1>
+        <p class="page__subtitle">建立與管理優惠碼，設定折扣方式、使用期限與適用賣場。</p>
+      </div>
+      <button class="btn--dark" id="toggleFormBtn" onclick="openForm()">＋ 新增優惠券</button>
+    </div>
+
+    <div class="coupon-form-wrap" id="formWrap">
+      <form class="coupon-form" id="couponForm" novalidate>
+        <h2 class="coupon-form__title" id="formTitle">新增優惠券</h2>
+        <input type="hidden" id="editingId" value="" />
+
+        <div class="form-grid">
+          <div class="field" data-field="code">
+            <label class="field__label" for="code">優惠碼</label>
+            <input class="field__input" type="text" id="code" placeholder="例如 SUMMER100" style="text-transform:uppercase;" required />
+            <p class="field__error">請輸入優惠碼（英數字，不可重複）</p>
+          </div>
+
+          <div class="field" data-field="storeId">
+            <label class="field__label" for="storeId">適用賣場</label>
+            <select class="field__input" id="storeId">
+              <option value="all">全部賣場</option>
+              <option value="st_001">手作陶藝小舖</option>
+              <option value="st_002">早晨咖啡豆專賣</option>
+              <option value="st_003">寵物零食實驗室</option>
+            </select>
+          </div>
+
+          <div class="field" data-field="discountType">
+            <label class="field__label" for="discountType">折扣類型</label>
+            <select class="field__input" id="discountType">
+              <option value="percent">比例折扣（%）</option>
+              <option value="fixed">固定金額折扣（$）</option>
+            </select>
+          </div>
+
+          <div class="field" data-field="discountValue">
+            <label class="field__label" for="discountValue">折扣值</label>
+            <input class="field__input" type="number" id="discountValue" min="1" placeholder="例如 10" required />
+            <p class="field__error">請輸入大於 0 的折扣值</p>
+          </div>
+
+          <div class="field" data-field="minSpend">
+            <label class="field__label" for="minSpend">最低消費金額（選填）</label>
+            <input class="field__input" type="number" id="minSpend" min="0" placeholder="例如 500" />
+          </div>
+
+          <div class="field" data-field="usageLimit">
+            <label class="field__label" for="usageLimit">使用次數上限（選填）</label>
+            <input class="field__input" type="number" id="usageLimit" min="1" placeholder="不填代表不限次數" />
+          </div>
+
+          <div class="field field--full" data-field="dateRange">
+            <label class="field__label">使用期限</label>
+            <div class="field-row-2">
+              <input class="field__input" type="date" id="startDate" required />
+              <input class="field__input" type="date" id="endDate" required />
+            </div>
+            <p class="field__error">請確認起始日期不晚於結束日期</p>
+          </div>
+
+          <div class="field field--full">
+            <div class="switch-row">
+              <label class="switch">
+                <input type="checkbox" id="isActive" checked />
+                <span class="switch__track"></span>
+              </label>
+              <span class="switch-label">立即啟用此優惠券</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn--ghost" onclick="closeForm()">取消</button>
+          <button type="submit" class="btn--dark">儲存優惠券</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="coupon-list" id="couponList"></div>
+
+    <div class="empty-state" id="emptyState">
+      <p class="empty-state__title">目前還沒有任何優惠券</p>
+      <p class="empty-state__desc">點擊「＋ 新增優惠券」開始建立你的第一組折扣碼。</p>
+    </div>
+  </main>
+
+  <script>
+    const storeNames = {
+      all: '全部賣場',
+      st_001: '手作陶藝小舖',
+      st_002: '早晨咖啡豆專賣',
+      st_003: '寵物零食實驗室',
+    };
+
+    // ── Mock 資料：待後端 API 完成後改為 fetch('/api/coupons') 取得 ──
+    let coupons = [
+      { id: 'cp_001', code: 'SUMMER100', storeId: 'all', discountType: 'fixed', discountValue: 100, minSpend: 500, usageLimit: 200, usedCount: 58, startDate: '2026-07-01', endDate: '2026-08-31', isActive: true },
+      { id: 'cp_002', code: 'POTTERY10', storeId: 'st_001', discountType: 'percent', discountValue: 10, minSpend: 0, usageLimit: null, usedCount: 12, startDate: '2026-08-01', endDate: '2026-09-30', isActive: true },
+      { id: 'cp_003', code: 'COFFEE50', storeId: 'st_002', discountType: 'fixed', discountValue: 50, minSpend: 300, usageLimit: 100, usedCount: 100, startDate: '2026-05-01', endDate: '2026-06-30', isActive: false },
+    ];
+
+    const formWrap = document.getElementById('formWrap');
+    const couponForm = document.getElementById('couponForm');
+    const formTitle = document.getElementById('formTitle');
+    const editingIdInput = document.getElementById('editingId');
+
+    function openForm(id) {
+      resetFormErrors();
+      if (id) {
+        const c = coupons.find(x => x.id === id);
+        if (!c) return;
+        formTitle.textContent = '編輯優惠券';
+        editingIdInput.value = c.id;
+        document.getElementById('code').value = c.code;
+        document.getElementById('storeId').value = c.storeId;
+        document.getElementById('discountType').value = c.discountType;
+        document.getElementById('discountValue').value = c.discountValue;
+        document.getElementById('minSpend').value = c.minSpend || '';
+        document.getElementById('usageLimit').value = c.usageLimit || '';
+        document.getElementById('startDate').value = c.startDate;
+        document.getElementById('endDate').value = c.endDate;
+        document.getElementById('isActive').checked = c.isActive;
+      } else {
+        formTitle.textContent = '新增優惠券';
+        editingIdInput.value = '';
+        couponForm.reset();
+        document.getElementById('isActive').checked = true;
+      }
+      formWrap.classList.add('is-open');
+      formWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function closeForm() {
+      formWrap.classList.remove('is-open');
+      resetFormErrors();
+    }
+
+    function resetFormErrors() {
+      document.querySelectorAll('.field').forEach(f => f.classList.remove('has-error'));
+    }
+
+    couponForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      resetFormErrors();
+
+      const id = editingIdInput.value || null;
+      const code = document.getElementById('code').value.trim().toUpperCase();
+      const storeId = document.getElementById('storeId').value;
+      const discountType = document.getElementById('discountType').value;
+      const discountValue = Number(document.getElementById('discountValue').value);
+      const minSpend = Number(document.getElementById('minSpend').value) || 0;
+      const usageLimit = document.getElementById('usageLimit').value ? Number(document.getElementById('usageLimit').value) : null;
+      const startDate = document.getElementById('startDate').value;
+      const endDate = document.getElementById('endDate').value;
+      const isActive = document.getElementById('isActive').checked;
+
+      let hasError = false;
+
+      const codeTaken = coupons.some(c => c.code === code && c.id !== id);
+      if (!code || codeTaken) {
+        document.querySelector('[data-field="code"]').classList.add('has-error');
+        hasError = true;
+      }
+      if (!discountValue || discountValue <= 0) {
+        document.querySelector('[data-field="discountValue"]').classList.add('has-error');
+        hasError = true;
+      }
+      if (!startDate || !endDate || startDate > endDate) {
+        document.querySelector('[data-field="dateRange"]').classList.add('has-error');
+        hasError = true;
+      }
+      if (hasError) return;
+
+      // TODO: 串接後端 API — POST /api/coupons 或 PUT /api/coupons/:id
+      if (id) {
+        const c = coupons.find(x => x.id === id);
+        Object.assign(c, { code, storeId, discountType, discountValue, minSpend, usageLimit, startDate, endDate, isActive });
+      } else {
+        coupons.push({
+          id: 'cp_' + Math.random().toString(36).slice(2, 8),
+          code, storeId, discountType, discountValue, minSpend, usageLimit,
+          usedCount: 0, startDate, endDate, isActive,
+        });
+      }
+
+      closeForm();
+      renderCoupons();
+    });
+
+    function handleDeleteCoupon(id) {
+      const c = coupons.find(x => x.id === id);
+      if (!c) return;
+      const confirmed = confirm(`確定要刪除優惠券「${c.code}」嗎？此操作無法復原。`);
+      if (!confirmed) return;
+
+      // TODO: 串接後端刪除 API — DELETE /api/coupons/:id
+      coupons = coupons.filter(x => x.id !== id);
+      renderCoupons();
+    }
+
+    function handleToggleActive(id) {
+      const c = coupons.find(x => x.id === id);
+      if (!c) return;
+      // TODO: 串接後端 API — PATCH /api/coupons/:id
+      c.isActive = !c.isActive;
+      renderCoupons();
+    }
+
+    function formatDiscount(c) {
+      return c.discountType === 'percent'
+        ? `折抵 ${c.discountValue}%`
+        : `折抵 $${c.discountValue.toLocaleString()}`;
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function renderCoupons() {
+      const listEl = document.getElementById('couponList');
+      const emptyEl = document.getElementById('emptyState');
+
+      if (coupons.length === 0) {
+        listEl.innerHTML = '';
+        emptyEl.classList.add('is-visible');
+        return;
+      }
+      emptyEl.classList.remove('is-visible');
+
+      listEl.innerHTML = coupons.map(c => `
+        <article class="coupon-card">
+          <span class="coupon-card__code">${escapeHtml(c.code)}</span>
+          <div class="coupon-card__body">
+            <div class="coupon-card__discount">
+              ${formatDiscount(c)}
+              ${c.minSpend ? `（滿 $${c.minSpend.toLocaleString()} 可用）` : ''}
+            </div>
+            <span class="coupon-card__meta">
+              適用：${storeNames[c.storeId] || '全部賣場'}　·
+              效期 ${c.startDate} ~ ${c.endDate}　·
+              已使用 ${c.usedCount}${c.usageLimit ? ' / ' + c.usageLimit : ' 次（不限次數）'}
+            </span>
+          </div>
+          <span class="badge ${c.isActive ? 'badge--active' : 'badge--inactive'}" style="cursor:pointer;" onclick="handleToggleActive('${c.id}')" title="點擊切換啟用狀態">
+            ${c.isActive ? '啟用中' : '已停用'}
+          </span>
+          <div class="coupon-card__actions">
+            <button class="action-btn" onclick="openForm('${c.id}')">編輯</button>
+            <button class="action-btn action-btn--danger" onclick="handleDeleteCoupon('${c.id}')">刪除</button>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    async function handleLogout() {
+      try {
+        await fetch('/api/auth/logout', { method: 'POST' });
+      } catch (error) {
+        console.error('登出請求失敗:', error);
+      } finally {
+        window.location.href = 'goez-landing.html';
+      }
+    }
+
+    renderCoupons();
+  </script>
+</body>
+</html>

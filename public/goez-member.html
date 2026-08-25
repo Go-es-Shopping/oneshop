@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>會員中心資料 — Goez Shop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+SC:wght@400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-white: #ffffff;
+      --color-black: #000000;
+      --color-black-55: rgba(0, 0, 0, 0.55);
+      --color-black-10: rgba(0, 0, 0, 0.1);
+      --color-black-5: rgba(0, 0, 0, 0.05);
+      --color-green: #1e7e42;
+      --color-green-bg: #eafaf0;
+      --color-red: #c0392b;
+      --color-red-bg: #fdecea;
+
+      --fs-32: 32px;
+      --fs-20: 20px;
+      --fs-18: 18px;
+      --fs-16: 16px;
+      --fs-14: 14px;
+      --fs-13: 13px;
+
+      --fw-regular: 400;
+      --fw-medium: 500;
+      --fw-semibold: 600;
+      --fw-bold: 700;
+
+      --lh-heading: 1.2;
+      --lh-body: 1.45;
+
+      --ls-heading: -0.6px;
+
+      --radius-16: 16px;
+      --radius-12: 12px;
+      --radius-10: 10px;
+      --radius-full: 9999px;
+
+      --shadow-card: 0px 4px 8px 0px rgba(0, 0, 0, 0.02), 0px 6px 12px 0px rgba(0, 0, 0, 0.03);
+
+      --spacing-64: 64px;
+      --spacing-48: 48px;
+      --spacing-40: 40px;
+      --spacing-32: 32px;
+      --spacing-24: 24px;
+      --spacing-20: 20px;
+      --spacing-16: 16px;
+      --spacing-12: 12px;
+      --spacing-8: 8px;
+      --spacing-4: 4px;
+
+      --font-primary: 'Inter', 'Noto Sans JP', 'Noto Sans SC', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; }
+    body {
+      font-family: var(--font-primary);
+      background: var(--color-white);
+      color: var(--color-black);
+      min-height: 100vh;
+    }
+    p, h1, h2 { margin: 0; }
+    a { text-decoration: none; color: inherit; }
+    button { font: inherit; cursor: pointer; }
+
+    /* ─── Top bar（改用 Background.svg 當底圖） ─────────────────── */
+    .topbar {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 96px;
+      padding: 0 var(--spacing-40);
+      overflow: hidden;
+      width: 100%;
+    }
+    .topbar__bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+    .topbar__brand {
+      position: relative;
+      z-index: 1;
+      font-size: var(--fs-20);
+      font-weight: var(--fw-bold);
+      letter-spacing: var(--ls-heading);
+      color: var(--color-white);
+    }
+    .topbar__logout {
+      position: relative;
+      z-index: 1;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: var(--radius-12);
+      padding: var(--spacing-8) var(--spacing-16);
+      font-size: var(--fs-16);
+      font-weight: var(--fw-medium);
+      color: var(--color-white);
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .topbar__logout:hover {
+      background: rgba(255,255,255,0.25);
+      border-color: rgba(255,255,255,0.4);
+    }
+
+    /* ─── Page ──────────────────────────────────────────────────── */
+    .page {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: var(--spacing-48) var(--spacing-24) var(--spacing-64);
+    }
+    .breadcrumb {
+      display: inline-block;
+      font-size: var(--fs-14);
+      font-weight: var(--fw-medium);
+      color: var(--color-black-55);
+      margin-bottom: var(--spacing-24);
+      transition: color 0.2s ease;
+    }
+    .breadcrumb:hover { color: var(--color-black); }
+
+    .page__header {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-4);
+      margin-bottom: var(--spacing-32);
+    }
+    .page__title { font-size: var(--fs-32); font-weight: var(--fw-bold); line-height: var(--lh-heading); letter-spacing: var(--ls-heading); }
+    .page__subtitle { font-size: var(--fs-16); font-weight: var(--fw-medium); color: var(--color-black-55); }
+
+    /* ─── Card / Section ────────────────────────────────────────── */
+    .card {
+      background: var(--color-white);
+      border: 1px solid var(--color-black-10);
+      border-radius: var(--radius-16);
+      box-shadow: var(--shadow-card);
+      padding: var(--spacing-24);
+      margin-bottom: var(--spacing-24);
+    }
+    .card__header { display: flex; flex-direction: column; gap: 2px; margin-bottom: var(--spacing-20); }
+    .card__title { font-size: var(--fs-18); font-weight: var(--fw-bold); }
+    .card__desc { font-size: var(--fs-13); color: var(--color-black-55); }
+
+    /* ─── Profile summary ───────────────────────────────────────── */
+    .profile-summary { display: flex; align-items: center; gap: var(--spacing-16); }
+    .profile-summary__avatar {
+      flex-shrink: 0;
+      width: 64px; height: 64px;
+      border-radius: var(--radius-full);
+      background: var(--color-black);
+      color: var(--color-white);
+      display: flex; align-items: center; justify-content: center;
+      font-size: var(--fs-20); font-weight: var(--fw-bold);
+    }
+    .profile-summary__body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .profile-summary__name { font-size: var(--fs-18); font-weight: var(--fw-bold); }
+    .profile-summary__email { font-size: var(--fs-13); color: var(--color-black-55); word-break: break-all; }
+
+    /* ─── Form ──────────────────────────────────────────────────── */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-16); }
+    .form-field { display: flex; flex-direction: column; gap: var(--spacing-8); }
+    .form-field--full { grid-column: 1 / -1; }
+    .form-field label { font-size: var(--fs-13); font-weight: var(--fw-semibold); color: var(--color-black-55); }
+    .form-field input {
+      font: inherit;
+      font-size: var(--fs-14);
+      padding: var(--spacing-12) var(--spacing-16);
+      border: 1px solid var(--color-black-10);
+      border-radius: var(--radius-10);
+      background: var(--color-white);
+      color: var(--color-black);
+      transition: border-color 0.2s ease;
+    }
+    .form-field input:focus { outline: none; border-color: var(--color-black); }
+    .form-field input:disabled { background: var(--color-black-5); color: var(--color-black-55); }
+    .form-field__hint { font-size: var(--fs-13); color: var(--color-black-55); }
+
+    .form-actions { display: flex; justify-content: flex-end; gap: var(--spacing-8); margin-top: var(--spacing-20); }
+
+    .btn--dark {
+      background: var(--color-black); color: var(--color-white); border: none;
+      padding: var(--spacing-12) var(--spacing-20); border-radius: var(--radius-12);
+      font-size: var(--fs-16); font-weight: var(--fw-medium); white-space: nowrap;
+      display: inline-flex; align-items: center; gap: var(--spacing-8);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    .btn--dark:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); background: #222; }
+    .btn--dark:active { transform: translateY(0); }
+
+    .form-status {
+      font-size: var(--fs-13);
+      font-weight: var(--fw-medium);
+      padding: var(--spacing-8) var(--spacing-16);
+      border-radius: var(--radius-10);
+      display: none;
+      margin-top: var(--spacing-16);
+    }
+    .form-status.is-visible { display: block; }
+    .form-status--success { background: var(--color-green-bg); color: var(--color-green); }
+    .form-status--error { background: var(--color-red-bg); color: var(--color-red); }
+
+    /* ─── Danger zone ───────────────────────────────────────────── */
+    .card--danger { border-color: var(--color-red-bg); }
+    .danger-row {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: var(--spacing-16); flex-wrap: wrap;
+    }
+    .danger-row__text { display: flex; flex-direction: column; gap: 2px; }
+    .danger-row__title { font-size: var(--fs-14); font-weight: var(--fw-semibold); }
+    .danger-row__desc { font-size: var(--fs-13); color: var(--color-black-55); }
+    .btn--danger-outline {
+      background: transparent;
+      border: 1px solid var(--color-red);
+      color: var(--color-red);
+      padding: var(--spacing-8) var(--spacing-16);
+      border-radius: var(--radius-10);
+      font-size: var(--fs-14);
+      font-weight: var(--fw-medium);
+      transition: background 0.2s ease;
+    }
+    .btn--danger-outline:hover { background: var(--color-red-bg); }
+
+    /* ─── Responsive ────────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .topbar { padding: 0 var(--spacing-16); height: 72px; }
+      .page { padding: var(--spacing-32) var(--spacing-16); }
+      .page__title { font-size: 26px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .card { padding: var(--spacing-16); }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <img class="topbar__bg" src="images/decorations/Background.svg" alt="" aria-hidden="true">
+    <a href="goez-home.html" class="topbar__brand">Goez Shop</a>
+    <button class="topbar__logout" onclick="handleLogout()">登出</button>
+  </header>
+
+  <main class="page">
+    <a href="goez-home.html" class="breadcrumb">‹ 返回會員首頁</a>
+
+    <div class="page__header">
+      <h1 class="page__title">會員資料</h1>
+      <p class="page__subtitle">管理你的個人資訊與帳號安全設定。</p>
+    </div>
+
+    <!-- ── 個人資訊摘要 ─────────────────────────── -->
+    <section class="card">
+      <div class="profile-summary">
+        <div class="profile-summary__avatar" id="avatarInitial">G</div>
+        <div class="profile-summary__body">
+          <span class="profile-summary__name" id="summaryName">會員姓名</span>
+          <span class="profile-summary__email" id="summaryEmail">member@example.com</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 基本資料表單 ─────────────────────────── -->
+    <section class="card">
+      <div class="card__header">
+        <h2 class="card__title">基本資料</h2>
+        <p class="card__desc">更新後的資料將顯示於你的會員檔案中。</p>
+      </div>
+
+      <form id="profileForm">
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="fieldName">姓名</label>
+            <input type="text" id="fieldName" name="name" required />
+          </div>
+          <div class="form-field">
+            <label for="fieldPhone">聯絡電話</label>
+            <input type="tel" id="fieldPhone" name="phone" placeholder="0912-345-678" />
+          </div>
+          <div class="form-field form-field--full">
+            <label for="fieldEmail">Email</label>
+            <input type="email" id="fieldEmail" name="email" disabled />
+            <span class="form-field__hint">Email 為登入帳號，如需變更請聯繫客服。</span>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn--dark">儲存變更</button>
+        </div>
+        <p class="form-status" id="profileStatus"></p>
+      </form>
+    </section>
+
+    <!-- ── 密碼變更 ─────────────────────────────── -->
+    <section class="card">
+      <div class="card__header">
+        <h2 class="card__title">變更密碼</h2>
+        <p class="card__desc">建議定期更換密碼以保護帳號安全。</p>
+      </div>
+
+      <form id="passwordForm">
+        <div class="form-grid">
+          <div class="form-field form-field--full">
+            <label for="fieldCurrentPassword">目前密碼</label>
+            <input type="password" id="fieldCurrentPassword" name="currentPassword" required autocomplete="current-password" />
+          </div>
+          <div class="form-field">
+            <label for="fieldNewPassword">新密碼</label>
+            <input type="password" id="fieldNewPassword" name="newPassword" required minlength="8" autocomplete="new-password" />
+          </div>
+          <div class="form-field">
+            <label for="fieldConfirmPassword">確認新密碼</label>
+            <input type="password" id="fieldConfirmPassword" name="confirmPassword" required minlength="8" autocomplete="new-password" />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn--dark">更新密碼</button>
+        </div>
+        <p class="form-status" id="passwordStatus"></p>
+      </form>
+    </section>
+
+    <!-- ── 危險操作 ─────────────────────────────── -->
+    <section class="card card--danger">
+      <div class="danger-row">
+        <div class="danger-row__text">
+          <span class="danger-row__title">刪除帳號</span>
+          <span class="danger-row__desc">刪除後將無法復原，所有賣場與資料都會一併移除。</span>
+        </div>
+        <button type="button" class="btn--danger-outline" onclick="handleDeleteAccount()">刪除帳號</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // ── Mock 會員資料：待後端 API 完成後改為 fetch('/api/member/profile') 取得 ──
+    const memberProfile = {
+      name: '陳小美',
+      email: 'member@example.com',
+      phone: '0912-345-678',
+    };
+
+    function renderProfile() {
+      document.getElementById('summaryName').textContent = memberProfile.name;
+      document.getElementById('summaryEmail').textContent = memberProfile.email;
+      document.getElementById('avatarInitial').textContent = memberProfile.name.charAt(0) || 'G';
+
+      document.getElementById('fieldName').value = memberProfile.name;
+      document.getElementById('fieldPhone').value = memberProfile.phone;
+      document.getElementById('fieldEmail').value = memberProfile.email;
+    }
+
+    function showStatus(el, message, type) {
+      el.textContent = message;
+      el.className = `form-status is-visible form-status--${type}`;
+    }
+
+    document.getElementById('profileForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const statusEl = document.getElementById('profileStatus');
+      const payload = {
+        name: document.getElementById('fieldName').value.trim(),
+        phone: document.getElementById('fieldPhone').value.trim(),
+      };
+
+      try {
+        // TODO: 串接後端更新 API — PATCH /api/member/profile
+        const response = await fetch('/api/member/profile', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (!response.ok) throw new Error('更新失敗');
+
+        Object.assign(memberProfile, payload);
+        renderProfile();
+        showStatus(statusEl, '個人資料已更新。', 'success');
+      } catch (error) {
+        console.error('更新個人資料失敗:', error);
+        showStatus(statusEl, '更新失敗，請稍後再試。', 'error');
+      }
+    });
+
+    document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const statusEl = document.getElementById('passwordStatus');
+      const currentPassword = document.getElementById('fieldCurrentPassword').value;
+      const newPassword = document.getElementById('fieldNewPassword').value;
+      const confirmPassword = document.getElementById('fieldConfirmPassword').value;
+
+      if (newPassword !== confirmPassword) {
+        showStatus(statusEl, '兩次輸入的新密碼不一致。', 'error');
+        return;
+      }
+
+      try {
+        // TODO: 串接後端變更密碼 API — POST /api/member/change-password
+        const response = await fetch('/api/member/change-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ currentPassword, newPassword }),
+        });
+        if (!response.ok) throw new Error('密碼變更失敗');
+
+        e.target.reset();
+        showStatus(statusEl, '密碼已成功更新。', 'success');
+      } catch (error) {
+        console.error('變更密碼失敗:', error);
+        showStatus(statusEl, '密碼變更失敗，請確認目前密碼是否正確。', 'error');
+      }
+    });
+
+    function handleDeleteAccount() {
+      const confirmed = confirm('確定要刪除帳號嗎？此操作無法復原，所有賣場與資料都會一併移除。');
+      if (!confirmed) return;
+
+      // TODO: 串接後端刪除帳號 API — DELETE /api/member/account
+      alert('帳號刪除功能尚未串接後端。');
+    }
+
+    async function handleLogout() {
+      try {
+        await fetch('/api/auth/logout', { method: 'POST' });
+      } catch (error) {
+        console.error('登出請求失敗:', error);
+      } finally {
+        window.location.href = 'goez-landing.html';
+      }
+    }
+
+    renderProfile();
+  </script>
+</body>
+</html>

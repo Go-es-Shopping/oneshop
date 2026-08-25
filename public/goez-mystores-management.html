@@ -234,12 +234,12 @@
 
   <header class="topbar">
     <img class="topbar__bg" src="images/decorations/Background.svg" alt="" aria-hidden="true">
-    <a href="goez-shop-dashboard.html" class="topbar__brand">Goez Shop</a>
+    <a href="goez-home.html" class="topbar__brand">Goez Shop</a>
     <button class="topbar__logout" onclick="handleLogout()">登出</button>
   </header>
 
   <main class="page">
-    <a href="goez-shop-dashboard.html" class="breadcrumb">‹ 返回會員中心</a>
+    <a href="goez-home.html" class="breadcrumb">‹ 返回會員首頁</a>
 
     <div class="page__header">
       <div class="page__title-group">
@@ -332,7 +332,7 @@
       } catch (error) {
         console.error('登出請求失敗:', error);
       } finally {
-        window.location.href = 'goez-shop-login.html';
+        window.location.href = 'goez-landing.html';
       }
     }
 

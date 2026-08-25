@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Goez Shop</title>
+  <title>登入後首頁 — Goez Shop</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+SC:wght@400&display=swap" rel="stylesheet" />
@@ -17,7 +17,6 @@
       --color-white-60: rgba(255, 255, 255, 0.6);
       --color-white-15: rgba(255, 255, 255, 0.15);
 
-      --fs-64: 64px;
       --fs-36: 36px;
       --fs-24: 24px;
       --fs-20: 20px;
@@ -29,13 +28,11 @@
       --fw-semibold: 600;
       --fw-bold: 700;
 
-      --lh-hero: 1.1;
       --lh-heading: 1.2;
       --lh-body: 1.45;
       --lh-sm: 1.4;
       --lh-tight: 1.5;
 
-      --ls-hero: -1.6px;
       --ls-heading: 3.6px;
       --ls-gallery: 10.8px;
       --ls-brand: -0.48px;
@@ -52,7 +49,6 @@
       --spacing-120: 120px;
       --spacing-96: 96px;
       --spacing-80: 80px;
-      --spacing-48: 48px;
       --spacing-40: 40px;
       --spacing-32: 32px;
       --spacing-24: 24px;
@@ -72,25 +68,20 @@
     p, h1, h2, h3 { margin: 0; }
     ul, ol { list-style: none; }
     a { text-decoration: none; color: inherit; }
+    button { font: inherit; }
 
-    /* ─── Page Wrapper ───────────────────────────────────────────── */
-    .page { display: flex; flex-direction: column; align-items: center; width: 100%; }
-    .container { display: flex; flex-direction: column; align-items: flex-start; width: 100%; }
-
-    /* ─── Hero / Background ──────────────────────────────────────── */
-    .hero {
+    /* ─── Top bar（改用 Background.svg 當底圖） ─────────────────── */
+    .topbar {
       position: relative;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      width: 100%;
-      height: 400px;
-      padding: var(--spacing-120) var(--spacing-120) var(--spacing-96);
+      justify-content: space-between;
+      height: 96px;
+      padding: 0 var(--spacing-40);
       overflow: hidden;
-      gap: var(--spacing-120);
+      width: 100%;
     }
-    .hero__bg {
+    .topbar__bg {
       position: absolute;
       inset: 0;
       width: 100%;
@@ -98,46 +89,74 @@
       object-fit: cover;
       pointer-events: none;
     }
-    .hero__content {
+    .topbar__brand {
       position: relative;
+      z-index: 1;
+      font-size: var(--fs-20);
+      font-weight: var(--fw-bold);
+      letter-spacing: var(--ls-brand);
+      color: var(--color-white);
+    }
+    .topbar__logout {
+      position: relative;
+      z-index: 1;
+      background: var(--color-white-15);
+      border: 1px solid var(--color-white-15);
+      border-radius: var(--radius-12);
+      padding: var(--spacing-8) var(--spacing-16);
+      font-size: var(--fs-16);
+      font-weight: var(--fw-medium);
+      color: var(--color-white);
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .topbar__logout:hover {
+      background: rgba(255,255,255,0.25);
+      border-color: rgba(255,255,255,0.4);
+    }
+    .topbar__actions {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-12);
+    }
+    .topbar__member {
+      background: transparent;
+      border: 1px solid var(--color-white-15);
+      border-radius: var(--radius-12);
+      padding: var(--spacing-8) var(--spacing-16);
+      font-size: var(--fs-16);
+      font-weight: var(--fw-medium);
+      color: var(--color-white);
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .topbar__member:hover {
+      background: rgba(255,255,255,0.15);
+      border-color: rgba(255,255,255,0.4);
+    }
+
+    /* ─── Page Wrapper ───────────────────────────────────────────── */
+    .page { display: flex; flex-direction: column; align-items: center; width: 100%; }
+    .container { display: flex; flex-direction: column; align-items: flex-start; width: 100%; }
+
+    /* ─── Quick Access：管理已建立賣場 / 優惠券設定 ─────────────── */
+    .quick-access {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: var(--spacing-48);
-      width: 100%;
-      z-index: 1;
-    }
-    .hero__title {
-      font-size: var(--fs-64);
-      font-weight: var(--fw-bold);
-      line-height: var(--lh-hero);
-      letter-spacing: var(--ls-hero);
-      color: var(--color-white);
-      text-align: center;
+      align-items: flex-start;
+      padding: var(--spacing-80) var(--spacing-120);
       width: 100%;
     }
-    .hero__buttons {
+    .quick-access__cards {
       display: flex;
-      flex-wrap: wrap;
-      gap: var(--spacing-16);
-      align-items: flex-end;
-      justify-content: center;
+      gap: var(--spacing-32);
+      align-items: flex-start;
+      width: 100%;
     }
-    .btn--primary {
-      background: var(--color-white);
-      color: var(--color-black);
-      padding: var(--spacing-12) var(--spacing-16);
-      border-radius: var(--radius-12);
-      font-size: var(--fs-18);
-      font-weight: var(--fw-medium);
-      line-height: var(--lh-body);
-      letter-spacing: var(--ls-xs);
-      white-space: nowrap;
-      cursor: pointer;
-      border: 2px solid transparent;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .quick-access__cards .gallery-card {
+      flex: 1 0 0;
     }
     .btn--dark {
       background: var(--color-black);
@@ -402,29 +421,7 @@
     .delay-3 { transition-delay: 0.3s; }
     .delay-4 { transition-delay: 0.4s; }
 
-    /* Hero title animation on load */
-    .hero__title {
-      animation: heroTitleIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
-    }
-    .hero__buttons {
-      animation: heroTitleIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
-    }
-    @keyframes heroTitleIn {
-      from { opacity: 0; transform: translateY(24px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
     /* Button hover effects */
-    .btn--primary {
-      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-    }
-    .btn--primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(255,255,255,0.3);
-      background: #f0f0f0;
-    }
-    .btn--primary:active { transform: translateY(0); }
-
     .btn--dark {
       transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
     }
@@ -480,12 +477,9 @@
 
     /* ─── Responsive: Tablet ─────────────────────────────────────── */
     @media (max-width: 1024px) {
-      .hero {
-        padding: 80px 48px 64px;
-        height: auto;
-        min-height: 340px;
-      }
-      .hero__title { font-size: 48px; }
+      .topbar { padding: 0 48px; height: 80px; }
+      .quick-access { padding: 64px 48px; }
+      .quick-access__cards { flex-direction: column; }
       .feature-gallery { padding: var(--spacing-64, 64px) 48px; }
       .feature-gallery { padding: 64px 48px; }
       .feature-gallery__heading { font-size: 28px; }
@@ -501,14 +495,10 @@
 
     /* ─── Responsive: Mobile ─────────────────────────────────────── */
     @media (max-width: 768px) {
-      .hero {
-        padding: 60px 24px 48px;
-        min-height: 280px;
-        gap: 48px;
-      }
-      .hero__title { font-size: 36px; letter-spacing: -1px; }
-      .hero__buttons { flex-direction: column; align-items: center; width: 100%; }
-      .btn--primary { width: 100%; justify-content: center; }
+      .topbar { padding: 0 24px; height: 72px; }
+      .topbar__brand { font-size: 18px; }
+      .quick-access { padding: 40px 24px; }
+      .quick-access__cards { flex-direction: column; }
       .feature-gallery { padding: 48px 24px; }
       .feature-gallery__heading { font-size: 22px; letter-spacing: 2px; }
       .feature-gallery__desc { font-size: 15px; }
@@ -527,24 +517,44 @@
 </head>
 <body>
 
+<!-- ── Top bar：改用 Background.svg 當底圖，只保留品牌與登出 ── -->
+<header class="topbar">
+  <img class="topbar__bg" src="images/decorations/Background.svg" alt="" aria-hidden="true" />
+  <a href="goez-home.html" class="topbar__brand">Goez Shop</a>
+  <div class="topbar__actions">
+    <button class="topbar__member" onclick="location.href='goez-member.html'">會員中心</button>
+    <button class="topbar__logout" onclick="handleLogout()">登出</button>
+  </div>
+</header>
+
 <div class="page">
   <main class="container">
 
-    <!-- ── Hero ──────────────────────────────────────── -->
-    <div class="hero">
-      <img
-        class="hero__bg"
-        src="images/decorations/title.svg"
-        alt=""
-        aria-hidden="true"
-      />
-      <div class="hero__content">
-        <h1 class="hero__title">Goez Shop</h1>
-        <div class="hero__buttons">
-          <button class="btn--primary" onclick="location.href='goez-shop-login.html'">一鍵開店</button>
+    <!-- ── Quick Access：管理已建立賣場 / 優惠券設定 ─── -->
+    <section class="quick-access" aria-label="會員快速功能">
+      <div class="quick-access__cards fade-in">
+        <div class="gallery-card"
+          onclick="location.href='goez-mystores-management.html'"
+        style="cursor: pointer;">
+          <img
+            class="gallery-card__img"
+            src="images/decorations/complete-store.png"
+            alt="管理已建立賣場"
+          />
+          <span class="gallery-card__label">管理已建立賣場</span>
+        </div>
+        <div class="gallery-card"
+          onclick="location.href='goez-mycoupons-management.html'"
+        style="cursor: pointer;">
+          <img
+            class="gallery-card__img"
+            src="images/decorations/coupong.png"
+            alt="優惠券設定"
+          />
+          <span class="gallery-card__label">優惠券設定</span>
         </div>
       </div>
-    </div>
+    </section>
 
     <!-- ── Feature Gallery ───────────────────────────── -->
     <section class="feature-gallery" aria-label="Feature gallery">
@@ -573,9 +583,8 @@
               />
               <span class="gallery-card__label">ＡＩ開店助手</span>
             </div>
-            </a>
             <div class="gallery-card"
-            onclick="handleCreateShop()" 
+            onclick="handleCreateShop()"
             style="cursor: pointer;">
               <img
                 class="gallery-card__img"
@@ -681,13 +690,15 @@
 
   animatedEls.forEach(el => observer.observe(el));
 
-  // ── Parallax on Hero background ─────────────────────────────────
-  const heroBg = document.querySelector('.hero__bg');
-  if (heroBg) {
-    window.addEventListener('scroll', () => {
-      const scrollY = window.scrollY;
-      heroBg.style.transform = `translateY(${scrollY * 0.35}px)`;
-    }, { passive: true });
+  async function handleLogout() {
+    try {
+      // TODO: 串接後端登出 API
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch (error) {
+      console.error('登出請求失敗:', error);
+    } finally {
+      window.location.href = 'goez-shop-login.html';
+    }
   }
 </script>
 <script>
