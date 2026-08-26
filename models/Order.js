@@ -15,6 +15,24 @@ const Order = sequelize.define('Order', {
     allowNull: false,
     field: 'SellerID'
   },
+  // 優惠卷 ID
+  CouponID: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    field: 'CouponID'
+  },
+  // 優惠卷代碼
+  CouponCode: {
+    type: DataTypes.STRING(50),  // 對應 varchar(50)
+    allowNull: true,
+    field: 'CouponCode'
+  },
+  // 折抵金額
+  DiscountValue: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true,
+    field: 'DiscountValue'
+  },
   // 買家姓名，支援中文 (nvarchar)
   BuyerName: {
     type: DataTypes.STRING(100),
@@ -56,6 +74,18 @@ const Order = sequelize.define('Order', {
     type: DataTypes.INTEGER,
     allowNull: false,
     field: 'PaymentStatus'
+  },
+  // 發票載具類型 (member 或 barcode)
+  InvoiceType: {
+    type: DataTypes.STRING(50),
+    allowNull: true,
+    field: 'InvoiceType'
+  },
+  // 手機條碼 (例如 /ABC1234)
+  CarrierCode: {
+    type: DataTypes.STRING(50),
+    allowNull: true,
+    field: 'CarrierCode'
   },
   // 來源 UTM 標籤 (例如：Facebook, Google)
   UTM_Source: {

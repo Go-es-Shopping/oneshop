@@ -24,7 +24,7 @@ const Shipment = sequelize.define('Shipment', {
   // 物流單號，使用 STRING 支援 nvarchar
   TrackingNumber: {
     type: DataTypes.STRING(100),
-    allowNull: false,
+    allowNull: true,
     field: 'TrackingNumber'
   },
   // 物流狀態 (如：待出貨、已出貨)，使用 STRING 支援 nvarchar

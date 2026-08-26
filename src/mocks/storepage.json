@@ -6,6 +6,9 @@
       "TemplateName": "OnePageV1",
       "IsPublished": 1,
       "PageUrl": "acme",
+      "StoreEmail": "",
+      "StorePhone": "",
+      "StoreBankAccount": "812-1234567890",
       "CreatedAt": "2026-03-02T10:00:00Z",
       "UpdatedAt": "2026-03-02T10:00:00Z",
       "PageContent": {
@@ -16,7 +19,9 @@
         "PageDescription": "精選商品與限時優惠",
         "CTA_Text": "立即下單",
         "CreatedAt": "2026-03-02T10:00:00Z",
-        "UpdatedAt": "2026-03-02T10:00:00Z"
+        "UpdatedAt": "2026-03-02T10:00:00Z",
+        "ThemeColor": "冷靜石板",
+        "ThemeFont": "gothic"
       },
       "PageProducts": [
         {
@@ -37,6 +42,9 @@
     "TemplateName": "OnePageV1",
     "IsPublished": 1,
     "PageUrl": "acme",
+    "StoreEmail": "",
+    "StorePhone": "",
+    "StoreBankAccount": "812-1234567890",
     "CreatedAt": "2026-03-02T10:00:00Z",
     "UpdatedAt": "2026-03-02T10:00:00Z",
     "PageContent": {
@@ -47,7 +55,9 @@
       "PageDescription": "精選商品與限時優惠",
       "CTA_Text": "立即下單",
       "CreatedAt": "2026-03-02T10:00:00Z",
-      "UpdatedAt": "2026-03-02T10:00:00Z"
+      "UpdatedAt": "2026-03-02T10:00:00Z",
+      "ThemeColor": "冷靜石板",
+      "ThemeFont": "gothic"
     },
     "PageProducts": [
       {

@@ -1,0 +1,1678 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>我的店舖</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ═══════════════════════════════════
+       DESIGN TOKENS
+    ═══════════════════════════════════ */
+    :root {
+      --c-white:        #ffffff;
+      --c-black:        #0a0a0a;
+      --c-bg-page:      #f3f4f6;
+      --c-bg-light:     #f9fafb;
+      --c-bg-subtle:    #f8fafc;
+      --c-border:       #e5e7eb;
+      --c-border-light: #f3f4f6;
+      --c-accent:       #6588A6;
+      --c-accent-dark:  #4e6d8c;
+      --c-text-heading: #101828;
+      --c-text-body:    #364153;
+      --c-text-muted:   #6a7282;
+      --c-text-faint:   #99a1af;
+      --c-text-nav:     #4a5565;
+
+      --r-10:   10px;
+      --r-14:   14px;
+      --r-16:   16px;
+      --r-24:   24px;
+      --r-full: 9999px;
+
+      --shadow-sm:   0 1px 2px rgba(0,0,0,.08);
+      --shadow-card: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+      --shadow-btn:  0 4px 12px rgba(101,136,166,.4);
+      --shadow-lg:   0 8px 24px rgba(0,0,0,.12);
+    }
+
+    /* ═══════════════════════════════════
+       RESET & BASE
+    ═══════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', 'Noto Sans TC', sans-serif;
+      background: var(--c-bg-page);
+      color: var(--c-text-heading);
+      min-width: 320px;
+      overflow-x: hidden;
+    }
+    img { display: block; max-width: 100%; }
+    button { cursor: pointer; border: none; background: none; font: inherit; padding: 0; }
+    a { text-decoration: none; color: inherit; }
+    ul, ol { list-style: none; }
+
+    /* ═══════════════════════════════════
+       PAGE SHELL
+    ═══════════════════════════════════ */
+    .page {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background: var(--c-white);
+    }
+
+    /* ═══════════════════════════════════
+       STORE NAV
+    ═══════════════════════════════════ */
+    .store-nav {
+      background: var(--c-white);
+      border-bottom: 1px solid var(--c-border-light);
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      transition: box-shadow 0.3s ease;
+    }
+    .store-nav.scrolled { box-shadow: 0 2px 12px rgba(0,0,0,.08); }
+
+    .store-nav__brand { display: flex; align-items: center; gap: 12px; }
+    .store-nav__logo {
+      width: 40px; height: 40px;
+      border-radius: var(--r-10);
+      box-shadow: var(--shadow-card);
+      overflow: hidden; flex-shrink: 0;
+      background: var(--c-bg-page);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .store-nav__logo img { width: 100%; height: 100%; object-fit: cover; }
+    .store-nav__logo-placeholder {
+      width: 100%; height: 100%;
+      background: linear-gradient(135deg, var(--c-accent) 0%, var(--c-accent-dark) 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 900; color: white;
+      letter-spacing: -0.5px;
+    }
+    .store-nav__name {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 700; font-size: 18px;
+      color: var(--c-text-heading); letter-spacing: -0.5px;
+      white-space: nowrap;
+    }
+
+    .store-nav__right { display: flex; align-items: center; gap: 24px; }
+    .store-nav__links { display: flex; align-items: center; gap: 4px; }
+    .store-nav__link {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 500; font-size: 14px;
+      color: var(--c-text-nav); line-height: 20px;
+      padding: 6px 12px; border-radius: var(--r-10);
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .store-nav__link:hover { background: var(--c-bg-page); color: var(--c-text-heading); }
+    .store-nav__link.active { color: var(--c-text-nav); font-weight: 700; }
+
+    .store-nav__actions { display: flex; align-items: center; gap: 4px; }
+    .store-nav__action-btn {
+      width: 36px; height: 36px;
+      border-radius: var(--r-full);
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s ease;
+      position: relative;
+    }
+    .store-nav__action-btn:hover { background: var(--c-bg-page); }
+    .store-nav__action-btn img { width: 22px; height: 22px; }
+
+    .store-nav__cart-wrap { position: relative; }
+    .store-nav__cart-badge {
+      position: absolute; top: 2px; right: 2px;
+      background: var(--c-accent);
+      border-radius: var(--r-full);
+      width: 16px; height: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700;
+      color: var(--c-white); line-height: 1;
+      pointer-events: none;
+    }
+
+    /* Mobile hamburger */
+    .store-nav__hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      width: 36px; height: 36px; padding: 8px;
+      border-radius: var(--r-10);
+    }
+    .store-nav__hamburger span {
+      display: block; height: 2px;
+      background: var(--c-text-heading);
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+
+    /* ═══════════════════════════════════
+       MOBILE NAV MENU
+    ═══════════════════════════════════ */
+    .mobile-menu {
+      display: none;
+      position: fixed; inset: 0; top: 70px;
+      background: rgba(0,0,0,.5);
+      z-index: 99;
+    }
+    .mobile-menu.open { display: block; }
+    .mobile-menu__panel {
+      background: var(--c-white);
+      padding: 16px;
+      display: flex; flex-direction: column; gap: 4px;
+      box-shadow: var(--shadow-lg);
+    }
+    .mobile-menu__link {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 500; font-size: 16px;
+      color: var(--c-text-heading);
+      padding: 12px 16px; border-radius: var(--r-14);
+      display: block;
+    }
+    .mobile-menu__link:hover { background: var(--c-bg-page); }
+
+    /* ═══════════════════════════════════
+       HERO
+    ═══════════════════════════════════ */
+    .store-hero {
+      background:var(--c-theme-4); /* 讓前台的 hero 區塊也吃最淺的主題色 */
+      padding: 64px 32px 48px;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 24px;
+      flex-shrink: 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .store-hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(101,136,166,.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .store-hero__eyebrow {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 700; font-size: 11px;
+      color: var(--c-accent);
+      letter-spacing: 2px; text-transform: uppercase;
+      background: rgba(101,136,166,.1);
+      padding: 4px 12px; border-radius: var(--r-full);
+    }
+    .store-hero__tagline {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 400; font-size: 17px;
+      color: var(--c-text-muted);
+      line-height: 1.7; max-width: 480px;
+    }
+    .store-hero__cta-wrap {
+      display: flex; align-items: center;
+      justify-content: center; gap: 12px;
+    }
+    .store-hero__cta-btn {
+      background: var(--c-accent);
+      border-radius: var(--r-full);
+      box-shadow: var(--shadow-btn);
+      height: 48px; padding: 0 32px;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 700; font-size: 15px;
+      color: var(--c-white); line-height: 24px;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .store-hero__cta-btn:hover {
+      background: var(--c-accent-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(101,136,166,.5);
+    }
+    .store-hero__cta-btn:active { transform: translateY(0); }
+    .store-hero__cta-secondary {
+      height: 48px; padding: 0 24px;
+      border: 1.5px solid var(--c-border);
+      border-radius: var(--r-full);
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 500; font-size: 15px;
+      color: var(--c-text-muted);
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+    }
+    .store-hero__cta-secondary:hover {
+      border-color: var(--c-accent);
+      color: var(--c-accent);
+      background: rgba(101,136,166,.04);
+    }
+
+    /* ═══════════════════════════════════
+       CATEGORY CHIPS
+    ═══════════════════════════════════ */
+    .store-categories {
+      padding: 0 32px 24px;
+      display: flex; align-items: center; gap: 8px;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .store-categories::-webkit-scrollbar { display: none; }
+    .category-chip {
+      height: 34px; padding: 0 16px;
+      border-radius: var(--r-full);
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 500; font-size: 13px;
+      white-space: nowrap; flex-shrink: 0;
+      border: 1.5px solid var(--c-border);
+      color: var(--c-text-muted);
+      background: var(--c-white);
+      transition: all 0.2s ease;
+    }
+    .category-chip:hover { border-color: var(--c-accent); color: var(--c-accent); }
+    .category-chip.active {
+      background: var(--c-accent); border-color: var(--c-accent);
+      color: var(--c-white);
+    }
+
+    /* ═══════════════════════════════════
+       PRODUCTS
+    ═══════════════════════════════════ */
+    .store-products {
+      padding: 0 24px 40px;
+      display: flex; flex-direction: column; gap: 24px;
+      flex-shrink: 0;
+    }
+    .store-products__header {
+      display: flex; align-items: center;
+      justify-content: space-between;
+    }
+    .store-products__heading {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .store-products__heading img { width: 20px; height: 20px; }
+    .store-products__heading-text {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 700; font-size: 22px;
+      color: var(--c-text-heading); line-height: 32px;
+    }
+    .store-products__more {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 500; font-size: 14px;
+      color: var(--c-accent); line-height: 20px;
+      display: flex; align-items: center; gap: 4px;
+      padding: 6px 12px; border-radius: var(--r-10);
+      transition: background 0.2s ease;
+    }
+    .store-products__more:hover { background: rgba(101,136,166,.08); }
+    .store-products__more::after {
+      content: '→'; font-size: 14px;
+    }
+
+    .store-products__grid {
+      display: grid;
+      /* 改成自動填滿：每個卡片最小約 240px，空間夠就會一直往右排，塞不下就自動換行 */
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
+      gap: 16px;
+    }
+
+    /* ═══════════════════════════════════
+       PRODUCT CARD
+    ═══════════════════════════════════ */
+    .product-card {
+      background: var(--c-white);
+      border: 1px solid var(--c-border-light);
+      border-radius: var(--r-24);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      display: flex; flex-direction: column;
+      cursor: pointer;
+      transition: transform 0.25s cubic-bezier(.22,1,.36,1), box-shadow 0.25s ease;
+    }
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0,0,0,.1);
+    }
+
+    .product-card__image-area {
+      height: 180px; flex-shrink: 0;
+      overflow: hidden; position: relative;
+      background: var(--c-bg-page);
+    }
+    .product-card__image-area img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.4s cubic-bezier(.22,1,.36,1);
+    }
+    .product-card:hover .product-card__image-area img { transform: scale(1.06); }
+    .product-card__image-area--empty {
+      display: flex; align-items: center; justify-content: center;
+    }
+    .product-card__image-area--empty .placeholder-art {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 40px; opacity: 0.3;
+    }
+    .placeholder-gradient-1 { background: linear-gradient(135deg,#e8edf2 0%,#ccd5dc 100%); }
+    .placeholder-gradient-2 { background: linear-gradient(135deg,#dce8f0 0%,#b8cfd9 100%); }
+    .placeholder-gradient-3 { background: linear-gradient(135deg,#f0e8dc 0%,#dcc8b0 100%); }
+    .placeholder-gradient-4 { background: linear-gradient(135deg,#e0dce8 0%,#c4bcdc 100%); }
+
+    .product-card__badge {
+      position: absolute; top: 12px; left: 12px;
+      background: var(--c-accent);
+      color: var(--c-white);
+      font-size: 10px; font-weight: 700;
+      padding: 3px 8px; border-radius: var(--r-full);
+      letter-spacing: 0.5px;
+    }
+
+    .product-card__body { padding: 12px 16px 16px; display: flex; flex-direction: column; gap: 4px; }
+
+    .product-card__meta { display: flex; align-items: center; justify-content: space-between; }
+    .product-card__tag {
+      background: var(--c-bg-light);
+      border-radius: var(--r-full);
+      padding: 0 10px; height: 26px;
+      display: flex; align-items: center;
+    }
+    .product-card__tag-text {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 700; font-size: 10px;
+      color: var(--c-text-faint);
+      letter-spacing: 0.5px; line-height: 1;
+    }
+    .product-card__stock {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 400; font-size: 11px;
+      color: var(--c-text-faint); line-height: 1;
+    }
+    .product-card__stock.low { color: #e07046; }
+
+    .product-card__name {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 700; font-size: 18px;
+      color: var(--c-text-heading);
+      line-height: 1.4;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-top: -6px; /* 讓商品名稱往上移動，貼近上方空間 */
+    }
+
+    .product-card__footer {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      margin-top: 4px;
+    }
+    .product-card__price {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 900; font-size: 18px;
+      color: var(--c-accent); line-height: 1;
+    }
+    .product-card__price-orig {
+      font-size: 12px; font-weight: 500;
+      color: var(--c-text-faint);
+      text-decoration: line-through;
+      margin-left: 4px;
+    }
+    .product-card__cart-btn {
+      background: var(--c-accent);
+      border-radius: var(--r-14);
+      box-shadow: var(--shadow-btn);
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+    .product-card__cart-btn:hover { background: var(--c-accent-dark); transform: scale(1.08); }
+    .product-card__cart-btn:active { transform: scale(0.96); }
+    .product-card__cart-btn img { width: 20px; height: 20px; }
+
+    /* ═══════════════════════════════════
+       PROMO BANNER
+    ═══════════════════════════════════ */
+    .promo-banner {
+      margin: 0 24px 40px;
+      /* 讓漸層自動抓取你們的主題色變數，並帶有優雅的深淺變化 */
+      background: linear-gradient(135deg, var(--c-accent, #869489) 0%, var(--c-accent-dark, #657367) 100%) !important;
+      border-radius: var(--r-24, 24px);
+      padding: 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px;
+      overflow: hidden; position: relative;
+    }
+    .promo-banner::before {
+      content: '';
+      position: absolute; top: -40px; right: -40px;
+      width: 160px; height: 160px;
+      background: rgba(255,255,255,.08);
+      border-radius: 50%;
+    }
+    .promo-banner::after {
+      content: '';
+      position: absolute; bottom: -60px; right: 60px;
+      width: 200px; height: 200px;
+      background: rgba(255,255,255,.05);
+      border-radius: 50%;
+    }
+    .promo-banner__text { position: relative; z-index: 1; }
+    .promo-banner__title {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 900; font-size: 20px;
+      color: var(--c-white); line-height: 1.3;
+      margin-bottom: 6px;
+    }
+    .promo-banner__sub {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 400; font-size: 13px;
+      color: rgba(255,255,255,.75); line-height: 1.5;
+    }
+    .promo-banner__btn {
+      position: relative; z-index: 1;
+      background: var(--c-white);
+      color: var(--c-accent);
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 700; font-size: 14px;
+      padding: 10px 20px;
+      border-radius: var(--r-full);
+      white-space: nowrap; flex-shrink: 0;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .promo-banner__btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,.15); }
+
+    /* ═══════════════════════════════════
+       STORE FOOTER
+    ═══════════════════════════════════ */
+    .store-footer {
+      background: var(--c-theme-2);
+      border-radius: 48px 48px 0 0;
+      padding: 56px 40px 36px;
+      display: flex; flex-direction: column; gap: 32px;
+      margin-top: auto; flex-shrink: 0;
+    }
+    .store-footer__cols { display: flex; gap: 32px; flex-wrap: wrap; }
+
+    .store-footer__about { flex: 1.5; min-width: 140px; display: flex; flex-direction: column; gap: 12px; }
+    .store-footer__brand {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 700; font-size: 18px;
+      color: var(--c-white); line-height: 28px;
+    }
+    .store-footer__desc {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 400; font-size: 13px;
+      color: rgba(255,255,255,.7); line-height: 1.7;
+      max-width: 180px;
+    }
+
+    .store-footer__links { min-width: 80px; display: flex; flex-direction: column; }
+    .store-footer__contact { min-width: 120px; display: flex; flex-direction: column; }
+
+    .store-footer__col-title {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 700; font-size: 14px;
+      color: var(--c-white); line-height: 24px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,255,255,.15);
+      margin-bottom: 16px;
+    }
+    .store-footer__col-list { display: flex; flex-direction: column; gap: 10px; }
+    .store-footer__col-item { display: flex; align-items: center; gap: 8px; }
+    .store-footer__col-dot {
+      width: 4px; height: 4px;
+      background: rgba(255,255,255,.3);
+      border-radius: var(--r-full); flex-shrink: 0;
+    }
+    .store-footer__col-link {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 500; font-size: 14px;
+      color: rgba(255,255,255,.7); line-height: 1;
+      transition: color 0.2s ease;
+    }
+    .store-footer__col-link:hover { color: var(--c-white); }
+
+    .store-footer__contact-items { display: flex; flex-direction: column; gap: 12px; }
+    .store-footer__contact-row { display: flex; align-items: center; gap: 10px; }
+    .store-footer__contact-icon {
+      width: 36px; height: 36px;
+      flex-shrink: 0;
+    }
+    .store-footer__contact-email,
+    .store-footer__contact-phone {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 500; font-size: 13px;
+      color: rgba(255,255,255,.75); line-height: 1;
+    }
+
+    .store-footer__bottom {
+      border-top: 1px solid rgba(255,255,255,.1);
+      padding-top: 24px; text-align: center;
+    }
+    .store-footer__copyright {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 400; font-size: 11px;
+      color: rgba(255,255,255,.4); line-height: 1.6;
+    }
+
+    /* ═══════════════════════════════════
+       CART DRAWER
+    ═══════════════════════════════════ */
+    .cart-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.45);
+      z-index: 200;
+      backdrop-filter: blur(2px);
+    }
+    .cart-overlay.open { display: block; }
+
+    .cart-drawer {
+      position: fixed; top: 0; right: 0; bottom: 0;
+      width: 360px; max-width: 100vw;
+      background: var(--c-white);
+      box-shadow: -8px 0 40px rgba(0,0,0,.15);
+      z-index: 201;
+      display: flex; flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(.22,1,.36,1);
+    }
+    .cart-drawer.open { transform: translateX(0); }
+
+    .cart-drawer__header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--c-border-light);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .cart-drawer__title {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 700; font-size: 18px;
+      color: var(--c-text-heading);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .cart-drawer__count {
+      background: var(--c-theme-2); color: var(--c-white);
+      font-size: 11px; font-weight: 700;
+      padding: 2px 7px; border-radius: var(--r-full);
+    }
+    .cart-drawer__close {
+      width: 32px; height: 32px;
+      border-radius: var(--r-full);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--c-text-muted); font-size: 18px;
+      transition: background 0.2s ease;
+    }
+    .cart-drawer__close:hover { background: var(--c-bg-page); }
+
+    .cart-drawer__body { flex: 1; overflow-y: auto; padding: 16px; }
+
+    .cart-empty {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      height: 100%; gap: 12px;
+      color: var(--c-text-faint);
+      font-family: 'Noto Sans TC', sans-serif;
+    }
+    .cart-empty__icon { font-size: 48px; opacity: 0.4; }
+    .cart-empty__text { font-size: 15px; font-weight: 500; }
+
+    .cart-item {
+      display: flex; gap: 12px;
+      padding: 12px; border-radius: var(--r-16);
+      margin-bottom: 8px;
+      background: var(--c-bg-subtle);
+      border: 1px solid var(--c-border-light);
+    }
+    .cart-item__img {
+      width: 60px; height: 60px;
+      border-radius: var(--r-10);
+      overflow: hidden; flex-shrink: 0;
+      background: var(--c-bg-page);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .cart-item__img img { width: 100%; height: 100%; object-fit: cover; }
+    .cart-item__info { flex: 1; min-width: 0; }
+    .cart-item__name {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 600; font-size: 13px;
+      color: var(--c-text-heading);
+      line-height: 1.4; margin-bottom: 4px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .cart-item__price {
+      font-weight: 700; font-size: 14px; color: var(--c-accent);
+    }
+    .cart-item__controls {
+      display: flex; flex-direction: column;
+      align-items: flex-end; justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .cart-item__remove {
+      font-size: 14px; color: var(--c-text-faint);
+      transition: color 0.2s ease;
+    }
+    .cart-item__remove:hover { color: #e07046; }
+    .cart-item__qty {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .cart-item__qty-btn {
+      width: 24px; height: 24px;
+      border-radius: var(--r-full);
+      background: var(--c-white);
+      border: 1px solid var(--c-border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: var(--c-text-heading);
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .cart-item__qty-btn:hover { background: var(--c-bg-page); border-color: var(--c-accent); }
+    .cart-item__qty-num {
+      font-size: 13px; font-weight: 600; min-width: 16px; text-align: center;
+    }
+
+    .cart-drawer__footer {
+      padding: 16px 24px 24px;
+      border-top: 1px solid var(--c-border-light);
+      flex-shrink: 0;
+    }
+    .cart-drawer__summary {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 16px;
+    }
+    .cart-drawer__summary-label {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 500; font-size: 14px; color: var(--c-text-muted);
+    }
+    .cart-drawer__total {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 900; font-size: 22px; color: var(--c-accent);
+    }
+    .cart-drawer__checkout {
+      background: var(--c-accent); color: var(--c-white);
+      border-radius: var(--r-full);
+      height: 50px; width: 100%;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 700; font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: var(--shadow-btn);
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+    .cart-drawer__checkout:hover { background: var(--c-accent-dark); transform: translateY(-1px); }
+    .cart-drawer__checkout:active { transform: translateY(0); }
+
+    /* ═══════════════════════════════════
+       SEARCH OVERLAY
+    ═══════════════════════════════════ */
+    .search-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.5);
+      z-index: 300;
+      backdrop-filter: blur(4px);
+      padding: 80px 24px 24px;
+      align-items: flex-start; justify-content: center;
+    }
+    .search-overlay.open { display: flex; }
+    .search-box {
+      background: var(--c-white);
+      border-radius: var(--r-24);
+      box-shadow: var(--shadow-lg);
+      width: 100%; max-width: 560px;
+      overflow: hidden;
+      animation: slideDown 0.3s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .search-box__input-row {
+      display: flex; align-items: center;
+      padding: 16px 20px; gap: 12px;
+      border-bottom: 1px solid var(--c-border-light);
+    }
+    .search-box__icon { color: var(--c-text-faint); font-size: 18px; flex-shrink: 0; }
+    .search-box__input {
+      flex: 1; border: none; outline: none;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-size: 16px; font-weight: 500;
+      color: var(--c-text-heading); background: transparent;
+    }
+    .search-box__input::placeholder { color: var(--c-text-faint); }
+    .search-box__close {
+      width: 28px; height: 28px;
+      border-radius: var(--r-full);
+      background: var(--c-bg-page);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--c-text-muted); font-size: 14px;
+      transition: background 0.2s ease;
+    }
+    .search-box__close:hover { background: var(--c-border); }
+    .search-box__results { padding: 12px; max-height: 400px; overflow-y: auto; }
+    .search-result-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px; border-radius: var(--r-14);
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .search-result-item:hover { background: var(--c-bg-page); }
+    .search-result-item__img {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: var(--c-bg-page);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0; overflow: hidden;
+    }
+    .search-result-item__img img { width: 100%; height: 100%; object-fit: cover; }
+    .search-result-item__name {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 600; font-size: 14px;
+      color: var(--c-text-heading); flex: 1;
+    }
+    .search-result-item__price {
+      font-weight: 700; font-size: 14px; color: var(--c-accent);
+    }
+    .search-no-results {
+      text-align: center; padding: 32px;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-size: 14px; color: var(--c-text-faint);
+    }
+
+    /* ═══════════════════════════════════
+       PRODUCT MODAL
+    ═══════════════════════════════════ */
+    .product-modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.5);
+      z-index: 400;
+      backdrop-filter: blur(4px);
+      align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .product-modal-overlay.open { display: flex; }
+    .product-modal {
+      background: var(--c-white);
+      border-radius: var(--r-24);
+      box-shadow: 0 32px 64px rgba(0,0,0,.2);
+      width: 100%; max-width: 460px;
+      overflow: hidden;
+      animation: modalIn 0.35s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.94) translateY(12px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .product-modal__img {
+      width: 100%; height: 220px;
+      background: var(--c-bg-page);
+      position: relative; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .product-modal__img img { width: 100%; height: 100%; object-fit: cover; }
+    .product-modal__img-placeholder { font-size: 56px; opacity: 0.25; }
+    .product-modal__close-btn {
+      position: absolute; top: 12px; right: 12px;
+      width: 32px; height: 32px; border-radius: var(--r-full);
+      background: rgba(255,255,255,.9);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; color: var(--c-text-heading);
+      box-shadow: var(--shadow-sm);
+    }
+    .product-modal__body { padding: 24px; }
+    .product-modal__tag {
+      display: inline-block;
+      background: rgba(101,136,166,.1);
+      color: var(--c-accent);
+      font-size: 11px; font-weight: 700;
+      padding: 3px 10px; border-radius: var(--r-full);
+      margin-bottom: 10px; letter-spacing: 0.5px;
+    }
+    .product-modal__name {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 900; font-size: 22px;
+      color: var(--c-text-heading); line-height: 1.3;
+      margin-bottom: 8px;
+    }
+    .product-modal__desc {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-size: 14px; color: var(--c-text-muted);
+      line-height: 1.7; margin-bottom: 20px;
+    }
+    .product-modal__footer {
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 12px;
+    }
+    .product-modal__price-block { display: flex; flex-direction: column; }
+    .product-modal__price {
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 900; font-size: 26px;
+      color: var(--c-accent); line-height: 1;
+    }
+    .product-modal__stock {
+      font-size: 12px; color: var(--c-text-faint); margin-top: 4px;
+    }
+    .product-modal__qty-row {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .product-modal__qty-btn {
+      width: 32px; height: 32px; border-radius: var(--r-full);
+      border: 1.5px solid var(--c-border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; color: var(--c-text-heading);
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+    .product-modal__qty-btn:hover { border-color: var(--c-accent); }
+    .product-modal__qty-num {
+      font-weight: 700; font-size: 16px;
+      min-width: 24px; text-align: center;
+    }
+    .product-modal__add-btn {
+      background: var(--c-accent); color: var(--c-theme-3);
+      border-radius: var(--r-full);
+      height: 44px; padding: 0 24px;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 700; font-size: 14px;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      box-shadow: var(--shadow-btn);
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+    .product-modal__add-btn:hover { background: var(--c-accent-dark); transform: translateY(-1px); }
+
+    /* ═══════════════════════════════════
+       TOAST NOTIFICATION
+    ═══════════════════════════════════ */
+    .toast-container {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 500; display: flex; flex-direction: column;
+      align-items: center; gap: 8px;
+      pointer-events: none;
+    }
+    .toast {
+      background: var(--c-text-heading);
+      color: var(--c-white);
+      padding: 12px 20px; border-radius: var(--r-full);
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 600; font-size: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.2);
+      white-space: nowrap;
+      animation: toastIn 0.3s cubic-bezier(.22,1,.36,1) both;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .toast.success { background: #2d7d46; }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes toastOut {
+      from { opacity: 1; transform: translateY(0); }
+      to   { opacity: 0; transform: translateY(12px); }
+    }
+
+    /* ═══════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════ */
+    @media (max-width: 640px) {
+      .store-nav { padding: 0 20px; }
+      .store-nav__links { display: none; }
+      .store-nav__hamburger { display: flex; }
+      .store-hero { padding: 48px 20px 36px; }
+      .store-hero__tagline { font-size: 15px; }
+      .store-categories { padding: 0 20px 20px; }
+      .store-products { padding: 0 16px 32px; }
+      .store-products__grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .product-card__image-area { height: 140px; }
+      .product-card__body { padding: 12px 14px 14px; }
+      .product-card__name { font-size: 13px; }
+      .product-card__price { font-size: 15px; }
+      .product-card__cart-btn { width: 30px; height: 30px; }
+      .promo-banner { margin: 0 16px 32px; padding: 24px; flex-direction: column; align-items: flex-start; }
+      .store-footer { padding: 40px 24px 28px; border-radius: 32px 32px 0 0; }
+      .store-footer__cols { flex-direction: column; gap: 24px; }
+    }
+
+    @media (min-width: 641px) and (max-width: 900px) {
+      .store-products__grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (min-width: 901px) {
+      .store-products__grid { grid-template-columns: repeat(4, 1fr); }
+      .store-hero { padding: 80px 48px 64px; }
+      .store-hero__tagline { font-size: 18px; }
+      .store-products { padding: 0 40px 56px; }
+      .promo-banner { margin: 0 40px 56px; }
+      .store-nav { padding: 0 40px; }
+      .store-categories { padding: 0 40px 32px; }
+    }
+
+    /* ═══════════════════════════════════
+       SCROLL ANIMATIONS
+    ═══════════════════════════════════ */
+    .fade-up {
+      opacity: 0; transform: translateY(24px);
+      transition: opacity 0.6s cubic-bezier(.22,1,.36,1),
+                  transform 0.6s cubic-bezier(.22,1,.36,1);
+    }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+    .delay-1 { transition-delay: 0.08s; }
+    .delay-2 { transition-delay: 0.16s; }
+    .delay-3 { transition-delay: 0.24s; }
+    .delay-4 { transition-delay: 0.32s; }
+
+    /* 查詢訂單按鈕樣式 */
+.order-query-btn {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: var(--r-full, 9999px);
+  border: 1.5px solid var(--c-border, #ddd);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--c-text-heading, #333);
+  background: var(--c-white, #fff);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+.order-query-btn:hover {
+  border-color: var(--c-accent, #6588a6);
+  color: var(--c-accent, #6588a6);
+}
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════
+     CART DRAWER
+══════════════════════════════════ -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<aside class="cart-drawer" id="cartDrawer" aria-label="購物車">
+  <div class="cart-drawer__header">
+    <div class="cart-drawer__title">
+      購物車 <span class="cart-drawer__count" id="cartCountBadge">0</span>
+    </div>
+    <button class="cart-drawer__close" onclick="closeCart()" aria-label="關閉">✕</button>
+  </div>
+  <div class="cart-drawer__body" id="cartBody">
+    <div class="cart-empty" id="cartEmpty">
+      <div class="cart-empty__icon">🛒</div>
+      <div class="cart-empty__text">購物車是空的</div>
+    </div>
+    <div id="cartItems"></div>
+  </div>
+  <div class="cart-drawer__footer" id="cartFooter" style="display:none">
+    <div class="cart-drawer__summary">
+      <span class="cart-drawer__summary-label">合計金額</span>
+      <span class="cart-drawer__total" id="cartTotal">$0</span>
+    </div>
+    <button class="cart-drawer__checkout" onclick="checkout()">前往結帳</button>
+  </div>
+</aside>
+
+<!-- ══════════════════════════════════
+     SEARCH OVERLAY
+══════════════════════════════════ -->
+<div class="search-overlay" id="searchOverlay" onclick="handleSearchOverlayClick(event)">
+  <div class="search-box" id="searchBox">
+    <div class="search-box__input-row">
+      <span class="search-box__icon">🔍</span>
+      <input class="search-box__input" id="searchInput" type="text" placeholder="搜尋商品…" oninput="doSearch(this.value)" />
+      <button class="search-box__close" onclick="closeSearch()" aria-label="關閉搜尋">✕</button>
+    </div>
+    <div class="search-box__results" id="searchResults">
+      <div class="search-no-results">輸入關鍵字搜尋商品</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PRODUCT MODAL
+══════════════════════════════════ -->
+<div class="product-modal-overlay" id="productModalOverlay" onclick="handleModalOverlayClick(event)">
+  <div class="product-modal" id="productModal">
+    <div class="product-modal__img" id="modalImg">
+      <div class="product-modal__img-placeholder" id="modalImgPlaceholder"></div>
+      <button class="product-modal__close-btn" onclick="closeModal()" aria-label="關閉">✕</button>
+    </div>
+    <div class="product-modal__body">
+      <div class="product-modal__tag" id="modalTag"></div>
+      <div class="product-modal__name" id="modalName"></div>
+      <div class="product-modal__desc" id="modalDesc"></div>
+      <div class="product-modal__footer">
+        <div class="product-modal__price-block">
+          <span class="product-modal__price" id="modalPrice"></span>
+          <span class="product-modal__stock" id="modalStock"></span>
+        </div>
+        <div class="product-modal__qty-row">
+          <button class="product-modal__qty-btn" onclick="changeModalQty(-1)">−</button>
+          <span class="product-modal__qty-num" id="modalQty">1</span>
+          <button class="product-modal__qty-btn" onclick="changeModalQty(1)">+</button>
+        </div>
+        <button class="product-modal__add-btn" id="modalAddBtn" onclick="addModalToCart()">
+          加入購物車
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     TOAST CONTAINER
+══════════════════════════════════ -->
+<div class="toast-container" id="toastContainer"></div>
+
+
+
+<!-- ══════════════════════════════════
+     MOBILE MENU
+══════════════════════════════════ -->
+<div class="mobile-menu" id="mobileMenu" onclick="closeMobileMenu()">
+  <div class="mobile-menu__panel" onclick="event.stopPropagation()">
+    <a class="mobile-menu__link" href="#" onclick="closeMobileMenu()">首頁</a>
+    <a class="mobile-menu__link" href="#products" onclick="closeMobileMenu()">所有商品</a>
+    <a class="mobile-menu__link" href="#about" onclick="closeMobileMenu()">關於我們</a>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     MAIN PAGE
+══════════════════════════════════ -->
+<div class="page" id="page">
+
+  <!-- Store Navbar -->
+  <nav class="store-nav" aria-label="店鋪導覽" id="storeNav">
+    <div class="store-nav__brand">
+      <div class="store-nav__logo">
+        <div class="store-nav__logo-placeholder">無</div>
+      </div>
+      <span class="store-nav__name">載入中..</span>
+    </div>
+    <div class="store-nav__right">
+      <div class="store-nav__links">
+        <a class="store-nav__link active" href="#">首頁</a>
+        <a class="store-nav__link" href="#products">所有商品</a>
+        <a class="store-nav__link" href="#about">關於我們</a>
+      </div>
+      <div class="store-nav__actions">
+        <button class="store-nav__action-btn" type="button" aria-label="搜尋" onclick="openSearch()">
+          <svg width="22" height="22" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.1667 23.8333C20.8486 23.8333 23.8333 20.8486 23.8333 17.1667C23.8333 13.4848 20.8486 10.5 17.1667 10.5C13.4848 10.5 10.5 13.4848 10.5 17.1667C10.5 20.8486 13.4848 23.8333 17.1667 23.8333Z" stroke="#4A5565" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M25.5 25.5L21.9167 21.9167" stroke="#4A5565" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="store-nav__cart-wrap">
+          <button class="store-nav__action-btn" type="button" aria-label="購物車" onclick="openCart()">
+            <svg width="22" height="22" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.6666 26.3333C15.1269 26.3333 15.5 25.9602 15.5 25.5C15.5 25.0398 15.1269 24.6667 14.6666 24.6667C14.2064 24.6667 13.8333 25.0398 13.8333 25.5C13.8333 25.9602 14.2064 26.3333 14.6666 26.3333Z" stroke="#4A5565" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M23.8333 26.3333C24.2936 26.3333 24.6667 25.9602 24.6667 25.5C24.6667 25.0398 24.2936 24.6667 23.8333 24.6667C23.3731 24.6667 23 25.0398 23 25.5C23 25.9602 23.3731 26.3333 23.8333 26.3333Z" stroke="#4A5565" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.70831 9.70834H11.375L13.5916 20.0583C13.673 20.4374 13.8839 20.7762 14.1881 21.0166C14.4923 21.2569 14.8707 21.3836 15.2583 21.375H23.4083C23.7876 21.3744 24.1554 21.2444 24.4508 21.0065C24.7463 20.7687 24.9518 20.4371 25.0333 20.0667L26.4083 13.875H12.2666" stroke="#4A5565" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="store-nav__cart-badge" id="navCartBadge" aria-live="polite">
+            <span id="navCartCount">0</span>
+          </div>
+        </div>
+      </div>
+      <!-- 查詢訂單按鈕 -->
+<a href="/goez-buyerOrder.html?store=" id="orderLink" class="order-query-btn">查詢訂單</a>
+      <button class="store-nav__hamburger" aria-label="選單" onclick="toggleMobileMenu()">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Store Hero -->
+  <div class="store-hero fade-up" id="heroSection">
+    <div class="store-hero__eyebrow">精選好物 · 品味生活</div>
+    <p class="store-hero__tagline">載入中..</p>
+    <div class="store-hero__cta-wrap">
+      <button class="store-hero__cta-btn" type="button" onclick="scrollToProducts()">立即選購</button>
+      <button class="store-hero__cta-secondary" type="button" onclick="scrollToAbout()">瞭解品牌</button>
+    </div>
+  </div>
+
+  <!-- Category Chips -->
+  <!-- 暫時隱藏分類按鈕，未來可進行優化(需增加資料庫欄位與增加賣場設計頁內容) -->
+  <div class="store-categories fade-up" style="display: none;">
+    <button class="category-chip active" onclick="filterCategory('all', this)">全部商品</button>
+    <button class="category-chip" onclick="filterCategory('居家生活', this)">居家生活</button>
+    <button class="category-chip" onclick="filterCategory('科技配件', this)">科技配件</button>
+    <button class="category-chip" onclick="filterCategory('時尚精品', this)">時尚精品</button>
+    <button class="category-chip" onclick="filterCategory('美食饗宴', this)">美食饗宴</button>
+  </div>
+
+  <!-- Hot Products -->
+  <section class="store-products" id="products" aria-label="熱門商品">
+    <div class="store-products__header fade-up">
+      <div class="store-products__heading">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15.8333 2.5H4.16667C3.24619 2.5 2.5 3.24619 2.5 4.16667V15.8333C2.5 16.7538 3.24619 17.5 4.16667 17.5H15.8333C16.7538 17.5 17.5 16.7538 17.5 15.8333V4.16667C17.5 3.24619 16.7538 2.5 15.8333 2.5Z" stroke="#99A1AF" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 7.5H17.5" stroke="#99A1AF" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 12.5H17.5" stroke="#99A1AF" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.5 2.5V17.5" stroke="#99A1AF" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M12.5 2.5V17.5" stroke="#99A1AF" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="store-products__heading-text">熱門商品</span>
+      </div>
+      <button class="store-products__more" type="button" onclick="showAllProducts()">查看更多</button>
+    </div>
+    <div class="store-products__grid" id="productsGrid">
+      <!-- Rendered by JS -->
+    </div>
+  </section>
+
+  <!-- 動態載入優惠券專用容器 -->
+<div id="coupon-banner-container"></div>
+
+  <!-- Store Footer -->
+  <footer class="store-footer" id="about" aria-label="頁尾">
+    <div class="store-footer__cols">
+      <div class="store-footer__about">
+        <span class="store-footer__brand">載入中..</span>
+        <p class="store-footer__desc">載入中..</p>
+      </div>
+      <div class="store-footer__links">
+        <div class="store-footer__col-title">快速連結</div>
+        <ul class="store-footer__col-list">
+          <li class="store-footer__col-item">
+            <span class="store-footer__col-dot"></span>
+            <a class="store-footer__col-link" href="#">最新商品</a>
+          </li>
+          <li class="store-footer__col-item">
+            <span class="store-footer__col-dot"></span>
+            <a class="store-footer__col-link" href="#">隱私條款</a>
+          </li>
+        </ul>
+      </div>
+      <div class="store-footer__contact">
+        <div class="store-footer__col-title">聯絡我們</div>
+        <div class="store-footer__contact-items">
+          <div class="store-footer__contact-row">
+            <div class="store-footer__contact-icon">
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 14C0 6.26801 6.26801 0 14 0H22C29.732 0 36 6.26801 36 14V22C36 29.732 29.732 36 22 36H14C6.26801 36 0 29.732 0 22V14Z" fill="white" fill-opacity="0.1"/><path d="M23.3294 12.6666H12.6627C11.9264 12.6666 11.3294 13.2636 11.3294 14V22C11.3294 22.7363 11.9264 23.3333 12.6627 23.3333H23.3294C24.0658 23.3333 24.6627 22.7363 24.6627 22V14C24.6627 13.2636 24.0658 12.6666 23.3294 12.6666Z" stroke="white" stroke-opacity="0.7" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M24.6627 14.6666L18.6827 18.4666C18.4769 18.5956 18.239 18.664 17.9961 18.664C17.7532 18.664 17.5152 18.5956 17.3094 18.4666L11.3294 14.6666" stroke="white" stroke-opacity="0.7" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <span class="store-footer__contact-email">載入中..</span>
+          </div>
+          <div class="store-footer__contact-row">
+            <div class="store-footer__contact-icon">
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 14C0 6.26801 6.26801 0 14 0H22C29.732 0 36 6.26801 36 14V22C36 29.732 29.732 36 22 36H14C6.26801 36 0 29.732 0 22V14Z" fill="white" fill-opacity="0.1"/><path d="M24.6666 21.28V23.28C24.6674 23.4657 24.6294 23.6494 24.555 23.8195C24.4806 23.9897 24.3715 24.1424 24.2347 24.2679C24.0979 24.3934 23.9364 24.489 23.7605 24.5485C23.5846 24.6079 23.3982 24.63 23.2133 24.6133C21.1619 24.3904 19.1913 23.6894 17.46 22.5667C15.8492 21.5431 14.4835 20.1774 13.46 18.5667C12.3333 16.8275 11.6321 14.8473 11.4133 12.7866C11.3966 12.6023 11.4186 12.4165 11.4776 12.2411C11.5367 12.0656 11.6317 11.9044 11.7565 11.7677C11.8813 11.631 12.0332 11.5218 12.2025 11.447C12.3718 11.3722 12.5549 11.3335 12.74 11.3333H14.74C15.0635 11.3301 15.3772 11.4447 15.6225 11.6557C15.8678 11.8666 16.028 12.1596 16.0733 12.48C16.1577 13.12 16.3143 13.7485 16.54 14.3533C16.6297 14.5919 16.6491 14.8513 16.5959 15.1006C16.5427 15.3499 16.4192 15.5787 16.24 15.76L15.3933 16.6066C16.3423 18.2757 17.7243 19.6576 19.3933 20.6067L20.24 19.76C20.4212 19.5807 20.6501 19.4572 20.8994 19.404C21.1487 19.3509 21.408 19.3703 21.6466 19.46C22.2515 19.6857 22.8799 19.8422 23.52 19.9267C23.8438 19.9723 24.1396 20.1355 24.351 20.385C24.5624 20.6345 24.6748 20.953 24.6666 21.28Z" stroke="white" stroke-opacity="0.7" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <span class="store-footer__contact-phone">載入中..</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="store-footer__bottom">
+      <p class="store-footer__copyright">© 2026 載入中... All rights reserved. Powered by Goez Shop.</p>
+    </div>
+  </footer>
+
+</div><!-- end .page -->
+
+<script>
+/* ══════════════════════════════════
+   PRODUCT DATA
+══════════════════════════════════ */
+const PRODUCTS = [
+  {
+    id: 1,
+    name: '質感陶瓷花瓶',
+    tag: '居家生活',
+    price: 890,
+    stock: 15,
+    emoji: '🏺',
+    gradientClass: 'placeholder-gradient-1',
+    badge: null,
+    desc: '手工拉坯製作，每件都是獨一無二的藝術品。極簡北歐風格，為居家空間增添質感與溫度。',
+  },
+  {
+    id: 2,
+    name: '無線降噪耳機',
+    tag: '科技配件',
+    price: 3280,
+    origPrice: 4200,
+    stock: 8,
+    emoji: '🎧',
+    gradientClass: 'placeholder-gradient-2',
+    badge: '熱銷',
+    desc: '主動降噪技術，隔絕外界干擾。長達 30 小時續航，讓音樂陪伴每一段旅程。',
+  },
+  {
+    id: 3,
+    name: '手工皮革錢包',
+    tag: '時尚精品',
+    price: 1280,
+    stock: 20,
+    emoji: '👛',
+    gradientClass: 'placeholder-gradient-3',
+    badge: null,
+    desc: '嚴選義大利植鞣革，採用傳統手縫工藝。隨著使用歲月增添專屬包漿，越用越美。',
+  },
+  {
+    id: 4,
+    name: '北歐木質時鐘',
+    tag: '居家生活',
+    price: 2400,
+    stock: 5,
+    emoji: '🕐',
+    gradientClass: 'placeholder-gradient-4',
+    badge: '限量',
+    desc: '實木框架搭配靜音機芯，精準報時不干擾。斯堪地納維亞美學設計，客廳臥室皆宜。',
+  },
+  {
+    id: 5,
+    name: '精釀蜂蜜禮盒',
+    tag: '美食饗宴',
+    price: 760,
+    stock: 30,
+    emoji: '🍯',
+    gradientClass: 'placeholder-gradient-1',
+    badge: null,
+    desc: '嚴選台灣在地養蜂場，無添加純天然蜂蜜。附精美禮盒包裝，送禮自用兩相宜。',
+  },
+  {
+    id: 6,
+    name: '智慧香薰機',
+    tag: '居家生活',
+    price: 1680,
+    origPrice: 2100,
+    stock: 12,
+    emoji: '💨',
+    gradientClass: 'placeholder-gradient-2',
+    badge: '特價',
+    desc: '超音波冷霧技術，靜音且高效。可搭配 App 定時控制，智慧調香讓空間隨時充滿香氛。',
+  },
+  {
+    id: 7,
+    name: '真皮名片夾',
+    tag: '時尚精品',
+    price: 580,
+    stock: 25,
+    emoji: '💼',
+    gradientClass: 'placeholder-gradient-3',
+    badge: null,
+    desc: '輕薄設計，可容納 20 張名片。採用頭層牛皮，細膩紋路展現專業品味與個人風格。',
+  },
+  {
+    id: 8,
+    name: '無線充電板',
+    tag: '科技配件',
+    price: 990,
+    stock: 18,
+    emoji: '⚡',
+    gradientClass: 'placeholder-gradient-4',
+    badge: null,
+    desc: '支援 15W 快充，相容 Qi 標準裝置。輕薄鋁合金外殼，商務出行不可或缺的隨身神器。',
+  },
+];
+
+/* ══════════════════════════════════
+    CART STATE (各賣場獨立隔離版)
+══════════════════════════════════ */
+
+// 動態抓取當前網址的 pageId，作為該賣場購物車的獨立辨識碼
+// 1-1. 先試著從網址參數抓取 pageId
+const urlParams = new URLSearchParams(window.location.search);
+let pageId = urlParams.get('pageId');
+
+// 1-2. 如果沒有，就從路徑（Pathname）中解析（例如 /store/retro -> 抓出 retro）
+if (!pageId) {
+    const pathParts = window.location.pathname.split('/');
+    if (pathParts.length >= 3 && pathParts[1] === 'store') {
+        pageId = pathParts[2];
+    }
+}
+
+// 1-3. 最終賦值給 currentStoreId，如果真的都沒有才用 'default'
+const currentStoreId = pageId || 'default';
+
+// 2. 讓每個賣場擁有自己獨立的 localStorage Key (例如: goez_cart_19, goez_cart_26)
+const CART_STORAGE_KEY = `goez_cart_${currentStoreId}`;
+
+let cart = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) || '[]');
+
+// 自動同步後端商品圖片到現有購物車中
+function syncCartImages() {
+  const allProducts = window.PRODUCTS || window.allProducts || [];
+  if (allProducts.length === 0) return;
+
+  let updated = false;
+  cart = cart.map(item => {
+    const product = allProducts.find(p => 
+      (p.id === item.id) || (p.ProductID === item.id) || (p.id == item.id) || (p.ProductID == item.id)
+    );
+    if (product) {
+      const realImg = product.imageUrl || product.ImageUrl || product.image || product.img;
+      if (realImg && item.imageUrl !== realImg) {
+        item.imageUrl = realImg;
+        updated = true;
+      }
+    }
+    return item;
+  });
+
+  if (updated) {
+    saveCart();
+  }
+}
+
+function saveCart() {
+  // 💡 存入專屬於當前賣場的 Key
+  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+}
+
+function getTotalItems() {
+  return cart.reduce((sum, item) => sum + item.qty, 0);
+}
+
+function getTotalPrice() {
+  return cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+}
+
+function addToCart(productId, qty = 1) {
+  const allProducts = window.PRODUCTS || window.allProducts || [];
+  const product = allProducts.find(p => 
+    (p.id === productId) || (p.ProductID === productId) || (p.id == productId) || (p.ProductID == productId)
+  );
+
+  if (!product) {
+    console.error('找不到商品資料，ID:', productId);
+    return;
+  }
+
+  const pId = product.id !== undefined ? product.id : product.ProductID;
+  const pName = product.name !== undefined ? product.name : product.ProductName;
+  const pPrice = product.price !== undefined ? product.price : product.Price;
+  const pStock = product.stock !== undefined ? product.stock : (product.Stock !== undefined ? product.Stock : 999);
+  const pImg = product.imageUrl || product.ImageUrl || product.image || product.img || '';
+
+  const existing = cart.find(i => i.id === pId);
+  if (existing) {
+    existing.qty = Math.min(existing.qty + qty, pStock);
+    if (pImg) existing.imageUrl = pImg; // 更新圖片
+  } else {
+    cart.push({ id: pId, name: pName, price: Number(pPrice), imageUrl: pImg, qty });
+  }
+  
+  saveCart();
+  updateCartUI();
+  
+  if (typeof showToast === 'function') {
+    showToast(`✓ ${pName} 已加入購物車`, 'success');
+  }
+}
+
+function removeFromCart(productId) {
+  cart = cart.filter(i => i.id !== productId);
+  saveCart();
+  updateCartUI();
+  renderCartItems();
+}
+
+function updateQty(productId, delta) {
+  const item = cart.find(i => i.id === productId);
+  if (!item) return;
+
+  const allProducts = window.PRODUCTS || window.allProducts || [];
+  const product = allProducts.find(p => 
+    (p.id === productId) || (p.ProductID === productId) || (p.id == productId) || (p.ProductID == productId)
+  );
+  const pStock = product ? (product.stock !== undefined ? product.stock : (product.Stock !== undefined ? product.Stock : 999)) : 999;
+
+  item.qty = Math.max(1, Math.min(item.qty + delta, pStock));
+  saveCart();
+  updateCartUI();
+  renderCartItems();
+}
+
+function updateCartUI() {
+  const count = getTotalItems();
+  const navCartCount = document.getElementById('navCartCount');
+  const cartCountBadge = document.getElementById('cartCountBadge');
+  const badge = document.getElementById('navCartBadge');
+
+  if (navCartCount) navCartCount.textContent = count;
+  if (cartCountBadge) cartCountBadge.textContent = count;
+  if (badge) badge.style.display = count > 0 ? 'flex' : 'none';
+}
+
+function renderCartItems() {
+  // 渲染前先嘗試同步圖片
+  syncCartImages();
+
+  const container = document.getElementById('cartItems');
+  const empty = document.getElementById('cartEmpty');
+  const footer = document.getElementById('cartFooter');
+
+  if (!container || !empty || !footer) return;
+
+  if (cart.length === 0) {
+    empty.style.display = 'flex';
+    container.innerHTML = '';
+    footer.style.display = 'none';
+    return;
+  }
+
+  empty.style.display = 'none';
+  footer.style.display = 'block';
+
+  container.innerHTML = cart.map(item => {
+    const imageContent = (item.imageUrl && item.imageUrl.trim() !== '')
+      ? `<img src="${item.imageUrl}" alt="${item.name}">` 
+      : (item.emoji || '📦');
+
+    return `
+      <div class="cart-item">
+        <div class="cart-item__img">${imageContent}</div>
+        <div class="cart-item__info">
+          <div class="cart-item__name">${item.name}</div>
+          <div class="cart-item__price">$${(item.price * item.qty).toLocaleString()}</div>
+        </div>
+        <div class="cart-item__controls">
+          <button class="cart-item__remove" onclick="removeFromCart(${item.id})" aria-label="移除">✕</button>
+          <div class="cart-item__qty">
+            <button class="cart-item__qty-btn" onclick="updateQty(${item.id}, -1)">−</button>
+            <span class="cart-item__qty-num">${item.qty}</span>
+            <button class="cart-item__qty-btn" onclick="updateQty(${item.id}, 1)">+</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const cartTotal = document.getElementById('cartTotal');
+  if (cartTotal) {
+    cartTotal.textContent = `$${getTotalPrice().toLocaleString()}`;
+  }
+}
+
+function openCart() {
+  renderCartItems();
+  const overlay = document.getElementById('cartOverlay');
+  const drawer = document.getElementById('cartDrawer');
+  if (overlay) overlay.classList.add('open');
+  if (drawer) drawer.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCart() {
+  const overlay = document.getElementById('cartOverlay');
+  const drawer = document.getElementById('cartDrawer');
+  if (overlay) overlay.classList.remove('open');
+  if (drawer) drawer.classList.remove('open');
+  document.body.style.overflow = '';
+}
+// 自動抓取當前整串網址，並組裝到查詢訂單的按鈕上
+  const currentUrl = window.encodeURIComponent(window.location.href);
+  const orderLink = document.getElementById('orderLink');
+  if (orderLink) {
+    orderLink.href = `/goez-buyerOrder.html?from=${currentUrl}`;
+  }
+function checkout() {
+  if (cart.length === 0) return;
+
+  const cartForCheckout = cart.map(item => ({
+    id:    item.id,
+    name:    item.name,
+    price:    item.price,
+    qty:       item.qty,
+    imageUrl: item.imageUrl || ''
+  }));
+  
+  // 💡 結帳頁面也存入專屬於當前賣場的 Key
+  localStorage.setItem(`goez_checkout_cart_${currentStoreId}`, JSON.stringify(cartForCheckout));
+
+  const storeName  = document.title || '風格生活選物';
+  const accentColor = getComputedStyle(document.documentElement)
+                        .getPropertyValue('--c-accent').trim() || '#6588A6';
+  localStorage.setItem('goez_store_meta', JSON.stringify({
+    name:        storeName,
+    accentColor: accentColor,
+    logoUrl:     ''
+  }));
+
+  closeCart();
+
+  // 動態抓取當前的域名（例如 https://niece-eel-casket.ngrok-free.dev）
+const currentOrigin = window.location.origin; 
+// 跳轉到完整路徑，確保藍新回傳時能對應到正確的 ngrok 網址，到結帳頁並帶上正確的 pageId
+window.location.href = `${currentOrigin}/goez-checkout.html?pageId=${currentStoreId}`;
+  // 跳轉到結帳頁並帶上正確的 pageId
+  //window.location.href = `goez-checkout.html?pageId=${currentStoreId}`;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  updateCartUI();
+});
+
+/* ══════════════════════════════════
+    SEARCH
+══════════════════════════════════ */
+function openSearch() {
+  document.getElementById('searchOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => document.getElementById('searchInput').focus(), 100);
+}
+
+function closeSearch() {
+  document.getElementById('searchOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchResults').innerHTML = '<div class="search-no-results">輸入關鍵字搜尋商品</div>';
+}
+
+function handleSearchOverlayClick(e) {
+  if (e.target === document.getElementById('searchOverlay')) closeSearch();
+}
+
+function doSearch(query) {
+  const results = document.getElementById('searchResults');
+  const q = query.trim().toLowerCase();
+  if (!q) {
+    results.innerHTML = '<div class="search-no-results">輸入關鍵字搜尋商品</div>';
+    return;
+  }
+
+  // 🚀 關鍵修改：明確強制讀取 window.PRODUCTS
+  const targetProducts = window.PRODUCTS || [];
+
+  const matches = targetProducts.filter(p =>
+    (p.name && p.name.toLowerCase().includes(q)) || 
+    (p.tag && p.tag.toLowerCase().includes(q)) || 
+    (p.category && p.category.toLowerCase().includes(q)) ||
+    (p.desc && p.desc.toLowerCase().includes(q)) ||
+    (p.description && p.description.toLowerCase().includes(q))
+  );
+
+  if (matches.length === 0) {
+    results.innerHTML = `<div class="search-no-results">找不到「${query}」的相關商品</div>`;
+    return;
+  }
+
+  results.innerHTML = matches.map(p => {
+    const imgSrc = p.img || p.imageUrl || '';
+    const itemTag = p.tag || p.category || '';
+    const itemPrice = p.price ? Number(p.price).toLocaleString() : '0';
+
+    return `
+      <div class="search-result-item" onclick="openProductModal(${p.id}); closeSearch();">
+        <div class="search-result-item__img ${imgSrc ? '' : (p.gradientClass || '')}">
+          ${imgSrc ? `<img src="${imgSrc}" alt="${p.name}">` : (p.emoji || '📦')}
+        </div>
+        <div style="flex: 1; display: flex; flex-direction: column;">
+          <span class="search-result-item__name">${p.name}</span>
+          <span style="font-size: 12px; color: var(--c-text-faint);">${itemTag}</span>
+        </div>
+        <span class="search-result-item__price">$${itemPrice}.00</span>
+      </div>
+    `;
+  }).join('');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeSearch();
+    if (typeof closeModal === 'function') closeModal();
+    if (typeof closeCart === 'function') closeCart();
+  }
+});
+
+/* ══════════════════════════════════
+   TOAST
+══════════════════════════════════ */
+function showToast(message, type = '') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.animation = 'toastOut 0.3s ease forwards';
+    setTimeout(() => toast.remove(), 300);
+  }, 2400);
+}
+
+/* ══════════════════════════════════
+   MOBILE MENU
+══════════════════════════════════ */
+function toggleMobileMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+function closeMobileMenu() {
+  document.getElementById('mobileMenu').classList.remove('open');
+}
+
+/* ══════════════════════════════════
+   SCROLL HELPERS
+══════════════════════════════════ */
+function scrollToProducts() {
+  document.getElementById('products').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function scrollToAbout() {
+  document.getElementById('about').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ══════════════════════════════════
+   STICKY NAV SHADOW
+══════════════════════════════════ */
+window.addEventListener('scroll', () => {
+  const nav = document.getElementById('storeNav');
+  nav.classList.toggle('scrolled', window.scrollY > 10);
+}, { passive: true });
+
+/* ══════════════════════════════════
+   SCROLL ANIMATIONS
+══════════════════════════════════ */
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12 });
+
+/* ══════════════════════════════════
+   INIT
+══════════════════════════════════ */
+(function init() {
+  updateCartUI();
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+})();
+</script>
+
+  </div>
+</div>
+<script src="/js/store-template-render.js"></script>
+</body>
+</html>

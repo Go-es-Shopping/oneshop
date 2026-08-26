@@ -573,7 +573,7 @@
 <nav class="checkout-bar">
   <div class="checkout-bar__brand">
     <div class="checkout-bar__logo" id="barLogo"></div>
-    <span class="checkout-bar__name" id="barName">我的店鋪</span>
+    <span class="checkout-bar__name" id="barName">載入中..</span>
   </div>
   <div class="checkout-bar__secure">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -658,7 +658,7 @@
               <span class="form-field__hint">請選擇縣市</span>
             </div>
             <div class="form-field">
-              <label>鄉鎮市區</label>
+              <label>鄉鎮市區 <span class="req">*</span></label>
               <input type="text" id="fDistrict" placeholder="例：大安區" />
             </div>
             <div class="form-field full">
@@ -690,7 +690,7 @@
           </div>
           <div class="form-field" style="margin-top:16px">
             <label>取件備註（選填）</label>
-            <input type="text" id="fCvsNote" placeholder="例：請盡快通知取件" />
+            <input type="text" id="fCvsNote" placeholder="" />
           </div>
         </div>
 
@@ -746,27 +746,9 @@
               </div>
             </div>
             <div class="payment-option__detail">
-              <div class="form-field">
-                <label>卡號</label>
-                <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19"
-                  oninput="formatCard(this)" />
-              </div>
-              <div class="card-row">
-                <div class="form-field">
-                  <label>有效期限</label>
-                  <input type="text" id="cardExpiry" placeholder="MM / YY" maxlength="7" oninput="formatExpiry(this)" />
-                </div>
-                <div class="form-field">
-                  <label>安全碼 CVV</label>
-                  <input type="text" id="cardCvv" placeholder="123" maxlength="4" />
-                </div>
-              </div>
-              <div class="card-row">
-                <div class="form-field" style="grid-column:1/-1">
-                  <label>持卡人姓名</label>
-                  <input type="text" id="cardName" placeholder="同身分證姓名（英文）" autocomplete="cc-name" />
-                </div>
-              </div>
+              <div style="padding: 12px 0; color: #666; font-size: 14px; line-height: 1.5;">
+          🔒 點擊「確認下單」後，將自動跳轉至<strong>藍新金流安全刷卡頁面</strong>完成付款（支援 Visa, Mastercard, JCB）。
+          </div>
             </div>
           </div>
 
@@ -783,9 +765,9 @@
               </div>
             </div>
             <div class="payment-option__detail">
-              <div class="payment-info">
-                ✅ 確認訂單後，系統將產生<strong>虛擬帳號</strong>並寄至您的 Email。<br>
-                請於 <strong>72 小時</strong>內完成轉帳，逾期訂單將自動取消。
+              <div class="payment-info" style="padding: 12px 0; color: #666; font-size: 14px; line-height: 1.5;">
+    🔒 點擊「確認下單」後，將自動跳轉至藍新金流取得<strong>專屬虛擬轉帳帳號</strong>。<br>
+    請於 <strong>72 小時</strong>內至 ATM 或網路銀行完成轉帳，逾期訂單將自動取消。
               </div>
             </div>
           </div>
@@ -820,6 +802,7 @@
   <div class="order-summary">
     <div class="order-summary__head">
       <div class="order-summary__title">訂單摘要</div>
+      <span style="font-size: 12px; color: #ec4c4c;">若要查詢訂單請至賣場點擊"查詢訂單"，輸入您的訂單編號以及連絡電話哦！</span>
     </div>
     <div class="order-summary__body" id="orderItems">
       <div class="order-empty">
@@ -902,18 +885,48 @@ const cart = (() => {
   root.style.setProperty('--accent-rgb', `${r},${g},${b}`);
 })();
 
-/* 渲染 TopBar */
-(function renderBar() {
-  const name = storeMeta.name || '我的店鋪';
-  document.getElementById('barName').textContent = name;
-  document.title = `結帳 — ${name}`;
-  const logoEl = document.getElementById('barLogo');
-  if (storeMeta.logoUrl) {
-    logoEl.innerHTML = `<img src="${storeMeta.logoUrl}" alt="${name}">`;
-  } else {
-    logoEl.textContent = name.charAt(0);
+/* 渲染 TopBar (對接後端 /api/template/:pageId) */
+async function renderBar() {
+  const urlParams = new URLSearchParams(window.location.search);
+  // 同時支援小寫 pageid 與大寫 pageId
+  const pageId = urlParams.get('pageid') || urlParams.get('pageId');
+
+  let storeName = storeMeta.name || '載入中..';
+  let storeLogo = storeMeta.logoUrl || '';
+
+  if (pageId) {
+    try {
+      // 💡 改用正確且有支援的 template API 路由
+      const response = await fetch(`/api/store/template/${pageId}`);
+      const result = await response.json();
+      
+      // /api/template/:pageId 直接回傳物件本身（包含 name 和 logoUrl）
+      if (response.ok && result) {
+        storeName = result.name || storeName;
+        storeLogo = result.logoUrl || storeLogo;
+      }
+    } catch (e) {
+      console.error('動態載入店鋪資訊失敗，使用預設暫存', e);
+    }
   }
-})();
+
+  // 填入畫面
+  const barNameEl = document.getElementById('barName');
+  if (barNameEl) barNameEl.textContent = storeName;
+  document.title = `結帳 — ${storeName}`;
+
+  const logoEl = document.getElementById('barLogo');
+  if (logoEl) {
+    if (storeLogo) {
+      logoEl.innerHTML = `<img src="${storeLogo}" alt="${storeName}">`;
+    } else {
+      logoEl.textContent = storeName.charAt(0);
+    }
+  }
+}
+
+// 執行渲染
+renderBar();
 
 /* 運費規則 */
 const FREE_SHIPPING_THRESHOLD = 1000;
@@ -1070,6 +1083,9 @@ function renderOrderSummary() {
     return;
   }
 
+  // 💡 記得這裡如果 cart 有資料，要同時把按鈕解鎖！
+    document.getElementById('confirmBtn').disabled = false;
+    document.getElementById('mobileConfirmBtn').disabled = false;
   el.innerHTML = cart.map(item => {
     const thumb = item.imageUrl
       ? `<img src="${item.imageUrl}" alt="${item.name}">`
@@ -1189,7 +1205,7 @@ function validateForm() {
   }
   return valid;
 }
-
+/*
 function submitOrder() {
   if (!cart.length) return;
   if (!validateForm()) {
@@ -1205,6 +1221,7 @@ function submitOrder() {
     document.getElementById('successOverlay').classList.add('show');
   }, 1800);
 }
+  */
 
 function setConfirmLoading(loading) {
   ['confirmBtn','mobileConfirmBtn'].forEach(id => {
@@ -1225,5 +1242,6 @@ function backToShop() {
 ══════════════════════════════════ */
 renderOrderSummary();
 </script>
+<script src="./js/checkout-manage.js"></script>
 </body>
 </html>

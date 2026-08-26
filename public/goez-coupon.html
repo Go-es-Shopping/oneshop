@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新增優惠券 - goezshop</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                screens: {
+                    'md': '800px',
+                    'lg': '1280px',
+                },
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans TC"', 'sans-serif'],
+                    },
+                    colors: {
+                        appbg: '#F3F6F9', 
+                        logo: '#5B4EFA', 
+                        btn: {
+                            DEFAULT: '#334155', 
+                            hover: '#1e293b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: theme('colors.appbg');
+        }
+        
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .custom-checkbox:checked {
+            background-color: theme('colors.logo');
+            border-color: theme('colors.logo');
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen pb-20">
+
+    <header class="bg-white h-16 flex items-center px-6 sticky top-0 z-20 border-b border-slate-200">
+        <div class="flex items-center gap-2 font-bold text-xl tracking-tight text-slate-900">
+            <svg class="w-6 h-6 text-logo" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 6h-2c0-2.8-2.2-5-5-5S7 3.2 7 6H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7-3c1.7 0 3 1.3 3 3H9c0-1.7 1.3-3 3-3zm7 17H5V8h14v12z"/>
+                <circle cx="9" cy="10" r="1.5"/>
+                <circle cx="15" cy="10" r="1.5"/>
+            </svg>
+            goezshop
+        </div>
+    </header>
+
+    <main class="w-full max-w-[1200px] mx-auto px-4 md:px-8 lg:px-12 py-8">
+        
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold text-slate-900">新增優惠券</h1>
+        </div>
+        
+        <form id="couponForm">
+            
+            <section class="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 lg:p-10 mb-6 flex flex-col md:flex-row gap-6 md:gap-8 lg:gap-12 items-start shadow-sm">
+                <div class="w-full md:w-1/3 flex-shrink-0 md:max-w-[260px] lg:max-w-[320px]">
+                    <h2 class="text-lg md:text-xl font-bold text-slate-900">優惠券</h2>
+                    <p class="text-sm text-slate-500 mt-2 md:mt-3 leading-relaxed">
+                        建議6個字以下，使用「數字」「全大寫英文」「全大寫英文＋數字」。<br>
+                        <span class="text-slate-400 text-xs mt-1 block">* 應避免出現容易混淆的字，例：數字 1 英文小寫 l</span>
+                    </p>
+                </div>
+                
+                <div class="w-full md:w-2/3 flex-grow flex flex-col gap-6">
+                    <div>
+                        <div class="flex items-center gap-2 mb-2">
+                            <label for="coupon-name" class="block text-sm font-medium text-slate-700">名稱</label>
+                            <span class="text-red-500 text-xs font-medium">必填</span>
+                        </div>
+                        <input type="text" id="coupon-name" placeholder="例如：2026年終優惠" required
+                            class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-400 focus:border-slate-400 transition-colors placeholder:text-slate-300">
+                    </div>
+                    
+                    <div>
+                        <div class="flex items-center gap-2 mb-2">
+                            <label for="coupon-code" class="block text-sm font-medium text-slate-700">代碼</label>
+                            <span class="text-red-500 text-xs font-medium">必填</span>
+                        </div>
+                        <input type="text" id="coupon-code" placeholder="例如：SAVE2026" required
+                            class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-400 focus:border-slate-400 transition-colors placeholder:text-slate-300">
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 lg:p-10 mb-6 flex flex-col md:flex-row gap-6 md:gap-8 lg:gap-12 items-start shadow-sm">
+                <div class="w-full md:w-1/3 flex-shrink-0 md:max-w-[260px] lg:max-w-[320px]">
+                    <h2 class="text-lg md:text-xl font-bold text-slate-900">折扣類型</h2>
+                    <p class="text-sm text-slate-500 mt-2 md:mt-3 leading-relaxed">
+                        可設定滿1000元9折，滿2000元8折。<br>
+                        滿1000元折100，滿2000元折200...等等。
+                    </p>
+                </div>
+                
+                <div class="w-full md:w-2/3 flex-grow flex flex-col gap-6">
+                    <div>
+                        <div class="flex items-center gap-2 mb-2">
+                            <label for="discount-type" class="block text-sm font-medium text-slate-700">折扣種類</label>
+                            <span class="text-red-500 text-xs font-medium">必填</span>
+                        </div>
+                        <div class="relative">
+                            <select id="discount-type" required
+                                class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-slate-900 appearance-none bg-white focus:outline-none focus:ring-1 focus:ring-slate-400 focus:border-slate-400 transition-colors">
+                                <option value="" disabled selected>請選擇種類</option>
+                                <option value="fixed">固定</option>
+                                <option value="percentage">百分比</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="discount-rules-wrapper" class="hidden mt-2 pt-4 border-t border-slate-100">
+                        <div id="discount-rules-list" class="flex flex-col gap-4"></div>
+                        
+                        <button type="button" id="add-rule-btn" class="mt-4 inline-flex items-center gap-2 px-4 py-2 border border-slate-300 shadow-sm text-sm font-medium rounded-lg text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-200 transition-colors">
+                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            新增規則
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 lg:p-10 mb-6 flex flex-col md:flex-row gap-6 md:gap-8 lg:gap-12 items-start shadow-sm">
+                <div class="w-full md:w-1/3 flex-shrink-0 md:max-w-[260px] lg:max-w-[320px]">
+                    <h2 class="text-lg md:text-xl font-bold text-slate-900">使用限制</h2>
+                    <p class="text-sm text-slate-500 mt-2 md:mt-3 leading-relaxed">
+                        設置優惠券的發放數量與使用條件限制。
+                    </p>
+                </div>
+                
+                <div class="w-full md:w-2/3 flex-grow flex flex-col gap-6">
+                    <div>
+                        <label for="limit-uses" class="block text-sm font-medium text-slate-700 mb-2">使用次數上限</label>
+                        <div class="relative">
+                            <input type="number" id="limit-uses" placeholder="不限制" min="1"
+                                class="w-full border border-slate-300 rounded-lg pl-4 pr-10 py-2.5 text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-400 focus:border-slate-400 transition-colors placeholder:text-slate-300">
+                            <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 pointer-events-none text-sm font-medium">次</span>
+                        </div>
+                    </div>
+
+                    
+
+                    <div>
+                        <label for="total-issue" class="block text-sm font-medium text-slate-700 mb-2">總發行量</label>
+                        <div class="relative">
+                            <input type="number" id="total-issue" placeholder="不限制" min="1"
+                                class="w-full border border-slate-300 rounded-lg pl-4 pr-10 py-2.5 text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-400 focus:border-slate-400 transition-colors placeholder:text-slate-300">
+                            <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 pointer-events-none text-sm font-medium">張</span>
+                        </div>
+                    </div>
+
+                    <div class="pt-1">
+                        <label class="inline-flex items-center cursor-pointer group">
+                            <input type="checkbox" id="no-combine" class="custom-checkbox w-5 h-5 rounded border-slate-300 text-logo focus:ring-slate-400 cursor-pointer transition-colors">
+                            <span class="ml-3 text-sm text-slate-700 group-hover:text-slate-900">不可與其他優惠券並用</span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 lg:p-10 mb-8 flex flex-col md:flex-row gap-6 md:gap-8 lg:gap-12 items-start shadow-sm">
+                <div class="w-full md:w-1/3 flex-shrink-0 md:max-w-[260px] lg:max-w-[320px]">
+                    <h2 class="text-lg md:text-xl font-bold text-slate-900">時間限制</h2>
+                    <p class="text-sm text-slate-500 mt-2 md:mt-3 leading-relaxed">
+                        設定此優惠券可被使用的有效期限。
+                    </p>
+                </div>
+                
+                <div class="w-full md:w-2/3 flex-grow flex flex-col gap-6">
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                        <div>
+                            <label for="start-date" class="block text-sm font-medium text-slate-700 mb-2">開始時間</label>
+                            <input type="date" id="start-date" value="2026-01-01"
+                                class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-400 focus:border-slate-400 transition-colors disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200 disabled:cursor-not-allowed">
+                        </div>
+                        <div>
+                            <label for="end-date" class="block text-sm font-medium text-slate-700 mb-2">結束時間</label>
+                            <input type="date" id="end-date" value="2026-12-01"
+                                class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-400 focus:border-slate-400 transition-colors disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200 disabled:cursor-not-allowed">
+                        </div>
+                    </div>
+
+                    <div class="pt-1">
+                        <label class="inline-flex items-center cursor-pointer group">
+                            <input type="checkbox" id="no-time-limit" class="custom-checkbox w-5 h-5 rounded border-slate-300 text-logo focus:ring-slate-400 cursor-pointer transition-colors">
+                            <span class="ml-3 text-sm text-slate-700 group-hover:text-slate-900">無時間限制</span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <div class="flex flex-row-reverse items-center gap-4 pt-2">
+                <button type="submit" class="px-8 py-2.5 rounded-lg border border-transparent text-white bg-btn hover:bg-btn-hover font-medium shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500">
+                    儲存設定
+                </button>
+                <button type="button" class="px-8 py-2.5 rounded-lg border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-200">
+                    取消
+                </button>
+            </div>
+            
+        </form>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const discountTypeSelect = document.getElementById('discount-type');
+            const rulesWrapper = document.getElementById('discount-rules-wrapper');
+            const rulesList = document.getElementById('discount-rules-list');
+            const addRuleBtn = document.getElementById('add-rule-btn');
+
+            const getRightColumnInfo = (type) => {
+                if (type === 'percentage') {
+                    return { label: '折扣百分比 例：10%請寫0.1', placeholder: '0.1' };
+                } else {
+                    return { label: '折扣金額 100元請填100', placeholder: '50' };
+                }
+            };
+
+            const updateRuleIndices = () => {
+                const ruleItems = rulesList.querySelectorAll('.rule-item');
+                ruleItems.forEach((item, index) => {
+                    const indexLabel = item.querySelector('.rule-index');
+                    if (indexLabel) {
+                        indexLabel.textContent = `#${index + 1}`;
+                    }
+                });
+            };
+
+            const createRuleItem = () => {
+                const currentType = discountTypeSelect.value;
+                const rightInfo = getRightColumnInfo(currentType);
+                
+                const ruleDiv = document.createElement('div');
+                ruleDiv.className = 'rule-item border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm';
+                
+                ruleDiv.innerHTML = `
+                    <div class="bg-slate-50 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between">
+                        <div class="flex items-center gap-1">
+                            <button type="button" class="text-slate-400 hover:text-slate-600 p-1 cursor-move" title="拖曳排序">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path></svg>
+                            </button>
+                            <div class="flex items-center text-sm text-slate-600 border-l border-slate-200 pl-3 ml-2">
+                                <span class="mr-1 hidden sm:inline">移動到</span>
+                                <select class="text-sm border-none bg-transparent focus:ring-0 cursor-pointer pr-6 py-0.5 text-slate-700 font-medium">
+                                    <option>1</option>
+                                </select>
+                            </div>
+                            <button type="button" class="delete-rule-btn text-slate-400 hover:text-red-500 border-l border-slate-200 pl-4 ml-2 py-1 transition-colors" title="刪除此規則">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </div>
+                        <div class="rule-index text-sm font-bold text-logo">
+                            #1
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-slate-200">
+                        <div class="flex-1 p-4 bg-white hover:bg-slate-50 focus-within:bg-white focus-within:ring-1 focus-within:ring-inset focus-within:ring-slate-400 transition-all">
+                            <div class="flex justify-between items-center mb-1.5">
+                                <label class="text-xs font-medium text-slate-500">金額滿X元</label>
+                                <span class="text-red-500 text-xs font-bold">*</span>
+                            </div>
+                            <input type="number" min="0" placeholder="0" required class="w-full border-none p-0 text-slate-900 focus:outline-none focus:ring-0 text-sm placeholder:text-slate-300 bg-transparent">
+                        </div>
+                        
+                        <div class="flex-1 p-4 bg-white hover:bg-slate-50 focus-within:bg-white focus-within:ring-1 focus-within:ring-inset focus-within:ring-slate-400 transition-all">
+                            <div class="flex justify-between items-center mb-1.5">
+                                <label class="dynamic-right-label text-xs font-medium text-slate-500">${rightInfo.label}</label>
+                                <span class="text-red-500 text-xs font-bold">*</span>
+                            </div>
+                            <input type="number" min="0" step="0.01" placeholder="${rightInfo.placeholder}" required class="w-full border-none p-0 text-slate-900 focus:outline-none focus:ring-0 text-sm placeholder:text-slate-300 bg-transparent">
+                        </div>
+                    </div>
+                `;
+
+                const deleteBtn = ruleDiv.querySelector('.delete-rule-btn');
+                deleteBtn.addEventListener('click', () => {
+                    ruleDiv.remove();
+                    updateRuleIndices();
+                });
+
+                return ruleDiv;
+            };
+
+            discountTypeSelect.addEventListener('change', () => {
+                if (discountTypeSelect.value) {
+                    rulesWrapper.classList.remove('hidden');
+                    
+                    const rightInfo = getRightColumnInfo(discountTypeSelect.value);
+                    
+                    if (rulesList.children.length === 0) {
+                        rulesList.appendChild(createRuleItem());
+                        updateRuleIndices();
+                    } else {
+                        const rightLabels = rulesList.querySelectorAll('.dynamic-right-label');
+                        const rightInputs = rulesList.querySelectorAll('.flex-1:last-child input');
+                        
+                        rightLabels.forEach(label => label.textContent = rightInfo.label);
+                        rightInputs.forEach(input => input.placeholder = rightInfo.placeholder);
+                    }
+                } else {
+                    rulesWrapper.classList.add('hidden');
+                }
+            });
+
+            addRuleBtn.addEventListener('click', () => {
+                rulesList.appendChild(createRuleItem());
+                updateRuleIndices();
+            });
+
+            const noTimeLimitCheckbox = document.getElementById('no-time-limit');
+            const startDateInput = document.getElementById('start-date');
+            const endDateInput = document.getElementById('end-date');
+
+            noTimeLimitCheckbox.addEventListener('change', (e) => {
+                const isChecked = e.target.checked;
+                
+                startDateInput.disabled = isChecked;
+                endDateInput.disabled = isChecked;
+                
+                if (isChecked) {
+                    startDateInput.type = "text";
+                    startDateInput.value = "不限制";
+                    endDateInput.type = "text";
+                    endDateInput.value = "不限制";
+                } else {
+                    startDateInput.type = "date";
+                    startDateInput.value = "2026-01-01";
+                    endDateInput.type = "date";
+                    endDateInput.value = "2026-12-01";
+                }
+            });
+
+            const form = document.getElementById('couponForm');
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const submitBtn = form.querySelector('button[type="submit"]');
+                const originalText = submitBtn.textContent;
+                
+                submitBtn.textContent = "處理中...";
+                submitBtn.classList.add('opacity-80', 'cursor-not-allowed');
+                
+                setTimeout(() => {
+                    submitBtn.textContent = "建立成功 ✓";
+                    submitBtn.classList.remove('bg-btn', 'hover:bg-btn-hover');
+                    submitBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+                    
+                    setTimeout(() => {
+                        submitBtn.textContent = originalText;
+                        submitBtn.classList.remove('opacity-80', 'cursor-not-allowed', 'bg-green-600', 'hover:bg-green-700');
+                        submitBtn.classList.add('bg-btn', 'hover:bg-btn-hover');
+                    }, 2000);
+                }, 800);
+            });
+        });
+    </script>
+    <script src="./js/coupon-manage.js"></script>
+</body>
+</html>

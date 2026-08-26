@@ -41,11 +41,19 @@ const sequelize = require('./config/database')
 const app = express()
 console.log('目前 FORCE_MOCK 的值是:', process.env.FORCE_MOCK);
 
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
 // --- 🚀 新增：Multer 圖片上傳設定 ---
 // 確保目錄存在：public/images/logos
 const uploadDir = path.join(__dirname, 'public/images/logos');
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
+}
+// 📦 【Backend Lead 擴充】：確保商品圖片目錄存在
+const productUploadDir = path.join(__dirname, 'public/images/products');
+if (!fs.existsSync(productUploadDir)) {
+    fs.mkdirSync(productUploadDir, { recursive: true });
 }
 
 const storage = multer.diskStorage({
@@ -63,16 +71,35 @@ const upload = multer({
     storage: storage,
     limits: { fileSize: 5 * 1024 * 1024 } // 限制 5MB
 });
+// 📦 【Backend Lead 擴充】：商品圖片的獨立儲存引擎
+const productStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'public/images/products'); // 丟到專屬的 products 資料夾
+    },
+    filename: (req, file, cb) => {
+        // 檔名：product-時間戳記-隨機數.副檔名
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, 'product-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+const uploadProduct = multer({ 
+    storage: productStorage,
+    limits: { fileSize: 5 * 1024 * 1024 } // 限制 5MB，對電商圖片來說非常夠用
+});
 
 
 // 1. 路由引入
 const authRoutes = require('./routes/auth')
 const productRoutes = require('./routes/product')
 const storeRoutes = require('./routes/store')
-const orderRouter = require('./routes/order')
+const orderRoutes = require('./routes/order')
+const sellerorderRoutes = require('./routes/sellerorder')
 const adminRoutes = require('./routes/adminRoutes')
 const checkoutRoutes = require('./routes/checkoutRoutes')
 const analyticsRoutes = require('./routes/analyticsRoutes')
+const couponRoutes = require('./routes/couponRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
+const aiRoutes = require('./routes/aiRoutes');
 
 app.use(cors());
 app.use(express.json());
@@ -83,14 +110,36 @@ app.use(express.static('public'));
 app.use('/api/auth', authRoutes)
 app.use('/api/products', productRoutes)
 app.use('/api/store', storeRoutes)
-app.use('/api/orders', orderRouter)
+app.use('/api/orders', orderRoutes)
+app.use('/api/seller/orders', sellerorderRoutes)
 app.use('/api/seller', require('./routes/sellerRoutes'));
 app.use('/api/admin', adminRoutes)
-app.use('/api/checkout', checkoutRoutes)
+// 保留原本的 api 路由
+app.use('/api/checkout', checkoutRoutes);
+// 額外掛載根目錄，專門用來接住藍新重新導向的 POST 請求
+app.use('/', checkoutRoutes);
 app.use('/api/track', analyticsRoutes)
+// 掛載優惠券路由
+app.use('/api/coupons', couponRoutes);
+app.use('/api/payment', paymentRoutes);
+
+// --- 🚀 新增：處理前台專屬網址動態路由 (/store/:slug)，可以正確對應到你的前台樣板頁面 ---
+app.get('/store/:slug', (req, res) => {
+    // 讓伺服器回傳你的前台樣板檔案 (請確認你的前台消費者樣板檔名是否為 goez-store-template.html)
+    res.sendFile(path.join(__dirname, 'public', 'goez-store-template.html'));
+});
+
+// 接收藍新返回的 POST 請求，並安全地轉向回前端頁面
+app.post('/store/:slug', (req, res) => {
+    const { slug } = req.params;
+    // 轉向回你的商店頁面，並帶上支付結果參數
+    return res.redirect(`/store/${slug}?payment=result`);
+});
+
+app.use('/api/ai', aiRoutes);
 
 
-// --- 🚀 新增：圖片上傳 API 路由 ---
+// --- 🚀 新增：商標圖片上傳 API 路由 ---
 app.post('/api/upload-logo', upload.single('logo'), (req, res) => {
     try {
         if (!req.file) return res.status(400).json({ success: false, message: '未選擇檔案' });
@@ -100,6 +149,23 @@ app.post('/api/upload-logo', upload.single('logo'), (req, res) => {
     } catch (err) {
         console.error("上傳失敗:", err);
         res.status(500).json({ success: false, message: '伺服器上傳錯誤' });
+    }
+});
+
+//  【商品圖片上傳 API 路由擴充】
+// 這裡前端上傳時的 input 欄位 name 要叫做 'product_file'
+app.post('/api/upload-product-img', uploadProduct.single('product_file'), (req, res) => {
+    try {
+        if (!req.file) return res.status(400).json({ success: false, message: '未選擇檔案' });
+        
+        // 生成給前端用的虛擬網址 (上市平台標準：隱藏後端真實路徑 public)
+        const productImgUrl = `/images/products/${req.file.filename}`;
+        
+        console.log(`[System] 商品圖片背景上傳成功，暫存路徑為: ${productImgUrl}`);
+        return res.json({ success: true, url: productImgUrl });
+    } catch (err) {
+        console.error("商品圖片上傳失敗:", err);
+        return res.status(500).json({ success: false, message: '伺服器上傳錯誤' });
     }
 });
 

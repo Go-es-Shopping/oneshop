@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>管理已建立賣場 — Goez Shop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+SC:wght@400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-white: #ffffff;
+      --color-black: #000000;
+      --color-black-55: rgba(0, 0, 0, 0.55);
+      --color-black-10: rgba(0, 0, 0, 0.1);
+      --color-black-5: rgba(0, 0, 0, 0.05);
+      --color-green: #1e7e42;
+      --color-green-bg: #eafaf0;
+      --color-grey: #6a7282;
+      --color-grey-bg: #f3f4f6;
+      --color-red: #c0392b;
+      --color-red-bg: #fdecea;
+
+      --fs-32: 32px;
+      --fs-20: 20px;
+      --fs-18: 18px;
+      --fs-16: 16px;
+      --fs-14: 14px;
+      --fs-13: 13px;
+
+      --fw-regular: 400;
+      --fw-medium: 500;
+      --fw-semibold: 600;
+      --fw-bold: 700;
+
+      --lh-heading: 1.2;
+      --lh-body: 1.45;
+
+      --ls-heading: -0.6px;
+
+      --radius-16: 16px;
+      --radius-12: 12px;
+      --radius-10: 10px;
+      --radius-full: 9999px;
+
+      --shadow-card: 0px 4px 8px 0px rgba(0, 0, 0, 0.02), 0px 6px 12px 0px rgba(0, 0, 0, 0.03);
+
+      --spacing-64: 64px;
+      --spacing-48: 48px;
+      --spacing-40: 40px;
+      --spacing-32: 32px;
+      --spacing-24: 24px;
+      --spacing-16: 16px;
+      --spacing-12: 12px;
+      --spacing-8: 8px;
+      --spacing-4: 4px;
+
+      --font-primary: 'Inter', 'Noto Sans JP', 'Noto Sans SC', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; }
+    body {
+      font-family: var(--font-primary);
+      background: var(--color-white);
+      color: var(--color-black);
+      min-height: 100vh;
+    }
+    p, h1, h2 { margin: 0; }
+    a { text-decoration: none; color: inherit; }
+    button { font: inherit; cursor: pointer; }
+
+    /* ─── Top bar（改用 Background.svg 當底圖） ─────────────────── */
+    .topbar {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 96px;
+      padding: 0 var(--spacing-40);
+      overflow: hidden;
+      width: 100%;
+    }
+    .topbar__bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+    .topbar__brand {
+      position: relative;
+      z-index: 1;
+      font-size: var(--fs-20);
+      font-weight: var(--fw-bold);
+      letter-spacing: var(--ls-heading);
+      color: var(--color-white);
+    }
+    .topbar__logout {
+      position: relative;
+      z-index: 1;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: var(--radius-12);
+      padding: var(--spacing-8) var(--spacing-16);
+      font-size: var(--fs-16);
+      font-weight: var(--fw-medium);
+      color: var(--color-white);
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .topbar__logout:hover {
+      background: rgba(255,255,255,0.25);
+      border-color: rgba(255,255,255,0.4);
+    }
+
+    /* ─── Page ──────────────────────────────────────────────────── */
+    .page {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: var(--spacing-48) var(--spacing-24) var(--spacing-64);
+    }
+    .breadcrumb {
+      display: inline-block;
+      font-size: var(--fs-14);
+      font-weight: var(--fw-medium);
+      color: var(--color-black-55);
+      margin-bottom: var(--spacing-24);
+      transition: color 0.2s ease;
+    }
+    .breadcrumb:hover { color: var(--color-black); }
+
+    .page__header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--spacing-16);
+      margin-bottom: var(--spacing-32);
+      flex-wrap: wrap;
+    }
+    .page__title-group { display: flex; flex-direction: column; gap: var(--spacing-4); }
+    .page__title { font-size: var(--fs-32); font-weight: var(--fw-bold); line-height: var(--lh-heading); letter-spacing: var(--ls-heading); }
+    .page__subtitle { font-size: var(--fs-16); font-weight: var(--fw-medium); color: var(--color-black-55); }
+
+    .btn--dark {
+      background: var(--color-black); color: var(--color-white); border: none;
+      padding: var(--spacing-12) var(--spacing-20, 20px); border-radius: var(--radius-12);
+      font-size: var(--fs-16); font-weight: var(--fw-medium); white-space: nowrap;
+      display: inline-flex; align-items: center; gap: var(--spacing-8);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    .btn--dark:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); background: #222; }
+    .btn--dark:active { transform: translateY(0); }
+
+    /* ─── Store list ────────────────────────────────────────────── */
+    .store-list { display: flex; flex-direction: column; gap: var(--spacing-16); }
+
+    .store-card {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-16);
+      background: var(--color-white);
+      border: 1px solid var(--color-black-10);
+      border-radius: var(--radius-16);
+      box-shadow: var(--shadow-card);
+      padding: var(--spacing-20, 20px) var(--spacing-24);
+      flex-wrap: wrap;
+    }
+    .store-card__icon {
+      flex-shrink: 0;
+      width: 44px; height: 44px;
+      border-radius: var(--radius-10);
+      background: var(--color-black);
+      color: var(--color-white);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .store-card__icon svg { width: 22px; height: 22px; }
+    .store-card__body { flex: 1 1 220px; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+    .store-card__name-row { display: flex; align-items: center; gap: var(--spacing-8); flex-wrap: wrap; }
+    .store-card__name { font-size: var(--fs-18); font-weight: var(--fw-bold); }
+    .store-card__meta { font-size: var(--fs-13); color: var(--color-black-55); }
+
+    .badge {
+      display: inline-flex; align-items: center;
+      font-size: var(--fs-13); font-weight: var(--fw-semibold);
+      padding: 3px 10px; border-radius: var(--radius-full);
+      white-space: nowrap;
+    }
+    .badge--published { background: var(--color-green-bg); color: var(--color-green); }
+    .badge--draft { background: var(--color-grey-bg); color: var(--color-grey); }
+
+    .store-card__actions { display: flex; align-items: center; gap: var(--spacing-8); flex-shrink: 0; }
+    .action-btn {
+      background: transparent;
+      border: 1px solid var(--color-black-10);
+      border-radius: var(--radius-10);
+      padding: var(--spacing-8) var(--spacing-16);
+      font-size: var(--fs-14); font-weight: var(--fw-medium);
+      color: var(--color-black);
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .action-btn:hover { background: var(--color-black-5); }
+    .action-btn--danger { color: var(--color-red); }
+    .action-btn--danger:hover { background: var(--color-red-bg); border-color: var(--color-red-bg); }
+
+    /* ─── Empty state ───────────────────────────────────────────── */
+    .empty-state {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-16);
+      text-align: center;
+      padding: var(--spacing-64) var(--spacing-24);
+      border: 1px dashed var(--color-black-10);
+      border-radius: var(--radius-16);
+    }
+    .empty-state.is-visible { display: flex; }
+    .empty-state__title { font-size: var(--fs-18); font-weight: var(--fw-bold); }
+    .empty-state__desc { font-size: var(--fs-14); color: var(--color-black-55); max-width: 360px; }
+
+    /* ─── Responsive ────────────────────────────────────────────── */
+    @media (max-width: 720px) {
+      .topbar { padding: 0 var(--spacing-16); height: 72px; }
+      .page { padding: var(--spacing-32) var(--spacing-16); }
+      .page__title { font-size: 26px; }
+      .store-card { padding: var(--spacing-16); }
+      .store-card__actions { width: 100%; justify-content: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <img class="topbar__bg" src="images/decorations/Background.svg" alt="" aria-hidden="true">
+    <a href="goez-home.html" class="topbar__brand">Goez Shop</a>
+    <button class="topbar__logout" onclick="handleLogout()">登出</button>
+  </header>
+
+  <main class="page">
+    <a href="goez-home.html" class="breadcrumb">‹ 返回會員首頁</a>
+
+    <div class="page__header">
+      <div class="page__title-group">
+        <h1 class="page__title">管理已建立賣場</h1>
+        <p class="page__subtitle">查看、編輯或刪除你所有的賣場。</p>
+      </div>
+      <button class="btn--dark" onclick="location.href='goez-shop-store-editor.html'">＋ 新增賣場</button>
+    </div>
+
+    <div class="store-list" id="storeList"></div>
+
+    <div class="empty-state" id="emptyState">
+      <p class="empty-state__title">目前還沒有任何賣場</p>
+      <p class="empty-state__desc">點擊「＋ 新增賣場」開始建立你的第一個線上賣場。</p>
+    </div>
+  </main>
+
+  <script>
+    // ── Mock 資料：待後端 API 完成後改為 fetch('/api/store/list') 取得 ──
+    // 預期後端回傳格式：[{ id, name, status: 'published' | 'draft', createdAt, views }, ...]
+    // 下面陣列中的 createdAt（建立時間）與 views（瀏覽次數）目前都是寫死的假資料，
+    // 之後接上資料庫後，只要讓 /api/store/list 回傳真實數值，這裡不用改任何渲染邏輯。
+    let stores = [
+      { id: 'st_001', name: '手作陶藝小舖', status: 'published', createdAt: '2026-06-12', views: 1284 },
+      { id: 'st_002', name: '早晨咖啡豆專賣', status: 'published', createdAt: '2026-07-03', views: 542 },
+      { id: 'st_003', name: '寵物零食實驗室', status: 'draft', createdAt: '2026-08-01', views: 0 },
+    ];
+
+    const storeIconSVG = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 9.5V19a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9.5" />
+        <path d="M3 9.5 4.6 4h14.8L21 9.5" />
+        <path d="M3 9.5a2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0" />
+        <path d="M10 20v-5a2 2 0 0 1 2-2 2 2 0 0 1 2 2v5" />
+      </svg>`;
+
+    function renderStores() {
+      const listEl = document.getElementById('storeList');
+      const emptyEl = document.getElementById('emptyState');
+
+      if (stores.length === 0) {
+        listEl.innerHTML = '';
+        emptyEl.classList.add('is-visible');
+        return;
+      }
+      emptyEl.classList.remove('is-visible');
+
+      listEl.innerHTML = stores.map(store => `
+        <article class="store-card">
+          <div class="store-card__icon">${storeIconSVG}</div>
+          <div class="store-card__body">
+            <div class="store-card__name-row">
+              <span class="store-card__name">${escapeHtml(store.name)}</span>
+              <span class="badge ${store.status === 'published' ? 'badge--published' : 'badge--draft'}">
+                ${store.status === 'published' ? '已發布' : '草稿'}
+              </span>
+            </div>
+            <!-- 建立時間／瀏覽次數：待接資料庫後由 store.createdAt / store.views 帶入真實數值 -->
+            <span class="store-card__meta">建立於 ${store.createdAt}　·　瀏覽次數 ${store.views.toLocaleString()}</span>
+          </div>
+          <div class="store-card__actions">
+            <a class="action-btn" href="goez-shop-store-template.html?pageId=${encodeURIComponent(store.id)}">檢視</a>
+            <a class="action-btn" href="goez-shop-store-editor.html?pageId=${encodeURIComponent(store.id)}">編輯</a>
+            <button class="action-btn action-btn--danger" onclick="handleDeleteStore('${store.id}')">刪除</button>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function handleDeleteStore(id) {
+      const store = stores.find(s => s.id === id);
+      if (!store) return;
+      const confirmed = confirm(`確定要刪除「${store.name}」嗎？此操作無法復原。`);
+      if (!confirmed) return;
+
+      // TODO: 串接後端刪除 API — DELETE /api/store/:id
+      stores = stores.filter(s => s.id !== id);
+      renderStores();
+    }
+
+    async function handleLogout() {
+      try {
+        await fetch('/api/auth/logout', { method: 'POST' });
+      } catch (error) {
+        console.error('登出請求失敗:', error);
+      } finally {
+        window.location.href = 'goez-landing.html';
+      }
+    }
+
+    renderStores();
+  </script>
+</body>
+</html>

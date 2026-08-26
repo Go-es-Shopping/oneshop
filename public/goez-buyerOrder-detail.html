@@ -51,7 +51,7 @@
 
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
   <div class="flex flex-col min-h-screen">
-
+    
 
     <main class="flex-1">
       <div class="page-enter max-w-2xl mx-auto px-4 sm:px-6 py-8 lg:py-10">
@@ -61,8 +61,11 @@
             <p id="result-order-id" class="mt-1 text-sm text-slate-600"></p>
             <div id="result-badges" class="flex flex-wrap gap-2 mt-3"></div>
           </div>
-          <a href="goez-buyerOrder.html" id="back-to-lookup"
-            class="flex-shrink-0 px-5 py-2.5 rounded-xl bg-slate-100 text-slate-700 text-sm font-medium hover:bg-slate-200 transition self-start text-center">
+          <a
+            href="goez-buyerOrder.html"
+            id="back-to-lookup"
+            class="flex-shrink-0 px-5 py-2.5 rounded-xl bg-slate-100 text-slate-700 text-sm font-medium hover:bg-slate-200 transition self-start text-center"
+          >
             重新查詢
           </a>
         </div>
@@ -358,7 +361,11 @@ function init() {
         backBtn.addEventListener('click', function () {
           window.location.href = 'goez-buyerOrder.html';
         });
-      }
+      });
+
+      document.getElementById('back-to-lookup').addEventListener('click', function () {
+        window.location.href = 'goez-buyerOrder.html'; // 回到查詢主頁
+      });
 
       detailBody.addEventListener('click', function (e) {
         var copyBtn = e.target.closest('.copy-tracking');

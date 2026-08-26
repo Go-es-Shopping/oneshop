@@ -23,7 +23,7 @@ const Payment = sequelize.define('Payment', {
   },
   // 付款狀態 (如：待支付、已支付)，使用 STRING 支援 nvarchar
   PaymentStatus: {
-    type: DataTypes.STRING(50),
+    type: DataTypes.INTEGER,
     allowNull: false,
     field: 'PaymentStatus'
   },
@@ -32,6 +32,12 @@ const Payment = sequelize.define('Payment', {
     type: DataTypes.DATE,
     allowNull: true,
     field: 'PaidAt'
+  },
+  // 💡 新增：藍新金流官方交易序號（對帳用）
+  TradeNo: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+    field: 'TradeNo'
   }
 }, {
   tableName: 'Payment',

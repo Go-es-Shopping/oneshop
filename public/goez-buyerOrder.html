@@ -142,7 +142,7 @@
         lookupError.classList.add('hidden');
       }
 
-      // ✨ 查詢送出事件：改為非同步預先驗證（驗證成功才跳轉，失敗留在原頁報錯）
+// ✨ 查詢送出事件：改為非同步預先驗證（驗證成功才跳轉，失敗留在原頁報錯）
       function submitLookup() {
         clearLookupError();
         
@@ -174,7 +174,7 @@
           })
           .then(function (data) {
             console.log('✅ 驗證成功，正在跳轉至詳情頁...');
-            // 3. 🎯 帶著 orderId 參數跳轉至訂單詳情頁，同時帶上訂單編號與手機號碼
+            // 3. 🎯 帶著 orderId 與 phone 參數跳轉至訂單詳情頁
             window.location.href = 'goez-buyerOrder-detail.html?orderId=' + encodeURIComponent(idValue) + '&phone=' + encodeURIComponent(phoneValue);
           })
           .catch(function (err) {
@@ -202,7 +202,7 @@
       });
 
       // ==========================================
-      // ✨ 自動帶回原本賣場的返回按鈕邏輯
+      // ✨ 新增：自動帶回原本賣場的返回按鈕邏輯
       // ==========================================
       const urlParams = new URLSearchParams(window.location.search);
       const backUrl = urlParams.get('from');
@@ -210,8 +210,12 @@
 
       if (backBtn) {
         if (backUrl) {
+
+          // 如果有抓到來源（包含原本的 pageId），解碼並賦值給返回按鈕
           backBtn.href = decodeURIComponent(backUrl);
         } else {
+          // 如果沒有來源（例如直接輸入網址），給予預設的返回頁面
+
           backBtn.href = "goez-store-template.html"; 
         }
       }

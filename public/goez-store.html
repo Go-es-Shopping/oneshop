@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Goez Shop — 視覺編輯器</title>
+  <title>Goez Shop — 設計我的賣場</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@500&display=swap" rel="stylesheet" />
@@ -53,7 +53,19 @@
       --shadow-preview:0 25px 50px rgba(0,0,0,.25);
       --shadow-pub:    0 8px 10px 0 #e2e8f0;
       --shadow-add:    0 4px 6px rgba(0,0,0,.1),0 2px 4px rgba(0,0,0,.1);
+
+      /* 💡 預設全域字體變數 */
+  --f-body: "Noto Sans TC", "Arial", "Microsoft JhengHei", sans-serif;
     }
+    /* 💡 莊組長終極壓制：直接強制後台商品卡片內所有元件一律死守這個變數 */
+.product-card, 
+.product-card__name, 
+.product-card__price, 
+.product-card p, 
+.product-card span, 
+.product-card h4 {
+  font-family: var(--f-body);
+}
 
     /* ═══════════════════════════════════
        RESET
@@ -455,7 +467,7 @@
     .store-footer__desc{
       font-family:'Noto Sans TC',sans-serif;font-weight:400;
       font-size:var(--fs-14);color:rgba(255,255,255,.7);
-      line-height:22.75px;width:154px;
+      line-height:22.75px;/*width:154px;*/
     }
     .store-footer__links{
       min-width:80px;
@@ -777,7 +789,7 @@
     }
     .mobile-footer {
       margin-top: 24px;
-      background: var(--c-theme-2,#1d293d);
+      background: var(--c-theme-1,var(--c-accent));
       padding: 24px 20px 32px;
       transition: background 0.3s ease;
     }
@@ -1181,7 +1193,7 @@
     <img class="hero__bg"
       src="images/decorations/Background.svg"
       alt="背景圖片" />
-    <a href="goez-shop-home.html" class="hero__title" style="cursor:pointer;" aria-label="返回首頁">Goez Shop</a>
+    <a href="goez-home.html" class="hero__title" style="cursor:pointer;" aria-label="返回首頁">Goez Shop</a>
   </section>
 
   <!-- EDITOR -->
@@ -1199,6 +1211,7 @@
           </div>
           <div class="editor__divider" aria-hidden="true"></div>
           <button class="editor__preview-btn" type="button">預覽編輯</button>
+          <span style="font-size: 15px; color: #888;">💡 離開前記得點擊儲存草稿喔！</span>
         </div>
 
         <button class="editor__hamburger" type="button"
@@ -1267,6 +1280,31 @@
                     data-placeholder="為您挑選來自世界各地的質感生活好物..."
                     ></div>
                 </div>
+                <!-- 🚀 Backend Lead 核心修正：完全同步前端 UI 的信箱欄位 -->
+<div class="field" style="margin-bottom: 15px;">
+    <label class="field__label">店鋪電子信箱</label>
+    <div
+        class="field__textarea"
+        id="store-email-input"
+        role="textbox"
+        contenteditable="true"
+        data-placeholder="如:service@shop.com(選填，不填則不顯示)"
+        style="min-height: auto; height: 38px; line-height: 22px; padding: 8px;"
+    ></div>
+</div>
+
+<!-- 🚀 Backend Lead 核心修正：完全同步前端 UI 的電話欄位 -->
+<div class="field" style="margin-bottom: 15px;">
+    <label class="field__label">店鋪聯絡電話</label>
+    <div
+        class="field__textarea"
+        id="store-phone-input"
+        role="textbox"
+        contenteditable="true"
+        data-placeholder="如:0800-000-000 (選填，不填則不顯示)"
+        style="min-height: auto; height: 38px; line-height: 22px; padding: 8px;"
+    ></div>
+</div>
                 <div class="field">
                   <div class="field__label">店鋪商標</div>
                   <div class="field__logo-area" id="logo-drop-zone">
@@ -1295,27 +1333,56 @@
               </button>
             </section>
 
-            <!-- 最近資源 -->
-            <section aria-label="最近資源">
-              <div class="recent-header" style="margin-bottom:16px">
-                <div class="section-label">
-                  <img src="images/decorations/photo.svg" alt="資源圖示" />
-                  <span class="section-label__text">最近資源</span>
-                </div>
-                <button class="recent-header__manage" type="button">管理全部</button>
-              </div>
-              <div class="assets-grid">
-                <div class="asset-thumb"><img src=" " alt="資源 1" /></div>
-                <div class="asset-thumb"><img src=" " alt="資源 2" /></div>
-                <div class="asset-thumb"><img src=" " alt="資源 3" /></div>
-                <div class="asset-thumb"><img src=" " alt="資源 4" /></div>
-                <div class="asset-thumb"><img src=" " alt="資源 5" /></div>
-                <div class="asset-add" role="button" tabindex="0" aria-label="新增資源">
-                  <img src="images/decorations/plus2.svg" alt="新增" />
-                </div>
-              </div>
-            </section>
+            <!-- 賣家收款銀行 -->
+            <div class="field" style="margin-bottom: 15px;">
+    <label class="field__label">收款銀行代碼(銀行代碼-銀行帳號)</label>
+    <div
+        class="field__textarea"
+        id="store-bank-input"
+        role="textbox"
+        contenteditable="true"
+        data-placeholder="例如: 812-1234567890"
+        style="min-height: auto; height: 38px; line-height: 22px; padding: 8px;"
+    ></div>
+    <div style="font-size: 12px; color: #ff4d4f; margin-top: 5px; line-height: 18px;">
+        「收款說明：本平台採用統一代收代付服務。款項將於每月5號由平台撥款至上述帳戶，請務必確認帳號填寫正確以確保撥款順利。」
+    </div>
+</div>
 
+        <!-- 店家網址設定 (對齊你們原本的介面與驗證按鈕風格) -->
+<div class="field" style="margin-bottom: 20px;">
+    <label class="field__label" style="font-weight: bold; margin-bottom: 5px; display: block;">您的賣場專屬網址設定</label>
+    <div style="font-size: 12px; color: #666; margin-bottom: 10px; line-height: 18px;">
+        設定店家 ID，顧客可透過 www.goezshop.tw 加上店家 ID 進入賣場。
+    </div>
+    
+    <!-- 輸入框與驗證按鈕的垂直排列區塊 -->
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+        <input 
+            type="text" 
+            id="storeSlugInput" 
+            placeholder="例如：myshop" 
+            style="width: 100%; height: 38px; padding: 8px 12px; border: 1px solid #d9d9d9; border-radius: 4px; font-size: 14px; box-sizing: border-box;"
+        />
+        <button 
+            type="button" 
+            id="verifyUrlBtn" 
+            style="width: 100%; height: 38px; padding: 0 16px; background-color: #2d4453; color: white; border: none; border-radius: 4px; font-size: 14px; cursor: pointer;"
+        >
+            驗證您的網址
+        </button>
+    </div>
+    
+    <!-- 提示與即時預覽文字 -->
+    <div style="font-size: 12px; color: #888; margin-top: 6px; line-height: 18px;">
+        「提示：只能使用英文大小寫、數字與連字號(-)，發布後將成為您的獨家店面連結。」
+    </div>
+    <div id="fullUrlPreview" style="font-size: 12px; color: #487faf; margin-top: 4px; line-height: 18px;">
+        完整網址預覽：https://www.goezshop.tw/store/
+    </div>
+</div>
+
+            
           </div>
         </aside>
 
@@ -1404,10 +1471,6 @@
                       </li>
                       <li class="store-footer__col-item">
                         <span class="store-footer__col-dot"></span>
-                        <a class="store-footer__col-link" href="#"> 會員中心</a>
-                      </li>
-                      <li class="store-footer__col-item">
-                        <span class="store-footer__col-dot"></span>
                         <a class="store-footer__col-link" href="#"> 隱私條款</a>
                       </li>
                     </ul>
@@ -1415,17 +1478,17 @@
                   <div class="store-footer__contact">
                     <div class="store-footer__col-title">聯絡我們</div>
                     <div class="store-footer__contact-items">
-                      <div class="store-footer__contact-row">
+                      <div class="store-footer__contact-row" id="row-email-desktop">
                         <div class="store-footer__contact-icon">
                           <img src="images/decorations/email.svg" alt="Email" />
                         </div>
-                        <span class="store-footer__contact-email">service@shop.com</span>
+                        <span class="store-footer__contact-email" id="preview-email-desktop">載入中...</span>
                       </div>
-                      <div class="store-footer__contact-row">
+                      <div class="store-footer__contact-row" id="row-phone-desktop">
                         <div class="store-footer__contact-icon">
                           <img src="images/decorations/phone.svg" alt="Phone" />
                         </div>
-                        <span class="store-footer__contact-phone">0800-000-000</span>
+                        <span class="store-footer__contact-phone" id="preview-phone-desktop">載入中...</span>
                       </div>
                     </div>
                   </div>
@@ -1474,14 +1537,67 @@
                     </div>
                     <div class="mobile-products__grid" id="mobile-product-list"></div>
                   <!-- Mobile footer -->
-                  <div class="mobile-footer">
-                  <div class="mobile-footer__brand" id="preview-footer-brand-mobile">載入中...</div>
-                  <div class="mobile-footer__desc" id="preview-footer-desc-mobile">載入中...</div>
-                  <div class="mobile-footer__copyright">
-                    © 2026 <span id="preview-footer-copyright-mobile">Goezshop</span>. All rights reserved.
-                  </div>
-                  </div>
-                </div><!-- /mobile-preview scroll -->
+<div class="mobile-footer" style="padding: 30px 20px; display: flex; flex-direction: column; gap: 25px;">
+  
+  <!-- 1. 店鋪基本資訊 -->
+  <div class="mobile-footer__about">
+    <div class="mobile-footer__brand" id="preview-footer-brand-mobile" style="font-size: 1.5rem; font-weight: bold; margin-bottom: 8px;">載入中...</div>
+    <div class="mobile-footer__desc" id="preview-footer-desc-mobile" style="font-size: 0.95rem; opacity: 0.8; line-height: 1.5;">載入中...</div>
+  </div>
+
+  <!-- 2. 快速連結 -->
+  <div class="mobile-footer__links" style="border-top: 1px solid rgba(255, 255, 255, 0.15); padding-top: 20px;">
+    <!-- 加上 color: #fff; -->
+    <div class="mobile-footer__col-title" style="font-weight: bold; margin-bottom: 12px; font-size: 1.1rem; letter-spacing: 1px; color: #fff;">快速連結</div>
+    <ul class="mobile-footer__col-list" style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; font-size: 0.95rem;">
+      <li class="mobile-footer__col-item">
+        <!-- 讓連結文字也變成白色（或 rgba 柔和白） -->
+        <a class="mobile-footer__col-link" href="#" style="color: rgba(255, 255, 255, 0.9); text-decoration: none; display: flex; align-items: center; gap: 6px;">
+          <span style="font-size: 0.6rem; opacity: 0.7;">●</span> 最新商品
+        </a>
+      </li>
+      <li class="mobile-footer__col-item">
+        <a class="mobile-footer__col-link" href="#" style="color: rgba(255, 255, 255, 0.9); text-decoration: none; display: flex; align-items: center; gap: 6px;">
+          <span style="font-size: 0.6rem; opacity: 0.7;">●</span> 隱私條款
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- 3. 聯絡我們 -->
+  <div class="mobile-footer__contact" style="border-top: 1px solid rgba(255, 255, 255, 0.15); padding-top: 20px;">
+    <!-- 加上 color: #fff; -->
+    <div class="mobile-footer__col-title" style="font-weight: bold; margin-bottom: 12px; font-size: 1.1rem; letter-spacing: 1px; color: #fff;">聯絡我們</div>
+    <div class="mobile-footer__contact-items" style="display: flex; flex-direction: column; gap: 12px; font-size: 0.95rem;">
+      
+      <!-- 信箱 Row -->
+      <div class="mobile-footer__contact-row" id="row-email-mobile" style="display: flex; align-items: center; gap: 12px;">
+        <div class="mobile-footer__contact-icon" style="width: 32px; height: 32px; background: rgba(255, 255, 255, 0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+          <img src="images/decorations/email.svg" alt="Email" style="width: 100%; height: 100%; filter: brightness(0.4);" />
+        </div>
+        <!-- 讓文字變成白色 -->
+        <span class="mobile-footer__contact-email" id="preview-email-mobile" style="color: #fff;">載入中...</span>
+      </div>
+
+      <!-- 電話 Row -->
+      <div class="mobile-footer__contact-row" id="row-phone-mobile" style="display: flex; align-items: center; gap: 12px;">
+        <div class="mobile-footer__contact-icon" style="width: 32px; height: 32px; background: rgba(255, 255, 255, 0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+          <img src="images/decorations/phone.svg" alt="Phone" style="width: 100%; height: 100%; filter: brightness(0.4);" />
+        </div>
+        <!-- 讓文字變成白色 -->
+        <span class="mobile-footer__contact-phone" id="preview-phone-mobile" style="color: #fff;">載入中...</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 4. 版權宣告 -->
+  <div class="mobile-footer__copyright" style="border-top: 1px solid rgba(255, 255, 255, 0.15); padding-top: 20px; font-size: 0.85rem; opacity: 0.6; text-align: center;">
+    © 2026 <span id="preview-footer-copyright-mobile">Goezshop</span>. All rights reserved.
+  </div>
+
+</div>
+<!-- /mobile-preview scroll -->
               </div><!-- /mobile-frame -->
             </div><!-- /mobile-preview wrapper -->
         </main>
@@ -1565,6 +1681,43 @@
     </div><!-- /editor -->
   </div><!-- /editor-shell -->
 
+  <style>
+  /* 🚀 Backend Lead 專屬：修正桌面版商品卡片橫向排列時，圖片被慘烈切掉的 bug */
+  @media (min-width: 768px) {
+      /* 1. 確保卡片在桌面版橫向排列時，高度能隨著內容自動撐開，不要壓扁 */
+      .product-card {
+          display: flex !important;
+          flex-direction: row !important;
+          align-items: center !important;
+          min-height: 160px !important; 
+      }
+
+      /* 2. 修正圖片容器：固定左側寬度，高度自由縮放 */
+      .product-card__image-area {
+          width: 140px !important;  
+          height: 140px !important;  /* 這裡改成固定的高寬，能確保在橫排時直接變回漂亮的方形比例 */
+          flex-shrink: 0 !important; 
+          overflow: hidden !important;
+          border-radius: 8px !important;
+      }
+
+      /* 3. 確保圖片本身完整顯示 */
+      .product-card__image-area img {
+          width: 100% !important;
+          height: 100% !important;
+          object-fit: cover !important; 
+          object-position: center !important; 
+      }
+      
+      /* 4. 右側文字區塊微調 */
+      .product-card__body {
+          flex-grow: 1 !important;
+          padding-left: 16px !important;
+          text-align: left !important;
+      }
+  }
+</style>
+
   <!-- PAGE FOOTER -->
   <footer class="page-footer" aria-label="Namedly 頁腳">
     <img class="page-footer__bg"
@@ -1625,68 +1778,76 @@
       </button>
     </div>
 
-    <!-- Fields -->
-    <div class="modal__fields">
-      <!-- 商品名稱 -->
-      <div class="modal__field">
-        <label class="modal__field-label" for="modal-product-name">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-          商品名稱
-        </label>
-        <input class="modal__input" id="modal-product-name" type="text" placeholder="例如：精選手作陶瓷盤" />
-      </div>
-
-      <!-- 商品簡介 -->
-      <div class="modal__field">
-        <label class="modal__field-label" for="modal-product-desc">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-          商品簡介
-        </label>
-        <textarea class="modal__input modal__textarea" id="modal-product-desc" placeholder="請輸入商品的詳細介紹..."></textarea>
-      </div>
-
-      <!-- 商品圖片 -->
-      <div class="modal__field">
-        <label class="modal__field-label">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          商品圖片
-        </label>
-        <div class="modal__img-upload" id="modal-img-drop">
-          <input type="file" id="modal-product-img" accept="image/*" />
-          <img class="modal__img-preview" id="modal-img-preview" alt="預覽" />
-          <svg class="modal__img-upload__icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          <span class="modal__img-upload__text">點擊上傳或拖曳圖片</span>
-          <span class="modal__img-upload__hint">PNG、JPG、WEBP，最大 5MB</span>
-        </div>
-      </div>
-
-      <!-- 定價 + 庫存 -->
-      <div class="modal__row">
+    <!-- 加上一個 <form> 表單標籤包裹，這樣等一下 JavaScript 一行就能抓完 -->
+    <form id="add-product-form" enctype="multipart/form-data">
+      <!-- Fields -->
+      <div class="modal__fields">
+        <!-- 商品名稱 -->
         <div class="modal__field">
-          <label class="modal__field-label" for="modal-product-price">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            商品定價
+          <label class="modal__field-label" for="modal-product-name">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+            商品名稱
           </label>
-          <div class="modal__price-wrap">
-            <span class="modal__price-prefix">$</span>
-            <input class="modal__input" id="modal-product-price" type="number" min="0" placeholder="0" />
+          <!-- 補上 name="ProductName" -->
+          <input class="modal__input" id="modal-product-name" name="ProductName" type="text" placeholder="例如：精選手作陶瓷盤" required />
+        </div>
+
+        <!-- 商品簡介 -->
+        <div class="modal__field">
+          <label class="modal__field-label" for="modal-product-desc">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            商品簡介
+          </label>
+          <!-- 補上 name="ProductDescription" -->
+          <textarea class="modal__input modal__textarea" id="modal-product-desc" name="ProductDescription" placeholder="請輸入商品的詳細介紹..."></textarea>
+        </div>
+
+        <!-- 商品圖片 -->
+        <div class="modal__field">
+          <label class="modal__field-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            商品圖片
+          </label>
+          <div class="modal__img-upload" id="modal-img-drop">
+            <!-- 補上 name="product_file" 給後端 multer 辨識 -->
+            <input type="file" id="modal-product-img" name="product_file" accept="image/*" />
+            <img class="modal__img-preview" id="modal-img-preview" alt="預覽" />
+            <svg class="modal__img-upload__icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span class="modal__img-upload__text">點擊上傳或拖曳圖片</span>
+            <span class="modal__img-upload__hint">PNG、JPG、WEBP，最大 5MB</span>
           </div>
         </div>
-        <div class="modal__field">
-          <label class="modal__field-label" for="modal-product-stock">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-            商品庫存
-          </label>
-          <input class="modal__input" id="modal-product-stock" type="number" min="0" placeholder="0" />
+
+        <!-- 定價 + 庫存 -->
+        <div class="modal__row">
+          <div class="modal__field">
+            <label class="modal__field-label" for="modal-product-price">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              商品定價
+            </label>
+            <div class="modal__price-wrap">
+              <span class="modal__price-prefix">$</span>
+              <!-- 補上 name="Price" -->
+              <input class="modal__input" id="modal-product-price" name="Price" type="number" min="0" placeholder="0" required />
+            </div>
+          </div>
+          <div class="modal__field">
+            <label class="modal__field-label" for="modal-product-stock">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+              商品庫存
+            </label>
+            <!-- 補上 name="Stock" -->
+            <input class="modal__input" id="modal-product-stock" name="Stock" type="number" min="0" placeholder="0" required />
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Footer -->
-    <div class="modal__footer">
-      <button class="modal__btn-cancel" id="modal-cancel-btn" type="button">取消</button>
-      <button class="modal__btn-confirm" id="modal-confirm-btn" type="button">確認新增</button>
-    </div>
+      <!-- Footer -->
+      <div class="modal__footer">
+        <button class="modal__btn-cancel" id="modal-cancel-btn" type="button">取消</button>
+        <button class="modal__btn-confirm" id="modal-confirm-btn" type="button">確認新增</button>
+      </div>
+    </form>
   </div>
 </div>
 
@@ -1745,24 +1906,28 @@ var descInput = document.getElementById('store-desc-input');
   // --c-theme-4 (lightest)→ hero section bg, product image bg, footer contact icons
   var themes = {
     '冷靜石板': {
+      '--c-accent': '#64748b',
       '--c-theme-1': '#64748b',
       '--c-theme-2': '#94a3b8',
       '--c-theme-3': '#cbd5e1',
       '--c-theme-4': '#f1f5f9'
     },
     '鼠尾草綠': {
+      '--c-accent': '#869489',
       '--c-theme-1': '#869489',
       '--c-theme-2': '#a3ad9e',
       '--c-theme-3': '#c2c9bd',
       '--c-theme-4': '#e8ebe4'
     },
     '陶土橘': {
+      '--c-accent': '#b38b7d',
       '--c-theme-1': '#b38b7d',
       '--c-theme-2': '#d1b4a6',
       '--c-theme-3': '#e5d3c8',
       '--c-theme-4': '#f5efea'
     },
     '北歐沙色': {
+      '--c-accent': '#a8a29e',
       '--c-theme-1': '#a8a29e',
       '--c-theme-2': '#d6d3d1',
       '--c-theme-3': '#e7e5e4',
@@ -1781,11 +1946,20 @@ var descInput = document.getElementById('store-desc-input');
       if(!name) return;
       var vars = themes[name.textContent.trim()];
       if(!vars) return;
-      // Apply to both desktop and mobile previews
+      
+      // 1. 同時打到全域與預覽容器，確保商品價格的 CSS 變數能同步更新
+      Object.keys(vars).forEach(function(key){ 
+        document.documentElement.style.setProperty(key, vars[key]);
+      });
       [preview, mobilePreviewEl].forEach(function(el){
         if(!el) return;
         Object.keys(vars).forEach(function(key){ el.style.setProperty(key, vars[key]); });
       });
+
+      // 💡 2. 關鍵修復：換完顏色後，立刻呼叫 renderAll() 把商品重新畫出來！
+      if (typeof renderAll === 'function') {
+          renderAll();
+      }
     });
   });
 
@@ -1826,10 +2000,29 @@ var descInput = document.getElementById('store-desc-input');
         // mobile
         '.mobile-store-nav__name','.mobile-hero__tagline','.mobile-hero__cta',
         '.mobile-products__title','.mobile-product-card__name','.mobile-product-card__price',
-        '.mobile-product-card__tag','.mobile-footer__brand','.mobile-footer__desc','.mobile-footer__copyright'
+        '.mobile-product-card__tag','.mobile-footer__brand','.mobile-footer__desc','.mobile-footer__links','.mobile-footer__contact','.mobile-footer__col-title','.mobile-footer__copyright'
       ];
       targets.forEach(function(sel){
         document.querySelectorAll(sel).forEach(function(el){ el.style.fontFamily = fontVal; });
+      });
+      
+      // 🔥 【修復Bug】確保商品卡片內的所有文字元素都跟著變動
+      // 特別針對商品描述(p)和庫存(span)這些容易被忽略的標籤
+      [preview, mobilePreviewEl].forEach(function(container){
+        if(!container) return;
+        
+        // 選取所有商品卡片
+        var allProductCards = container.querySelectorAll('.product-card, .mobile-product-card');
+        allProductCards.forEach(function(card){
+          // 選取卡片內的所有文字元素（p, span, h4, div, 等等）
+          var allTextElements = card.querySelectorAll('p, span, h4, div, li');
+          allTextElements.forEach(function(el){
+            el.style.fontFamily = fontVal;
+          });
+          
+          // 同時更新卡片本身的 font-family
+          card.style.fontFamily = fontVal;
+        });
       });
     });
   });
@@ -1868,6 +2061,8 @@ var descInput = document.getElementById('store-desc-input');
   });
 </script>
 <script src="./js/store-render.js"></script>
+<script src="./js/product-manage.js"></script>
+
 <script>
 window.onload = async () => {
     // 1. 從網址列抓取 ?pageId=XXX
@@ -1880,33 +2075,132 @@ window.onload = async () => {
     }
 
     try {
-        // 2. 向後端請求資料 (後端現在有 findOrCreate，沒資料會自動初始化)
+        // 2. 向後端請求資料
         const response = await fetch(`/api/store/pages/${pageId}`);
         const result = await response.json();
 
         if (result.success && result.data) {
             const store = result.data;
             
-            // A. 填入店名與簡介 (使用 textContent 確保安全)
+            // A. 填入店名與簡介
             const nameInput = document.getElementById('store-name-input');
             if (nameInput) nameInput.textContent = store.PageTitle || "";
 
             const descInput = document.getElementById('store-desc-input');
             if (descInput) descInput.textContent = store.PageDescription || "";
 
-            // B. 填入 Logo (增加防破圖保險)
+            // B. 填入 Logo
             const logoImg = document.getElementById('logo-preview-img');
             if (logoImg) {
-                // 預設圖路徑 (當資料庫沒圖時顯示)
                 const defaultLogo = "https://www.figma.com/api/mcp/asset/665605e6-519c-4fa0-8070-daa26e795351";
-                
-                // 邏輯：有網址就用網址，沒網址就用預設圖
                 const finalLogoUrl = (store.StoreLogo && store.StoreLogo.trim() !== "") 
                                      ? store.StoreLogo 
                                      : defaultLogo;
-                
                 logoImg.src = finalLogoUrl;
-                console.log(`✅ PageID ${pageId} 資料載入成功`, { logo: finalLogoUrl });
+            }
+
+            // 🎨 C. 優先宣告後端回傳的顏色與字體
+            const dbColor = store.ThemeColor || store.themeColor || '#2b4c7e';
+            const dbFont = store.ThemeFont || store.themeFont || '現代黑體';
+
+            // 📦 ─── 初始化商品卡片渲染 ───
+            const targetContainer = document.getElementById('product-list');
+            if (targetContainer && store.PageProducts && Array.isArray(store.PageProducts)) {
+                
+                if (store.PageProducts.length > 0) {
+                    targetContainer.innerHTML = '';
+                    targetContainer.style.display = "flex";
+                    targetContainer.style.flexWrap = "wrap";
+                    targetContainer.style.gap = "20px";
+                    targetContainer.style.justifyContent = "flex-start";
+                }
+
+                // 2. 開始跑迴圈畫出商品
+                store.PageProducts.forEach(prod => {
+                    let displayPrice = prod.Price;
+                    if (typeof displayPrice === 'number' || (typeof displayPrice === 'string' && !displayPrice.includes('.'))) {
+                        displayPrice = `${displayPrice}.00`;
+                    } else if (typeof displayPrice === 'string' && displayPrice.includes('.')) {
+                        displayPrice = parseFloat(displayPrice).toFixed(2);
+                    }
+
+                    // 產出卡片 HTML (拔除過高的 min-height，讓高度自然收合)
+                    const cardHtml = `
+                        <div class="product-card" data-id="${prod.ProductID}" style="background: var(--c-white, #fff); border: 1px solid var(--c-border-light, #eaeaea); border-radius: 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.04); overflow: hidden; display: flex !important; flex-direction: column !important; align-items: stretch !important; cursor: pointer; width: 280px !important; box-sizing: border-box; position: relative; font-family: var(--f-body, sans-serif) !important; transition: transform 0.25s ease, box-shadow 0.25s ease;">
+                          
+                          <!-- 商品圖片區 -->
+                          <div style="height: 180px; flex-shrink: 0; overflow: hidden; position: relative; background: #f5f5f5;">
+                            <img src="${prod.ProductImg || 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=300'}" 
+                                 alt="${prod.ProductName}" 
+                                 style="width: 100%; height: 100%; object-fit: cover;">
+                          </div>
+                          
+                          <!-- 商品文字與資訊主體 -->
+                          <div style="padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 8px;">
+                            
+                            <!-- 名稱與剩餘數量行 -->
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
+                              <h4 class="product-card__name" style="margin: 0; font-family: 'Noto Sans TC', sans-serif; font-weight: 700; font-size: 16px; color: #333; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${prod.ProductName}</h4>
+                              <span class="product-card__stock" style="font-family: 'Noto Sans TC', sans-serif; font-weight: 400; font-size: 12px; color: #888; white-space: nowrap; margin-top: 2px;">剩餘 ${prod.Stock}</span>
+                            </div>
+                            
+                            <!-- 商品描述欄位 -->
+                            <p style="color: #888; font-size: 12px; margin: 0; font-family: 'Noto Sans TC', sans-serif; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 34px;">
+                              ${prod.ProductDescription || '暫無商品描述'}
+                            </p>
+                            
+                            <!-- 價格與購物車按鈕同一行或完美置底 -->
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px;">
+                              
+                              <!-- 👇 【新增】價格與刪除按鈕包在同一側 -->
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="product-card__price" style="font-family: 'Noto Sans TC', sans-serif; font-weight: 900; font-size: 18px; color: ${dbColor}; line-height: 1;">$${displayPrice}</span>
+              <button class="delete-product-btn" data-id="${prod.ProductID}" style="background: #ff4d4f; color: white; border: none; padding: 4px 8px; border-radius: 8px; cursor: pointer; font-size: 12px;">刪除</button>
+            </div>
+                              <!-- 購物車按鈕直接跟價格排在右側，大小適中且絕對有背景色 -->
+                              <button class="add-to-cart-btn" style="position: absolute; right: 16px; bottom: 16px; background: var(--c-theme-1, #2b4c7e); border-radius: 14px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.12); flex-shrink: 0; transition: transform 0.15s ease;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                  <circle cx="9" cy="21" r="1"></circle>
+                                  <circle cx="20" cy="21" r="1"></circle>
+                                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                                </svg>
+                              </button>
+                            </div>
+                          </div>
+
+                        </div>
+                    `;
+                    targetContainer.insertAdjacentHTML('beforeend', cardHtml);
+                });
+
+                // 3. 鎖定剛生成的卡片做顏色與字體防禦校正
+                const currentProductCards = targetContainer.querySelectorAll('.product-card');
+                currentProductCards.forEach(card => {
+                    const cartBtn = card.querySelector('.add-to-cart-btn');
+                    if (cartBtn) {
+                        cartBtn.style.setProperty('background', dbColor, 'important');
+                        cartBtn.style.setProperty('background-color', dbColor, 'important');
+                        cartBtn.style.setProperty('border-color', dbColor, 'important');
+                    }
+
+                    const priceSpan = card.querySelector('.product-card__price');
+                    if (priceSpan) {
+                        priceSpan.style.setProperty('color', dbColor, 'important');
+                    }
+
+                    let targetFontFamily = '"Noto Sans TC", "Arial", "Microsoft JhengHei", sans-serif';
+                    if (dbFont.includes('明體') || dbFont.toLowerCase() === 'serif') {
+                        targetFontFamily = '"Noto Serif TC", "Georgia", serif';
+                    } else if (dbFont.includes('圓體') || dbFont.includes('溫潤')) {
+                        targetFontFamily = '"Xingothic TC", "Noto Sans TC", sans-serif';
+                    }
+
+                    const textNodes = card.querySelectorAll('.product-card__name, .product-card__tag-text, .product-card__stock, p, span, h4, div');
+                    textNodes.forEach(el => {
+                        el.style.setProperty('font-family', targetFontFamily, 'important');
+                    });
+                    card.style.setProperty('font-family', targetFontFamily, 'important');
+                });
             }
         }
     } catch (error) {
