@@ -142,48 +142,65 @@
         lookupError.classList.add('hidden');
       }
 
-      function goToDetail(order) {
-        GoezBuyerOrders.saveOrderForDetail(order);
-        window.location.href = 'order-detail.html';
-      }
-
+// ✨ 查詢送出事件：改為非同步預先驗證（驗證成功才跳轉，失敗留在原頁報錯）
       function submitLookup() {
-  clearLookupError();
-  
-  var idValue = orderIdInput.value.trim();
-  var phoneValue = phoneInput.value.trim();
+        clearLookupError();
+        
+        var idValue = orderIdInput.value.trim();
+        var phoneValue = phoneInput.value.trim();
 
-  // 1. 基本前端防禦性檢查
-  if (!idValue) {
-    showLookupError("請輸入訂單編號");
-    return;
-  }
-  if (!phoneValue) {
-    showLookupError("請輸入手機號碼");
-    return;
-  }
+        // 1. 基本防禦性檢查
+        if (!idValue) {
+          showLookupError("請輸入訂單編號");
+          return;
+        }
+        if (!phoneValue) {
+          showLookupError("請輸入手機號碼");
+          return;
+        }
 
-  console.log('🚀 買家送出查詢，正在連線真後端... 編號:', idValue, '電話:', phoneValue);
-  
-  // 2. ✨ 直接把編號帶在網址參數後面，跳轉到詳情頁！
-  // 網址會變成像這樣：order-detail.html?orderId=14
-  window.location.href = 'goez-buyerOrder-detail.html?orderId=' + idValue;
-}
+        console.log('🔍 買家送出查詢，正在連線後端預先驗證... 編號:', idValue, '電話:', phoneValue);
+
+        // 2. ✨ 發送 fetch 向後端驗證編號與手機
+        var verifyUrl = 'http://localhost:3000/api/orders/' + encodeURIComponent(idValue) + '?phone=' + encodeURIComponent(phoneValue);
+
+        fetch(verifyUrl)
+          .then(function (res) {
+            if (!res.ok) {
+              // 404 或 500 代表找不到或電話不符
+              throw new Error('查無此訂單，請確認訂單編號與手機號碼是否正確');
+            }
+            return res.json();
+          })
+          .then(function (data) {
+            console.log('✅ 驗證成功，正在跳轉至詳情頁...');
+            // 3. 🎯 帶著 orderId 與 phone 參數跳轉至訂單詳情頁
+            window.location.href = 'goez-buyerOrder-detail.html?orderId=' + encodeURIComponent(idValue) + '&phone=' + encodeURIComponent(phoneValue);
+          })
+          .catch(function (err) {
+            console.warn('❌ 驗證失敗，停留在本頁:', err.message);
+            // 4. 🎯 留在本頁顯示紅字錯誤提示，不進行跳轉
+            showLookupError(err.message || '查無此訂單，請確認訂單編號與手機號碼是否正確');
+          });
+      }
 
       form.addEventListener('submit', function (e) {
         e.preventDefault();
         submitLookup();
       });
 
+      // 支援 demo 測試參數
       if (new URLSearchParams(window.location.search).get('demo') === '1') {
-        orderIdInput.value = String(GoezBuyerOrders.DEMO_ORDER_ID);
-        phoneInput.value = '0987654321';
+        orderIdInput.value = '14';
+        phoneInput.value = '0912345678';
         submitLookup();
       }
 
       requestAnimationFrame(function () {
-        document.querySelector('.page-enter').classList.add('is-entered');
+        var pageEnter = document.querySelector('.page-enter');
+        if (pageEnter) pageEnter.classList.add('is-entered');
       });
+
       // ==========================================
       // ✨ 新增：自動帶回原本賣場的返回按鈕邏輯
       // ==========================================
@@ -193,10 +210,12 @@
 
       if (backBtn) {
         if (backUrl) {
+
           // 如果有抓到來源（包含原本的 pageId），解碼並賦值給返回按鈕
           backBtn.href = decodeURIComponent(backUrl);
         } else {
           // 如果沒有來源（例如直接輸入網址），給予預設的返回頁面
+
           backBtn.href = "goez-store-template.html"; 
         }
       }

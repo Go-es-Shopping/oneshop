@@ -1,13 +1,23 @@
 const { Order, OrderDetail, Product, Payment, Shipment } = require('../models');
 
 const SellerOrderController = {
-  // 1. 查詢賣家的所有訂單列表
+  // 1. 查詢賣家的所有訂單列表（已加入 OrderStatus 篩選支援）
   getSellerOrders: async (req, res) => {
     try {
-      const sellerId = req.query.sellerId;
+      // 同時相容大小寫的參數命名，避免傳遞時漏掉
+      const sellerId = req.query.sellerId || req.query.SellerID;
+      const orderStatus = req.query.OrderStatus || req.query.orderStatus;
+
       let whereCondition = {};
+      
+      // 如果有指定賣家 ID，加入條件
       if (sellerId) {
         whereCondition.SellerID = sellerId;
+      }
+
+      // 如果前端有傳入狀態，且不是空字串或 'all'，才加入狀態過濾條件
+      if (orderStatus !== undefined && orderStatus !== '' && orderStatus !== 'all') {
+        whereCondition.OrderStatus = orderStatus;
       }
 
       const orders = await Order.findAll({
@@ -39,7 +49,7 @@ const SellerOrderController = {
     }
   },
 
-// 3. 查詢訂單明細列表（修正版：從 PageContent 抓取 ProductName）
+  // 3. 查詢訂單明細列表（修正版：從 PageContent 抓取 ProductName）
   getOrderDetailsList: async (req, res) => {
     try {
       const orderId = req.params.OrderID;
@@ -49,14 +59,12 @@ const SellerOrderController = {
         raw: true 
       });
 
-      // 引入 PageContent 模型（如果妳檔案最上方還沒引入，記得在頂端 require 或者是確保 models 裡有 PageContent）
       const { PageContent } = require('../models');
 
       const result = await Promise.all(details.map(async (item) => {
         let productName = `商品 #${item.ProductID}`;
         
         if (item.ProductID) {
-          // 改從 PageContent 這張表用 ProductID 去找
           const pageContent = await PageContent.findOne({
             where: { ProductID: item.ProductID },
             raw: true
@@ -64,8 +72,8 @@ const SellerOrderController = {
 
           if (pageContent) {
             productName = pageContent.ProductName || 
-                          pageContent.product_name || 
-                          `商品 #${item.ProductID}`;
+                        pageContent.product_name || 
+                        `商品 #${item.ProductID}`;
           }
         }
 
