@@ -139,13 +139,13 @@ Order (1) ──< Orderdetail (N) >── Product
 
 ## 建議頁面欄位（買家端）
 
-### 查詢頁 `index.html`
+### 查詢頁 `goez-buyerOrder.html`
 
 - 輸入：**OrderID**（訂單編號）、**BuyerPhone**（聯絡電話）
-- 驗證通過後跳轉 **`order-detail.html`**（示範以 `sessionStorage` 帶訂單資料）
+- 驗證通過後跳轉 **`goez-buyerOrder-detail.html`**（示範以 `sessionStorage` 帶訂單資料）
 - 建議限制：僅可查 **6 個月內** 訂單（前端／後端皆可實作）
 
-### 詳情頁 `order-detail.html`
+### 詳情頁 `goez-buyerOrder-detail.html`
 
 1. **訂單摘要**：編號、狀態、金額、下單時間  
 2. **收件資訊**：姓名、電話、地址  
