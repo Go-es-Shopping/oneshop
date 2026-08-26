@@ -3,6 +3,8 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 console.log("【偵探檢查】目前的金鑰狀態:", process.env.GEMINI_API_KEY ? "有讀到！開頭是 " + process.env.GEMINI_API_KEY.substring(0, 6) : "空空如也 (undefined)");
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY.trim());
+// ✅ 加上空字串防呆，即使沒設定也不會噴 TypeError 崩潰
+const apiKey = (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '').trim();
 
 exports.generateCopywriting = async (req, res) => {
   try {
