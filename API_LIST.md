@@ -2,9 +2,10 @@
 
 | 模組 | HTTP 方法 | 完整 URL 路徑 | 對應資料表 | 說明 |
 | :--- | :--- | :--- | :--- | :--- |
-| **身份驗證** | POST | `/api/auth/login` | `Seller` | 賣家登入 (回傳 Token) |
-| | GET | `/api/auth/me` | `Seller` | 取得當前登入賣家資訊 |
-| | POST | `/api/auth/logout` | - | 登出 |
+| **賣家中心身份驗證** | POST | `/api/seller/login` | `Seller` | 賣家中心登入 |
+| | GET | `/api/seller/me` | `Seller` | 賣家中心取得個人資料 (瀏覽器可測) |
+| | POST | `/api/seller/logout` | - | 賣家中心登出 |
+| | POST | `/api/seller/register` | `Seller` | 賣家中心註冊 |
 | **商品管理** | GET | `/api/products/` | `Product`, `PageContent`, `PageProduct`, `StorePage` | 取得商品列表 (支援 SellerID 篩選) (瀏覽器可測) |
 | | GET | `/api/products/:ProductID` | `Product`, `PageContent`, `PageProduct`, `StorePage` | 取得單一商品詳情 (瀏覽器可測) |
 | | POST | `/api/products/` | `Product` | 新增商品 |
@@ -29,8 +30,6 @@
 | | PATCH / PUT | `/api/seller/orders/:OrderID/status` | `Order` | 更新訂單狀態 |
 | | GET | `/api/seller/orders/:OrderID` | `Order`, `Orderdetail`, `Shipment`, `Payment` | 查詢單筆訂單詳情 |
 | | DELETE | `/api/seller/orders/:OrderID` |`Order` | 刪除指定訂單 |
-| **賣家中心** | POST | `/api/seller/login` | `Seller` | 賣家中心登入 |
-| | GET | `/api/seller/me` | `Seller` | 賣家中心取得個人資料 (瀏覽器可測) |
 | **後台管理** | POST | `/api/admin/login` | `PlatformAdmin` | 平台管理員登入 |
 | | GET | `/api/admin/analytics` | `PageVisit`, `Order`, `Product` | 營運數據分析 (含轉換率、UTM 來源分布，瀏覽器可測) |
 | **購物與結帳** | POST | `/api/checkout/calculate` | `Product` | 購物車金額計算 (含庫存檢查、滿額折扣) |

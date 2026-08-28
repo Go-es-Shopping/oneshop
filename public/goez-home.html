@@ -694,15 +694,27 @@
   animatedEls.forEach(el => observer.observe(el));
 
   async function handleLogout() {
-    try {
-      // TODO: 串接後端登出 API
-      await fetch('/api/auth/logout', { method: 'POST' });
-    } catch (error) {
-      console.error('登出請求失敗:', error);
-    } finally {
-      window.location.href = 'goez-landing.html';
-    }
+  try {
+    // 1. 呼叫後端登出 API（注意路徑要改成你們現在統一的 /api/seller/logout）
+    await fetch('/api/seller/logout', { 
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+        // 如果你們的登出 API 驗證需要帶 Token，可以在這裡補上 Authorization
+      }
+    });
+  } catch (error) {
+    console.error('登出請求失敗:', error);
+  } finally {
+    // 2. 無論後端 API 是否成功，前端一定要把 localStorage 裡關於賣家的資料清空！
+    localStorage.removeItem('sellerToken');
+    localStorage.removeItem('sellerInfo');
+    localStorage.removeItem('sellerId');
+    
+    // 3. 重新導向回登入頁或首頁 (看你們設計要跳回 landing 還是 login)
+    window.location.href = 'goez-landing.html'; 
   }
+}
 </script>
 <script>
 async function handleCreateShop() {
