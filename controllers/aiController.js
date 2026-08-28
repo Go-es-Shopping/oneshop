@@ -2,9 +2,11 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 console.log("【偵探檢查】目前的金鑰狀態:", process.env.GEMINI_API_KEY ? "有讀到！開頭是 " + process.env.GEMINI_API_KEY.substring(0, 6) : "空空如也 (undefined)");
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY.trim());
-// ✅ 加上空字串防呆，即使沒設定也不會噴 TypeError 崩潰
-const apiKey = (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '').trim();
+// 加上空字串防呆，避免沒設定時直接噴 TypeError 崩潰
+const apiKey = (process.env.GEMINI_API_KEY || '').trim();
+const genAI = new GoogleGenerativeAI(apiKey);
+//AI 功能完全正常：因為 genAI 有確實拿到抓到的 apiKey。
+//成功防呆：就算 GEMINI_API_KEY 忘記填，也不會讓整個伺服器因為 TypeError 直接當掉。
 
 exports.generateCopywriting = async (req, res) => {
   try {
