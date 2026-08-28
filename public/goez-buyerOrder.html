@@ -162,7 +162,7 @@
         console.log('🔍 買家送出查詢，正在連線後端預先驗證... 編號:', idValue, '電話:', phoneValue);
 
         // 2. ✨ 發送 fetch 向後端驗證編號與手機
-        var verifyUrl = 'http://localhost:3000/api/orders/' + encodeURIComponent(idValue) + '?phone=' + encodeURIComponent(phoneValue);
+        var verifyUrl = '/api/orders/' + encodeURIComponent(idValue) + '?phone=' + encodeURIComponent(phoneValue);
 
         fetch(verifyUrl)
           .then(function (res) {
