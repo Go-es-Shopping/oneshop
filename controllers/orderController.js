@@ -29,15 +29,7 @@ const orderController = {
       if (!items || items.length === 0) throw new Error("購物車不可為空");
       if (!PageID) throw new Error("缺少賣場頁面編號 (PageID)");
 
-      // ==========================================================
-      // 💡 關鍵修正：透過 PageID 自動去資料庫查詢對應的 SellerID
-      // ==========================================================
-      const storePage = await StorePage.findByPk(PageID, { transaction: t });
-      if (!storePage) {
-        throw new Error(`找不到對應的賣場頁面 (PageID: ${PageID})`);
-      }
-      const resolvedSellerID = storePage.SellerID; // 取得該賣場真正的擁有者 ID！
-
+      
       // ==========================================================
       // 💡 關鍵修正：透過 PageID 自動去資料庫查詢對應的 SellerID
       // ==========================================================
