@@ -89,7 +89,8 @@ const uploadProduct = multer({
 
 
 // 1. 路由引入
-const authRoutes = require('./routes/auth')
+//const authRoutes = require('./routes/auth')
+const sellerRoutes = require('./routes/sellerRoutes');
 const productRoutes = require('./routes/product')
 const storeRoutes = require('./routes/store')
 const orderRoutes = require('./routes/order')
@@ -107,12 +108,12 @@ app.use(express.json());
 app.use(express.static('public'));
 
 // 2. 路由掛載
-app.use('/api/auth', authRoutes)
+//app.use('/api/auth', authRoutes)
 app.use('/api/products', productRoutes)
 app.use('/api/store', storeRoutes)
 app.use('/api/orders', orderRoutes)
 app.use('/api/seller/orders', sellerorderRoutes)
-app.use('/api/seller', require('./routes/sellerRoutes'));
+app.use('/api/seller', sellerRoutes); // 👈 掛載時直接帶入上面宣告的變數
 app.use('/api/admin', adminRoutes)
 // 保留原本的 api 路由
 app.use('/api/checkout', checkoutRoutes);
@@ -122,6 +123,7 @@ app.use('/api/track', analyticsRoutes)
 // 掛載優惠券路由
 app.use('/api/coupons', couponRoutes);
 app.use('/api/payment', paymentRoutes);
+app.use('/api/ai', aiRoutes);
 
 // --- 🚀 新增：處理前台專屬網址動態路由 (/store/:slug)，可以正確對應到你的前台樣板頁面 ---
 app.get('/store/:slug', (req, res) => {
@@ -135,8 +137,6 @@ app.post('/store/:slug', (req, res) => {
     // 轉向回你的商店頁面，並帶上支付結果參數
     return res.redirect(`/store/${slug}?payment=result`);
 });
-
-app.use('/api/ai', aiRoutes);
 
 
 // --- 🚀 新增：商標圖片上傳 API 路由 ---

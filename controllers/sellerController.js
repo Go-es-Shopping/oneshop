@@ -150,3 +150,13 @@ exports.getProfile = async (req, res) => {
   }
   return res.json(shapeSeller(SellerRow))
 }
+// ==========================================
+// 4. 賣家登出 API
+// ==========================================
+exports.logout = async (req, res) => {
+  // 如果未來有需要記錄登出時間，或清空 Server 端某些快取可以在這裡寫
+  return res.json({
+    success: true,
+    message: '登出成功'
+  });
+}

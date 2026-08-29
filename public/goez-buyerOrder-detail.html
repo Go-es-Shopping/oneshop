@@ -294,7 +294,7 @@
 
       // 1. 修改 fetchOrderDetail：新增 phone 參數，帶在網址後面送給後端驗證
 function fetchOrderDetail(orderId, phone) {
-  var url = 'http://localhost:3000/api/orders/' + encodeURIComponent(orderId);
+  var url = '/api/orders/' + encodeURIComponent(orderId);
   if (phone) {
     url += '?phone=' + encodeURIComponent(phone);
   }
@@ -337,7 +337,7 @@ function init() {
           if (!currentOrder) return;
           if (!confirm('您確定要取消訂單 #' + (currentOrder.OrderID || currentOrder.id) + ' 嗎？')) return;
 
-          fetch('http://localhost:3000/api/orders/' + (currentOrder.OrderID || currentOrder.id) + '/cancel', {
+          fetch('/api/orders/' + (currentOrder.OrderID || currentOrder.id) + '/cancel', {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' }
           })

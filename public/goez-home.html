@@ -520,9 +520,9 @@
 <!-- ── Top bar：改用 Background.svg 當底圖，只保留品牌與登出 ── -->
 <header class="topbar">
   <img class="topbar__bg" src="images/decorations/Background.svg" alt="" aria-hidden="true" />
-  <a href="goez-home.html" class="topbar__brand">Goez Shop</a>
+  <span class="topbar__brand">Goez Shop</span>
   <div class="topbar__actions">
-    <button class="topbar__member" onclick="location.href='goez-member.html'">會員中心</button>
+    <a href="goez-member.html" id="memberCenterLink" class="topbar__member">會員中心</a>
     <button class="topbar__logout" onclick="handleLogout()">登出</button>
   </div>
 </header>
@@ -533,7 +533,7 @@
     <!-- ── Quick Access：管理已建立賣場 / 優惠券設定 ─── -->
     <section class="quick-access" aria-label="會員快速功能">
       <div class="quick-access__cards fade-in">
-        <a href="goez-mystores-management.html" style="text-decoration: none; color: inherit; display: block; width: 100%; height: 100%;">
+        <a href="goez-mystores-management.html" id="manageStoresLink" style="text-decoration: none; color: inherit; display: block; width: 100%; height: 100%;">
         <div class="gallery-card" style="cursor: pointer;">
           <img
             class="gallery-card__img"
@@ -543,7 +543,7 @@
           <span class="gallery-card__label">管理已建立賣場</span>
         </div>
       </a>
-          <a href="goez-mycoupons-management.html" style="text-decoration: none; color: inherit; display: block; width: 100%; height: 100%;">
+          <a href="goez-mycoupons-management.html" id="couponSettingLink" style="text-decoration: none; color: inherit; display: block; width: 100%; height: 100%;">
           <div class="gallery-card" style="cursor: pointer;">
           <img
             class="gallery-card__img"
@@ -598,22 +598,14 @@
 
           <!-- Column 2 (offset) -->
           <div class="image-gallery__col image-gallery__col--offset fade-in-right delay-2">
-            <div class="gallery-card">
+            <a href="goez-SellerOrder.html?sellerId=1" id="sellerOrderLink" style="text-decoration: none; color: inherit; display: block; width: 100%; height: 100%;">
+              <div class="gallery-card" style="cursor: pointer;">
               <img
                 class="gallery-card__img"
                 src="images/decorations/order-function.svg"
                 alt="訂單與物流"
               />
               <span class="gallery-card__label">訂單與物流</span>
-           <!-- Column 2 (offset) -->
-          <div class="image-gallery__col image-gallery__col--offset fade-in-right delay-2">
-            <a href="goez-SellerOrder.html?sellerId=1" style="text-decoration: none; color: inherit; display: block; width: 100%; height: 100%;">
-              <div class="gallery-card" style="cursor: pointer;">
-                <img
-                  class="gallery-card__img"
-                  src="images/decorations/order-function.svg"
-                  alt="訂單與物流"
-                />
               </div>
             </a>
             <div class="gallery-card">
@@ -702,15 +694,27 @@
   animatedEls.forEach(el => observer.observe(el));
 
   async function handleLogout() {
-    try {
-      // TODO: 串接後端登出 API
-      await fetch('/api/auth/logout', { method: 'POST' });
-    } catch (error) {
-      console.error('登出請求失敗:', error);
-    } finally {
-      window.location.href = 'goez-landing.html';
-    }
+  try {
+    // 1. 呼叫後端登出 API（注意路徑要改成你們現在統一的 /api/seller/logout）
+    await fetch('/api/seller/logout', { 
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+        // 如果你們的登出 API 驗證需要帶 Token，可以在這裡補上 Authorization
+      }
+    });
+  } catch (error) {
+    console.error('登出請求失敗:', error);
+  } finally {
+    // 2. 無論後端 API 是否成功，前端一定要把 localStorage 裡關於賣家的資料清空！
+    localStorage.removeItem('sellerToken');
+    localStorage.removeItem('sellerInfo');
+    localStorage.removeItem('sellerId');
+    
+    // 3. 重新導向回登入頁或首頁 (看你們設計要跳回 landing 還是 login)
+    window.location.href = 'goez-landing.html'; 
   }
+}
 </script>
 <script>
 async function handleCreateShop() {
@@ -731,7 +735,7 @@ async function handleCreateShop() {
         if (result.success && result.pageId) {
             // 3. 拿到新 ID 了，自動跳轉到編輯頁，並帶上 pageId
             console.log("申請成功，ID 為:", result.pageId);
-            window.location.href = `http://localhost:3000/goez-shop-store.html?pageId=${result.pageId}`;
+            window.location.href = `/goez-shop-store.html?pageId=${result.pageId}`;
         } else {
             alert("建立失敗：" + (result.message || "未知錯誤"));
         }
@@ -739,6 +743,42 @@ async function handleCreateShop() {
         console.error("網路請求失敗:", error);
         alert("伺服器連線失敗，請檢查後端是否啟動");
     }
+}
+// ── 1. 從登入頁跳過來時，檢查網址列有沒有帶 sellerId ──
+const urlParams = new URLSearchParams(window.location.search);
+const urlSellerId = urlParams.get('sellerId');
+// 如果網址上有，就優先把它存進 localStorage 裡面
+if (urlSellerId) {
+    localStorage.setItem('sellerId', urlSellerId);
+}
+//──  2.宣告一次就好，全頁共用──────────
+// 當頁面載入時，自動去 localStorage 檢查有沒有登入的 sellerId，沒有就用 1 頂著
+const currentSellerId = localStorage.getItem('sellerId') || 1;
+
+// ──  3.動態帶入訂單與物流的 sellerId ──────────
+// 用 id 來精準抓取這個超連結
+const linkElement = document.getElementById('sellerOrderLink');
+// 如果元素存在，就動態修改它的 href 網址 
+if (linkElement) {
+linkElement.href = `goez-SellerOrder.html?sellerId=${currentSellerId}`;
+} 
+
+// ── 4.動態帶入會員中心的 sellerId ──────────
+const memberLinkElement = document.getElementById('memberCenterLink');
+if (memberLinkElement) {
+    memberLinkElement.href = `goez-member.html?sellerId=${currentSellerId}`;
+}
+
+// ── 5.動態帶入「管理已建立賣場」的 sellerId ──────────
+const manageStoresLink = document.getElementById('manageStoresLink');
+if (manageStoresLink) {
+    manageStoresLink.href = `goez-mystores-management.html?sellerId=${currentSellerId}`;
+}
+
+// ── 6.動態帶入「優惠券設定」的 sellerId ──────────
+const couponSettingLink = document.getElementById('couponSettingLink');
+if (couponSettingLink) {
+    couponSettingLink.href = `goez-mycoupons-management.html?sellerId=${currentSellerId}`;
 }
 </script>
 </body>

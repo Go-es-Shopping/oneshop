@@ -207,7 +207,7 @@
 
         // 🚀 3. 發送 API 請求給後端 Express
         try {
-          var response = await fetch('/api/auth/login', {
+          var response = await fetch('/api/seller/login', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -221,14 +221,23 @@
           var data = await response.json();
 
           if (response.ok && data.success) {
-            // 登入成功：保存 Token 與賣家資訊至 localStorage
+            // 1.登入成功：保存 Token 與賣家資訊至 localStorage
             if (data.token) localStorage.setItem('sellerToken', data.token);
-            if (data.seller) localStorage.setItem('sellerInfo', JSON.stringify(data.seller));
+            if (data.seller) {
+                localStorage.setItem('sellerInfo', JSON.stringify(data.seller));
+                
+                // 💡 依照你的 Seller 模型定義，精準抓取 SellerID 存起來！
+                if (data.seller.SellerID) {
+                    localStorage.setItem('sellerId', data.seller.SellerID);
+                }
+            }
 
-            // 自動導頁至賣家後台或首頁
-            window.location.href = '../index.html';
+            // 2. 自動導頁至首頁，並把 SellerID 帶在網址後綴傳過去
+            // 請把 'goez-home.html' 換成你們實際的首頁檔名
+            var sellerId = (data.seller && data.seller.SellerID) ? data.seller.SellerID : 1;
+            window.location.href = `goez-home.html?sellerId=${sellerId}`;
           } else {
-            // 登入失敗：顯示後端回傳的錯誤訊息
+            // 3.登入失敗：顯示後端回傳的錯誤訊息
             showError(data.message || '登入失敗，請檢查帳號密碼');
           }
         } catch (err) {
