@@ -243,14 +243,12 @@
 </head>
 <body>
 
-  <header class="topbar">
+<header class="topbar">
     <img class="topbar__bg" src="images/decorations/Background.svg" alt="" aria-hidden="true">
-    <a href="goez-home.html" class="topbar__brand">Goez Shop</a>
-    <button class="topbar__logout" onclick="handleLogout()">登出</button>
+    <span class="topbar__brand">Goez Shop</span>
   </header>
-
   <main class="page">
-    <a href="goez-home.html" class="breadcrumb">‹ 返回會員首頁</a>
+    <a href="goez-home.html" id="backHomeLink" class="breadcrumb">‹ 返回會員首頁</a>
 
     <div class="page__header">
       <h1 class="page__title">會員資料</h1>
@@ -342,7 +340,7 @@
   </main>
 
   <script>
-    // ── Mock 會員資料：待後端 API 完成後改為 fetch('/api/member/profile') 取得 ──
+    // ── Mock 會員資料：待後端 API 完成後改為 fetch('/api/seller/me') 取得 ──
     const memberProfile = {
       name: '陳小美',
       email: 'member@example.com',
@@ -373,8 +371,8 @@
       };
 
       try {
-        // TODO: 串接後端更新 API — PATCH /api/member/profile
-        const response = await fetch('/api/member/profile', {
+        // TODO: 串接後端更新 API — PATCH /api/seller/me
+        const response = await fetch('/api/seller/me', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
@@ -403,8 +401,8 @@
       }
 
       try {
-        // TODO: 串接後端變更密碼 API — POST /api/member/change-password
-        const response = await fetch('/api/member/change-password', {
+        // TODO: 串接後端變更密碼 API — POST /api/seller/change-password
+        const response = await fetch('/api/seller/change-password', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ currentPassword, newPassword }),
@@ -423,21 +421,23 @@
       const confirmed = confirm('確定要刪除帳號嗎？此操作無法復原，所有賣場與資料都會一併移除。');
       if (!confirmed) return;
 
-      // TODO: 串接後端刪除帳號 API — DELETE /api/member/account
+      // TODO: 串接後端刪除帳號 API — DELETE /api/seller/account
       alert('帳號刪除功能尚未串接後端。');
     }
 
-    async function handleLogout() {
-      try {
-        await fetch('/api/auth/logout', { method: 'POST' });
-      } catch (error) {
-        console.error('登出請求失敗:', error);
-      } finally {
-        window.location.href = 'goez-landing.html';
-      }
-    }
-
     renderProfile();
+
+    // 1. 先從當前頁面的網址把 sellerId 抓出來（或從 localStorage 拿）
+const urlParams = new URLSearchParams(window.location.search);
+const sellerId = urlParams.get('sellerId') || localStorage.getItem('sellerId') || 1;
+
+// 2. 抓取返回首頁的超連結元素
+const backHomeLink = document.getElementById('backHomeLink');
+
+// 3. 動態組裝網址，把 sellerId 帶回去首頁
+if (backHomeLink) {
+    backHomeLink.href = `goez-home.html?sellerId=${sellerId}`;
+}
   </script>
 </body>
 </html>
