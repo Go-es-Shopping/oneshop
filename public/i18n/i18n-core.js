@@ -128,4 +128,4 @@
     apply: apply,
     mountSwitcher: mountSwitcher,
   };
-})(windo
+})(window);
