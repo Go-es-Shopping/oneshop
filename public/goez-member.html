@@ -69,7 +69,7 @@
     a { text-decoration: none; color: inherit; }
     button { font: inherit; cursor: pointer; }
 
-    /* ─── Top bar（改用 Background.svg 當底圖） ─────────────────── */
+    /* ─── Top bar ─────────────────────────────────────────── */
     .topbar {
       position: relative;
       display: flex;
@@ -95,23 +95,6 @@
       font-weight: var(--fw-bold);
       letter-spacing: var(--ls-heading);
       color: var(--color-white);
-    }
-    .topbar__logout {
-      position: relative;
-      z-index: 1;
-      background: rgba(255,255,255,0.15);
-      border: 1px solid rgba(255,255,255,0.15);
-      border-radius: var(--radius-12);
-      padding: var(--spacing-8) var(--spacing-16);
-      font-size: var(--fs-16);
-      font-weight: var(--fw-medium);
-      color: var(--color-white);
-      cursor: pointer;
-      transition: background 0.2s ease, border-color 0.2s ease;
-    }
-    .topbar__logout:hover {
-      background: rgba(255,255,255,0.25);
-      border-color: rgba(255,255,255,0.4);
     }
 
     /* ─── Page ──────────────────────────────────────────────────── */
@@ -260,8 +243,8 @@
       <div class="profile-summary">
         <div class="profile-summary__avatar" id="avatarInitial">G</div>
         <div class="profile-summary__body">
-          <span class="profile-summary__name" id="summaryName">會員姓名</span>
-          <span class="profile-summary__email" id="summaryEmail">member@example.com</span>
+          <span class="profile-summary__name" id="summaryName">載入中...</span>
+          <span class="profile-summary__email" id="summaryEmail">loading...</span>
         </div>
       </div>
     </section>
@@ -282,6 +265,10 @@
           <div class="form-field">
             <label for="fieldPhone">聯絡電話</label>
             <input type="tel" id="fieldPhone" name="phone" placeholder="0912-345-678" />
+          </div>
+          <div class="form-field form-field--full">
+            <label for="fieldStoreName">商店名稱</label>
+            <input type="text" id="fieldStoreName" name="storeName" placeholder="請輸入商店名稱" />
           </div>
           <div class="form-field form-field--full">
             <label for="fieldEmail">Email</label>
@@ -312,11 +299,11 @@
           </div>
           <div class="form-field">
             <label for="fieldNewPassword">新密碼</label>
-            <input type="password" id="fieldNewPassword" name="newPassword" required minlength="8" autocomplete="new-password" />
+            <input type="password" id="fieldNewPassword" name="newPassword" required minlength="6" autocomplete="new-password" />
           </div>
           <div class="form-field">
             <label for="fieldConfirmPassword">確認新密碼</label>
-            <input type="password" id="fieldConfirmPassword" name="confirmPassword" required minlength="8" autocomplete="new-password" />
+            <input type="password" id="fieldConfirmPassword" name="confirmPassword" required minlength="6" autocomplete="new-password" />
           </div>
         </div>
 
@@ -340,21 +327,14 @@
   </main>
 
   <script>
-    // ── Mock 會員資料：待後端 API 完成後改為 fetch('/api/seller/me') 取得 ──
-    const memberProfile = {
-      name: '陳小美',
-      email: 'member@example.com',
-      phone: '0912-345-678',
-    };
+    // ── 1. 從 URL 取得 sellerId ─────────────────
+    const urlParams = new URLSearchParams(window.location.search);
+    const sellerId = urlParams.get('sellerId') || localStorage.getItem('sellerId') || '1';
 
-    function renderProfile() {
-      document.getElementById('summaryName').textContent = memberProfile.name;
-      document.getElementById('summaryEmail').textContent = memberProfile.email;
-      document.getElementById('avatarInitial').textContent = memberProfile.name.charAt(0) || 'G';
-
-      document.getElementById('fieldName').value = memberProfile.name;
-      document.getElementById('fieldPhone').value = memberProfile.phone;
-      document.getElementById('fieldEmail').value = memberProfile.email;
+    // 設定返回首頁連結
+    const backHomeLink = document.getElementById('backHomeLink');
+    if (backHomeLink) {
+      backHomeLink.href = `goez-home.html?sellerId=${sellerId}`;
     }
 
     function showStatus(el, message, type) {
@@ -362,36 +342,71 @@
       el.className = `form-status is-visible form-status--${type}`;
     }
 
+    // ── 2. 頁面載入時取得賣家資料 ────────────────
+    async function loadProfile() {
+      try {
+        const response = await fetch(`/api/seller/me?sellerId=${sellerId}`);
+        if (!response.ok) throw new Error('無法取得個人資料');
+
+        const seller = await response.json();
+
+        // 渲染畫面上半部摘要
+        const name = seller.SellerName || '賣家';
+        document.getElementById('summaryName').textContent = name;
+        document.getElementById('summaryEmail').textContent = seller.Email || '';
+        document.getElementById('avatarInitial').textContent = name.charAt(0).toUpperCase() || 'G';
+
+        // 填入基本資料表單
+        document.getElementById('fieldName').value = seller.SellerName || '';
+        document.getElementById('fieldPhone').value = seller.Phone || '';
+        document.getElementById('fieldStoreName').value = seller.StoreName || '';
+        document.getElementById('fieldEmail').value = seller.Email || '';
+      } catch (error) {
+        console.error('載入個人資料失敗:', error);
+      }
+    }
+
+    // ── 3. 更新基本資料 API 串接 ───────────────
     document.getElementById('profileForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const statusEl = document.getElementById('profileStatus');
+
       const payload = {
-        name: document.getElementById('fieldName').value.trim(),
+        sellerId: sellerId,
+        sellerName: document.getElementById('fieldName').value.trim(),
         phone: document.getElementById('fieldPhone').value.trim(),
+        storeName: document.getElementById('fieldStoreName').value.trim()
       };
 
       try {
-        // TODO: 串接後端更新 API — PATCH /api/seller/me
-        const response = await fetch('/api/seller/me', {
-          method: 'PATCH',
+        const response = await fetch('/api/seller/update-profile', {
+          method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
-        if (!response.ok) throw new Error('更新失敗');
 
-        Object.assign(memberProfile, payload);
-        renderProfile();
-        showStatus(statusEl, '個人資料已更新。', 'success');
+        const result = await response.json();
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || '更新失敗');
+        }
+
+        // 重新更新頂部名字與大頭照
+        const name = payload.sellerName;
+        document.getElementById('summaryName').textContent = name;
+        document.getElementById('avatarInitial').textContent = name.charAt(0).toUpperCase() || 'G';
+
+        showStatus(statusEl, result.message || '基本資料已成功更新！', 'success');
       } catch (error) {
-        console.error('更新個人資料失敗:', error);
-        showStatus(statusEl, '更新失敗，請稍後再試。', 'error');
+        console.error('更新基本資料失敗:', error);
+        showStatus(statusEl, error.message || '更新失敗，請稍後再試。', 'error');
       }
     });
 
+    // ── 4. 變更密碼 API 串接 ───────────────────
     document.getElementById('passwordForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const statusEl = document.getElementById('passwordStatus');
-      const currentPassword = document.getElementById('fieldCurrentPassword').value;
+      const oldPassword = document.getElementById('fieldCurrentPassword').value;
       const newPassword = document.getElementById('fieldNewPassword').value;
       const confirmPassword = document.getElementById('fieldConfirmPassword').value;
 
@@ -401,43 +416,57 @@
       }
 
       try {
-        // TODO: 串接後端變更密碼 API — POST /api/seller/change-password
-        const response = await fetch('/api/seller/change-password', {
+        const response = await fetch('/api/seller/update-password', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ currentPassword, newPassword }),
+          body: JSON.stringify({
+            sellerId: sellerId,
+            oldPassword: oldPassword,
+            newPassword: newPassword
+          }),
         });
-        if (!response.ok) throw new Error('密碼變更失敗');
+
+        const result = await response.json();
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || '密碼變更失敗');
+        }
 
         e.target.reset();
-        showStatus(statusEl, '密碼已成功更新。', 'success');
+        showStatus(statusEl, result.message || '密碼已成功變更！', 'success');
       } catch (error) {
         console.error('變更密碼失敗:', error);
-        showStatus(statusEl, '密碼變更失敗，請確認目前密碼是否正確。', 'error');
+        showStatus(statusEl, error.message || '密碼變更失敗，請確認目前密碼是否正確。', 'error');
       }
     });
 
-    function handleDeleteAccount() {
+    // ── 5. 刪除帳號 API 串接 ───────────────────
+    async function handleDeleteAccount() {
       const confirmed = confirm('確定要刪除帳號嗎？此操作無法復原，所有賣場與資料都會一併移除。');
       if (!confirmed) return;
 
-      // TODO: 串接後端刪除帳號 API — DELETE /api/seller/account
-      alert('帳號刪除功能尚未串接後端。');
+      try {
+        const response = await fetch('/api/seller/delete-account', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sellerId: sellerId })
+        });
+
+        const result = await response.json();
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || '刪除失敗');
+        }
+
+        alert('帳號已成功刪除！');
+        localStorage.clear();
+        window.location.href = 'goez-landing.html';
+      } catch (error) {
+        console.error('刪除帳號失敗:', error);
+        alert(error.message || '刪除帳號失敗，請稍微再試');
+      }
     }
 
-    renderProfile();
-
-    // 1. 先從當前頁面的網址把 sellerId 抓出來（或從 localStorage 拿）
-const urlParams = new URLSearchParams(window.location.search);
-const sellerId = urlParams.get('sellerId') || localStorage.getItem('sellerId') || 1;
-
-// 2. 抓取返回首頁的超連結元素
-const backHomeLink = document.getElementById('backHomeLink');
-
-// 3. 動態組裝網址，把 sellerId 帶回去首頁
-if (backHomeLink) {
-    backHomeLink.href = `goez-home.html?sellerId=${sellerId}`;
-}
+    // 初始化頁面
+    loadProfile();
   </script>
 </body>
 </html>
