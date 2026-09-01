@@ -25,6 +25,7 @@ exports.getCoupons = async (req, res) => {
 exports.createCoupon = async (req, res) => {
   try {
     const { 
+      SellerID, // <--- 補上這行
       Title, Code, DiscountType, 
       UsageLimit, TotalQuantity, IsExclusive, StartDate, EndDate, Rules 
     } = req.body;
@@ -52,6 +53,7 @@ exports.createCoupon = async (req, res) => {
 
     // 建立新優惠券並寫入 MinSpend 與 DiscountValue
     const newCoupon = await Coupon.create({
+      SellerID: SellerID || null, // <--- 補上這行
       Title,
       Code,
       DiscountType,
@@ -70,8 +72,59 @@ exports.createCoupon = async (req, res) => {
     res.status(500).json({ success: false, message: '伺服器錯誤: ' + error.message });
   }
 };
+// 3. 更新優惠券 (PUT /api/coupons/:CouponID) 
+exports.updateCoupon = async (req, res) => {
+  try {
+    const { CouponID } = req.params;
+    const { 
+      Title, Code, DiscountType, 
+      UsageLimit, TotalQuantity, IsExclusive, StartDate, EndDate, Rules 
+    } = req.body;
 
-// 3. 刪除優惠券
+    // 尋找是否存在該筆優惠券
+    const coupon = await Coupon.findByPk(CouponID);
+    if (!coupon) {
+      return res.status(404).json({ success: false, message: '找不到此優惠券' });
+    }
+
+    // 檢查代碼是否被別人佔用 (排除自己)
+    if (Code && Code !== coupon.Code) {
+      const existingCoupon = await Coupon.findOne({ where: { Code } });
+      if (existingCoupon) {
+        return res.status(400).json({ success: false, message: '此優惠券代碼已經存在' });
+      }
+    }
+
+    // 從前端傳來的 Rules 陣列取得動態規則的數值
+    let minSpendValue = coupon.MinSpend;
+    let discountValue = coupon.DiscountValue;
+
+    if (Rules && Array.isArray(Rules) && Rules.length > 0) {
+      minSpendValue = Rules[0].minSpend !== undefined ? Rules[0].minSpend : minSpendValue;
+      discountValue = Rules[0].discountValue !== undefined ? Rules[0].discountValue : discountValue;
+    }
+
+    // 執行更新
+    await coupon.update({
+      Title: Title !== undefined ? Title : coupon.Title,
+      Code: Code !== undefined ? Code.toUpperCase() : coupon.Code,
+      DiscountType: DiscountType !== undefined ? DiscountType : coupon.DiscountType,
+      MinSpend: minSpendValue,
+      DiscountValue: discountValue,
+      UsageLimit: UsageLimit !== undefined ? UsageLimit : coupon.UsageLimit,
+      TotalQuantity: TotalQuantity !== undefined ? TotalQuantity : coupon.TotalQuantity,
+      IsExclusive: IsExclusive !== undefined ? IsExclusive : coupon.IsExclusive,
+      StartDate: StartDate !== undefined ? StartDate : coupon.StartDate,
+      EndDate: EndDate !== undefined ? EndDate : coupon.EndDate
+    });
+
+    res.json({ success: true, message: '優惠券更新成功', data: coupon });
+  } catch (error) {
+    console.error('更新優惠券失敗:', error);
+    res.status(500).json({ success: false, message: '伺服器錯誤: ' + error.message });
+  }
+};
+// 4. 刪除優惠券
 exports.deleteCoupon = async (req, res) => {
   try {
     const { CouponID } = req.params;
@@ -88,7 +141,7 @@ exports.deleteCoupon = async (req, res) => {
     res.status(500).json({ success: false, message: '伺服器錯誤' });
   }
 };
-// 4. 驗證並套用優惠券 (給結帳頁使用)
+// 5. 驗證並套用優惠券 (給結帳頁使用)
 exports.applyCoupon = async (req, res) => {
   try {
     const { code, orderTotal } = req.body;
