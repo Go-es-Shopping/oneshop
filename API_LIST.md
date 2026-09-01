@@ -20,6 +20,8 @@
 | | POST | `/api/store/create-new-shop` | `StorePage` | 建立全新空白賣場|
 | | PUT | `/api/store/pages/:PageID` | `StorePage` | 更新商店頁面基本資訊 (含 Logo 路徑、標題、發佈狀態) |
 | | PUT | `/api/store/content/:ContentID` | `PageContent` | 更新頁面特定區塊內容 (如 CTA 文字、產品敘述) |
+| | GET | `/api/store/my-stores` | `StorePage` ,`PageContent`| 取得指定賣家的所有賣場清單 (瀏覽器可測) |
+| | DELETE | `/api/store/pages/:PageID` | `StorePage` ,`PageContent`,`PageProduct`|刪除指定賣場 |
 | **訂單管理** | POST | `/api/orders/` | `Order`, `Orderdetail`, `Product` | 建立新訂單 (包含扣庫存邏輯) |
 | | GET | `/api/orders/` | `Order` | 取得訂單列表 (支援 SellerID 篩選) (瀏覽器可測) |
 | | GET | `/api/orders/:OrderID` | `Order`, `Orderdetail`, `Shipment`, `Payment` | 取得訂單詳情 (包含明細、物流、付款) (瀏覽器可測) |
