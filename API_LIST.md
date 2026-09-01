@@ -20,6 +20,8 @@
 | | POST | `/api/store/create-new-shop` | `StorePage` | 建立全新空白賣場|
 | | PUT | `/api/store/pages/:PageID` | `StorePage` | 更新商店頁面基本資訊 (含 Logo 路徑、標題、發佈狀態) |
 | | PUT | `/api/store/content/:ContentID` | `PageContent` | 更新頁面特定區塊內容 (如 CTA 文字、產品敘述) |
+| | GET | `/api/store/my-stores` | `StorePage` ,`PageContent`| 取得指定賣家的所有賣場清單 (瀏覽器可測) |
+| | DELETE | `/api/store/pages/:PageID` | `StorePage` ,`PageContent`,`PageProduct`|刪除指定賣場 |
 | **訂單管理** | POST | `/api/orders/` | `Order`, `Orderdetail`, `Product` | 建立新訂單 (包含扣庫存邏輯) |
 | | GET | `/api/orders/` | `Order` | 取得訂單列表 (支援 SellerID 篩選) (瀏覽器可測) |
 | | GET | `/api/orders/:OrderID` | `Order`, `Orderdetail`, `Shipment`, `Payment` | 取得訂單詳情 (包含明細、物流、付款) (瀏覽器可測) |
@@ -37,6 +39,7 @@
 | **數據追蹤** | POST | `/api/track/view` | `PageVisit` , `Product` , `Seller` | 瀏覽紀錄追蹤 (支援商品 ID、來源網址、SessionID 與 Metadata 擴充) |
 | **優惠券管理** | GET | `/api/coupons` | `Coupon` | 取得賣家已設定的所有優惠券列表 |
 | | POST | `/api/coupons` | `Coupon` | 新增一筆優惠券設定（包含折扣種類、門檻與時間限制） |
+| | PUT | `/api/coupons/:CouponID` | `Coupon` | 編輯更新優惠卷 |
 | | DELETE | `/api/coupons/:CouponID` | `Coupon` | 刪除指定的優惠券 |
 | | POST | `/api/coupons/apply` | `Coupon` | 驗證並套用優惠券 |
 | **金流服務** | POST | `/api/payment/notify` | `Payment`, `Order` | 接收藍新金流幕後背景通知 (Webhook)，自動解密並更新訂單付款狀態、寫入 TradeNo 與付款時間 |

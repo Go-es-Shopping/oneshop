@@ -245,27 +245,30 @@
         <h1 class="page__title">管理已建立賣場</h1>
         <p class="page__subtitle">查看、編輯或刪除你所有的賣場。</p>
       </div>
-      <button class="btn--dark" onclick="location.href='goez-shop-store-editor.html'">＋ 新增賣場</button>
     </div>
 
     <div class="store-list" id="storeList"></div>
 
+    <!-- 修改後的空狀態提示文字 -->
     <div class="empty-state" id="emptyState">
-      <p class="empty-state__title">目前還沒有任何賣場</p>
-      <p class="empty-state__desc">點擊「＋ 新增賣場」開始建立你的第一個線上賣場。</p>
+      <p class="empty-state__title">尚未建立賣場唷！</p>
+      <p class="empty-state__desc">請至首頁點選「設計我的賣場」開始你的第一間線上小店吧！</p>
     </div>
   </main>
 
   <script>
-    // ── Mock 資料：待後端 API 完成後改為 fetch('/api/store/list') 取得 ──
-    // 預期後端回傳格式：[{ id, name, status: 'published' | 'draft', createdAt, views }, ...]
-    // 下面陣列中的 createdAt（建立時間）與 views（瀏覽次數）目前都是寫死的假資料，
-    // 之後接上資料庫後，只要讓 /api/store/list 回傳真實數值，這裡不用改任何渲染邏輯。
-    let stores = [
-      { id: 'st_001', name: '手作陶藝小舖', status: 'published', createdAt: '2026-06-12', views: 1284 },
-      { id: 'st_002', name: '早晨咖啡豆專賣', status: 'published', createdAt: '2026-07-03', views: 542 },
-      { id: 'st_003', name: '寵物零食實驗室', status: 'draft', createdAt: '2026-08-01', views: 0 },
-    ];
+    // ─── 全域變數準備 ───
+    let stores = []; // 用來存放從後端抓回來的賣場清單
+    
+    // 1. 從網址列取得 sellerId (如果網址沒有，預設先帶 15，對應你的資料庫測試)
+    const urlParams = new URLSearchParams(window.location.search);
+    const sellerId = urlParams.get('sellerId') || '15'; 
+
+    // 2. 處理「返回會員首頁」的超連結，讓它也能帶上 sellerId
+    const backHomeLink = document.getElementById('backHomeLink');
+    if (backHomeLink) {
+      backHomeLink.href = `goez-home.html?sellerId=${sellerId}`;
+    }
 
     const storeIconSVG = `
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -275,6 +278,7 @@
         <path d="M10 20v-5a2 2 0 0 1 2-2 2 2 0 0 1 2 2v5" />
       </svg>`;
 
+    // ─── 畫面渲染邏輯 ───
     function renderStores() {
       const listEl = document.getElementById('storeList');
       const emptyEl = document.getElementById('emptyState');
@@ -286,26 +290,49 @@
       }
       emptyEl.classList.remove('is-visible');
 
-      listEl.innerHTML = stores.map(store => `
-        <article class="store-card">
-          <div class="store-card__icon">${storeIconSVG}</div>
-          <div class="store-card__body">
-            <div class="store-card__name-row">
-              <span class="store-card__name">${escapeHtml(store.name)}</span>
-              <span class="badge ${store.status === 'published' ? 'badge--published' : 'badge--draft'}">
-                ${store.status === 'published' ? '已發布' : '草稿'}
-              </span>
+      listEl.innerHTML = stores.map(store => {
+        // ─── 1. 動態判斷「檢視」按鈕的網址 ───
+        let viewUrl = '';
+        if (store.status === 'published') {
+          // 如果資料庫有填寫專屬網址 (customUrl)，就走 /store/xxx
+          if (store.customUrl && store.customUrl.trim() !== '') {
+            viewUrl = `/store/${encodeURIComponent(store.customUrl)}`;
+          } else {
+            // 否則走預設的通用模版網頁
+            viewUrl = `goez-shop-store-template.html?pageId=${encodeURIComponent(store.id)}`;
+          }
+        }
+
+        // ─── 2. 「編輯」按鈕的網址 (帶入 pageId 與 sellerId) ───
+        const editUrl = `goez-store.html?pageId=${encodeURIComponent(store.id)}`;
+
+        return `
+          <article class="store-card">
+            <div class="store-card__icon">${storeIconSVG}</div>
+            <div class="store-card__body">
+              <div class="store-card__name-row">
+                <span class="store-card__name">${escapeHtml(store.name)}</span>
+                <span class="badge ${store.status === 'published' ? 'badge--published' : 'badge--draft'}">
+                  ${store.status === 'published' ? '已發布' : '草稿'}
+                </span>
+              </div>
+              <span class="store-card__meta">建立於 ${store.createdAt}</span>
             </div>
-            <!-- 建立時間／瀏覽次數：待接資料庫後由 store.createdAt / store.views 帶入真實數值 -->
-            <span class="store-card__meta">建立於 ${store.createdAt}　·　瀏覽次數 ${store.views.toLocaleString()}</span>
-          </div>
-          <div class="store-card__actions">
-            <a class="action-btn" href="goez-shop-store-template.html?pageId=${encodeURIComponent(store.id)}">檢視</a>
-            <a class="action-btn" href="goez-shop-store-editor.html?pageId=${encodeURIComponent(store.id)}">編輯</a>
-            <button class="action-btn action-btn--danger" onclick="handleDeleteStore('${store.id}')">刪除</button>
-          </div>
-        </article>
-      `).join('');
+            <div class="store-card__actions">
+              <!-- 條件渲染：只有狀態為 published 時才顯示「檢視」 -->
+              ${store.status === 'published' ? `
+                <a class="action-btn" href="${viewUrl}" target="_blank">檢視</a>
+              ` : ''}
+              
+              <!-- 編輯按鈕 -->
+              <a class="action-btn" href="${editUrl}">編輯</a>
+              
+              <!-- 刪除按鈕 -->
+              <button class="action-btn action-btn--danger" onclick="handleDeleteStore('${store.id}')">刪除</button>
+            </div>
+          </article>
+        `;
+      }).join('');
     }
 
     function escapeHtml(str) {
@@ -314,30 +341,57 @@
       return div.innerHTML;
     }
 
-    function handleDeleteStore(id) {
-      const store = stores.find(s => s.id === id);
-      if (!store) return;
-      const confirmed = confirm(`確定要刪除「${store.name}」嗎？此操作無法復原。`);
-      if (!confirmed) return;
+    // ─── 刪除邏輯 ───
+async function handleDeleteStore(id) {
+  const store = stores.find(s => String(s.id) === String(id));
+  if (!store) return;
+  
+  const confirmed = confirm(`確定要刪除「${store.name}」嗎？此操作無法復原。`);
+  if (!confirmed) return;
 
-      // TODO: 串接後端刪除 API — DELETE /api/store/:id
-      stores = stores.filter(s => s.id !== id);
+  try {
+    // 呼叫對應的後端刪除 API (對應 storeroute.js 中的 router.delete('/pages/:PageID', ...))
+    const response = await fetch(`/api/store/pages/${id}`, {
+      method: 'DELETE'
+    });
+    const result = await response.json();
+
+    if (result.success) {
+      // 後端刪除成功後，才從前端陣列移除並重新渲染
+      stores = stores.filter(s => String(s.id) !== String(id));
       renderStores();
+      alert('賣場刪除成功！');
+    } else {
+      alert('刪除失敗: ' + (result.message || '未知錯誤'));
     }
-//---------跳轉回去帶有sellerId的首頁------------------
-
-// 1. 先從當前頁面的網址把 sellerId 抓出來（或從 localStorage 拿）
-const urlParams = new URLSearchParams(window.location.search);
-const sellerId = urlParams.get('sellerId') || localStorage.getItem('sellerId') || 1;
-
-// 2. 抓取返回首頁的超連結元素
-const backHomeLink = document.getElementById('backHomeLink');
-
-// 3. 動態組裝網址，把 sellerId 帶回去首頁
-if (backHomeLink) {
-    backHomeLink.href = `goez-home.html?sellerId=${sellerId}`;
+  } catch (err) {
+    console.error('連線伺服器刪除失敗:', err);
+    alert('網路異常，刪除失敗，請稍後再試');
+  }
 }
-    renderStores();
+
+    // ─── 網頁載入時：呼叫後端 API 取得資料 ───
+    document.addEventListener('DOMContentLoaded', () => {
+      // 呼叫你在 storeroute 新增的 /my-stores 路由
+      fetch(`/api/store/my-stores?sellerId=${sellerId}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            // 將後端回傳的實體資料賦值給全域變數 stores
+            stores = data.stores;
+            // 資料準備好後，開始渲染畫面
+            renderStores();
+          } else {
+            console.error('載入賣場失敗:', data.message);
+            // 萬一失敗，可以確保顯示空狀態
+            renderStores(); 
+          }
+        })
+        .catch(err => {
+          console.error('連線伺服器發生錯誤:', err);
+          renderStores(); 
+        });
+    });
   </script>
 </body>
 </html>

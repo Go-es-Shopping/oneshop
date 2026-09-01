@@ -2,25 +2,102 @@
  * Goezshop 優惠券管理與 API 互動引擎
  * ====================================================================
  * 【核心定位】
- * 負責後台優惠券管理頁面之互動邏輯、折扣規則動態增刪，以及 API 資料串接。
- * 【運作流程】
- * 1. 動態規則管理：依據折扣類型（固定金額/百分比）即時調整欄位標籤與提示，支援多重規則項目的動態新增與刪除。
- * 2. 介面互動控制：處理「無時間限制」等 UI 狀態切換，自動化啟用或停用起訖日期欄位。
- * 3. 欄位防呆與收集：驗證並收集表單內各項優惠券設定（代碼、折扣、限制、期限等），並防呆安全地抓取動態規則。
- * 4. API 對接：將包裝好的 JSON 負載透過 POST /api/coupons 非同步傳送至後端進行建立，並處理回應與按鈕狀態。
+ * 負責後台優惠券管理頁面之互動邏輯、折扣規則動態增刪，以及 API 資料串接。（支援新增與編輯）。
+* 【運作流程】
+ * 1. 網址參數解析：自動偵測網址中的 sellerId 與 couponID，判斷目前為「新增」或「編輯」模式。
+ * 2. 編輯資料載入：若為編輯模式，於畫面載入時自動向後端取得該筆優惠券詳細資料（含基本欄位與動態規則）並回填表單。
+ * 3. 動態規則管理：依據折扣類型（固定金額/百分比）即時調整欄位標籤與提示，支援多重規則項目的動態新增與刪除。
+ * 4. 介面互動控制：處理「無時間限制」等 UI 狀態切換，自動化啟用或停用起訖日期欄位。
+ * 5. 欄位防呆與收集：驗證並收集表單內各項優惠券設定，並防呆安全地抓取動態規則。
+ * 6. API 對接：依據是否有 couponID 自動切換發送 POST（新建）或 PUT（更新）請求至後端，並處理回應與跳轉狀態。
  * 
  * 【注意事項】
- * * 本檔案僅負責「優惠券管理與建立」。
+ * * 本檔案僅負責「優惠券管理、建立與編輯」。
  * * 依據單一職責原則，任何與優惠券無關的店鋪裝潢或商品管理功能請一律寫在獨立的新檔案中。
  * ====================================================================
  * 由goez-coupon.html引用
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sellerId = urlParams.get('sellerId') || localStorage.getItem('sellerId') || 15;
+    const couponID = urlParams.get('couponID'); // 取得網址上的 couponID
+
     const discountTypeSelect = document.getElementById('discount-type');
     const rulesWrapper = document.getElementById('discount-rules-wrapper');
     const rulesList = document.getElementById('discount-rules-list');
     const addRuleBtn = document.getElementById('add-rule-btn');
+    const formTitleEl = document.querySelector('h1') || document.querySelector('.form-title'); // 視你的標題 DOM 而定
+
+    // 如果有 couponID，代表是「編輯模式」，要在畫面載入時先抓資料填入
+    if (couponID) {
+        if (formTitleEl) formTitleEl.textContent = '編輯優惠券';
+        fetchCouponDetails(couponID);
+    }
+
+    // 抓取單筆資料填入表單的函式
+    async function fetchCouponDetails(id) {
+        try {
+            // 假設後端有提供取得單筆的 API，或者從清單過濾。這裡示範直接呼叫 /api/coupons/:id 或從列表撈
+            const response = await fetch(`/api/coupons?sellerID=${sellerId}`);
+            const result = await response.json();
+            if (result.success && result.list) {
+                const c = result.list.find(x => String(x.CouponID) === String(id));
+                if (c) {
+                    // 填入基本欄位
+                    document.getElementById('coupon-name').value = c.Title || '';
+                    document.getElementById('coupon-code').value = c.Code || '';
+                    
+                    if (discountTypeSelect) {
+                        discountTypeSelect.value = c.DiscountType || '';
+                        // 觸發 change 事件以便動態生成規則區塊
+                        discountTypeSelect.dispatchEvent(new Event('change'));
+                    }
+
+                    document.getElementById('limit-uses').value = c.UsageLimit !== null ? c.UsageLimit : '';
+                    document.getElementById('total-issue').value = c.TotalQuantity !== null ? c.TotalQuantity : '';
+                    
+                    const noCombineEl = document.getElementById('no-combine');
+                    if (noCombineEl) noCombineEl.checked = !!c.IsExclusive;
+
+                    const noTimeLimitCheckbox = document.getElementById('no-time-limit');
+                    if (!c.StartDate && !c.EndDate) {
+                        if (noTimeLimitCheckbox) {
+                            noTimeLimitCheckbox.checked = true;
+                            noTimeLimitCheckbox.dispatchEvent(new Event('change'));
+                        }
+                    } else {
+                        if (document.getElementById('start-date')) document.getElementById('start-date').value = c.StartDate ? c.StartDate.split('T')[0] : '';
+                        if (document.getElementById('end-date')) document.getElementById('end-date').value = c.EndDate ? c.EndDate.split('T')[0] : '';
+                    }
+
+                    // 處理動態規則 (Rules)
+                    if (c.Rules && c.Rules.length > 0 && rulesList) {
+                        rulesList.innerHTML = ''; // 清空預設空白規則
+                        c.Rules.forEach(rule => {
+                            const ruleDiv = createRuleItem();
+                            rulesList.appendChild(ruleDiv);
+                            const inputs = ruleDiv.querySelectorAll('input');
+                            if (inputs.length >= 2) {
+                                inputs[0].value = rule.MinSpend;
+                                inputs[1].value = rule.DiscountValue;
+                            }
+                        });
+                        updateRuleIndices();
+                    } else if (c.MinSpend !== null && rulesList && rulesList.children.length > 0) {
+                        // 相容舊結構只有 MinSpend 的情況
+                        const firstInputs = rulesList.children[0].querySelectorAll('input');
+                        if (firstInputs.length >= 2) {
+                            firstInputs[0].value = c.MinSpend;
+                            firstInputs[1].value = c.DiscountValue;
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('載入優惠券詳細資料失敗:', error);
+        }
+    }
 
     const getRightColumnInfo = (type) => {
         if (type === 'percentage') {
@@ -165,6 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
 const minSpend = rules.length > 0 ? rules[0].minSpend : null;
 
 const payload = {
+    SellerID: Number(sellerId), // 必須帶入 SellerID 讓後端驗證
     Title: title,
     Code: code,
     DiscountType: discountType,
@@ -181,29 +259,34 @@ const payload = {
         submitBtn.classList.add('opacity-80', 'cursor-not-allowed');
 
         try {
-            const response = await fetch('/api/coupons', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
+            let response;
+            if (couponID) {
+                // 編輯模式：發送 PUT 請求
+                response = await fetch(`/api/coupons/${couponID}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            } else {
+                // 新增模式：發送 POST 請求
+                response = await fetch('/api/coupons', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            }
 
             const result = await response.json();
 
             if (result.success) {
-                submitBtn.textContent = "建立成功 ✓";
-                submitBtn.classList.remove('bg-btn', 'hover:bg-btn-hover');
-                submitBtn.classList.add('bg-green-600', 'hover:bg-green-700');
-                
+                submitBtn.textContent = couponID ? "修改成功 ✓" : "建立成功 ✓";
+                // ... 後續成功動畫與跳轉回列表頁
                 setTimeout(() => {
-                    form.reset();
-                    if (rulesWrapper) rulesWrapper.classList.add('hidden');
-                    if (rulesList) rulesList.innerHTML = '';
-                    submitBtn.textContent = originalText;
-                    submitBtn.classList.remove('opacity-80', 'cursor-not-allowed', 'bg-green-600', 'hover:bg-green-700');
-                    submitBtn.classList.add('bg-btn', 'hover:bg-btn-hover');
-                }, 1500);
+                    // 儲存成功後自動跳轉回管理列表頁面
+                    location.href = `goez-mycoupons-management.html?sellerId=${sellerId}`;
+                }, 1000);
             } else {
-                alert('建立失敗: ' + result.message);
+                alert('操作失敗: ' + result.message);
                 submitBtn.textContent = originalText;
                 submitBtn.classList.remove('opacity-80', 'cursor-not-allowed');
             }
