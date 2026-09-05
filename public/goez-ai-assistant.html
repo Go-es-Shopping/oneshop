@@ -679,12 +679,12 @@
 
       <div class="editor__heading">
         <div class="editor__heading-text">
-          <h1 class="editor__title">AI 商店助手</h1>
-          <p class="editor__subtitle">使用 AI 工具優化您的產品內容</p>
+          <h1 class="editor__title" data-i18n="aiTitle">AI 商店助手</h1>
+          <p class="editor__subtitle" data-i18n="aiSubtitle">使用 AI 工具優化您的產品內容</p>
         </div>
         <div class="quota-badge" aria-label="AI 使用額度">
-          <span class="quota-badge__label">本月 AI 使用量</span>
-          <span class="quota-badge__value"><span id="quotaValue">0</span> / <span id="quotaLimit">50</span> 次</span>
+          <span class="quota-badge__label" data-i18n="monthlyQuota">本月 AI 使用量</span>
+          <span class="quota-badge__value"><span id="quotaValue">0</span> / <span id="quotaLimit">50</span> <span data-i18n="timesUnit">次</span></span>
           <div class="quota-badge__bar">
             <div class="quota-badge__bar-fill" id="quotaBarFill"></div>
           </div>
@@ -692,54 +692,54 @@
       </div>
 
       <article class="card" aria-label="AI 文案魔法生成器">
-        <h2 class="card__title">AI 文案魔法生成器</h2>
+        <h2 class="card__title" data-i18n="copyGenTitle">AI 文案魔法生成器</h2>
         <div class="text-gen__body">
           <div class="text-gen__left">
             <div class="field">
-              <label class="field__label" for="keywords">產品關鍵字</label>
-              <input class="field__input" id="keywords" type="text" maxlength="50" placeholder="例如：無線耳機、降噪、藍牙 5.0" />
+              <label class="field__label" for="keywords" data-i18n="keywordsLabel">產品關鍵字</label>
+              <input class="field__input" id="keywords" type="text" maxlength="50" placeholder="例如：無線耳機、降噪、藍牙 5.0" data-i18n-placeholder="keywordsPlaceholder" />
               <div class="field__meta">
                 <p class="field__error" id="keywordError" role="alert" hidden></p>
                 <span class="field__counter" id="keywordCounter">0/50</span>
               </div>
             </div>
             <div class="field">
-              <label class="field__label">文案語氣</label>
+              <label class="field__label" data-i18n="toneLabel">文案語氣</label>
               <div class="chip-group" id="toneGroup" role="radiogroup" aria-label="文案語氣">
-                <button type="button" class="chip is-selected" data-tone="formal" role="radio" aria-checked="true">正式</button>
-                <button type="button" class="chip" data-tone="playful" role="radio" aria-checked="false">活潑</button>
-                <button type="button" class="chip" data-tone="professional" role="radio" aria-checked="false">專業</button>
+                <button type="button" class="chip is-selected" data-tone="formal" role="radio" aria-checked="true" data-i18n="toneFormal">正式</button>
+                <button type="button" class="chip" data-tone="playful" role="radio" aria-checked="false" data-i18n="tonePlayful">活潑</button>
+                <button type="button" class="chip" data-tone="professional" role="radio" aria-checked="false" data-i18n="toneProfessional">專業</button>
               </div>
             </div>
             <div class="field" style="margin-top: 16px;">
-              <label class="field__label" for="wordCountSelect">字數限制</label>
+              <label class="field__label" for="wordCountSelect" data-i18n="lengthLabel">字數限制</label>
               <select id="wordCountSelect" class="field__input custom-select">
-                <option value="5 到 10">5-10字 (極短標題)</option>
-                <option value="10 到 15">10-15字 (簡短口號)</option>
-                <option value="15 到 20">15-20字 (社群短文)</option>
-                <option value="50 到 100" selected>50-100字 (標準內文)</option>
+                <option value="5 到 10" data-i18n="lenOption1">5-10字 (極短標題)</option>
+                <option value="10 到 15" data-i18n="lenOption2">10-15字 (簡短口號)</option>
+                <option value="15 到 20" data-i18n="lenOption3">15-20字 (社群短文)</option>
+                <option value="50 到 100" selected data-i18n="lenOption4">50-100字 (標準內文)</option>
               </select>
             </div>
             <button class="btn-indigo" aria-label="使用 AI 魔法生成文案">
               <img src="images/decorations/magic.svg" alt="" aria-hidden="true" />
-              ✨ 魔法生成
+              <span data-i18n="magicGenBtn">✨ 魔法生成</span>
             </button>
           </div>
           <div class="text-gen__right">
             <div class="text-gen__result-header">
-              <label class="field__label">生成文案內容</label>
-              <button type="button" class="text-gen__copy-btn" id="copyBtn" disabled>複製</button>
+              <label class="field__label" data-i18n="generatedContentLabel">生成文案內容</label>
+              <button type="button" class="text-gen__copy-btn" id="copyBtn" disabled data-i18n="copyBtn">複製</button>
             </div>
             <div class="text-gen__history" id="copyHistory" hidden></div>
             <div class="text-gen__result" id="copyResult" aria-live="polite">
-              <p class="text-gen__result-placeholder" id="copyResultPlaceholder">文案生成後將顯示於此</p>
+              <p class="text-gen__result-placeholder" id="copyResultPlaceholder" data-i18n="copyPlaceholder">文案生成後將顯示於此</p>
             </div>
           </div>
         </div>
       </article>
 
       <article class="card" aria-label="AI 修圖">
-        <h2 class="card__title">AI 修圖</h2>
+        <h2 class="card__title" data-i18n="retouchTitle">AI 修圖</h2>
         <div class="retouch__panels">
           <div class="retouch__left">
             <div class="upload-zone" id="mainUpload" role="button" tabindex="0" aria-label="上傳要修改的圖片">
@@ -747,52 +747,53 @@
               <div class="upload-zone__icon-wrap">
                 <img src="images/decorations/upload.svg" alt="上傳圖示" />
               </div>
-              <p class="upload-zone__title">上傳要修改的圖片</p>
-              <p class="upload-zone__subtitle">拖曳圖片至此或點擊選擇</p>
-              <button class="upload-zone__btn">選擇檔案</button>
-              <p class="upload-zone__hint">支援 JPG、PNG，最大 5MB</p>
+              <p class="upload-zone__title" data-i18n="uploadTitle">上傳要修改的圖片</p>
+              <p class="upload-zone__subtitle" data-i18n="uploadSubtitle">拖曳圖片至此或點擊選擇</p>
+              <button class="upload-zone__btn" data-i18n="selectFileBtn">選擇檔案</button>
+              <p class="upload-zone__hint" data-i18n="uploadHint">支援 JPG、PNG，最大 5MB</p>
             </div>
             <p class="field__error" id="uploadError" role="alert" hidden></p>
             <div class="field">
-              <label class="field__label" for="editDesc">修改說明</label>
+              <label class="field__label" for="editDesc" data-i18n="editDescLabel">修改說明</label>
               <div class="chip-group" id="retouchTagGroup">
-                <button type="button" class="chip" data-tag="去背景">去背景</button>
-                <button type="button" class="chip" data-tag="模糊背景">模糊背景</button>
+                <button type="button" class="chip" data-tag="去背景" data-i18n="tagRemoveBg">去背景</button>
+                <button type="button" class="chip" data-tag="模糊背景" data-i18n="tagBlurBg">模糊背景</button>
               </div>
-              <input class="field__input" id="editDesc" type="text" maxlength="100" placeholder="例如：模糊背景、將背景改為純白色、移除背景" />
+              <input class="field__input" id="editDesc" type="text" maxlength="100" placeholder="例如：模糊背景、將背景改為純白色、移除背景" data-i18n-placeholder="editDescPlaceholder" />
               <div class="field__meta">
                 <span class="field__counter" id="editDescCounter">0/100</span>
               </div>
             </div>
             <button class="btn-indigo btn-indigo--h48" aria-label="開始 AI 修圖">
               <img src="images/decorations/magic.svg" alt="" aria-hidden="true" />
-              開始修圖
+              <span data-i18n="startRetouchBtn">開始修圖</span>
             </button>
           </div>
           <div class="dark-panel" aria-label="修圖結果預覽">
             <div class="dark-panel__status">
               <div class="dark-panel__dot"></div>
-              <span class="dark-panel__status-text">修圖結果預覽</span>
+              <span class="dark-panel__status-text" data-i18n="previewStatusTitle">修圖結果預覽</span>
             </div>
             <div class="dark-panel__image-box" id="retouchResultBox">
               <img src="images/decorations/image-placeholder.svg" alt="修圖結果佔位圖示" />
             </div>
             <div class="dark-panel__stats">
               <div class="dark-panel__stat-row">
-                <span class="dark-panel__stat-label">處理狀態</span>
-                <span class="dark-panel__stat-value" id="statusVal">等待上傳</span>
+                <span class="dark-panel__stat-label" data-i18n="statusLabel">處理狀態</span>
+                <span class="dark-panel__stat-value" id="statusVal" data-i18n="waitingUpload">等待上傳</span>
               </div>
               <div class="dark-panel__stat-row">
-                <span class="dark-panel__stat-label">修改項目</span>
+                <span class="dark-panel__stat-label" data-i18n="editItemLabel">修改項目</span>
                 <span class="dark-panel__stat-value" id="editItemVal">-</span>
               </div>
               <div class="dark-panel__stat-row">
-                <span class="dark-panel__stat-label">完成度</span>
+                <span class="dark-panel__stat-label" data-i18n="progressLabel">完成度</span>
                 <span class="dark-panel__stat-value" id="progressVal">0%</span>
               </div>
             </div>
             <div class="dark-panel__actions" id="retouchActions" hidden>
-              <button type="button" class="dark-panel__action-btn" id="downloadBtn">下載圖片</button>
+              <button type="button" class="dark-panel__action-btn" id="downloadBtn" data-i18n="downloadBtn">下載圖片</button>
+            </div>
           </div>
         </div>
       </article>
@@ -807,11 +808,22 @@
          alt="" aria-hidden="true" />
     <div class="footer__content">
       <p class="footer__contact">
-        若有操作上問題 請寄信至
-        <a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=goez-shop@gmail.com" class="footer__contact-link" target="_blank" rel="noopener noreferrer">goez-shop@gmail.com</a> 客服將為您服務
+        <span data-i18n="footerContactPre">若有操作上問題 請寄信至</span>
+        <a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=goez-shop@gmail.com" class="footer__contact-link" target="_blank" rel="noopener noreferrer">goez-shop@gmail.com</a>
+        <span data-i18n="footerContactPost">客服將為您服務</span>
       </p>
     </div>
   </footer>
+
+  <!-- 🌟 底部引入核心與專屬字典檔，並自動讀取記憶套用 -->
+  <script src="./i18n/i18n-core.js"></script>
+  <script src="./i18n/aiAssistant.js"></script>
+  <script>
+    if (window.GoezI18n) {
+      GoezI18n.apply();
+      document.title = GoezI18n.t('pageTitleAi');
+    }
+  </script>
 
 </div>
 
@@ -860,7 +872,7 @@
       textarea.select();
       const ok = document.execCommand('copy');
       textarea.remove();
-      if (!ok) throw new Error('複製失敗');
+      if (!ok) throw new Error(window.GoezI18n ? GoezI18n.t('copyFailMsg') || 'Copy failed' : '複製失敗');
     }
   };
 
@@ -894,7 +906,17 @@
   const toneGroup = document.getElementById('toneGroup');
 
   const KEYWORD_MAX = 50;
-  const TONE_LABELS = { formal: '正式', playful: '活潑', professional: '專業' };
+  const getToneLabel = (tone) => { //原本寫死的改成i18n
+  if (window.GoezI18n) {
+    const map = {
+      formal: GoezI18n.t('toneFormal'),
+      playful: GoezI18n.t('tonePlayful'),
+      professional: GoezI18n.t('toneProfessional')
+    };
+    return map[tone] || tone;
+  }
+  return { formal: '正式', playful: '活潑', professional: '專業' }[tone] || tone;
+};
  
   let selectedTone = 'formal';
   let copyHistory = []; // { id, text, tone, keyword }
