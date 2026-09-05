@@ -608,7 +608,8 @@
               <span class="gallery-card__label">訂單與物流</span>
               </div>
             </a>
-            <div class="gallery-card">
+            <a href="goez-sales-analytics.html?sellerId={{sellerId}}" id="salesAnalyticsLink" style="text-decoration: none; color: inherit; display: block; width: 100%; height: 100%;">
+              <div class="gallery-card" style="cursor: pointer;">
               <img
                 class="gallery-card__img"
                 src="images/decorations/sale-function.svg"
@@ -616,6 +617,7 @@
               />
               <span class="gallery-card__label">銷售成效追蹤</span>
             </div>
+            </a>
           </div>
         </div>
       </div>
@@ -779,6 +781,11 @@ if (manageStoresLink) {
 const couponSettingLink = document.getElementById('couponSettingLink');
 if (couponSettingLink) {
     couponSettingLink.href = `goez-mycoupons-management.html?sellerId=${currentSellerId}`;
+}
+// ── 7.動態帶入「銷售成效追蹤」的 sellerId ──────────
+const salesAnalyticsLink = document.getElementById('salesAnalyticsLink');
+if (salesAnalyticsLink) {
+    salesAnalyticsLink.href = `goez-sales-analytics.html?sellerId=${currentSellerId}`;
 }
 </script>
 </body>

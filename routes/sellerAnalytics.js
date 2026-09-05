@@ -19,7 +19,7 @@
 //     如果有，「商品銷售佔比」可以改回真的分類佔比，見 buildProductShare 註解）
 
 const express = require('express')
-const { Op } = require('sequelize')
+const { Op, literal } = require('sequelize')
 const sequelize = require('../config/database')
 const { readMock } = require('../src/mocks/utils')
 
@@ -126,7 +126,11 @@ router.get('/overview', async (req, res) => {
 
 // ── 撈某段期間、某賣家的商品彙總（手動查 + 手動彙總，比照 store.js 風格）──
 async function buildProductRollup({ Order, Orderdetail, Product, PageContent, PageVisit }, SellerID, from, to) {
-  const dateRange = { [Op.gte]: new Date(`${from}T00:00:00`), [Op.lte]: new Date(`${to}T23:59:59`) }
+  // 使用 literal 阻止 Sequelize 自動轉型成帶時區的 ISO 字串
+  const dateRange = {
+    [Op.gte]: literal(`'${from} 00:00:00'`),
+    [Op.lte]: literal(`'${to} 23:59:59'`)
+  }
 
   // 1) 有效訂單（已付款、未取消）→ 賣場層級的營收/訂單數
   const orders = await Order.findAll({
