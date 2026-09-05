@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Goez Shop — 銷售成效追蹤</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@500&display=swap" rel="stylesheet" />
+  <style>
+    /* ═══════════════════════════════════
+       DESIGN TOKENS（沿用 store-editor）
+    ═══════════════════════════════════ */
+    :root {
+      --c-white:          #ffffff;
+      --c-black:          #0a0a0a;
+      --c-bg-page:        #f3f4f6;
+      --c-bg-light:       #f9fafb;
+      --c-bg-subtle:      #f8fafc;
+      --c-border:         #e5e7eb;
+      --c-border-light:   #f3f4f6;
+      --c-border-input:   #f1f5f9;
+      --c-border-field:   #d1d5dc;
+      --c-accent:         #6588A6;
+      --c-brand-dark:     #1d293d;
+      --c-blue:           #2b7fff;
+      --c-text-hero:      #0f172b;
+      --c-text-heading:   #101828;
+      --c-text-body:      #364153;
+      --c-text-muted:     #6a7282;
+      --c-text-faint:     #99a1af;
+      --c-text-nav:       #4a5565;
+      --c-text-slate:     #45556c;
+      --c-text-gray:      #64748b;
+      --c-placeholder:    rgba(10,10,10,0.5);
+
+      --c-good:           #4f9d69;
+      --c-good-soft:      #e7f2ec;
+      --c-warn:           #c98a3c;
+      --c-warn-soft:      #f6ecdd;
+      --c-bad:            #c15b5b;
+      --c-bad-soft:       #f4e3e3;
+
+      --sp-4:  4px;  --sp-8:  8px;  --sp-12: 12px; --sp-16: 16px;
+      --sp-20: 20px; --sp-24: 24px; --sp-32: 32px; --sp-48: 48px;
+      --sp-64: 64px; --sp-80: 80px; --sp-96: 96px; --sp-120:120px;
+
+      --fs-10: 10px; --fs-12: 12px; --fs-14: 14px; --fs-16: 16px;
+      --fs-18: 18px; --fs-20: 20px; --fs-24: 24px; --fs-64: 64px;
+
+      --r-10: 10px; --r-14: 14px; --r-16: 16px;
+      --r-24: 24px; --r-48: 48px; --r-full: 9999px;
+
+      --shadow-sm:     0 1px 2px rgba(0,0,0,.1);
+      --shadow-md:     0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.1);
+      --shadow-card:   0 1px 3px rgba(0,0,0,.1),0 1px 2px -1px rgba(0,0,0,.1);
+      --shadow-btn:    0 10px 15px rgba(0,0,0,.1),0 4px 6px rgba(0,0,0,.1);
+      --shadow-brand:  0 10px 15px rgba(0,0,0,.1),0 4px 6px rgba(0,0,0,.1);
+      --shadow-editor: 0 25px 50px -12px rgba(0,0,0,.25);
+      --shadow-pub:    0 8px 10px 0 #e2e8f0;
+    }
+
+    /* ═══════════════════════════════════
+       RESET（沿用 store-editor）
+    ═══════════════════════════════════ */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:16px}
+    body{font-family:'Inter','Noto Sans TC',sans-serif;background:var(--c-white);color:var(--c-text-heading);min-width:320px}
+    img{display:block;max-width:100%}
+    button{cursor:pointer;border:none;background:none;font:inherit;padding:0}
+    a{text-decoration:none;color:inherit}
+    ul,ol{list-style:none}
+
+    /* ═══════════════════════════════════
+       TOP BAR（品牌 + 登出，Background.svg 底圖）
+    ═══════════════════════════════════ */
+    .topbar {
+      position: relative; width: 100%; height: 96px; overflow: hidden;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px;
+    }
+    .topbar__bg { position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none; }
+    .topbar__brand {
+      position: relative; z-index:1;
+      font-size: var(--fs-20); font-weight:700;
+      letter-spacing:-0.48px; color:var(--c-white);
+      transition: opacity 0.2s ease;
+    }
+    .topbar__brand:hover { opacity: 0.8; }
+    .topbar__logout {
+      position: relative; z-index:1;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 12px;
+      padding: 8px 16px;
+      font-size: var(--fs-16); font-weight:500;
+      color: var(--c-white); cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .topbar__logout:hover { background: rgba(255,255,255,0.25); border-color: rgba(255,255,255,0.4); }
+
+    /* ═══════════════════════════════════
+       PAGE SHELL + 頁面工具列
+    ═══════════════════════════════════ */
+    .page-shell{background:var(--c-bg-page);width:100%;display:flex;}
+    .page-inner{background:var(--c-white);width:100%;box-shadow:var(--shadow-editor);display:flex;flex-direction:column;
+      animation: shellIn 0.7s cubic-bezier(0.22,1,0.36,1) 0.15s both;}
+    @keyframes shellIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+    .editor__topbar{
+      background:var(--c-white);border-bottom:1px solid var(--c-border-light);
+      box-shadow:var(--shadow-md);height:80px;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:0 32px;flex-shrink:0;
+    }
+    .editor__topbar-left{display:flex;align-items:center;gap:32px;height:40px}
+    .editor__brand{display:flex;align-items:center;gap:12px}
+    .editor__brand-name{
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:900;
+      font-size:var(--fs-20);color:var(--c-text-hero);
+      letter-spacing:-0.95px;line-height:28px;white-space:nowrap;
+    }
+    .editor__divider{width:1px;height:32px;background:var(--c-bg-page);flex-shrink:0}
+    .breadcrumb{
+      background:var(--c-bg-subtle);border:1px solid var(--c-border-input);
+      border-radius:var(--r-14);height:38px;padding:0 16px;
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:700;
+      font-size:var(--fs-14);color:var(--c-accent);letter-spacing:-0.15px;
+      line-height:20px;white-space:nowrap;display:flex;align-items:center;justify-content:center;
+      transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    }
+    .breadcrumb:hover{background:var(--c-accent);color:var(--c-white);transform:translateY(-1px)}
+    .editor__topbar-right{display:flex;align-items:center;gap:12px}
+    .topbar-range{
+      height:40px;padding:0 14px;border:2px solid var(--c-border-input);border-radius:var(--r-14);
+      background:var(--c-white);font-family:'Inter','Noto Sans TC',sans-serif;font-weight:700;
+      font-size:var(--fs-14);color:var(--c-text-slate);box-shadow:var(--shadow-sm);
+    }
+    .btn-draft{
+      background:var(--c-white);border:2px solid var(--c-border-input);
+      border-radius:var(--r-14);box-shadow:var(--shadow-sm);
+      height:40px;padding:0 16px;
+      display:flex;align-items:center;justify-content:center;gap:8px;
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:700;
+      font-size:var(--fs-14);color:var(--c-text-slate);
+      letter-spacing:-0.15px;white-space:nowrap;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    .btn-draft:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,0.1);background:var(--c-bg-light)}
+    .btn-draft:active{transform:translateY(0)}
+    .btn-draft[disabled]{opacity:.5;pointer-events:none}
+    .btn-draft img{width:16px;height:16px;flex-shrink:0}
+    .btn-publish{
+      background:var(--c-accent);border-radius:var(--r-14);
+      box-shadow:var(--shadow-pub);height:40px;padding:0 16px;
+      display:flex;align-items:center;justify-content:center;gap:8px;
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:700;
+      font-size:var(--fs-14);color:var(--c-white);
+      letter-spacing:-0.15px;white-space:nowrap;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    }
+    .btn-publish:hover{transform:translateY(-2px);filter:brightness(1.08);box-shadow:0 8px 20px rgba(101,136,166,0.4)}
+    .btn-publish:active{transform:translateY(0)}
+    .btn-publish img{width:16px;height:16px;flex-shrink:0}
+
+    .editor__hamburger{display:none;flex-direction:column;gap:5px;padding:6px;background:none;border:none;cursor:pointer;}
+    .editor__hamburger-line{display:block;width:22px;height:2px;background:var(--c-text-heading);border-radius:2px;transition:transform .3s,opacity .3s;}
+    .editor__hamburger[aria-expanded="true"] .editor__hamburger-line:nth-child(1){transform:translateY(7px) rotate(45deg)}
+    .editor__hamburger[aria-expanded="true"] .editor__hamburger-line:nth-child(2){opacity:0}
+    .editor__hamburger[aria-expanded="true"] .editor__hamburger-line:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+    .editor__mobile-nav{display:none;flex-direction:column;max-height:0;overflow:hidden;transition:max-height .35s ease;background:var(--c-white);border-bottom:1px solid var(--c-border-light);}
+    .editor__mobile-nav.is-open{max-height:280px}
+    .editor__mobile-nav-link{display:block;padding:14px 24px;font-weight:600;font-size:var(--fs-14);color:var(--c-text-heading);border-bottom:1px solid var(--c-border-light);}
+    .editor__mobile-nav-link:last-child{border-bottom:none}
+
+    /* ═══════════════════════════════════
+       BODY / CONTENT
+    ═══════════════════════════════════ */
+    .content{padding:40px 32px 64px;background:var(--c-bg-light);flex:1}
+    .wrap{max-width:1160px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+
+    .intro{
+      display:flex;gap:16px;align-items:flex-start;
+      background:var(--c-white);border:1px solid var(--c-border);border-radius:var(--r-16);
+      box-shadow:var(--shadow-card);padding:20px 24px;
+    }
+    .intro__title{font-size:var(--fs-18);font-weight:900;color:var(--c-text-hero);letter-spacing:-0.4px;margin-bottom:4px}
+    .intro__text{font-size:var(--fs-14);line-height:1.9;color:var(--c-text-body)}
+    .intro__text b{color:var(--c-text-heading)}
+
+    .section-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+    .section-head h2{font-size:var(--fs-20);font-weight:900;color:var(--c-text-hero);letter-spacing:-0.6px}
+
+    /* 資料狀態徽章 */
+    .data-status{display:inline-flex;align-items:center;gap:7px;font-size:var(--fs-12);font-weight:700;padding:5px 12px;border-radius:var(--r-full)}
+    .data-status__dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+    .data-status.is-loading{background:var(--c-bg-page);color:var(--c-text-muted)}
+    .data-status.is-loading .data-status__dot{background:var(--c-text-faint);animation:pulse 1s ease-in-out infinite}
+    .data-status.is-live{background:var(--c-good-soft);color:var(--c-good)}
+    .data-status.is-live .data-status__dot{background:var(--c-good)}
+    .data-status.is-demo{background:var(--c-warn-soft);color:var(--c-warn)}
+    .data-status.is-demo .data-status__dot{background:var(--c-warn)}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+    .card{background:var(--c-white);border:1px solid var(--c-border);border-radius:var(--r-16);box-shadow:var(--shadow-card);}
+    .card__head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 22px;border-bottom:1px solid var(--c-border-light)}
+    .card__head h3{font-size:var(--fs-16);font-weight:800;color:var(--c-text-heading);letter-spacing:-0.3px}
+    .card__head .hint{font-size:var(--fs-12);color:var(--c-text-faint)}
+    .card__body{padding:22px}
+    .card__empty{font-size:var(--fs-13);color:var(--c-text-faint);text-align:center;padding:18px 0}
+
+    .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+    .kpi{background:var(--c-white);border:1px solid var(--c-border);border-radius:var(--r-16);box-shadow:var(--shadow-card);padding:18px 20px}
+    .kpi__label{font-size:var(--fs-12);color:var(--c-text-muted);font-weight:700;margin-bottom:8px}
+    .kpi__value{font-size:26px;font-weight:900;color:var(--c-text-hero);letter-spacing:-0.8px;font-family:'Inter',sans-serif}
+    .kpi__delta{font-size:var(--fs-12);font-weight:700;margin-top:6px;color:var(--c-text-faint)}
+    .kpi__delta.up{color:var(--c-good)}
+    .kpi__delta.down{color:var(--c-bad)}
+
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+
+    /* horizontal bars */
+    .bars{display:flex;flex-direction:column;gap:14px}
+    .bar-row{display:grid;grid-template-columns:120px 1fr 84px;align-items:center;gap:12px}
+    .bar-row__name{font-size:var(--fs-13);font-weight:700;color:var(--c-text-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .bar-row__track{height:22px;background:var(--c-bg-page);border-radius:var(--r-full);overflow:hidden}
+    .bar-row__fill{display:block;height:100%;border-radius:var(--r-full);width:0;transition:width 1s cubic-bezier(0.22,1,0.36,1)}
+    .bar-row__fill.hot{background:linear-gradient(90deg,#6588A6,#9db9cf)}
+    .bar-row__fill.cold{background:linear-gradient(90deg,#c98a3c,#e0b784)}
+    .bar-row__val{font-size:var(--fs-12);font-weight:700;color:var(--c-text-slate);text-align:right}
+
+    /* stale list */
+    .stale{display:flex;flex-direction:column;gap:10px}
+    .stale-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border:1px solid var(--c-border-light);border-radius:var(--r-10);background:var(--c-bg-subtle)}
+    .stale-row__name{font-size:var(--fs-13);font-weight:700;color:var(--c-text-body)}
+    .stale-row__meta{font-size:var(--fs-11);color:var(--c-text-muted);margin-top:2px}
+    .stale-row__tag{font-size:var(--fs-11);font-weight:800;padding:4px 10px;border-radius:var(--r-full);white-space:nowrap}
+    .tag-bad{background:var(--c-bad-soft);color:var(--c-bad)}
+    .tag-warn{background:var(--c-warn-soft);color:var(--c-warn)}
+
+    /* category legend */
+    .cats{display:flex;flex-direction:column;align-items:center;gap:20px}
+    /* 這張卡內容比隔壁象限卡短，讓內容在卡片高度內垂直置中，別擠在頂端留一大塊空白 */
+    .card--fill{display:flex;flex-direction:column}
+    .card--fill > .card__body{flex:1;display:flex;flex-direction:column;justify-content:center}
+    .pie-wrap{display:flex;justify-content:center;padding:4px 0 2px}
+    .pie{
+      position:relative;width:208px;height:208px;border-radius:50%;flex-shrink:0;
+      background:var(--c-bg-page);transition:background .5s ease;
+    }
+    .pie__hole{
+      position:absolute;inset:24%;background:var(--c-white);border-radius:50%;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.1);padding:4px;
+    }
+    .pie__hole-pct{font-size:32px;font-weight:900;color:var(--c-text-hero);letter-spacing:-1px;line-height:1.1}
+    .pie__hole-name{font-size:13px;font-weight:700;color:var(--c-text-muted);margin-top:4px;
+      max-width:92%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .cat-legend{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 22px}
+    .cat-legend__item{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600;color:var(--c-text-body)}
+    .cat-legend__dot{width:14px;height:14px;border-radius:4px;flex-shrink:0}
+    .cat-insight{font-size:15px;font-weight:500;color:var(--c-text-body);line-height:1.7;text-align:center;max-width:38ch}
+
+    /* quadrant */
+    .quad-wrap{display:flex;flex-direction:column;gap:12px}
+    .quad-legend{font-size:var(--fs-12);color:var(--c-text-muted);line-height:1.7}
+    .quad svg{width:100%;height:auto;display:block}
+
+    /* actions */
+    .acts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .act{border:1px solid var(--c-border);border-radius:var(--r-14);padding:16px 18px;background:var(--c-white)}
+    .act__head{display:flex;align-items:center;gap:8px;font-weight:900;font-size:var(--fs-14);margin-bottom:8px}
+    .act__dot{width:10px;height:10px;border-radius:50%}
+    .act.good .act__dot{background:var(--c-good)} .act.good .act__head{color:var(--c-good)}
+    .act.warn .act__dot{background:var(--c-warn)} .act.warn .act__head{color:var(--c-warn)}
+    .act.bad .act__dot{background:var(--c-bad)}   .act.bad .act__head{color:var(--c-bad)}
+    .act ul{display:flex;flex-direction:column;gap:6px}
+    .act li{font-size:var(--fs-13);line-height:1.6;color:var(--c-text-body);padding-left:14px;position:relative}
+    .act li::before{content:"›";position:absolute;left:0;color:var(--c-text-faint);font-weight:900}
+
+    .fade-in{opacity:0;transform:translateY(24px);transition:opacity .6s cubic-bezier(0.22,1,0.36,1),transform .6s cubic-bezier(0.22,1,0.36,1)}
+    .fade-in.visible{opacity:1;transform:translateY(0)}
+
+    /* ═══════════════════════════════════
+       FOOTER（與 store-editor 相同）
+    ═══════════════════════════════════ */
+    .footer{position:relative;width:100%;overflow:hidden}
+    .footer__bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
+    .footer__content{
+      position:relative;z-index:1;border-top:1px solid rgba(255,255,255,.15);
+      display:flex;align-items:center;justify-content:center;text-align:center;padding:80px 60px;
+    }
+    .footer__contact{
+      font-family:'Inter','Noto Sans TC',sans-serif;font-weight:400;
+      font-size:var(--fs-16);color:rgba(255,255,255,.75);
+      letter-spacing:-0.08px;line-height:1.6;max-width:600px;
+    }
+    .footer__contact-link{color:var(--c-white);font-weight:600;text-decoration:underline;text-underline-offset:2px;transition:color .2s ease}
+    .footer__contact-link:hover{color:rgba(255,255,255,.85)}
+
+    /* ═══════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════ */
+    @media (max-width:1024px){
+      .editor__hamburger{display:flex}
+      .editor__topbar{flex-wrap:wrap;height:auto;min-height:64px;padding:12px 20px;gap:12px}
+      .editor__topbar-left{flex:1;min-width:0}
+      .editor__topbar-right{display:none}
+      .editor__mobile-nav{display:flex}
+      .breadcrumb,.editor__divider{display:none}
+      .footer__content{padding:60px 40px}
+      .topbar{height:80px;padding:0 24px}
+      .kpi-grid{grid-template-columns:repeat(2,1fr)}
+      .two-col{grid-template-columns:1fr}
+      .acts{grid-template-columns:1fr}
+      .content{padding:32px 20px 56px}
+    }
+    @media (max-width:768px){
+      .editor__brand-name{font-size:15px}
+      .editor__topbar{padding:10px 16px;gap:8px}
+      .topbar{padding:0 16px}
+      .footer__content{padding:40px 20px}
+      .bar-row{grid-template-columns:96px 1fr 64px;gap:8px}
+      .kpi__value{font-size:22px}
+    }
+
+    @media print{
+      .topbar,.editor__topbar,.editor__mobile-nav,.footer,.intro{display:none!important}
+      .page-inner{box-shadow:none}
+      .content{background:#fff;padding:0}
+      .card,.kpi{break-inside:avoid}
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <img class="topbar__bg" src="images/decorations/Background.svg" alt="" aria-hidden="true">
+    <span class="topbar__brand">Goez Shop</span>
+  </header>
+
+  <div class="page-shell">
+    <div class="page-inner">
+
+      <!-- 頁面工具列 -->
+      <header class="editor__topbar">
+        <div class="editor__topbar-left">
+          <div class="editor__brand">
+            <span class="editor__brand-name">銷售成效追蹤</span>
+          </div>
+          <div class="editor__divider" aria-hidden="true"></div>
+          <a href="goez-home.html" id="backHomeLink" class="breadcrumb">‹ 返回會員首頁</a>
+        </div>
+
+        <button class="editor__hamburger" type="button"
+          aria-expanded="false" aria-controls="editor-mobile-nav"
+          aria-label="開啟選單" id="hamburger-btn">
+          <span class="editor__hamburger-line"></span>
+          <span class="editor__hamburger-line"></span>
+          <span class="editor__hamburger-line"></span>
+        </button>
+
+        <div class="editor__topbar-right">
+          <select class="topbar-range" id="range-select" aria-label="資料期間">
+            <option value="7d">近 7 天</option>
+            <option value="30d" selected>近 30 天</option>
+            <option value="90d">近 90 天</option>
+            <option value="ytd">本年度</option>
+          </select>
+          <button class="btn-draft" type="button" id="refresh-btn">
+            <img src="images/decorations/redo.svg" alt="重新整理圖示" />
+            重新整理
+          </button>
+          <button class="btn-publish" type="button" id="export-btn">
+            <img src="images/decorations/publish.svg" alt="匯出圖示" />
+            匯出報表
+          </button>
+        </div>
+      </header>
+
+      <!-- Mobile nav -->
+      <nav class="editor__mobile-nav" id="editor-mobile-nav" aria-label="行動選單">
+        <a class="editor__mobile-nav-link" href="#analytics">銷售分析</a>
+        <a class="editor__mobile-nav-link" href="#" id="mnav-refresh">重新整理</a>
+        <a class="editor__mobile-nav-link" href="#" id="mnav-export">匯出報表</a>
+        <a class="editor__mobile-nav-link" href="goez-shop-store-editor.html">回到賣場編輯</a>
+      </nav>
+
+      <!-- CONTENT -->
+      <main class="content">
+        <div class="wrap">
+
+          <!-- 說明 -->
+          <section class="intro fade-in">
+            <div>
+              <p class="intro__title">幫你提升業績的四個問題</p>
+              <p class="intro__text">
+                <b>①</b> 哪些商品在暢銷　<b>②</b> 哪些商品有流量卻沒人買　<b>③</b> 你的賣場定位落在哪個象限　<b>④</b> 接下來該補什麼貨、哪些該停止囤貨。<br>
+              </p>
+            </div>
+          </section>
+
+          <!-- 銷售分析 -->
+          <section id="analytics" class="fade-in">
+            <div class="section-head" style="margin-bottom:14px">
+              <h2>銷售分析</h2>
+              <span class="data-status is-loading" id="data-status">
+                <span class="data-status__dot"></span><span id="data-status-text">讀取賣場數據中…</span>
+              </span>
+            </div>
+
+            <!-- KPI -->
+            <div class="kpi-grid" id="kpi-grid" style="margin-bottom:20px">
+              <div class="kpi"><div class="kpi__label">營收</div><div class="kpi__value">—</div><div class="kpi__delta">—</div></div>
+              <div class="kpi"><div class="kpi__label">訂單數</div><div class="kpi__value">—</div><div class="kpi__delta">—</div></div>
+              <div class="kpi"><div class="kpi__label">商品動銷率</div><div class="kpi__value">—</div><div class="kpi__delta">—</div></div>
+              <div class="kpi"><div class="kpi__label">平均客單價</div><div class="kpi__value">—</div><div class="kpi__delta">—</div></div>
+            </div>
+
+            <div class="two-col" style="margin-bottom:20px">
+              <!-- 暢銷 -->
+              <div class="card">
+                <div class="card__head"><h3>暢銷商品 Top 5</h3><span class="hint">依銷量</span></div>
+                <div class="card__body"><div class="bars" id="bars-hot"></div></div>
+              </div>
+
+              <!-- 受眾少 / 滯銷 -->
+              <div class="card">
+                <div class="card__head"><h3>受眾少 / 滯銷商品</h3><span class="hint">銷量低或週轉天數過長</span></div>
+                <div class="card__body"><div class="stale" id="stale-list"></div></div>
+              </div>
+            </div>
+
+            <div class="two-col" style="margin-bottom:20px">
+              <!-- 分類佔比 -->
+              <div class="card card--fill">
+                <div class="card__head"><h3>商品銷售佔比</h3><span class="hint">看營收集中在哪些商品</span></div>
+                <div class="card__body">
+                  <div class="cats">
+                    <div class="pie-wrap">
+                      <div class="pie" id="prod-pie">
+                        <div class="pie__hole">
+                          <span class="pie__hole-pct" id="prod-pie-pct">—</span>
+                          <span class="pie__hole-name" id="prod-pie-name">尚無資料</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="cat-legend" id="cat-legend"></div>
+                    <p class="cat-insight" id="cat-insight"></p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 象限 -->
+              <div class="card">
+                <div class="card__head"><h3>商品定位</h3><span class="hint">X：流量／曝光　Y：轉換率</span></div>
+                <div class="card__body">
+                  <div class="quad-wrap">
+                    <div class="quad">
+                      <svg viewBox="0 0 360 260" role="img" aria-label="商品定位象限圖">
+                        <rect x="40" y="10" width="145" height="110" fill="#eef2f6"/>
+                        <rect x="185" y="10" width="145" height="110" fill="#e7f2ec"/>
+                        <rect x="40" y="120" width="145" height="110" fill="#f4e3e3"/>
+                        <rect x="185" y="120" width="145" height="110" fill="#f6ecdd"/>
+                        <line x1="40" y1="120" x2="330" y2="120" stroke="#cbd5e1" stroke-width="1"/>
+                        <line x1="185" y1="10" x2="185" y2="230" stroke="#cbd5e1" stroke-width="1"/>
+                        <line x1="40" y1="10" x2="40" y2="230" stroke="#94a3b8" stroke-width="1.5"/>
+                        <line x1="40" y1="230" x2="330" y2="230" stroke="#94a3b8" stroke-width="1.5"/>
+                        <text x="48" y="26" font-size="9" fill="#64748b">小眾但穩定</text>
+                        <text x="193" y="26" font-size="9" fill="#4f9d69">明星商品</text>
+                        <text x="48" y="225" font-size="9" fill="#c15b5b">滯銷候選</text>
+                        <text x="193" y="225" font-size="9" fill="#c98a3c">高曝光低轉換</text>
+                        <g id="quad-points"></g>
+                        <text x="150" y="252" font-size="9" fill="#64748b">流量 / 曝光 →</text>
+                        <text x="14" y="130" font-size="9" fill="#64748b" transform="rotate(-90 14 130)">轉換率 →</text>
+                      </svg>
+                    </div>
+                    <p class="quad-legend">
+                      右上「明星商品」擴大廣告與延伸品項；左上「小眾穩定」維持庫存即可；
+                      右下「高曝光低轉換」先改標題／主圖／定價再決定；左下「滯銷候選」停止補貨、清庫存後下架。
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 建議行動 -->
+            <div class="card">
+              <div class="card__head"><h3>建議行動</h3><span class="hint">依上方分析自動歸納</span></div>
+              <div class="card__body">
+                <div class="acts">
+                  <div class="act good">
+                    <div class="act__head"><span class="act__dot"></span>加碼／擴充</div>
+                    <ul id="act-grow"></ul>
+                  </div>
+                  <div class="act warn">
+                    <div class="act__head"><span class="act__dot"></span>優化再觀察</div>
+                    <ul id="act-optimize"></ul>
+                  </div>
+                  <div class="act bad">
+                    <div class="act__head"><span class="act__dot"></span>停止囤貨／下架</div>
+                    <ul id="act-cut"></ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </main>
+
+    </div><!-- /page-inner -->
+  </div><!-- /page-shell -->
+
+</div><!-- /page -->
+
+<script>
+  //--------- 跳轉回去帶有 sellerId 的首頁 ------------------
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. 先從當前頁面的網址把 sellerId 抓出來（或從 localStorage 拿，預設 15）
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlSellerId = urlParams.get('sellerId');
+    
+    // 如果網址上有帶，就順便更新 localStorage 記錄
+    if (urlSellerId) {
+        localStorage.setItem('sellerId', urlSellerId);
+    }
+    
+    // 最終使用的 sellerId
+    const sellerId = urlSellerId || localStorage.getItem('sellerId') || 15;
+
+    // 2. 抓取返回首頁的超連結元素
+    const backHomeLink = document.getElementById('backHomeLink');
+
+    // 3. 動態組裝網址，把 sellerId 帶回去首頁
+    if (backHomeLink) {
+        backHomeLink.href = `goez-home.html?sellerId=${sellerId}`;
+    }
+});
+
+  // ── Hamburger nav ───────────────────────────────────────────────
+  (function(){
+    var btn=document.getElementById('hamburger-btn');
+    var nav=document.getElementById('editor-mobile-nav');
+    if(!btn||!nav)return;
+    btn.addEventListener('click',function(){
+      var open=btn.getAttribute('aria-expanded')==='true';
+      btn.setAttribute('aria-expanded',String(!open));
+      nav.classList.toggle('is-open',!open);
+    });
+  }());
+
+  // ── Scroll fade-in ─────────────────────────────────────────────
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.fade-in').forEach(function(el){ io.observe(el); });
+
+  /* ════════════════════════════════════════════════════════════════
+     銷售分析：load 時自動 fetch /api/analytics/overview
+     成功 → 用實際數據渲染；失敗 → 退回下方 DEMO 示範資料
+     回傳形狀見 server/routes/analytics.js 的 header 註解
+  ════════════════════════════════════════════════════════════════ */
+
+  var API = '/api/analytics/overview';
+
+  // 後端連不上時的 fallback（形狀與 API 回傳一致）
+  var DEMO = {
+    range: '30d',
+    period: null,
+    kpi: {
+      revenue:       { value: 539300, delta: 0.124 },
+      orders:        { value: 486,    delta: 0.081 },
+      activeRate:    { value: 0.75, activeCount: 18, totalCount: 24, deltaPoint: 0.04 },
+      avgOrderValue: { value: 1110,   delta: -0.023 }
+    },
+    topProducts: [
+      { name: '手沖咖啡濾杯組', qtySold: 312, revenue: 187200 },
+      { name: '香氛蠟燭 60g',   qtySold: 268, revenue: 120600 },
+      { name: '亞麻餐墊 4 入',   qtySold: 174, revenue: 104400 },
+      { name: '手工陶瓷馬克杯',  qtySold: 143, revenue: 85800  },
+      { name: '復古黃銅書籤',    qtySold: 61,  revenue: 18300  }
+    ],
+    lowPerformers: [
+      { name: '限量聯名帆布袋',   views: 1240, qtySold: 4,  conversionRate: 0.003, turnoverDays: null, tag: '有流量沒轉換' },
+      { name: '大型藤編收納籃',   views: 210,  qtySold: 9,  conversionRate: 0.043, turnoverDays: 96,   tag: '滯銷可下架' },
+      { name: '羊毛氈杯墊',       views: 180,  qtySold: 22, conversionRate: 0.122, turnoverDays: 68,   tag: '滯銷不需補貨' },
+      { name: '陶瓷筷架 2 入',    views: 96,   qtySold: 14, conversionRate: 0.146, turnoverDays: 41,   tag: '觀察中' }
+    ],
+    productShare: [
+      { productId: 'p1', name: '手沖咖啡濾杯組', revenue: 187200, pct: 0.3471 },
+      { productId: 'p2', name: '香氛蠟燭 60g',   revenue: 120600, pct: 0.2237 },
+      { productId: 'p3', name: '亞麻餐墊 4 入',   revenue: 104400, pct: 0.1936 },
+      { productId: 'p4', name: '手工陶瓷馬克杯',  revenue: 85800,  pct: 0.1591 },
+      { productId: 'p5', name: '復古黃銅書籤',    revenue: 18300,  pct: 0.0339 },
+      { productId: null, name: '其他商品',        revenue: 23000,  pct: 0.0427 }
+    ],
+    quadrant: [
+      { name: '手沖咖啡濾杯組', traffic: 4200, conversionRate: 0.074, revenue: 187200 },
+      { name: '香氛蠟燭 60g',   traffic: 3600, conversionRate: 0.074, revenue: 120600 },
+      { name: '手工陶瓷馬克杯',  traffic: 2400, conversionRate: 0.060, revenue: 85800  },
+      { name: '復古黃銅書籤',    traffic: 900,  conversionRate: 0.068, revenue: 18300  },
+      { name: '限量聯名帆布袋',   traffic: 1240, conversionRate: 0.003, revenue: 3600   },
+      { name: '大型藤編收納籃',   traffic: 210,  conversionRate: 0.043, revenue: 10800  }
+    ],
+    actions: {
+      grow: [
+        '咖啡濾杯組、香氛蠟燭：追加庫存並投放廣告',
+        '沿「咖啡器具」延伸：濾紙、手沖壺、電子秤',
+        '推出濾杯＋蠟燭的生活組合包提高客單價'
+      ],
+      optimize: [
+        '限量聯名帆布袋：流量足但轉換低，換主圖與售價測試 2 週',
+        '陶瓷馬克杯：加入評價與情境照，推動往明星象限',
+        '「手沖咖啡濾杯組」佔營收 35%，建議培養第二主力分散風險'
+      ],
+      cut: [
+        '大型藤編收納籃、羊毛氈杯墊：週轉逾 60 天，不再補貨',
+        '清倉出清後將商品下架，讓版位留給明星商品'
+      ]
+    }
+  };
+
+  var CAT_COLORS = ['#6588A6','#869489','#b38b7d','#c9a94e','#a8a29e','#7f9bb3','#9caf9f','#c98a3c'];
+
+  // ── helpers ───────────────────────────────────────────────────
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){
+    return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c];
+  }); }
+  function ntd(n){ return 'NT$' + Math.round(Number(n) || 0).toLocaleString('en-US'); }
+  function pct(n, d){ return ((Number(n) || 0) * 100).toFixed(d == null ? 1 : d) + '%'; }
+  function short(name){ return String(name || '').replace(/\s+/g,'').slice(0, 3); }
+
+  function deltaHTML(delta, isPoint){
+    if (delta == null || !isFinite(delta)) return '<div class="kpi__delta">— 無前期可比</div>';
+    var up = delta >= 0;
+    var mag = Math.abs(delta * 100).toFixed(1);
+    return '<div class="kpi__delta ' + (up ? 'up' : 'down') + '">' +
+      (up ? '▲ ' : '▼ ') + mag + (isPoint ? ' pt' : '%') + ' 對比前期</div>';
+  }
+
+  // ── 狀態徽章 ──────────────────────────────────────────────────
+  function setStatus(kind, text){
+    var el = $('data-status');
+    el.className = 'data-status is-' + kind;
+    $('data-status-text').textContent = text;
+  }
+
+  // ── 各區塊渲染 ────────────────────────────────────────────────
+  function renderKPI(k){
+    if (!k) return;
+    $('kpi-grid').innerHTML = [
+      kpiCard('營收', ntd(k.revenue && k.revenue.value), deltaHTML(k.revenue && k.revenue.delta)),
+      kpiCard('訂單數', (k.orders && k.orders.value != null ? k.orders.value : '—'), deltaHTML(k.orders && k.orders.delta)),
+      kpiCard('商品動銷率', pct(k.activeRate && k.activeRate.value, 0), activeRateSub(k.activeRate)),
+      kpiCard('平均客單價', ntd(k.avgOrderValue && k.avgOrderValue.value), deltaHTML(k.avgOrderValue && k.avgOrderValue.delta))
+    ].join('');
+  }
+  // 動銷率的副標：「18 / 24 項有成交」+ 對比前期的百分點升降
+  function activeRateSub(a){
+    if (!a) return '<div class="kpi__delta">—</div>';
+    var line = (a.activeCount != null && a.totalCount != null)
+      ? esc(a.activeCount + ' / ' + a.totalCount + ' 項有成交') : '';
+    var dp = a.deltaPoint, delta = '';
+    if (dp != null && isFinite(dp) && Math.abs(dp) >= 0.005) {
+      var up = dp >= 0;
+      delta = ' <span style="color:' + (up ? 'var(--c-good)' : 'var(--c-bad)') + '">' +
+        (up ? '▲ ' : '▼ ') + Math.abs(dp * 100).toFixed(0) + ' pt</span>';
+    }
+    return '<div class="kpi__delta">' + line + delta + '</div>';
+  }
+  function kpiCard(label, value, deltaHtml){
+    return '<div class="kpi"><div class="kpi__label">' + esc(label) + '</div>' +
+      '<div class="kpi__value">' + esc(value) + '</div>' + deltaHtml + '</div>';
+  }
+
+  function renderTop(list){
+    var box = $('bars-hot');
+    if (!list || !list.length){ box.innerHTML = '<p class="card__empty">這段期間還沒有銷售紀錄</p>'; return; }
+    var rows = list.slice(0, 5);
+    var max = Math.max.apply(null, rows.map(function(p){ return Number(p.qtySold) || 0; })) || 1;
+    box.innerHTML = rows.map(function(p){
+      var w = Math.max(3, (Number(p.qtySold) || 0) / max * 100);
+      return '<div class="bar-row">' +
+        '<span class="bar-row__name" title="' + esc(p.name) + '">' + esc(p.name) + '</span>' +
+        '<span class="bar-row__track"><span class="bar-row__fill hot" style="width:0"></span></span>' +
+        '<span class="bar-row__val">' + (Number(p.qtySold) || 0) + ' 件</span></div>';
+    }).join('');
+    // 從 0 過渡到目標寬度（用 setTimeout 保險，rAF 在部分預覽環境不觸發）
+    var fills = box.querySelectorAll('.bar-row__fill');
+    setTimeout(function(){
+      rows.forEach(function(p, i){
+        if (fills[i]) fills[i].style.width = Math.max(3, (Number(p.qtySold) || 0) / max * 100) + '%';
+      });
+    }, 60);
+  }
+
+  function renderStale(list){
+    var box = $('stale-list');
+    if (!list || !list.length){ box.innerHTML = '<p class="card__empty">目前沒有明顯滯銷或低轉換的商品 👍</p>'; return; }
+    box.innerHTML = list.map(function(r){
+      var isBad = String(r.tag || '').indexOf('滯銷') === 0;
+      var meta = '曝光 ' + (Number(r.views) || 0).toLocaleString('en-US') + ' · 售出 ' + (Number(r.qtySold) || 0) + ' 件 · ' +
+        (r.turnoverDays != null ? '週轉 ' + r.turnoverDays + ' 天' : '轉換 ' + pct(r.conversionRate));
+      return '<div class="stale-row"><div>' +
+        '<div class="stale-row__name">' + esc(r.name) + '</div>' +
+        '<div class="stale-row__meta">' + esc(meta) + '</div></div>' +
+        '<span class="stale-row__tag ' + (isBad ? 'tag-bad' : 'tag-warn') + '">' + esc(r.tag) + '</span></div>';
+    }).join('');
+  }
+
+  // 沒有分類表，改用「商品銷售佔比」：依營收排前幾名商品 + 其他商品，畫成圓餅(donut)
+  function renderProductShare(list){
+    var pie = $('prod-pie'), legend = $('cat-legend'), insight = $('cat-insight');
+    var holePct = $('prod-pie-pct'), holeName = $('prod-pie-name');
+
+    if (!list || !list.length){
+      pie.style.background = 'var(--c-bg-page)';
+      legend.innerHTML = '';
+      holePct.textContent = '—'; holeName.textContent = '尚無資料';
+      insight.textContent = '這段期間還沒有商品銷售資料。';
+      return;
+    }
+
+    // 組 conic-gradient：每個商品依序累加角度區間
+    var cum = 0;
+    var stops = list.map(function(c, i){
+      var start = cum, end = cum + (Number(c.pct) || 0) * 100;
+      cum = end;
+      return CAT_COLORS[i % CAT_COLORS.length] + ' ' + start.toFixed(2) + '% ' + end.toFixed(2) + '%';
+    });
+    if (cum < 99.9) stops.push('var(--c-bg-page) ' + cum.toFixed(2) + '% 100%'); // 補滿捨入誤差
+    pie.style.background = 'conic-gradient(' + stops.join(', ') + ')';
+
+    legend.innerHTML = list.map(function(c, i){
+      return '<span class="cat-legend__item"><span class="cat-legend__dot" style="background:' +
+        CAT_COLORS[i % CAT_COLORS.length] + '"></span>' + esc(c.name) + ' ' + pct(c.pct, 0) + '</span>';
+    }).join('');
+
+    var top = list[0];
+    holePct.textContent = pct(top.pct, 0);
+    holeName.textContent = top.name;
+
+    var top2 = list.slice(0, 2);
+    var sum2 = top2.reduce(function(s, c){ return s + (Number(c.pct) || 0); }, 0);
+    var txt = top2.length > 1
+      ? top2.map(function(c){ return c.name; }).join('＋') + ' 合計 ' + pct(sum2, 0) + '，是你的營收主力。'
+      : '「' + top.name + '」佔營收 ' + pct(top.pct, 0) + '。';
+    if (top.pct > 0.5) txt += '單一商品集中度偏高，建議培養第二主力分散風險。';
+    insight.textContent = txt;
+  }
+
+  function renderQuadrant(list){
+    var g = $('quad-points');
+    if (!list || !list.length){ g.innerHTML = ''; return; }
+    var X0 = 40, X1 = 330, Y0 = 10, Y1 = 230, XMID = 185, YMID = 120;
+    var tMax = Math.max.apply(null, list.map(function(p){ return Number(p.traffic) || 0; })) * 1.1 || 1;
+    var cMax = Math.max.apply(null, list.map(function(p){ return Number(p.conversionRate) || 0; })) * 1.15 || 0.01;
+    var rMax = Math.max.apply(null, list.map(function(p){ return Number(p.revenue) || 0; })) || 1;
+    g.innerHTML = list.slice(0, 12).map(function(p){
+      var cx = Math.min(X1 - 6, Math.max(X0 + 6, X0 + (Number(p.traffic) || 0) / tMax * (X1 - X0)));
+      var cy = Math.min(Y1 - 6, Math.max(Y0 + 6, Y1 - (Number(p.conversionRate) || 0) / cMax * (Y1 - Y0)));
+      var r  = 6 + (Number(p.revenue) || 0) / rMax * 10;
+      var hiT = cx >= XMID, hiC = cy <= YMID;
+      var fill = hiT && hiC ? '#6588A6' : (!hiT && hiC ? '#869489' : (hiT && !hiC ? '#c98a3c' : '#c15b5b'));
+      return '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="' + r.toFixed(1) + '" fill="' + fill + '" fill-opacity="0.85"><title>' +
+        esc(p.name) + ' · 流量 ' + (Number(p.traffic) || 0).toLocaleString('en-US') + ' · 轉換 ' + pct(p.conversionRate) + ' · ' + ntd(p.revenue) + '</title></circle>' +
+        '<text x="' + cx.toFixed(1) + '" y="' + (cy + 3).toFixed(1) + '" font-size="7" fill="#fff" text-anchor="middle">' + esc(short(p.name)) + '</text>';
+    }).join('');
+  }
+
+  function renderActions(a){
+    a = a || {};
+    fillList('act-grow', a.grow);
+    fillList('act-optimize', a.optimize);
+    fillList('act-cut', a.cut);
+  }
+  function fillList(id, arr){
+    var el = $(id);
+    if (!arr || !arr.length){ el.innerHTML = '<li>目前沒有特別建議</li>'; return; }
+    el.innerHTML = arr.map(function(s){ return '<li>' + esc(s) + '</li>'; }).join('');
+  }
+
+  function render(data){
+    renderKPI(data.kpi);
+    renderTop(data.topProducts);
+    renderStale(data.lowPerformers);
+    renderProductShare(data.productShare);
+    renderQuadrant(data.quadrant);
+    renderActions(data.actions);
+  }
+
+  // ── 期間文字 ─────────────────────────────────────────────────
+  function rangeLabel(){
+    var s = $('range-select');
+    return s.options[s.selectedIndex].text;
+  }
+  function periodText(period){
+    if (period && period.from && period.to) return period.from + ' ～ ' + period.to;
+    return rangeLabel();
+  }
+
+  // ── 主流程：抓 API，失敗退 DEMO ──────────────────────────────
+  var loading = false;
+  async function loadOverview(){
+    if (loading) return;
+    loading = true;
+    var refreshBtn = $('refresh-btn');
+    refreshBtn.setAttribute('disabled', 'true');
+    setStatus('loading', '讀取賣場數據中…');
+
+    var range = $('range-select').value;
+    try {
+      var res = await fetch(API + '?range=' + encodeURIComponent(range), {
+        headers: { 'Accept': 'application/json' },
+        credentials: 'same-origin'
+      });
+      var json = await res.json();
+      if (!res.ok || !json || json.success !== true) throw new Error((json && json.message) || ('HTTP ' + res.status));
+
+      render(json);
+      setStatus('live', '你的賣場實際數據 · ' + periodText(json.period));
+    } catch (err) {
+      console.warn('[analytics] 改用示範資料：', err && err.message);
+      render(DEMO);
+      setStatus('demo', '目前顯示示範資料（後端未連線）· ' + rangeLabel());
+    } finally {
+      loading = false;
+      refreshBtn.removeAttribute('disabled');
+    }
+  }
+
+  // ── 事件綁定 ─────────────────────────────────────────────────
+  $('range-select').addEventListener('change', loadOverview);
+  $('refresh-btn').addEventListener('click', loadOverview);
+  $('export-btn').addEventListener('click', function(){ window.print(); });
+  $('mnav-refresh').addEventListener('click', function(e){ e.preventDefault(); loadOverview(); });
+  $('mnav-export').addEventListener('click', function(e){ e.preventDefault(); window.print(); });
+
+  // 先鋪一版 DEMO（避免空白），再打 API 覆蓋
+  render(DEMO);
+  loadOverview();
+</script>
+</body>
+</html>
