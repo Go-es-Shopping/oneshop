@@ -786,7 +786,9 @@ document.addEventListener('DOMContentLoaded', () => {
     el.innerHTML = arr.map(function(s){ return '<li>' + esc(s) + '</li>'; }).join('');
   }
 
+  var currentData = null;
   function render(data){
+    currentData = data;
     renderKPI(data.kpi);
     renderTop(data.topProducts);
     renderStale(data.lowPerformers);
@@ -835,12 +837,99 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // ── 匯出 CSV（把圖表上出現過的商品彙成一份表）────────────────
+  function exportCsv(){
+    var data = currentData || DEMO;
+    var rows = collectProducts(data);
+    if (!rows.length){ alert('目前沒有可匯出的商品資料'); return; }
+
+    var headers = ['商品名稱', '售出件數', '營收(NT$)', '營收佔比', '曝光次數', '造訪工作階段', '轉換率', '週轉天數', '分類標籤', '出現於'];
+    var lines = [headers.map(csvCell).join(',')];
+    rows.forEach(function(r){
+      lines.push([
+        r.name,
+        r.qtySold,
+        r.revenue,
+        r.sharePct === '' ? '' : (r.sharePct * 100).toFixed(1) + '%',
+        r.views,
+        r.traffic,
+        r.conversionRate === '' ? '' : (r.conversionRate * 100).toFixed(2) + '%',
+        r.turnoverDays,
+        r.tag,
+        r.from.join(' / ')
+      ].map(csvCell).join(','));
+    });
+
+    var today = new Date().toISOString().slice(0, 10);
+    var fname = '銷售成效追蹤_' + rangeLabel().replace(/\s/g, '') + '_' + today + '.csv';
+    downloadCsv(fname, lines.join('\r\n'));
+  }
+
+  // 把 topProducts / lowPerformers / productShare / quadrant 出現過的商品，
+  // 依商品名稱去重合併成一份清單（每個欄位有哪個區塊帶到就填哪個）
+  function collectProducts(data){
+    var map = new Map();
+    function slot(p){
+      var key = (p.name && String(p.name).trim()) ? 'n:' + String(p.name).trim() : 'id:' + p.productId;
+      if (!map.has(key)) {
+        map.set(key, { name: p.name || String(p.productId || ''), qtySold: '', revenue: '', sharePct: '', views: '', traffic: '', conversionRate: '', turnoverDays: '', tag: '', from: [] });
+      }
+      return map.get(key);
+    }
+    function mark(r, label){ if (r.from.indexOf(label) < 0) r.from.push(label); }
+
+    (data.topProducts || []).forEach(function(p){
+      var r = slot(p);
+      if (p.qtySold != null) r.qtySold = p.qtySold;
+      if (p.revenue != null) r.revenue = p.revenue;
+      mark(r, '暢銷 Top 5');
+    });
+    (data.lowPerformers || []).forEach(function(p){
+      var r = slot(p);
+      if (p.qtySold != null) r.qtySold = p.qtySold;
+      if (p.views != null) r.views = p.views;
+      if (p.conversionRate != null && r.conversionRate === '') r.conversionRate = p.conversionRate;
+      if (p.turnoverDays != null) r.turnoverDays = p.turnoverDays;
+      if (p.tag) r.tag = p.tag;
+      mark(r, '受眾少 / 滯銷');
+    });
+    (data.productShare || []).forEach(function(p){
+      if (p.productId == null && p.name === '其他商品') return; // 聚合列不匯出
+      var r = slot(p);
+      if (p.revenue != null && r.revenue === '') r.revenue = p.revenue;
+      if (p.pct != null) r.sharePct = p.pct;
+      mark(r, '營收佔比');
+    });
+    (data.quadrant || []).forEach(function(p){
+      var r = slot(p);
+      if (p.revenue != null && r.revenue === '') r.revenue = p.revenue;
+      if (p.traffic != null) r.traffic = p.traffic;
+      if (p.conversionRate != null && r.conversionRate === '') r.conversionRate = p.conversionRate;
+      mark(r, '定位象限');
+    });
+    return Array.from(map.values());
+  }
+
+  function csvCell(v){
+    var s = (v == null) ? '' : String(v);
+    return /[",\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }
+  function downloadCsv(filename, text){
+    // 加 UTF-8 BOM（﻿），Excel 開中文才不會亂碼
+    var blob = new Blob(['﻿' + text], { type: 'text/csv;charset=utf-8;' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+  }
+
   // ── 事件綁定 ─────────────────────────────────────────────────
   $('range-select').addEventListener('change', loadOverview);
   $('refresh-btn').addEventListener('click', loadOverview);
-  $('export-btn').addEventListener('click', function(){ window.print(); });
+  $('export-btn').addEventListener('click', exportCsv);
   $('mnav-refresh').addEventListener('click', function(e){ e.preventDefault(); loadOverview(); });
-  $('mnav-export').addEventListener('click', function(e){ e.preventDefault(); window.print(); });
+  $('mnav-export').addEventListener('click', function(e){ e.preventDefault(); exportCsv(); });
 
   // 先鋪一版 DEMO（避免空白），再打 API 覆蓋
   render(DEMO);
