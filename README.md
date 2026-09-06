@@ -1,6 +1,7 @@
 # oneshop
 ## 資料庫關聯圖 (Database Schema)
 ![資料庫圖表](./sources-images/Shopping-db-diagram.jpg)
+- PlatformAdmin以及Notification表已先製作，但未實做相關邏輯，將其放在未來可優化進度。
 ## API規格書
 👉 [點此查看路由清單](./API_LIST.md)
 
