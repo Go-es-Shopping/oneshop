@@ -132,7 +132,7 @@ exports.login = async (req, res) => {
 }
 
 // ==========================================
-// 3. 取得賣家個人資料 API
+// 3. 取得賣家個人資料 API (支援 sellerId 或 Email 查詢)
 // ==========================================
 exports.getProfile = async (req, res) => {
   const Mock = await useMock()
@@ -140,25 +140,45 @@ exports.getProfile = async (req, res) => {
     const SellerData = readMock('seller.json')
     return res.json(SellerData)
   }
-  const Email = req.query.Email || req.body?.Email
-  if (!Email) {
-    return res.status(400).json({ message: '缺少查詢條件' })
+
+  // 💡 同時相容從 query 或 body 帶入的 sellerId 或 Email
+  const sellerId = req.query.sellerId || req.query.SellerID || req.body?.sellerId
+  const email = req.query.Email || req.query.email || req.body?.Email
+
+  if (!sellerId && !email) {
+    return res.status(400).json({ message: '缺少查詢條件 (sellerId 或 Email)' })
   }
-  const SellerRow = await Seller.findOne({ where: { Email: Email } }).catch(() => null)
-  if (!SellerRow) {
-    return res.status(404).json({ message: '查無資料' })
+
+  try {
+    let sellerRow = null
+
+    // 優先以 sellerId 主鍵查詢
+    if (sellerId) {
+      sellerRow = await Seller.findByPk(sellerId)
+    } else if (email) {
+      sellerRow = await Seller.findOne({ where: { Email: email } })
+    }
+
+    if (!sellerRow) {
+      return res.status(404).json({ message: '查無資料' })
+    }
+
+    // 回傳前端格式
+    return res.json(shapeSeller(sellerRow))
+  } catch (error) {
+    console.error('取得個人資料失敗:', error)
+    return res.status(500).json({ message: '伺服器內部錯誤' })
   }
-  return res.json(shapeSeller(SellerRow))
 }
+
 // ==========================================
 // 4. 賣家登出 API
 // ==========================================
 exports.logout = async (req, res) => {
-  // 如果未來有需要記錄登出時間，或清空 Server 端某些快取可以在這裡寫
   return res.json({
     success: true,
     message: '登出成功'
-  });
+  })
 }
 
 // ==========================================
