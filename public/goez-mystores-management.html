@@ -465,7 +465,8 @@
           if (store.customUrl && store.customUrl.trim() !== '') {
             viewUrl = `/store/${encodeURIComponent(store.customUrl)}`;
           } else {
-            viewUrl = `goez-shop-store-template.html?pageId=${encodeURIComponent(store.id)}`;
+            // 否則走預設的通用模版網頁
+            viewUrl = `goez-store-template.html?pageId=${encodeURIComponent(store.id)}`;
           }
         }
 

@@ -817,7 +817,7 @@
     </div>
   </header>
 
- <div class="page">
+  <div class="page">
     <main class="container">
 
       <!-- ── Quick Access：管理已建立賣場 / 優惠券設定 ─── -->
@@ -880,10 +880,13 @@
                   <span class="gallery-card__label" data-i18n="cardOrdersLogistics">訂單與物流</span>
                 </div>
               </a>
-              <div class="gallery-card">
-                <img class="gallery-card__img" src="images/decorations/sale-function.svg" alt="銷售成效追蹤" />
-                <span class="gallery-card__label" data-i18n="cardSalesPerformance">銷售成效追蹤</span>
-              </div>
+              <a href="goez-sales-analytics.html?sellerId={{sellerId}}" id="salesAnalyticsLink"
+                style="text-decoration: none; color: inherit; display: block; width: 100%; height: 100%;">
+                <div class="gallery-card" style="cursor: pointer;">
+                  <img class="gallery-card__img" src="images/decorations/sale-function.svg" alt="銷售成效追蹤" />
+                  <span class="gallery-card__label" data-i18n="cardSalesPerformance">銷售成效追蹤</span>
+                </div>
+              </a>
             </div>
           </div>
         </div>
@@ -899,7 +902,8 @@
           <!-- Card 1 -->
           <article class="faq-card fade-in-left delay-1">
             <p class="faq-card__question" data-i18n="faqQ1">Q. 手機拍照背景很亂怎麼辦？</p>
-            <p class="faq-card__answer" data-i18n="faqA1">A. 使用 Goez Shop 內建的 AI 去背與美化工具，一鍵清除雜亂背景、自動優化光線與色調，讓商品照片瞬間變得專業。</p>
+            <p class="faq-card__answer" data-i18n="faqA1">A. 使用 Goez Shop 內建的 AI 去背與美化工具，一鍵清除雜亂背景、自動優化光線與色調，讓商品照片瞬間變得專業。
+            </p>
           </article>
 
           <!-- Card 2 -->
@@ -996,7 +1000,7 @@
         if (result.success && result.pageId) {
           // 3. 拿到新 ID 了，自動跳轉到編輯頁，並帶上 pageId
           console.log("申請成功，ID 為:", result.pageId);
-          window.location.href = `/goez-shop-store.html?pageId=${result.pageId}`;
+          window.location.href = `/goez-store.html?pageId=${result.pageId}`;
         } else {
           alert("建立失敗：" + (result.message || "未知錯誤"));
         }
@@ -1041,6 +1045,11 @@
     if (couponSettingLink) {
       couponSettingLink.href = `goez-mycoupons-management.html?sellerId=${currentSellerId}`;
     }
+    // ── 7.動態帶入「銷售成效追蹤」的 sellerId ──────────
+    const salesAnalyticsLink = document.getElementById('salesAnalyticsLink');
+    if (salesAnalyticsLink) {
+      salesAnalyticsLink.href = `goez-sales-analytics.html?sellerId=${currentSellerId}`;
+    }
   </script>
 
 
@@ -1066,6 +1075,8 @@
       GoezI18n.apply();
       document.title = GoezI18n.t('pageTitleHome');
     }
+  </script>
+
   </script>
 </body>
 

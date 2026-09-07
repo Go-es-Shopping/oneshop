@@ -347,7 +347,16 @@ getOrderDetail: async (req, res) => {
       if (PaymentStatus !== undefined) updateData.PaymentStatus = Number(PaymentStatus);
 
       if (Object.keys(updateData).length > 0) {
+        // 1. 更新 Order 主檔的狀態
         await Order.update(updateData, { where: { OrderID: orderID }, transaction: t });
+
+        // 💡 2. 關鍵補上：如果前端有傳入 PaymentStatus，也要同步更新 Payment 付款記錄表！
+        if (PaymentStatus !== undefined) {
+          await Payment.update(
+            { PaymentStatus: Number(PaymentStatus) }, 
+            { where: { OrderID: orderID }, transaction: t }
+          );
+        }
       }
       
       await t.commit();

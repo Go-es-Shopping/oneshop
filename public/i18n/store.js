@@ -12,10 +12,17 @@
       btnLearnBrand: '瞭解品牌',
       hotProductsTitle: '熱門商品',
       viewMore: '查看更多',
+      // Footer 導覽與版權
+      loading: '載入中...',
+      previewQuickLinks: '快速連結',
+      previewLatestProducts: '最新商品',
+      previewPrivacy: '隱私條款',
+      previewContactUs: '聯絡我們',
       footerQuickLinks: '快速連結',
       footerLatestProducts: '最新商品',
       footerPrivacy: '隱私條款',
-      footerContactUs: '聯絡我們'
+      footerContactUs: '聯絡我們',
+      footerRights: 'All rights reserved. Powered by Figma Make.'
     },
     en: {
       pageTitleStore: 'Goez Shop - Online Store',
@@ -28,10 +35,17 @@
       btnLearnBrand: 'About Brand',
       hotProductsTitle: 'Hot Products',
       viewMore: 'View More',
+      // Footer Links & Copyright
+      loading: 'Loading...',
+      previewQuickLinks: 'Quick Links',
+      previewLatestProducts: 'Latest Products',
+      previewPrivacy: 'Privacy Policy',
+      previewContactUs: 'Contact Us',
       footerQuickLinks: 'Quick Links',
       footerLatestProducts: 'Latest Products',
       footerPrivacy: 'Privacy Policy',
-      footerContactUs: 'Contact Us'
+      footerContactUs: 'Contact Us',
+      footerRights: 'All rights reserved. Powered by Figma Make.'
     },
     ja: {
       pageTitleStore: 'Goez Shop - オンラインストア',
@@ -44,10 +58,17 @@
       btnLearnBrand: 'ブランドについて',
       hotProductsTitle: 'おすすめ商品',
       viewMore: 'もっと見る',
+      // フッターリンク・著作権
+      loading: '読み込み中...',
+      previewQuickLinks: 'クイックリンク',
+      previewLatestProducts: '新着商品',
+      previewPrivacy: 'プライバシーポリシー',
+      previewContactUs: 'お問い合わせ',
       footerQuickLinks: 'クイックリンク',
       footerLatestProducts: '新着商品',
       footerPrivacy: 'プライバシーポリシー',
-      footerContactUs: 'お問い合わせ'
+      footerContactUs: 'お問い合わせ',
+      footerRights: 'All rights reserved. Powered by Figma Make.'
     }
   });
 })();
