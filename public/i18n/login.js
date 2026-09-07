@@ -6,6 +6,7 @@
   if (!window.GoezI18n) return;
   GoezI18n.register({
     'zh-Hant': {
+      // ── 登入頁專用 ──
       pageTitleSignin: '登入｜Goez Shop 後台',
       language: '語言',
       signinTitle: '登入 Goez Shop',
@@ -19,6 +20,8 @@
       errSigninEmpty: '請輸入 Email 與密碼。',
       alertSigninDemo: '示範：登入表單已送出。實際登入需接後端 API。',
 
+      // ── 註冊頁專用 ──
+      pageTitleRegister: 'Goez Shop - 建立賣家帳號',
       pageTitleSignup: '註冊｜Goez Shop 後台',
       signupTitle: '建立賣家帳號',
       signupSubtitle: '填寫以下資料註冊店鋪，送出後帳號狀態為「審核中」，並寄送 Email 驗證信。（示範流程）',
@@ -34,6 +37,7 @@
       passwordHint: '密碼至少需要 8 個字元。',
       confirmPassword: '再次輸入密碼',
       confirmPasswordPlaceholder: '請再輸入一次密碼',
+      togglePasswordAria: '切換密碼顯示',
       termsAgreePrefix: '我已閱讀並同意',
       termsOfService: '服務條款',
       termsAgreeAnd: '及',
@@ -53,14 +57,19 @@
       errPhoneE164: '聯絡電話請使用 E.164 格式，例如 +886912345678。',
       errEmail: '請輸入 Email。',
       errPasswordLen: '密碼至少需要 8 碼。',
+      errPasswordTooShort: '密碼至少需要 8 個字元。',
       errPasswordMismatch: '兩次輸入的密碼不一致，請重新確認。',
       errTermsRequired: '請勾選同意服務條款及隱私政策。',
+      errAgreeRequired: '請勾選同意服務條款及隱私政策。',
+      errRegisterFailed: '註冊失敗，請檢查輸入資料或稍後再試。',
+      errNetwork: '連線伺服器失敗，請稍後再試。',
       verifyTitle: '註冊申請已送出',
       verifyMailSent: '已寄送驗證信到：{email}',
       verifyStatus: '店鋪「{store}」已建立申請，帳號狀態為審核中（Status = 0）。',
-      verifyOk: '我知道了',
+      verifyOk: '我知道了'
     },
     en: {
+      // ── Sign-in Page ──
       pageTitleSignin: 'Sign In｜Goez Shop Admin',
       language: 'Language',
       signinTitle: 'Sign in to Goez Shop',
@@ -74,6 +83,8 @@
       errSigninEmpty: 'Please enter your email and password.',
       alertSigninDemo: 'Demo: sign-in form submitted. Real sign-in requires a backend API.',
 
+      // ── Signup Page ──
+      pageTitleRegister: 'Goez Shop - Create Seller Account',
       pageTitleSignup: 'Sign Up｜Goez Shop Admin',
       signupTitle: 'Create a seller account',
       signupSubtitle: 'Fill in the details below to register your store. After submitting, the account status is “Under review” and a verification email is sent. (Demo flow)',
@@ -89,6 +100,7 @@
       passwordHint: 'Password must be at least 8 characters.',
       confirmPassword: 'Confirm password',
       confirmPasswordPlaceholder: 'Enter your password again',
+      togglePasswordAria: 'Toggle password visibility',
       termsAgreePrefix: 'I have read and agree to the ',
       termsOfService: 'Terms of Service',
       termsAgreeAnd: ' and ',
@@ -108,14 +120,19 @@
       errPhoneE164: 'Phone number must be in E.164 format, e.g. +886912345678.',
       errEmail: 'Please enter your email.',
       errPasswordLen: 'Password must be at least 8 characters.',
+      errPasswordTooShort: 'Password must be at least 8 characters.',
       errPasswordMismatch: 'Passwords do not match. Please try again.',
       errTermsRequired: 'Please agree to the Terms of Service and Privacy Policy.',
+      errAgreeRequired: 'Please agree to the Terms of Service and Privacy Policy.',
+      errRegisterFailed: 'Registration failed. Please check your details or try again later.',
+      errNetwork: 'Failed to connect to server. Please try again later.',
       verifyTitle: 'Application submitted',
       verifyMailSent: 'A verification email has been sent to: {email}',
       verifyStatus: 'Store “{store}” application created. Account status is Under review (Status = 0).',
-      verifyOk: 'Got it',
+      verifyOk: 'Got it'
     },
     ja: {
+      // ── ログインページ ──
       pageTitleSignin: 'ログイン｜Goez Shop 管理画面',
       language: '言語',
       signinTitle: 'Goez Shop にログイン',
@@ -129,6 +146,8 @@
       errSigninEmpty: 'メールアドレスとパスワードを入力してください。',
       alertSigninDemo: 'デモ：ログインフォームを送信しました。本番ではバックエンド API が必要です。',
 
+      // ── 新規登録ページ ──
+      pageTitleRegister: 'Goez Shop - 出店アカウント登録',
       pageTitleSignup: '新規登録｜Goez Shop 管理画面',
       signupTitle: '出品者アカウントを作成',
       signupSubtitle: '以下の情報を入力して店舗を登録します。送信後、アカウント状態は「審査中」となり、確認メールが送信されます。（デモ）',
@@ -144,6 +163,7 @@
       passwordHint: 'パスワードは 8 文字以上にしてください。',
       confirmPassword: 'パスワード（確認）',
       confirmPasswordPlaceholder: 'パスワードを再入力',
+      togglePasswordAria: 'パスワードの表示切替',
       termsAgreePrefix: '',
       termsOfService: '利用規約',
       termsAgreeAnd: 'および',
@@ -163,12 +183,16 @@
       errPhoneE164: '電話番号は E.164 形式で入力してください（例：+886912345678）。',
       errEmail: 'メールアドレスを入力してください。',
       errPasswordLen: 'パスワードは 8 文字以上にしてください。',
+      errPasswordTooShort: 'パスワードは 8 文字以上にしてください。',
       errPasswordMismatch: 'パスワードが一致しません。もう一度確認してください。',
       errTermsRequired: '利用規約とプライバシーポリシーに同意してください。',
+      errAgreeRequired: '利用規約とプライバシーポリシーに同意してください。',
+      errRegisterFailed: '登録に失敗しました。入力内容を確認するか、後でもう一度お試しください。',
+      errNetwork: 'サーバーへの接続に失敗しました。後でもう一度お試しください。',
       verifyTitle: '申請を受け付けました',
       verifyMailSent: '確認メールを送信しました：{email}',
       verifyStatus: '店舗「{store}」の申請を作成しました。アカウント状態は審査中です（Status = 0）。',
-      verifyOk: '了解',
-    },
+      verifyOk: '了解'
+    }
   });
 })();

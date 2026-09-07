@@ -1,0 +1,65 @@
+(function () {
+    if (!window.GoezI18n) return;
+    GoezI18n.register({
+        'zh-Hant': {
+            pageTitleLanding: 'Goez Shop - 打造你的一頁式賣場',
+            language: '語言',
+            brandSlogan: '購意思',
+            heroSubtitle: '輕鬆打造您的專屬線上商店',
+            startNowBtn: '立即開始',
+            feature1Title: '建立一頁式商店',
+            feature1Desc: '快速建立品牌專屬商店',
+            feature2Title: 'AI 功能輔助開店創意',
+            feature2Desc: '智慧生成文案與設計靈感建議',
+            feature3Title: 'Power BI 數據分析',
+            feature3Desc: '即時掌握營運數據與趨勢',
+            feature4Title: '質感主題與字體',
+            feature4Desc: '一鍵套用品牌風格設計',
+            feature5Title: '訂單與金物流處理',
+            feature5Desc: '管理訂單物流資訊與平台統一代收按月撥款',
+            feature6Title: '中・日・英三國語言切換',
+            feature6Desc: '輕鬆拓展海外市場',
+            scrollDown: '探索更多功能'
+        },
+        en: {
+            pageTitleLanding: 'Goez Shop - Build Your One-Page Store',
+            language: 'Language',
+            brandSlogan: 'Goez Shop',
+            heroSubtitle: 'Easily Build Your Exclusive Online Store',
+            startNowBtn: 'Get Started',
+            feature1Title: 'One-Page Store',
+            feature1Desc: 'Quickly set up your brand store',
+            feature2Title: 'AI-Powered Store Ideas',
+            feature2Desc: 'Smart copywriting & design inspiration',
+            feature3Title: 'Power BI Analytics',
+            feature3Desc: 'Track real-time operational data & trends',
+            feature4Title: 'Themes & Typography',
+            feature4Desc: 'Apply brand styles with one click',
+            feature5Title: 'Orders & Payments/Shipping',
+            feature5Desc: 'Integrated logistics & platform payouts',
+            feature6Title: 'Multi-Language Support',
+            feature6Desc: 'Expand to global markets effortlessly',
+            scrollDown: 'Explore More Features'
+        },
+        ja: {
+            pageTitleLanding: 'Goez Shop - ワンページショップを作成',
+            language: '言語',
+            brandSlogan: 'Goez Shop',
+            heroSubtitle: '専用のオンラインストアを簡単作成',
+            startNowBtn: '今すぐ始める',
+            feature1Title: 'ワンページショップ作成',
+            feature1Desc: 'ブランドショップを素早く構築',
+            feature2Title: 'AIによる開店サポート',
+            feature2Desc: '魅力的なコピーとデザインの自動提案',
+            feature3Title: 'Power BI データ分析',
+            feature3Desc: '売上データとトレンドをリアルタイム把握',
+            feature4Title: '洗練されたテーマとフォント',
+            feature4Desc: 'ワンクリックでブランドスタイルを適用',
+            feature5Title: '注文・決済・配送管理',
+            feature5Desc: '注文・配送情報の一括管理と月次精算',
+            feature6Title: '日・英・中 3言語切換',
+            feature6Desc: '海外市場へ手軽にビジネス拡大',
+            scrollDown: 'さらに機能を見る'
+        }
+    });
+})();

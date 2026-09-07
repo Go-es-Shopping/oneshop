@@ -1,0 +1,101 @@
+(function () {
+    if (!window.GoezI18n) return;
+    GoezI18n.register({
+        'zh-Hant': {
+            pageTitleMember: 'Goez Shop - 會員資料',
+            backHome: '‹ 返回會員首頁',
+            pageTitle: '會員資料',
+            pageSubtitle: '管理你的個人資訊與帳號安全設定。',
+            // Basic Info
+            basicInfoTitle: '基本資料',
+            basicInfoDesc: '更新後的資料將顯示於你的會員檔案中。',
+            nameLabel: '姓名',
+            phoneLabel: '聯絡電話',
+            phonePlaceholder: '0912-345-678',
+            emailHint: 'Email 為登入帳號，如需變更請聯繫客服。',
+            btnSaveProfile: '儲存變更',
+            profileSuccess: '個人資料已更新。',
+            profileError: '更新失敗，請稍後再試。',
+            // Password
+            passwordTitle: '變更密碼',
+            passwordDesc: '建議定期更換密碼以保護帳號安全。',
+            currentPasswordLabel: '目前密碼',
+            newPasswordLabel: '新密碼',
+            confirmPasswordLabel: '確認新密碼',
+            btnUpdatePassword: '更新密碼',
+            passwordMismatch: '兩次輸入的新密碼不一致。',
+            passwordSuccess: '密碼已成功更新。',
+            passwordError: '密碼變更失敗，請確認目前密碼是否正確。',
+            // Danger Zone
+            deleteAccountTitle: '刪除帳號',
+            deleteAccountDesc: '刪除後將無法復原，所有賣場與資料都會一併移除。',
+            btnDeleteAccount: '刪除帳號',
+            confirmDeleteAlert: '確定要刪除帳號嗎？此操作無法復原，所有賣場與資料都會一併移除。',
+            deletePendingAlert: '帳號刪除功能尚未串接後端。'
+        },
+        en: {
+            pageTitleMember: 'Goez Shop - Member Profile',
+            backHome: '‹ Back to Home',
+            pageTitle: 'Member Profile',
+            pageSubtitle: 'Manage your personal information and account security settings.',
+            // Basic Info
+            basicInfoTitle: 'Basic Profile',
+            basicInfoDesc: 'Updated info will be reflected in your member account.',
+            nameLabel: 'Name',
+            phoneLabel: 'Phone',
+            phonePlaceholder: '0912-345-678',
+            emailHint: 'Email is your login ID. Please contact support to change it.',
+            btnSaveProfile: 'Save Changes',
+            profileSuccess: 'Profile updated successfully.',
+            profileError: 'Update failed. Please try again later.',
+            // Password
+            passwordTitle: 'Change Password',
+            passwordDesc: 'Regularly updating your password enhances account security.',
+            currentPasswordLabel: 'Current Password',
+            newPasswordLabel: 'New Password',
+            confirmPasswordLabel: 'Confirm New Password',
+            btnUpdatePassword: 'Update Password',
+            passwordMismatch: 'The new passwords do not match.',
+            passwordSuccess: 'Password updated successfully.',
+            passwordError: 'Password change failed. Please verify your current password.',
+            // Danger Zone
+            deleteAccountTitle: 'Delete Account',
+            deleteAccountDesc: 'This action is irreversible. All stores and data will be removed.',
+            btnDeleteAccount: 'Delete Account',
+            confirmDeleteAlert: 'Are you sure you want to delete your account? This action cannot be undone.',
+            deletePendingAlert: 'Account deletion feature is not connected to backend yet.'
+        },
+        ja: {
+            pageTitleMember: 'Goez Shop - 会員情報',
+            backHome: '‹ ホームに戻る',
+            pageTitle: '会員情報設定',
+            pageSubtitle: '個人情報とアカウントのセキュリティ設定を管理します。',
+            // Basic Info
+            basicInfoTitle: '基本情報',
+            basicInfoDesc: '更新された情報はアカウントプロフィールに反映されます。',
+            nameLabel: '氏名',
+            phoneLabel: '電話番号',
+            phonePlaceholder: '0912-345-678',
+            emailHint: 'メールアドレスはログインIDです。変更はサポートまでお問い合わせください。',
+            btnSaveProfile: '変更を保存',
+            profileSuccess: '個人情報が更新されました。',
+            profileError: '更新に失敗しました。後でもう一度お試しください。',
+            // Password
+            passwordTitle: 'パスワード変更',
+            passwordDesc: 'アカウント保護のため、定期的なパスワード変更をおすすめします。',
+            currentPasswordLabel: '現在のパスワード',
+            newPasswordLabel: '新しいパスワード',
+            confirmPasswordLabel: '新しいパスワード（確認）',
+            btnUpdatePassword: 'パスワードを更新',
+            passwordMismatch: '入力された新しいパスワードが一致しません。',
+            passwordSuccess: 'パスワードが正常に更新されました。',
+            passwordError: 'パスワードの変更に失敗しました。現在のパスワードをご確認ください。',
+            // Danger Zone
+            deleteAccountTitle: 'アカウント削除',
+            deleteAccountDesc: '削除すると復元できません。すべてのショップとデータが完全に削除されます。',
+            btnDeleteAccount: 'アカウントを削除',
+            confirmDeleteAlert: '本当にアカウントを削除しますか？この操作は取り消せません。',
+            deletePendingAlert: 'アカウント削除機能は現在準備中です。'
+        }
+    });
+})();

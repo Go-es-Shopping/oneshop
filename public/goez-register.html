@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,7 +8,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
   <script>
     tailwind.config = {
       theme: {
@@ -22,16 +24,21 @@
     };
   </script>
   <style>
-    body { font-family: 'Noto Sans TC', sans-serif; }
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+    }
+
     .page-enter {
       opacity: 0;
       transform: translateY(28px);
       transition: opacity 320ms ease, transform 320ms ease;
     }
+
     .page-enter.is-entered {
       opacity: 1;
       transform: translateY(0);
     }
+
     @media (prefers-reduced-motion: reduce) {
       .page-enter {
         opacity: 1;
@@ -41,6 +48,7 @@
     }
   </style>
 </head>
+
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
   <div class="flex flex-col min-h-screen">
     <header class="flex-shrink-0 bg-gradient-to-r from-slate-200 via-slate-100 to-blue-100/80 backdrop-blur-sm">
@@ -49,10 +57,7 @@
           <a href="../index.html" class="flex items-center gap-2">
             <span class="text-xl font-bold text-slate-800 tracking-tight">Goez Shop</span>
           </a>
-          <div class="flex items-center gap-3">
-            <label for="lang-switch" class="sr-only" data-i18n="language">語言</label>
-            <select id="lang-switch" class="text-sm rounded-xl border border-slate-200 bg-white/80 px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-200"></select>
-          </div>
+          <!-- 🌟 依組長規範：註冊頁移除 lang-switch 切換選單，維持介面簡潔 -->
         </div>
       </div>
     </header>
@@ -61,148 +66,143 @@
       <div class="page-enter max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
         <div class="mb-8">
           <h1 class="text-2xl sm:text-3xl font-bold text-slate-900" data-i18n="signupTitle">建立賣家帳號</h1>
-          <p class="mt-2 text-sm text-slate-600" data-i18n="signupSubtitle">填寫以下資料註冊店鋪，送出後帳號狀態為「審核中」，並寄送 Email 驗證信。（示範流程）</p>
+          <p class="mt-2 text-sm text-slate-600" data-i18n="signupSubtitle">
+            填寫以下資料註冊店鋪，送出後帳號狀態為「審核中」，並寄送 Email 驗證信。（示範流程）
+          </p>
         </div>
 
         <section class="bg-white rounded-2xl shadow-soft overflow-hidden">
           <div class="p-6 sm:p-8">
             <form id="signup-form" class="space-y-5" novalidate>
-              <div class="rounded-xl border border-slate-200 bg-slate-50/40 p-5 sm:p-6 space-y-4" role="group" aria-labelledby="signup-section-basic">
-                <h2 id="signup-section-basic" class="text-sm font-semibold text-slate-800 pb-3 border-b border-slate-200" data-i18n="sectionBasic">基本資料</h2>
+              <!-- 基本資料 -->
+              <div class="rounded-xl border border-slate-200 bg-slate-50/40 p-5 sm:p-6 space-y-4" role="group"
+                aria-labelledby="signup-section-basic">
+                <h2 id="signup-section-basic"
+                  class="text-sm font-semibold text-slate-800 pb-3 border-b border-slate-200" data-i18n="sectionBasic">
+                  基本資料
+                </h2>
 
                 <div>
-                  <label for="signup-seller-name" class="block text-sm font-medium text-slate-700 mb-1.5"><span data-i18n="sellerName">真實姓名</span> <span class="text-red-500">*</span></label>
-                  <input
-                    type="text"
-                    id="signup-seller-name"
-                    name="SellerName"
-                    required
-                    maxlength="100"
-                    autocomplete="name"
-                    placeholder="請輸入真實姓名"
-                    data-i18n-placeholder="sellerNamePlaceholder"
-                    class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800 placeholder-slate-400 transition"
-                  />
+                  <label for="signup-seller-name" class="block text-sm font-medium text-slate-700 mb-1.5">
+                    <span data-i18n="sellerName">真實姓名</span> <span class="text-red-500">*</span>
+                  </label>
+                  <input type="text" id="signup-seller-name" name="SellerName" required maxlength="100"
+                    autocomplete="name" placeholder="請輸入真實姓名" data-i18n-placeholder="sellerNamePlaceholder"
+                    class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800 placeholder-slate-400 transition" />
                 </div>
 
                 <div>
-                  <label for="signup-store-name" class="block text-sm font-medium text-slate-700 mb-1.5"><span data-i18n="storeName">店鋪名稱</span> <span class="text-red-500">*</span></label>
-                  <input
-                    type="text"
-                    id="signup-store-name"
-                    name="StoreName"
-                    required
-                    maxlength="100"
-                    autocomplete="organization"
-                    placeholder="例：小明選物店"
-                    data-i18n-placeholder="storeNamePlaceholder"
-                    class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800 placeholder-slate-400 transition"
-                  />
+                  <label for="signup-store-name" class="block text-sm font-medium text-slate-700 mb-1.5">
+                    <span data-i18n="storeName">店鋪名稱</span> <span class="text-red-500">*</span>
+                  </label>
+                  <input type="text" id="signup-store-name" name="StoreName" required maxlength="100"
+                    autocomplete="organization" placeholder="例：小明選物店" data-i18n-placeholder="storeNamePlaceholder"
+                    class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800 placeholder-slate-400 transition" />
                 </div>
 
                 <div>
-                  <label for="signup-phone" class="block text-sm font-medium text-slate-700 mb-1.5"><span data-i18n="phone">聯絡電話</span> <span class="text-red-500">*</span></label>
-                  <input
-                    type="tel"
-                    id="signup-phone"
-                    name="Phone"
-                    required
-                    maxlength="20"
-                    autocomplete="tel"
+                  <label for="signup-phone" class="block text-sm font-medium text-slate-700 mb-1.5">
+                    <span data-i18n="phone">聯絡電話</span> <span class="text-red-500">*</span>
+                  </label>
+                  <input type="tel" id="signup-phone" name="Phone" required maxlength="20" autocomplete="tel"
                     placeholder="+886912345678"
-                    class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800 placeholder-slate-400 transition"
-                  />
+                    class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800 placeholder-slate-400 transition" />
                   <p class="mt-2 text-xs text-slate-500" data-i18n="phoneHint">請使用 E.164 國際格式，例如 +886912345678。</p>
                 </div>
               </div>
 
-              <div class="rounded-xl border border-slate-200 bg-slate-50/40 p-5 sm:p-6 space-y-4" role="group" aria-labelledby="signup-section-account">
-                <h2 id="signup-section-account" class="text-sm font-semibold text-slate-800 pb-3 border-b border-slate-200" data-i18n="sectionAccount">帳號與密碼</h2>
+              <!-- 帳號與密碼 -->
+              <div class="rounded-xl border border-slate-200 bg-slate-50/40 p-5 sm:p-6 space-y-4" role="group"
+                aria-labelledby="signup-section-account">
+                <h2 id="signup-section-account"
+                  class="text-sm font-semibold text-slate-800 pb-3 border-b border-slate-200"
+                  data-i18n="sectionAccount">
+                  帳號與密碼
+                </h2>
 
                 <div>
-                  <label for="signup-email" class="block text-sm font-medium text-slate-700 mb-1.5"><span data-i18n="email">Email</span> <span class="text-red-500">*</span></label>
-                  <input
-                    type="email"
-                    id="signup-email"
-                    name="Email"
-                    required
-                    maxlength="255"
-                    autocomplete="email"
+                  <label for="signup-email" class="block text-sm font-medium text-slate-700 mb-1.5">
+                    <span data-i18n="email">Email</span> <span class="text-red-500">*</span>
+                  </label>
+                  <input type="email" id="signup-email" name="Email" required maxlength="255" autocomplete="email"
                     placeholder="example@email.com"
-                    class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800 placeholder-slate-400 transition"
-                  />
+                    class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800 placeholder-slate-400 transition" />
                 </div>
 
                 <div>
-                  <label for="signup-password" class="block text-sm font-medium text-slate-700 mb-1.5"><span data-i18n="password">密碼</span> <span class="text-red-500">*</span></label>
-                    <div class="relative">
-                        <input
-                        type="password"
-                        id="signup-password"
-                        name="Password"
-                        required
-                        minlength="8"
-                        autocomplete="new-password"
-                        placeholder="請輸入密碼"
-                        data-i18n-placeholder="passwordPlaceholder"
-                        class="w-full px-4 py-3 pr-12 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800 placeholder-slate-400 transition"
-                        />
-                        <button type="button" id="toggle-password-btn" class="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-slate-600 transition" aria-label="切換密碼顯示">
-                        <svg id="eye-icon-pass" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                        </button>
-                    </div>
-                    <p class="mt-2 text-xs text-slate-500" data-i18n="passwordHint">密碼至少需要 8 個字元。</p>
+                  <label for="signup-password" class="block text-sm font-medium text-slate-700 mb-1.5">
+                    <span data-i18n="password">密碼</span> <span class="text-red-500">*</span>
+                  </label>
+                  <div class="relative">
+                    <input type="password" id="signup-password" name="Password" required minlength="8"
+                      autocomplete="new-password" placeholder="請輸入密碼" data-i18n-placeholder="passwordPlaceholder"
+                      class="w-full px-4 py-3 pr-12 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800 placeholder-slate-400 transition" />
+                    <button type="button" id="toggle-password-btn"
+                      class="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-slate-600 transition"
+                      aria-label="切換密碼顯示">
+                      <svg id="eye-icon-pass" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                    </button>
+                  </div>
+                  <p class="mt-2 text-xs text-slate-500" data-i18n="passwordHint">密碼至少需要 8 個字元。</p>
                 </div>
 
                 <div>
-                  <label for="signup-confirm" class="block text-sm font-medium text-slate-700 mb-1.5"><span data-i18n="confirmPassword">再次輸入密碼</span> <span class="text-red-500">*</span></label>
-                    <div class="relative">
-                        <input
-                        type="password"
-                        id="signup-confirm"
-                        required
-                        minlength="8"
-                        autocomplete="new-password"
-                        placeholder="請再輸入一次密碼"
-                        data-i18n-placeholder="confirmPasswordPlaceholder"
-                        class="w-full px-4 py-3 pr-12 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800 placeholder-slate-400 transition"
-                        />
-                        <button type="button" id="toggle-confirm-btn" class="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-slate-600 transition" aria-label="切換密碼顯示">
-                        <svg id="eye-icon-confirm" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                        </button>
-                    </div>
-              </div>
+                  <label for="signup-confirm" class="block text-sm font-medium text-slate-700 mb-1.5">
+                    <span data-i18n="confirmPassword">再次輸入密碼</span> <span class="text-red-500">*</span>
+                  </label>
+                  <div class="relative">
+                    <input type="password" id="signup-confirm" required minlength="8" autocomplete="new-password"
+                      placeholder="請再輸入一次密碼" data-i18n-placeholder="confirmPasswordPlaceholder"
+                      class="w-full px-4 py-3 pr-12 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:outline-none text-slate-800 placeholder-slate-400 transition" />
+                    <button type="button" id="toggle-confirm-btn"
+                      class="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-slate-600 transition"
+                      aria-label="切換密碼顯示">
+                      <svg id="eye-icon-confirm" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
 
-              <label class="flex items-start gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  id="signup-terms"
-                  name="AgreeTerms"
-                  required
-                  class="mt-0.5 h-4 w-4 flex-shrink-0 rounded border-slate-300 text-slate-800 focus:ring-slate-300"
-                />
-                <span class="text-sm text-slate-700 leading-relaxed">
-                  <span data-i18n="termsAgreePrefix">我已閱讀並同意</span>
-                  <button type="button" id="open-terms-btn" class="text-blue-600 hover:text-blue-800 underline underline-offset-2" data-i18n="termsOfService">服務條款</button>
-                  <span data-i18n="termsAgreeAnd">及</span>
-                  <button type="button" id="open-privacy-btn" class="text-blue-600 hover:text-blue-800 underline underline-offset-2" data-i18n="privacyPolicy">隱私政策</button>
-                  <span data-i18n="termsAgreeSuffix"></span>
-                </span>
-              </label>
+                <label class="flex items-start gap-3 cursor-pointer">
+                  <input type="checkbox" id="signup-terms" name="AgreeTerms" required
+                    class="mt-0.5 h-4 w-4 flex-shrink-0 rounded border-slate-300 text-slate-800 focus:ring-slate-300" />
+                  <span class="text-sm text-slate-700 leading-relaxed">
+                    <span data-i18n="termsAgreePrefix">我已閱讀並同意</span>
+                    <button type="button" id="open-terms-btn"
+                      class="text-blue-600 hover:text-blue-800 underline underline-offset-2"
+                      data-i18n="termsOfService">服務條款</button>
+                    <span data-i18n="termsAgreeAnd">及</span>
+                    <button type="button" id="open-privacy-btn"
+                      class="text-blue-600 hover:text-blue-800 underline underline-offset-2"
+                      data-i18n="privacyPolicy">隱私政策</button>
+                    <span data-i18n="termsAgreeSuffix"></span>
+                  </span>
+                </label>
 
-              <div id="signup-error" class="hidden p-3 rounded-xl border border-red-200 bg-red-50 text-red-700 text-sm" role="alert"></div>
+                <div id="signup-error"
+                  class="hidden p-3 rounded-xl border border-red-200 bg-red-50 text-red-700 text-sm" role="alert"></div>
 
-              <div class="flex flex-wrap justify-end gap-3 pt-2">
-                <button
-                  type="submit"
-                  class="px-5 py-3 rounded-xl bg-slate-800 text-white font-medium shadow-soft hover:bg-slate-900 transition whitespace-nowrap"
-                  data-i18n="createAccountBtn"
-                >
-                  建立帳號
-                </button>
-                <a href="./goez-login.html" class="px-5 py-3 rounded-xl bg-slate-100 text-slate-700 font-medium hover:bg-slate-200 transition inline-flex items-center justify-center" data-i18n="backToSignin">
-                  返回登入
-                </a>
+                <div class="flex flex-wrap justify-end gap-3 pt-2">
+                  <button type="submit"
+                    class="px-5 py-3 rounded-xl bg-slate-800 text-white font-medium shadow-soft hover:bg-slate-900 transition whitespace-nowrap"
+                    data-i18n="createAccountBtn">
+                    建立帳號
+                  </button>
+                  <a href="./goez-login.html"
+                    class="px-5 py-3 rounded-xl bg-slate-100 text-slate-700 font-medium hover:bg-slate-200 transition inline-flex items-center justify-center"
+                    data-i18n="backToSignin">
+                    返回登入
+                  </a>
+                </div>
               </div>
             </form>
           </div>
@@ -211,13 +211,15 @@
     </main>
   </div>
 
+  <!-- 註冊成功彈窗 -->
   <div id="verify-mail-modal" class="fixed inset-0 z-50 hidden" aria-hidden="true">
     <div id="verify-mail-overlay" class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
     <div class="absolute inset-0 flex items-center justify-center p-4">
       <div class="w-full max-w-md bg-white rounded-2xl shadow-soft-lg border border-slate-100 overflow-hidden">
         <div class="p-6 sm:p-8">
           <div class="flex items-start gap-3 p-4 rounded-xl border border-emerald-200 bg-emerald-50/70">
-            <span class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold flex-shrink-0">✓</span>
+            <span
+              class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold flex-shrink-0">✓</span>
             <div>
               <p class="text-sm font-semibold text-emerald-800" data-i18n="verifyTitle">註冊申請已送出</p>
               <p id="verify-mail-text" class="mt-1 text-sm text-slate-700"></p>
@@ -225,7 +227,9 @@
             </div>
           </div>
           <div class="pt-5 flex justify-end">
-            <button type="button" id="verify-mail-ok" class="px-5 py-3 rounded-xl bg-slate-800 text-white font-medium shadow-soft hover:bg-slate-900 transition" data-i18n="verifyOk">
+            <button type="button" id="verify-mail-ok"
+              class="px-5 py-3 rounded-xl bg-slate-800 text-white font-medium shadow-soft hover:bg-slate-900 transition"
+              data-i18n="verifyOk">
               我知道了
             </button>
           </div>
@@ -234,26 +238,41 @@
     </div>
   </div>
 
-  <div id="legal-modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-labelledby="legal-modal-title" aria-hidden="true">
+  <!-- 服務條款 / 隱私政策彈窗 -->
+  <div id="legal-modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true"
+    aria-labelledby="legal-modal-title" aria-hidden="true">
     <div id="legal-modal-overlay" class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
     <div class="absolute inset-0 flex items-center justify-center p-4">
-      <div class="w-full max-w-2xl max-h-[85vh] bg-white rounded-2xl shadow-soft-lg border border-slate-100 overflow-hidden flex flex-col">
+      <div
+        class="w-full max-w-2xl max-h-[85vh] bg-white rounded-2xl shadow-soft-lg border border-slate-100 overflow-hidden flex flex-col">
         <div class="flex items-start justify-between gap-4 p-6 sm:p-8 pb-4 border-b border-slate-100">
           <h2 id="legal-modal-title" class="text-lg font-bold text-slate-900 pr-2"></h2>
-          <button type="button" id="legal-modal-close" class="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition" data-i18n-aria="close" aria-label="關閉">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          <button type="button" id="legal-modal-close"
+            class="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition"
+            aria-label="關閉">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
         </div>
-        <div id="legal-modal-body" class="overflow-y-auto px-6 sm:px-8 py-5 text-sm text-slate-700 leading-relaxed space-y-4"></div>
+        <div id="legal-modal-body"
+          class="overflow-y-auto px-6 sm:px-8 py-5 text-sm text-slate-700 leading-relaxed space-y-4"></div>
         <div class="p-6 sm:p-8 pt-4 border-t border-slate-100 flex justify-end">
-          <button type="button" id="legal-modal-ok" class="px-5 py-3 rounded-xl bg-slate-800 text-white font-medium shadow-soft hover:bg-slate-900 transition" data-i18n="legalModalClose">關閉</button>
+          <button type="button" id="legal-modal-ok"
+            class="px-5 py-3 rounded-xl bg-slate-800 text-white font-medium shadow-soft hover:bg-slate-900 transition"
+            data-i18n="legalModalClose">
+            關閉
+          </button>
         </div>
       </div>
     </div>
   </div>
 
-  <script src="../i18n/i18n-core.js"></script>
+  <!-- 1. 優先引入多語言核心與字典檔（核心在上、字典在下） -->
+  <script src="./i18n/i18n-core.js"></script>
   <script src="./i18n/login.js"></script>
+
+  <!-- 2. 業務邏輯與驗證腳本 -->
   <script>
     (function () {
       var entering = document.querySelector('.page-enter');
@@ -401,20 +420,18 @@
           const result = await response.json();
 
           if (result.success) {
-            // 寫入成功，開啟成功彈窗
             openSuccessModal(email.value.trim(), storeName.value.trim());
           } else {
-            // 後端傳回失敗訊息
-            showError(result.message || '註冊失敗，請重試');
+            showError(result.message || GoezI18n.t('errRegisterFailed'));
           }
         } catch (err) {
           console.error('註冊請求失敗:', err);
-          showError('伺服器連線失敗，請檢查 API 伺服器是否正常啟動');
+          showError(GoezI18n.t('errNetwork'));
         }
       });
 
-      modalOk.addEventListener('click', closeSuccessModal);
-      modalOverlay.addEventListener('click', closeSuccessModal);
+      if (modalOk) modalOk.addEventListener('click', closeSuccessModal);
+      if (modalOverlay) modalOverlay.addEventListener('click', closeSuccessModal);
 
       var legalModal = document.getElementById('legal-modal');
       var legalModalOverlay = document.getElementById('legal-modal-overlay');
@@ -434,7 +451,7 @@
         legalModal.classList.remove('hidden');
         legalModal.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
-        legalModalClose.focus();
+        if (legalModalClose) legalModalClose.focus();
       }
       function closeLegalModal() {
         if (!legalModal) return;
@@ -442,11 +459,6 @@
         legalModal.setAttribute('aria-hidden', 'true');
         legalModalType = null;
         if (modal.classList.contains('hidden')) document.body.style.overflow = '';
-      }
-      function refreshLegalModal() {
-        if (!legalModalType || legalModal.classList.contains('hidden')) return;
-        legalModalTitle.textContent = GoezI18n.t(legalModalType === 'terms' ? 'termsModalTitle' : 'privacyModalTitle');
-        legalModalBody.innerHTML = GoezI18n.t(legalModalType === 'terms' ? 'termsBody' : 'privacyBody');
       }
 
       if (openTermsBtn) {
@@ -472,14 +484,13 @@
         if (ev.key === 'Escape' && legalModal && !legalModal.classList.contains('hidden')) closeLegalModal();
       });
 
-      GoezI18n.mountSwitcher(document.getElementById('lang-switch'), function () {
+      // 🌟 初始化套用多語言（被動讀取 localStorage）
+      if (window.GoezI18n) {
+        GoezI18n.apply();
         document.title = GoezI18n.t('pageTitleSignup');
-        clearError();
-        refreshLegalModal();
-      });
-      GoezI18n.apply();
-      document.title = GoezI18n.t('pageTitleSignup');
+      }
     })();
   </script>
 </body>
+
 </html>
