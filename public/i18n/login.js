@@ -24,7 +24,7 @@
       pageTitleRegister: 'Goez Shop - 建立賣家帳號',
       pageTitleSignup: '註冊｜Goez Shop 後台',
       signupTitle: '建立賣家帳號',
-      signupSubtitle: '填寫以下資料註冊店鋪，送出後帳號狀態為「審核中」，並寄送 Email 驗證信。（示範流程）',
+      signupSubtitle: '填寫以下資料註冊店鋪。',
       sectionBasic: '基本資料',
       sectionAccount: '帳號與密碼',
       sellerName: '真實姓名',
@@ -64,8 +64,6 @@
       errRegisterFailed: '註冊失敗，請檢查輸入資料或稍後再試。',
       errNetwork: '連線伺服器失敗，請稍後再試。',
       verifyTitle: '註冊申請已送出',
-      verifyMailSent: '已寄送驗證信到：{email}',
-      verifyStatus: '店鋪「{store}」已建立申請，帳號狀態為審核中（Status = 0）。',
       verifyOk: '我知道了'
     },
     en: {
@@ -87,7 +85,7 @@
       pageTitleRegister: 'Goez Shop - Create Seller Account',
       pageTitleSignup: 'Sign Up｜Goez Shop Admin',
       signupTitle: 'Create a seller account',
-      signupSubtitle: 'Fill in the details below to register your store. After submitting, the account status is “Under review” and a verification email is sent. (Demo flow)',
+      signupSubtitle: 'Fill in the details below to register your store. ',
       sectionBasic: 'Basic information',
       sectionAccount: 'Account & password',
       sellerName: 'Full name',
@@ -127,8 +125,6 @@
       errRegisterFailed: 'Registration failed. Please check your details or try again later.',
       errNetwork: 'Failed to connect to server. Please try again later.',
       verifyTitle: 'Application submitted',
-      verifyMailSent: 'A verification email has been sent to: {email}',
-      verifyStatus: 'Store “{store}” application created. Account status is Under review (Status = 0).',
       verifyOk: 'Got it'
     },
     ja: {
@@ -150,7 +146,7 @@
       pageTitleRegister: 'Goez Shop - 出店アカウント登録',
       pageTitleSignup: '新規登録｜Goez Shop 管理画面',
       signupTitle: '出品者アカウントを作成',
-      signupSubtitle: '以下の情報を入力して店舗を登録します。送信後、アカウント状態は「審査中」となり、確認メールが送信されます。（デモ）',
+      signupSubtitle: '以下の情報を入力して店舗を登録します。',
       sectionBasic: '基本情報',
       sectionAccount: 'アカウントとパスワード',
       sellerName: '氏名',
@@ -190,8 +186,6 @@
       errRegisterFailed: '登録に失敗しました。入力内容を確認するか、後でもう一度お試しください。',
       errNetwork: 'サーバーへの接続に失敗しました。後でもう一度お試しください。',
       verifyTitle: '申請を受け付けました',
-      verifyMailSent: '確認メールを送信しました：{email}',
-      verifyStatus: '店舗「{store}」の申請を作成しました。アカウント状態は審査中です（Status = 0）。',
       verifyOk: '了解'
     }
   });
