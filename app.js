@@ -90,6 +90,7 @@ const uploadProduct = multer({
 
 // 1. 路由引入
 //const authRoutes = require('./routes/auth')
+//const analyticsRoutes = require('./routes/analyticsRoutes')
 const sellerRoutes = require('./routes/sellerRoutes');
 const productRoutes = require('./routes/product')
 const storeRoutes = require('./routes/store')
@@ -97,7 +98,7 @@ const orderRoutes = require('./routes/order')
 const sellerorderRoutes = require('./routes/sellerorder')
 const adminRoutes = require('./routes/adminRoutes')
 const checkoutRoutes = require('./routes/checkoutRoutes')
-const analyticsRoutes = require('./routes/analyticsRoutes')
+const sellerAnalyticsRoutes = require('./routes/sellerAnalytics') // 賣家自己的銷售成效追蹤
 const couponRoutes = require('./routes/couponRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const aiRoutes = require('./routes/aiRoutes');
@@ -109,6 +110,7 @@ app.use(express.static('public'));
 
 // 2. 路由掛載
 //app.use('/api/auth', authRoutes)
+//app.use('/api/track', analyticsRoutes)
 app.use('/api/products', productRoutes)
 app.use('/api/store', storeRoutes)
 app.use('/api/orders', orderRoutes)
@@ -117,9 +119,9 @@ app.use('/api/seller', sellerRoutes); // 👈 掛載時直接帶入上面宣告�
 app.use('/api/admin', adminRoutes)
 // 保留原本的 api 路由
 app.use('/api/checkout', checkoutRoutes);
+app.use('/api/analytics', sellerAnalyticsRoutes)
 // 額外掛載根目錄，專門用來接住藍新重新導向的 POST 請求
 app.use('/', checkoutRoutes);
-app.use('/api/track', analyticsRoutes)
 // 掛載優惠券路由
 app.use('/api/coupons', couponRoutes);
 app.use('/api/payment', paymentRoutes);

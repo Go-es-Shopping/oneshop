@@ -51,13 +51,12 @@
 
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
   <div class="flex flex-col min-h-screen">
-    
 
     <main class="flex-1">
       <div class="page-enter max-w-2xl mx-auto px-4 sm:px-6 py-8 lg:py-10">
         <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
           <div>
-            <h1 class="text-2xl sm:text-3xl font-bold text-slate-900">訂單詳情</h1>
+            <h1 class="text-2xl sm:text-3xl font-bold text-slate-900" data-i18n="orderDetailHeader">訂單詳情</h1>
             <p id="result-order-id" class="mt-1 text-sm text-slate-600"></p>
             <div id="result-badges" class="flex flex-wrap gap-2 mt-3"></div>
           </div>
@@ -65,6 +64,7 @@
             href="goez-buyerOrder.html"
             id="back-to-lookup"
             class="flex-shrink-0 px-5 py-2.5 rounded-xl bg-slate-100 text-slate-700 text-sm font-medium hover:bg-slate-200 transition self-start text-center"
+            data-i18n="backToLookupBtn"
           >
             重新查詢
           </a>
@@ -74,24 +74,57 @@
 
         <div class="mt-6 flex flex-wrap justify-end gap-3">
           <button type="button" id="detail-cancel-order"
-            class="hidden px-5 py-3 rounded-xl bg-slate-100 text-slate-700 font-medium hover:bg-slate-200 transition">取消訂單</button>
+            class="hidden px-5 py-3 rounded-xl bg-slate-100 text-slate-700 font-medium hover:bg-slate-200 transition"
+            data-i18n="cancelOrderBtn">取消訂單</button>
         </div>
       </div>
     </main>
   </div>
 
+  <!-- 🌟 引入核心與訂單詳情字典檔 -->
+  <script src="./i18n/i18n-core.js"></script>
+  <script src="./i18n/buyerOrderDetail.js"></script>
+
   <script>
     (function () {
-      // 狀態字典定義
-      var ORDER_STATUS_LABELS = {
-        0: '處理中', 1: '待出貨', 2: '已出貨', 3: '已送達', 4: '完成取貨', 5: '已取消', 9: '已取消'
-      };
-      var PAYMENT_STATUS_LABELS = {
-        0: '未付款', 1: '已付款', 2: '退款中', 3: '已退款', 4: '付款失敗'
-      };
-      var SHIPMENT_STATUS_LABELS = {
-        0: '準備中', 1: '已出貨', 2: '配送中', 3: '已送達', 4: '退貨中'
-      };
+      function t(key, fallback) {
+        return (window.GoezI18n && GoezI18n.t(key)) ? GoezI18n.t(key) : fallback;
+      }
+
+      function getOrderStatusLabel(os) {
+        var map = {
+          0: t('statusProcessing', '處理中'),
+          1: t('statusPendingShipment', '待出貨'),
+          2: t('statusShipped', '已出貨'),
+          3: t('statusDelivered', '已送達'),
+          4: t('statusPickedUp', '完成取貨'),
+          5: t('statusCancelled', '已取消'),
+          9: t('statusCancelled', '已取消')
+        };
+        return map[os] || t('statusProcessing', '處理中');
+      }
+
+      function getPaymentStatusLabel(ps) {
+        var map = {
+          0: t('statusUnpaid', '未付款'),
+          1: t('statusPaid', '已付款'),
+          2: t('statusRefunding', '退款中'),
+          3: t('statusRefunded', '已退款'),
+          4: t('statusPayFailed', '付款失敗')
+        };
+        return map[ps] || t('statusUnpaid', '未付款');
+      }
+
+      function getShipmentStatusLabel(ss) {
+        var map = {
+          0: t('statusPreparing', '準備中'),
+          1: t('statusShipped', '已出貨'),
+          2: t('statusInTransit', '配送中'),
+          3: t('statusDelivered', '已送達'),
+          4: t('statusReturning', '退貨中')
+        };
+        return map[ss] || t('statusPreparing', '準備中');
+      }
 
       var detailBody = document.getElementById('order-detail-body');
       var resultOrderId = document.getElementById('result-order-id');
@@ -118,7 +151,6 @@
           String(d.getMinutes()).padStart(2, '0');
       }
 
-      // 狀態標籤函式 (帶小圓點 ● 風格)
       function statusDotHtml(label, colorType) {
         var styles = {
           green: 'bg-emerald-50 text-emerald-700 border-emerald-200',
@@ -142,7 +174,7 @@
       }
 
       function getOrderStatusBadge(os) {
-        var label = ORDER_STATUS_LABELS[os] || '處理中';
+        var label = getOrderStatusLabel(os);
         if (os === 2 || os === 3 || os === 4) return statusDotHtml(label, 'blue');
         if (os === 1) return statusDotHtml(label, 'amber');
         if (os === 5 || os === 9) return statusDotHtml(label, 'gray');
@@ -150,7 +182,7 @@
       }
 
       function getPaymentStatusBadge(ps) {
-        var label = PAYMENT_STATUS_LABELS[ps] || '未付款';
+        var label = getPaymentStatusLabel(ps);
         if (ps === 1) return statusDotHtml(label, 'green');
         if (ps === 2) return statusDotHtml(label, 'amber');
         if (ps === 3) return statusDotHtml(label, 'gray');
@@ -160,51 +192,49 @@
       function shipmentStatusLabel(order) {
         var s = order.Shipment || order.shipment;
         var ss = s ? parseStatus(s.ShippingStatus !== undefined ? s.ShippingStatus : s.ShipmentStatus) : parseStatus(order.ShippingStatus || order.ShipmentStatus);
-        return SHIPMENT_STATUS_LABELS[ss] || '準備中';
+        return getShipmentStatusLabel(ss);
       }
 
       function paymentRecordStatusLabel(order) {
         var p = order.Payment || order.payment;
         var ps = p ? parseStatus(p.PaymentStatus) : parseStatus(order.PaymentStatus);
-        return PAYMENT_STATUS_LABELS[ps] || '未付款';
+        return getPaymentStatusLabel(ps);
       }
 
-      // 2️⃣ 物流狀態與明細渲染
       function buildShipmentHtml(order) {
         var s = order.Shipment || order.shipment;
-        var method = s ? (s.ShippingMethod || order.ShippingMethod || '超商取件') : (order.ShippingMethod || '超商取件');
+        var method = s ? (s.ShippingMethod || order.ShippingMethod || t('storePickup', '超商取件')) : (order.ShippingMethod || t('storePickup', '超商取件'));
         var tracking = s ? (s.TrackingNumber || '').trim() : '';
         var trackingLine = tracking
-          ? '<p class="flex flex-wrap items-center gap-2"><span class="text-slate-500">物流單號：</span><span class="font-mono text-slate-800 font-bold">' + tracking + '</span>' +
-          '<button type="button" class="copy-tracking text-xs text-indigo-600 underline underline-offset-2 hover:text-indigo-900" data-tracking="' + tracking + '">複製</button></p>'
-          : '<p><span class="text-slate-500">物流單號：</span>處理中（尚未填寫單號）</p>';
-        var storeLine = (s && s.StoreInfo) ? '<p><span class="text-slate-500">門市資訊：</span>' + s.StoreInfo + '</p>' : '';
+          ? '<p class="flex flex-wrap items-center gap-2"><span class="text-slate-500">' + t('trackingNumber', '物流單號：') + '</span><span class="font-mono text-slate-800 font-bold">' + tracking + '</span>' +
+            '<button type="button" class="copy-tracking text-xs text-indigo-600 underline underline-offset-2 hover:text-indigo-900" data-tracking="' + tracking + '">' + t('copy', '複製') + '</button></p>'
+          : '<p><span class="text-slate-500">' + t('trackingNumber', '物流單號：') + '</span>' + t('trackingPending', '處理中（尚未填寫單號）') + '</p>';
+        var storeLine = (s && s.StoreInfo) ? '<p><span class="text-slate-500">' + t('storeInfo', '門市資訊：') + '</span>' + s.StoreInfo + '</p>' : '';
 
         return (
-          '<p><span class="text-slate-500">配送方式：</span>' + method + '</p>' +
+          '<p><span class="text-slate-500">' + t('shippingMethod', '配送方式：') + '</span>' + method + '</p>' +
           storeLine +
           trackingLine +
-          '<p><span class="text-slate-500">物流狀態：</span><span class="font-medium text-slate-800">' + shipmentStatusLabel(order) + '</span></p>' +
-          '<p><span class="text-slate-500">出貨時間：</span>' + ((s && s.ShippedAt) ? formatDateTime(s.ShippedAt) : '—') + '</p>'
+          '<p><span class="text-slate-500">' + t('shipmentStatus', '物流狀態：') + '</span><span class="font-medium text-slate-800">' + shipmentStatusLabel(order) + '</span></p>' +
+          '<p><span class="text-slate-500">' + t('shippedAt', '出貨時間：') + '</span>' + ((s && s.ShippedAt) ? formatDateTime(s.ShippedAt) : '—') + '</p>'
         );
       }
 
-      // 2️⃣ 付款狀態與資訊渲染
       function buildPaymentHtml(order) {
         var p = order.Payment || order.payment;
-        var method = p ? (p.PaymentMethod || '線上支付') : (order.PaymentMethod || '線上支付');
+        var method = p ? (p.PaymentMethod || t('onlinePayment', '線上支付')) : (order.PaymentMethod || t('onlinePayment', '線上支付'));
         return (
-          '<p><span class="text-slate-500">付款方式：</span>' + method + '</p>' +
-          '<p><span class="text-slate-500">付款狀態：</span><span class="font-medium text-slate-800">' + paymentRecordStatusLabel(order) + '</span></p>' +
-          '<p><span class="text-slate-500">付款時間：</span>' + ((p && p.PaidAt) ? formatDateTime(p.PaidAt) : '—') + '</p>'
+          '<p><span class="text-slate-500">' + t('paymentMethod', '付款方式：') + '</span>' + method + '</p>' +
+          '<p><span class="text-slate-500">' + t('paymentStatus', '付款狀態：') + '</span><span class="font-medium text-slate-800">' + paymentRecordStatusLabel(order) + '</span></p>' +
+          '<p><span class="text-slate-500">' + t('paidAt', '付款時間：') + '</span>' + ((p && p.PaidAt) ? formatDateTime(p.PaidAt) : '—') + '</p>'
         );
       }
 
       function sectionBlock(title, html) {
         return (
           '<section class="bg-white rounded-2xl shadow-soft border border-slate-100 overflow-hidden mb-4">' +
-          '<h2 class="px-4 sm:px-5 py-3 text-sm font-semibold text-slate-800 bg-slate-50 border-b border-slate-100">' + title + '</h2>' +
-          '<div class="p-4 sm:p-5 text-sm text-slate-700 space-y-2">' + html + '</div>' +
+            '<h2 class="px-4 sm:px-5 py-3 text-sm font-semibold text-slate-800 bg-slate-50 border-b border-slate-100">' + title + '</h2>' +
+            '<div class="p-4 sm:p-5 text-sm text-slate-700 space-y-2">' + html + '</div>' +
           '</section>'
         );
       }
@@ -214,50 +244,48 @@
         var os = parseStatus(order.OrderStatus);
         var ps = parseStatus(order.PaymentStatus);
 
-        resultOrderId.textContent = '訂單編號 #' + (order.OrderID || order.id) + ' · 下單時間 ' + formatDateTime(order.CreatedAt);
+        resultOrderId.textContent = '#' + (order.OrderID || order.id) + ' · ' + formatDateTime(order.CreatedAt);
         resultBadges.innerHTML = getOrderStatusBadge(os) + ' ' + getPaymentStatusBadge(ps);
 
-        // 1️⃣ 優惠券與折扣渲染
         var discount = Number(order.Discount || order.DiscountAmount || 0);
         var couponCode = order.CouponCode || order.Coupon || '';
         var shippingFee = Number(order.ShippingFee || 0);
         var totalAmount = Number(order.TotalAmount || 0);
 
-        var couponHtml = '';
+        var couponDisplayHtml = '';
         if (couponCode && discount > 0) {
-          couponHtml =
+          couponDisplayHtml =
             '<div class="text-right">' +
-            '<span class="inline-block px-2.5 py-0.5 rounded text-xs font-semibold bg-purple-100 text-purple-700 font-mono">' + couponCode + '</span>' +
-            '<p class="text-xs text-rose-600 font-bold mt-0.5">-$' + discount.toLocaleString() + '</p>' +
+              '<span class="inline-block px-2 py-0.5 rounded text-xs font-semibold bg-purple-100 text-purple-700 font-mono">' + couponCode + '</span>' +
+              '<p class="text-xs text-rose-600 font-bold mt-0.5">-$' + discount.toLocaleString() + '</p>' +
             '</div>';
         } else if (discount > 0) {
-          couponHtml = '<span class="text-xs text-rose-600 font-bold">-$' + discount.toLocaleString() + '</span>';
+          couponDisplayHtml = '<span class="text-xs text-rose-600 font-bold">-$' + discount.toLocaleString() + '</span>';
         } else {
-          couponHtml = '<span class="text-xs text-slate-500 font-medium">無</span>';
+          couponDisplayHtml = '<span class="text-xs text-slate-500 font-medium">' + t('noCoupon', '無') + '</span>';
         }
 
         var summaryHtml =
           '<dl class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">' +
-          '<div><dt class="text-slate-500 text-xs">訂單狀態</dt><dd class="mt-1">' + getOrderStatusBadge(os) + '</dd></div>' +
-          '<div><dt class="text-slate-500 text-xs">付款狀態</dt><dd class="mt-1">' + getPaymentStatusBadge(ps) + '</dd></div>' +
-          '<div><dt class="text-slate-500 text-xs">物流狀態</dt><dd class="mt-1 font-medium text-slate-800">' + shipmentStatusLabel(order) + '</dd></div>' +
-          '<div><dt class="text-slate-500 text-xs">下單時間</dt><dd class="mt-1">' + formatDateTime(order.CreatedAt) + '</dd></div>' +
+            '<div><dt class="text-slate-500 text-xs">' + t('orderStatus', '訂單狀態') + '</dt><dd class="mt-1">' + getOrderStatusBadge(os) + '</dd></div>' +
+            '<div><dt class="text-slate-500 text-xs">' + t('paymentStatus', '付款狀態') + '</dt><dd class="mt-1">' + getPaymentStatusBadge(ps) + '</dd></div>' +
+            '<div><dt class="text-slate-500 text-xs">' + t('shipmentStatus', '物流狀態') + '</dt><dd class="mt-1 font-medium text-slate-800">' + shipmentStatusLabel(order) + '</dd></div>' +
+            '<div><dt class="text-slate-500 text-xs">' + t('orderTime', '下單時間') + '</dt><dd class="mt-1">' + formatDateTime(order.CreatedAt) + '</dd></div>' +
           '</dl>' +
           '<div class="pt-3 border-t border-slate-100 space-y-2 text-xs text-slate-600">' +
-          '<div class="flex justify-between items-center"><span>優惠券：</span>' + couponHtml + '</div>' +
-          '<div class="flex justify-between items-center"><span>運費：</span><span>' + formatMoney(shippingFee) + '</span></div>' +
-          '<div class="flex justify-between items-center text-sm font-bold text-slate-900 pt-2 border-t border-slate-100">' +
-          '<span>訂單總金額：</span><span class="text-indigo-600 font-mono text-base">' + formatMoney(totalAmount) + '</span>' +
-          '</div>' +
+            '<div class="flex justify-between items-center"><span>' + t('couponCode', '優惠券：') + '</span>' + couponDisplayHtml + '</div>' +
+            '<div class="flex justify-between items-center"><span>' + t('shippingFee', '運費：') + '</span><span>' + formatMoney(shippingFee) + '</span></div>' +
+            '<div class="flex justify-between items-center text-sm font-bold text-slate-900 pt-2 border-t border-slate-100">' +
+              '<span>' + t('totalAmount', '訂單總金額：') + '</span><span class="text-indigo-600 font-mono text-base">' + formatMoney(totalAmount) + '</span>' +
+            '</div>' +
           '</div>';
 
         var addressHtml =
-          '<p><span class="text-slate-500">姓名：</span>' + (order.BuyerName || '—') + '</p>' +
-          '<p><span class="text-slate-500">電話：</span>' + (order.BuyerPhone || '—') + '</p>' +
-          '<p><span class="text-slate-500">Email：</span>' + (order.BuyerEmail || '—') + '</p>' +
-          '<p><span class="text-slate-500">地址：</span>' + (order.BuyerAddress || '—') + '</p>';
+          '<p><span class="text-slate-500">' + t('name', '姓名：') + '</span>' + (order.BuyerName || '—') + '</p>' +
+          '<p><span class="text-slate-500">' + t('phone', '電話：') + '</span>' + (order.BuyerPhone || '—') + '</p>' +
+          '<p><span class="text-slate-500">' + t('email', 'Email：') + '</span>' + (order.BuyerEmail || '—') + '</p>' +
+          '<p><span class="text-slate-500">' + t('address', '地址：') + '</span>' + (order.BuyerAddress || '—') + '</p>';
 
-        // 2️⃣ 商品明細渲染
         var items = order.items || order.Items || order.Orderdetails || order.OrderDetails || [];
         var itemsHtml = items.length > 0 ? items.map(function (item) {
           var qty = Number(item.Quantity || item.quantity || 1);
@@ -270,102 +298,98 @@
 
           return (
             '<div class="flex gap-3 py-3 border-b border-slate-100 last:border-0 items-center">' +
-            img +
-            '<div class="flex-1 min-w-0">' +
-            '<p class="font-medium text-slate-900 truncate">' + name + '</p>' +
-            '<p class="text-xs text-slate-500 mt-1">單價 ' + formatMoney(price) + ' × ' + qty + '</p>' +
-            '</div>' +
-            '<p class="font-semibold text-slate-900 flex-shrink-0">' + formatMoney(sub) + '</p>' +
+              img +
+              '<div class="flex-1 min-w-0">' +
+                '<p class="font-medium text-slate-900 truncate">' + name + '</p>' +
+                '<p class="text-xs text-slate-500 mt-1">' + t('unitPrice', '單價') + ' ' + formatMoney(price) + ' × ' + qty + '</p>' +
+              '</div>' +
+              '<p class="font-semibold text-slate-900 flex-shrink-0">' + formatMoney(sub) + '</p>' +
             '</div>'
           );
-        }).join('') : '<p class="text-slate-400 text-sm">查無商品明細資料</p>';
+        }).join('') : '<p class="text-slate-400 text-sm">' + t('noItems', '查無商品明細資料') + '</p>';
 
         detailBody.innerHTML =
-          sectionBlock('訂單摘要與金額', summaryHtml) +
-          sectionBlock('收件資訊', addressHtml) +
-          sectionBlock('商品明細', itemsHtml) +
-          sectionBlock('物流資訊', buildShipmentHtml(order)) +
-          sectionBlock('付款資訊', buildPaymentHtml(order));
+          sectionBlock(t('sectionSummary', '訂單摘要與金額'), summaryHtml) +
+          sectionBlock(t('sectionRecipient', '收件資訊'), addressHtml) +
+          sectionBlock(t('sectionItems', '商品明細'), itemsHtml) +
+          sectionBlock(t('sectionShipment', '物流資訊'), buildShipmentHtml(order)) +
+          sectionBlock(t('sectionPayment', '付款資訊'), buildPaymentHtml(order));
 
         if (cancelOrderBtn) {
           cancelOrderBtn.classList.toggle('hidden', (os === 5 || os === 9 || os === 3 || os === 4));
         }
       }
 
-      // 1. 修改 fetchOrderDetail：新增 phone 參數，帶在網址後面送給後端驗證
-function fetchOrderDetail(orderId, phone) {
-  var url = '/api/orders/' + encodeURIComponent(orderId);
-  if (phone) {
-    url += '?phone=' + encodeURIComponent(phone);
-  }
+      function fetchOrderDetail(orderId, phone) {
+        var url = '/api/orders/' + encodeURIComponent(orderId);
+        if (phone) {
+          url += '?phone=' + encodeURIComponent(phone);
+        }
 
-  fetch(url)
-    .then(function (res) {
-      if (!res.ok) throw new Error('找不到該訂單或手機號碼不符');
-      return res.json();
-    })
-    .then(function (data) {
-      console.log('✅ 驗證成功，撈取到訂單詳情：\n', JSON.stringify(data, null, 2));
-      renderOrder(data);
-    })
-    .catch(function (err) {
-      console.error('❌ 查詢失敗：', err);
-      alert('查無此訂單，請確認「訂單編號」與「購買人手機號碼」是否正確！');
-    });
-}
+        fetch(url)
+          .then(function (res) {
+            if (!res.ok) throw new Error('找不到該訂單或手機號碼不符');
+            return res.json();
+          })
+          .then(function (data) {
+            renderOrder(data);
+          })
+          .catch(function (err) {
+            console.error('❌ 查詢失敗：', err);
+            alert(t('cancelFail', '查無此訂單，請確認「訂單編號」與「購買人手機號碼」是否正確！'));
+          });
+      }
 
-// 2. 修改 init：從網址同時抓取 orderId 與 phone，並傳給 fetchOrderDetail
-function init() {
-  var urlParams = new URLSearchParams(window.location.search);
-  var orderId = urlParams.get('orderId') || urlParams.get('id') || urlParams.get('orederId');
-  var phone = urlParams.get('phone'); // 👈 抓取網址上的手機號碼
+      function init() {
+        if (window.GoezI18n) {
+          GoezI18n.apply();
+          document.title = GoezI18n.t('pageTitleBuyerOrderDetail');
+        }
 
-  if (!orderId) {
-    orderId = '24';
-  }
+        var urlParams = new URLSearchParams(window.location.search);
+        var orderId = urlParams.get('orderId') || urlParams.get('id') || urlParams.get('orederId') || '24';
+        var phone = urlParams.get('phone');
 
-  fetchOrderDetail(orderId, phone);
+        fetchOrderDetail(orderId, phone);
 
-  requestAnimationFrame(function () {
-    var pageEnter = document.querySelector('.page-enter');
-    if (pageEnter) pageEnter.classList.add('is-entered');
-  });
-}
+        requestAnimationFrame(function () {
+          var pageEnter = document.querySelector('.page-enter');
+          if (pageEnter) pageEnter.classList.add('is-entered');
+        });
+      }
 
       if (cancelOrderBtn) {
         cancelOrderBtn.addEventListener('click', function () {
           if (!currentOrder) return;
-          if (!confirm('您確定要取消訂單 #' + (currentOrder.OrderID || currentOrder.id) + ' 嗎？')) return;
+          var confirmText = t('confirmCancel', '您確定要取消訂單 #{orderId} 嗎？').replace('{orderId}', (currentOrder.OrderID || currentOrder.id));
+          if (!confirm(confirmText)) return;
 
           fetch('/api/orders/' + (currentOrder.OrderID || currentOrder.id) + '/cancel', {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' }
           })
-            .then(function (res) {
-              if (!res.ok) throw new Error('取消訂單失敗');
-              return res.json();
-            })
-            .then(function (data) {
-              alert('訂單已成功取消！' + (data.Message ? '（' + data.Message + '）' : ''));
-              fetchOrderDetail(currentOrder.OrderID || currentOrder.id);
-            })
-            .catch(function (err) {
-              console.error('❌ 取消失敗：', err);
-              alert('取消訂單發生錯誤，請檢查後端伺服器！');
-            });
+          .then(function (res) {
+            if (!res.ok) throw new Error('取消訂單失敗');
+            return res.json();
+          })
+          .then(function (data) {
+            alert(t('cancelSuccess', '訂單已成功取消！'));
+            fetchOrderDetail(currentOrder.OrderID || currentOrder.id);
+          })
+          .catch(function (err) {
+            console.error('❌ 取消失敗：', err);
+            alert(t('cancelFail', '取消訂單發生錯誤，請檢查後端伺服器！'));
+          });
         });
       }
 
       var backBtn = document.getElementById('back-to-lookup');
       if (backBtn) {
-        backBtn.addEventListener('click', function () {
+        backBtn.addEventListener('click', function (e) {
+          e.preventDefault();
           window.location.href = 'goez-buyerOrder.html';
         });
       }
-
-      document.getElementById('back-to-lookup').addEventListener('click', function () {
-        window.location.href = 'goez-buyerOrder.html'; // 回到查詢主頁
-      });
 
       detailBody.addEventListener('click', function (e) {
         var copyBtn = e.target.closest('.copy-tracking');
@@ -373,7 +397,7 @@ function init() {
         var text = copyBtn.getAttribute('data-tracking');
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard.writeText(text).then(function () {
-            alert('物流單號已複製！');
+            alert(t('copiedMsg', '物流單號已複製！'));
           });
         }
       });
@@ -382,5 +406,4 @@ function init() {
     })();
   </script>
 </body>
-
 </html>

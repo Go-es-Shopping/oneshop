@@ -1,6 +1,7 @@
 # oneshop
 ## 資料庫關聯圖 (Database Schema)
 ![資料庫圖表](./sources-images/Shopping-db-diagram.jpg)
+- PlatformAdmin以及Notification表已先製作，但未實做相關邏輯，將其放在未來可優化進度。
 ## API規格書
 👉 [點此查看路由清單](./API_LIST.md)
 
@@ -347,6 +348,7 @@
 ```
 
 ### Analytics 模組（流量與轉換追蹤）
+
 紀錄瀏覽行為
 - Method: POST
 - Endpoint: /api/track/view
@@ -357,14 +359,13 @@
   "ProductID": 2001,
   "SellerID": 123,
   "PageType": "Product",
-  "Referrer": "https://google.com",
+  "Referrer": "[https://google.com](https://google.com)",
   "SessionID": "sess_123456789",
   "Metadata": {
     "device_type": "Mobile",
     "ai_insights": {
       "intent_note": "OpenAI 意圖分析預留欄位"
     }
-  } 
   }
 }
 ```
@@ -376,21 +377,66 @@
   - Metadata: 預留欄位，供未來 OpenAI 智慧分析使用。
   - SessionID: 用於追蹤從瀏覽到下單的完整路徑。
 
-營運數據統計（轉換率分析）
+賣家成效與營運數據總覽（銷售與轉換率分析）
 - Method: GET
-- Endpoint: /api/admin/analytics
-- Query Parameters: 無
+- Endpoint: /api/analytics/overview
+- Query Parameters: 
+  sellerId (選填，預設為 15)
+  range: (選填，支援 7d、30d、90d，預設為 30d)
 - Response JSON 範例
 ```json
 {
-  "TotalVisits": 1500,
-  "TotalRevenue": 89550.00,
-  "CompletedOrders": 45,
-  "ConversionRate": "3.00%",
-  "UTMStats": [
-    { "UTM_Source": "Facebook", "OrderCount": 20 },
-    { "UTM_Source": "Google", "OrderCount": 15 }
-  ]
+  "kpi": {
+    "revenue": { "value": 539300, "delta": 0.124 },
+    "orders": { "value": 486, "delta": 0.081 },
+    "activeRate": { "value": 0.75, "activeCount": 18, "totalCount": 24, "deltaPoint": 0.04 },
+    "avgOrderValue": { "value": 1110, "delta": -0.023 }
+  },
+  "topProducts": [
+    { "productId": "p1", "name": "手沖咖啡濾杯組", "qtySold": 312, "revenue": 187200 },
+    { "productId": "p2", "name": "香氛蠟燭 60g", "qtySold": 268, "revenue": 120600 },
+    { "productId": "p3", "name": "亞麻餐墊 4 入", "qtySold": 174, "revenue": 104400 },
+    { "productId": "p4", "name": "手工陶瓷馬克杯", "qtySold": 143, "revenue": 85800 },
+    { "productId": "p5", "name": "復古黃銅書籤", "qtySold": 61, "revenue": 18300 }
+  ],
+  "lowPerformers": [
+    { "productId": "p6", "name": "限量聯名帆布袋", "views": 1240, "qtySold": 4, "conversionRate": 0.003, "turnoverDays": null, "tag": "有流量沒轉換" },
+    { "productId": "p7", "name": "大型藤編收納籃", "views": 210, "qtySold": 9, "conversionRate": 0.043, "turnoverDays": 96, "tag": "滯銷可下架" },
+    { "productId": "p8", "name": "羊毛氈杯墊", "views": 180, "qtySold": 22, "conversionRate": 0.122, "turnoverDays": 68, "tag": "滯銷不需補貨" },
+    { "productId": "p9", "name": "陶瓷筷架 2 入", "views": 96, "qtySold": 14, "conversionRate": 0.146, "turnoverDays": 41, "tag": "觀察中" }
+  ],
+  "productShare": [
+    { "productId": "p1", "name": "手沖咖啡濾杯組", "revenue": 187200, "pct": 0.3471 },
+    { "productId": "p2", "name": "香氛蠟燭 60g", "revenue": 120600, "pct": 0.2237 },
+    { "productId": "p3", "name": "亞麻餐墊 4 入", "revenue": 104400, "pct": 0.1936 },
+    { "productId": "p4", "name": "手工陶瓷馬克杯", "revenue": 85800, "pct": 0.1591 },
+    { "productId": "p5", "name": "復古黃銅書籤", "revenue": 18300, "pct": 0.0339 },
+    { "productId": null, "name": "其他商品", "revenue": 23000, "pct": 0.0427 }
+  ],
+  "quadrant": [
+    { "productId": "p1", "name": "手沖咖啡濾杯組", "traffic": 4200, "conversionRate": 0.074, "revenue": 187200 },
+    { "productId": "p2", "name": "香氛蠟燭 60g", "traffic": 3600, "conversionRate": 0.074, "revenue": 120600 },
+    { "productId": "p4", "name": "手工陶瓷馬克杯", "traffic": 2400, "conversionRate": 0.060, "revenue": 85800 },
+    { "productId": "p5", "name": "復古黃銅書籤", "traffic": 900, "conversionRate": 0.068, "revenue": 18300 },
+    { "productId": "p6", "name": "限量聯名帆布袋", "traffic": 1240, "conversionRate": 0.003, "revenue": 3600 },
+    { "productId": "p7", "name": "大型藤編收納籃", "traffic": 210, "conversionRate": 0.043, "revenue": 10800 }
+  ],
+  "actions": {
+    "grow": [
+      "咖啡濾杯組、香氛蠟燭：追加庫存並投放廣告",
+      "沿「咖啡器具」延伸：濾紙、手沖壺、電子秤",
+      "推出濾杯＋蠟燭的生活組合包提高客單價"
+    ],
+    "optimize": [
+      "限量聯名帆布袋：流量足但轉換低，換主圖與售價測試 2 週",
+      "陶瓷馬克杯：加入評價與情境照，推動往明星象限",
+      "「手沖咖啡濾杯組」佔營收 35%，建議培養第二主力分散風險"
+    ],
+    "cut": [
+      "大型藤編收納籃、羊毛氈杯墊：週轉逾 60 天，不再補貨",
+      "清倉出清後將商品下架，讓版位留給明星商品"
+    ]
+  }
 }
 ```
 ### Coupon 模組（優惠券管理）

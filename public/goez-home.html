@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>登入後首頁 — Goez Shop</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+SC:wght@400&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+SC:wght@400&display=swap"
+    rel="stylesheet" />
   <style>
     /* ─── Design Tokens ─────────────────────────────────────────── */
     :root {
@@ -61,43 +64,170 @@
     }
 
     /* ─── Reset ─────────────────────────────────────────────────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { width: 100%; }
-    body { font-family: var(--font-primary); background: var(--color-white); color: var(--color-black); }
-    img { display: block; max-width: 100%; }
-    p, h1, h2, h3 { margin: 0; }
-    ul, ol { list-style: none; }
-    a { text-decoration: none; color: inherit; }
-    button { font: inherit; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-    /* ─── Top bar（改用 Background.svg 當底圖） ─────────────────── */
+    html,
+    body {
+      width: 100%;
+    }
+
+    body {
+      font-family: var(--font-primary);
+      background: var(--color-white);
+      color: var(--color-black);
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    p,
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+    }
+
+    ul,
+    ol {
+      list-style: none;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    /* ─── Top bar 質感美化 ─────────────────────────────────────────── */
     .topbar {
       position: relative;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 96px;
-      padding: 0 var(--spacing-40);
+      height: 80px;
+      padding: 0 40px;
       overflow: hidden;
       width: 100%;
+      background: #1e293b;
+      /* 預設高質感深藍底色，絕不破圖 */
     }
-    .topbar__bg {
+
+    /* 漸層背景容器 */
+    .topbar__bg{
       position: absolute;
-      inset: 0;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      pointer-events: none;
+      z-index: 0;
     }
+
     .topbar__brand {
       position: relative;
-      z-index: 1;
-      font-size: var(--fs-20);
-      font-weight: var(--fw-bold);
-      letter-spacing: var(--ls-brand);
-      color: var(--color-white);
+      z-index: 2;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #ffffff;
+      text-decoration: none;
     }
+
+    .topbar__actions {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* 🌟 語言選單：圓角、半透明毛玻璃質感 */
+    .topbar__lang-select {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 8px 16px;
+      font-size: 15px;
+      font-weight: 500;
+      color: #ffffff;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .topbar__lang-select:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.35);
+    }
+
+    /* 展開選單時的文字顏色（黑字白底防撞色） */
+    .topbar__lang-select option {
+      color: #1e293b;
+      background: #ffffff;
+    }
+
+    /* 會員中心按鈕 */
+    .topbar__member {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 8px 18px;
+      font-size: 15px;
+      font-weight: 500;
+      color: #ffffff;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .topbar__member:hover {
+      background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.35);
+    }
+
+    /* 登出按鈕 */
     .topbar__logout {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 12px;
+      padding: 8px 18px;
+      font-size: 15px;
+      font-weight: 500;
+      color: #fca5a5;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .topbar__logout:hover {
+      background: rgba(239, 68, 68, 0.3);
+      color: #ffffff;
+    }
+
+    /* 隱藏無障礙標籤 */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
+
+    /* ─── 🌟 新增：多語言下拉選單樣式（完美融合毛玻璃與圓角） ─── */
+    .topbar__lang-select {
       position: relative;
       z-index: 1;
       background: var(--color-white-15);
@@ -108,38 +238,48 @@
       font-weight: var(--fw-medium);
       color: var(--color-white);
       cursor: pointer;
+      outline: none;
       transition: background 0.2s ease, border-color 0.2s ease;
     }
-    .topbar__logout:hover {
-      background: rgba(255,255,255,0.25);
-      border-color: rgba(255,255,255,0.4);
+
+    .topbar__lang-select:hover {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.4);
     }
-    .topbar__actions {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-12);
+
+    /* 點開下拉選單時，選項文字改為黑字白底（避免展開時看不清） */
+    .topbar__lang-select option {
+      color: var(--color-black);
+      background: var(--color-white);
     }
-    .topbar__member {
-      background: transparent;
-      border: 1px solid var(--color-white-15);
-      border-radius: var(--radius-12);
-      padding: var(--spacing-8) var(--spacing-16);
-      font-size: var(--fs-16);
-      font-weight: var(--fw-medium);
-      color: var(--color-white);
-      cursor: pointer;
-      transition: background 0.2s ease, border-color 0.2s ease;
-    }
-    .topbar__member:hover {
-      background: rgba(255,255,255,0.15);
-      border-color: rgba(255,255,255,0.4);
+
+    /* 隱藏無障礙閱讀標籤，不破壞排版 */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
     }
 
     /* ─── Page Wrapper ───────────────────────────────────────────── */
-    .page { display: flex; flex-direction: column; align-items: center; width: 100%; }
-    .container { display: flex; flex-direction: column; align-items: flex-start; width: 100%; }
+    .page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+    }
 
     /* ─── Quick Access：管理已建立賣場 / 優惠券設定 ─────────────── */
     .quick-access {
@@ -149,15 +289,18 @@
       padding: var(--spacing-80) var(--spacing-120);
       width: 100%;
     }
+
     .quick-access__cards {
       display: flex;
       gap: var(--spacing-32);
       align-items: flex-start;
       width: 100%;
     }
+
     .quick-access__cards .gallery-card {
       flex: 1 0 0;
     }
+
     .btn--dark {
       background: var(--color-black);
       color: var(--color-white);
@@ -183,12 +326,14 @@
       padding: var(--spacing-80) var(--spacing-120);
       width: 100%;
     }
+
     .feature-gallery__inner {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
       width: 100%;
     }
+
     .feature-gallery__content {
       display: flex;
       flex-direction: column;
@@ -197,12 +342,14 @@
       padding-bottom: var(--spacing-80);
       width: 100%;
     }
+
     .feature-gallery__text {
       display: flex;
       flex-direction: column;
       gap: var(--spacing-16);
       width: 100%;
     }
+
     .feature-gallery__heading {
       font-size: var(--fs-36);
       font-weight: var(--fw-bold);
@@ -211,6 +358,7 @@
       color: var(--color-black);
       width: 100%;
     }
+
     .feature-gallery__desc {
       font-size: var(--fs-20);
       font-weight: var(--fw-medium);
@@ -227,6 +375,7 @@
       align-items: flex-start;
       width: 100%;
     }
+
     .image-gallery__col {
       display: flex;
       flex: 1 0 0;
@@ -235,9 +384,11 @@
       align-items: flex-start;
       min-width: 0;
     }
+
     .image-gallery__col--offset {
       padding-top: var(--spacing-96);
     }
+
     .gallery-card {
       position: relative;
       height: 390px;
@@ -247,6 +398,7 @@
       border-radius: var(--radius-16);
       background: var(--color-white);
     }
+
     .gallery-card__img {
       position: absolute;
       inset: 0;
@@ -257,6 +409,7 @@
       border-radius: var(--radius-16);
       opacity: 0.6;
     }
+
     .gallery-card__label {
       position: absolute;
       top: 50%;
@@ -282,6 +435,7 @@
       padding: var(--spacing-80) var(--spacing-120) var(--spacing-120);
       width: 100%;
     }
+
     .faq__header {
       display: flex;
       flex-direction: column;
@@ -289,6 +443,7 @@
       align-items: flex-start;
       width: 100%;
     }
+
     .faq__heading {
       font-size: var(--fs-36);
       font-weight: var(--fw-bold);
@@ -297,12 +452,14 @@
       color: var(--color-black);
       width: 100%;
     }
+
     .faq__cards {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: var(--spacing-32);
       width: 100%;
     }
+
     .faq-card {
       background: var(--color-white);
       border: 1px solid var(--color-black-10);
@@ -316,6 +473,7 @@
       min-width: 0;
       overflow: hidden;
     }
+
     .faq-card__question {
       font-size: var(--fs-16);
       font-weight: var(--fw-bold);
@@ -324,6 +482,7 @@
       color: var(--color-black);
       width: 100%;
     }
+
     .faq-card__answer {
       font-size: var(--fs-16);
       font-weight: var(--fw-regular);
@@ -345,6 +504,7 @@
       padding-right: var(--spacing-120);
       width: 100%;
     }
+
     .footer__bg {
       position: absolute;
       inset: 0;
@@ -353,6 +513,7 @@
       object-fit: cover;
       pointer-events: none;
     }
+
     .footer__content {
       position: relative;
       display: flex;
@@ -365,6 +526,7 @@
       z-index: 1;
       min-width: 0;
     }
+
     .footer__contact {
       font-size: var(--fs-16);
       font-weight: var(--fw-medium);
@@ -374,6 +536,7 @@
       text-align: center;
       max-width: 640px;
     }
+
     .footer__contact-link {
       color: var(--color-white);
       font-weight: var(--fw-semibold);
@@ -388,70 +551,95 @@
       opacity: 0;
       transform: translateY(32px);
       transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
-                  transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+        transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
     }
+
     .fade-in.visible {
       opacity: 1;
       transform: translateY(0);
     }
+
     .fade-in-left {
       opacity: 0;
       transform: translateX(-32px);
       transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
-                  transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+        transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
     }
+
     .fade-in-left.visible {
       opacity: 1;
       transform: translateX(0);
     }
+
     .fade-in-right {
       opacity: 0;
       transform: translateX(32px);
       transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
-                  transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+        transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
     }
+
     .fade-in-right.visible {
       opacity: 1;
       transform: translateX(0);
     }
 
     /* Stagger delays */
-    .delay-1 { transition-delay: 0.1s; }
-    .delay-2 { transition-delay: 0.2s; }
-    .delay-3 { transition-delay: 0.3s; }
-    .delay-4 { transition-delay: 0.4s; }
+    .delay-1 {
+      transition-delay: 0.1s;
+    }
+
+    .delay-2 {
+      transition-delay: 0.2s;
+    }
+
+    .delay-3 {
+      transition-delay: 0.3s;
+    }
+
+    .delay-4 {
+      transition-delay: 0.4s;
+    }
 
     /* Button hover effects */
     .btn--dark {
       transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
     }
+
     .btn--dark:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
       background: #222;
     }
-    .btn--dark:active { transform: translateY(0); }
+
+    .btn--dark:active {
+      transform: translateY(0);
+    }
 
     /* Gallery card hover */
     .gallery-card {
       cursor: pointer;
       transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-                  box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     }
+
     .gallery-card:hover {
       transform: translateY(-6px) scale(1.02);
-      box-shadow: 0 16px 40px rgba(0,0,0,0.12);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
     }
+
     .gallery-card__img {
       transition: opacity 0.35s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
     }
+
     .gallery-card:hover .gallery-card__img {
       opacity: 0.8;
       transform: scale(1.06);
     }
+
     .gallery-card__label {
       transition: letter-spacing 0.35s ease, color 0.35s ease;
     }
+
     .gallery-card:hover .gallery-card__label {
       letter-spacing: 14px;
       color: #000;
@@ -460,326 +648,439 @@
     /* FAQ card hover */
     .faq-card {
       transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-                  box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+        box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
     }
+
     .faq-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
     }
 
     /* Footer contact link hover */
     .footer__contact-link {
       transition: color 0.2s ease;
     }
+
     .footer__contact-link:hover {
-      color: rgba(255,255,255,0.75);
+      color: rgba(255, 255, 255, 0.75);
     }
 
     /* ─── Responsive: Tablet ─────────────────────────────────────── */
     @media (max-width: 1024px) {
-      .topbar { padding: 0 48px; height: 80px; }
-      .quick-access { padding: 64px 48px; }
-      .quick-access__cards { flex-direction: column; }
-      .feature-gallery { padding: var(--spacing-64, 64px) 48px; }
-      .feature-gallery { padding: 64px 48px; }
-      .feature-gallery__heading { font-size: 28px; }
-      .feature-gallery__desc { font-size: 17px; }
-      .image-gallery { flex-direction: column; }
-      .image-gallery__col--offset { padding-top: 0; }
-      .gallery-card { height: 260px; }
-      .faq { padding: 64px 48px 80px; }
-      .faq__heading { font-size: 28px; }
-      .faq__cards { grid-template-columns: 1fr; }
-      .footer { padding: 0 48px 80px; }
+      .topbar {
+        padding: 0 48px;
+        height: 80px;
+      }
+
+      .quick-access {
+        padding: 64px 48px;
+      }
+
+      .quick-access__cards {
+        flex-direction: column;
+      }
+
+      .feature-gallery {
+        padding: var(--spacing-64, 64px) 48px;
+      }
+
+      .feature-gallery {
+        padding: 64px 48px;
+      }
+
+      .feature-gallery__heading {
+        font-size: 28px;
+      }
+
+      .feature-gallery__desc {
+        font-size: 17px;
+      }
+
+      .image-gallery {
+        flex-direction: column;
+      }
+
+      .image-gallery__col--offset {
+        padding-top: 0;
+      }
+
+      .gallery-card {
+        height: 260px;
+      }
+
+      .faq {
+        padding: 64px 48px 80px;
+      }
+
+      .faq__heading {
+        font-size: 28px;
+      }
+
+      .faq__cards {
+        grid-template-columns: 1fr;
+      }
+
+      .footer {
+        padding: 0 48px 80px;
+      }
     }
 
     /* ─── Responsive: Mobile ─────────────────────────────────────── */
     @media (max-width: 768px) {
-      .topbar { padding: 0 24px; height: 72px; }
-      .topbar__brand { font-size: 18px; }
-      .quick-access { padding: 40px 24px; }
-      .quick-access__cards { flex-direction: column; }
-      .feature-gallery { padding: 48px 24px; }
-      .feature-gallery__heading { font-size: 22px; letter-spacing: 2px; }
-      .feature-gallery__desc { font-size: 15px; }
-      .feature-gallery__content { padding-bottom: 40px; }
-      .image-gallery { flex-direction: column; }
-      .image-gallery__col--offset { padding-top: 0; }
-      .gallery-card { height: 200px; }
-      .gallery-card__label { font-size: 18px; letter-spacing: 6px; }
-      .faq { padding: 48px 24px 64px; }
-      .faq__heading { font-size: 22px; letter-spacing: 2px; }
-      .faq__cards { grid-template-columns: 1fr; }
-      .faq-card { padding: 24px; }
-      .footer { padding: 0 24px 64px; }
+      .topbar {
+        padding: 0 24px;
+        height: 72px;
+      }
+
+      .topbar__brand {
+        font-size: 18px;
+      }
+
+      .quick-access {
+        padding: 40px 24px;
+      }
+
+      .quick-access__cards {
+        flex-direction: column;
+      }
+
+      .feature-gallery {
+        padding: 48px 24px;
+      }
+
+      .feature-gallery__heading {
+        font-size: 22px;
+        letter-spacing: 2px;
+      }
+
+      .feature-gallery__desc {
+        font-size: 15px;
+      }
+
+      .feature-gallery__content {
+        padding-bottom: 40px;
+      }
+
+      .image-gallery {
+        flex-direction: column;
+      }
+
+      .image-gallery__col--offset {
+        padding-top: 0;
+      }
+
+      .gallery-card {
+        height: 200px;
+      }
+
+      .gallery-card__label {
+        font-size: 18px;
+        letter-spacing: 6px;
+      }
+
+      .faq {
+        padding: 48px 24px 64px;
+      }
+
+      .faq__heading {
+        font-size: 22px;
+        letter-spacing: 2px;
+      }
+
+      .faq__cards {
+        grid-template-columns: 1fr;
+      }
+
+      .faq-card {
+        padding: 24px;
+      }
+
+      .footer {
+        padding: 0 24px 64px;
+      }
     }
   </style>
 </head>
+
 <body>
 
-<!-- ── Top bar：改用 Background.svg 當底圖，只保留品牌與登出 ── -->
-<header class="topbar">
-  <img class="topbar__bg" src="images/decorations/Background.svg" alt="" aria-hidden="true" />
-  <span class="topbar__brand">Goez Shop</span>
-  <div class="topbar__actions">
-    <a href="goez-member.html" id="memberCenterLink" class="topbar__member">會員中心</a>
-    <button class="topbar__logout" onclick="handleLogout()">登出</button>
-  </div>
-</header>
+  <!-- ── Top bar：結合 Background.svg 底圖、品牌、語言切換、會員中心與登出 ── -->
+  <header class="topbar">
+    <img class="topbar__bg" src="images/decorations/Background.svg" alt="" aria-hidden="true" />
+    <span class="topbar__brand">Goez Shop</span>
 
-<div class="page">
-  <main class="container">
+    <div class="topbar__actions">
+      <label for="lang-switch" class="sr-only" data-i18n="language">語言</label>
+      <select id="lang-switch" class="topbar__lang-select"></select>
 
-    <!-- ── Quick Access：管理已建立賣場 / 優惠券設定 ─── -->
-    <section class="quick-access" aria-label="會員快速功能">
-      <div class="quick-access__cards fade-in">
-        <a href="goez-mystores-management.html" id="manageStoresLink" style="text-decoration: none; color: inherit; display: block; width: 100%; height: 100%;">
-        <div class="gallery-card" style="cursor: pointer;">
-          <img
-            class="gallery-card__img"
-            src="images/decorations/complete-store.png"
-            alt="管理已建立賣場"
-          />
-          <span class="gallery-card__label">管理已建立賣場</span>
-        </div>
-      </a>
-          <a href="goez-mycoupons-management.html" id="couponSettingLink" style="text-decoration: none; color: inherit; display: block; width: 100%; height: 100%;">
-          <div class="gallery-card" style="cursor: pointer;">
-          <img
-            class="gallery-card__img"
-            src="images/decorations/coupong.png"
-            alt="優惠券設定"
-          />
-          <span class="gallery-card__label">優惠券設定</span>
-        </div>
-       </a>
-      </div>
-    </section>
-
-    <!-- ── Feature Gallery ───────────────────────────── -->
-    <section class="feature-gallery" aria-label="Feature gallery">
-      <div class="feature-gallery__inner">
-        <div class="feature-gallery__content fade-in">
-          <div class="feature-gallery__text">
-            <h2 class="feature-gallery__heading">快來建立屬於自己的專屬賣場～</h2>
-            <p class="feature-gallery__desc">
-              打造會自動賺錢的一頁式商店。<br>
-              內建多種優化工具，讓流量不再流失，<br>
-              輕鬆開啟你的電商生意。
-            </p>
-          </div>
-          <button class="btn--dark">瞭解更多</button>
-        </div>
-
-        <div class="image-gallery">
-          <!-- Column 1 -->
-          <div class="image-gallery__col fade-in-left delay-1">
-            <a href="goez-ai-assistant.html" style="text-decoration: none; color: inherit; display: block; width: 100%; height: 100%;">
-            <div class="gallery-card"style="cursor: pointer;">
-              <img
-                class="gallery-card__img"
-                src="images/decorations/ai-function.svg"
-                alt="AI 開店助手"
-              />
-              <span class="gallery-card__label">ＡＩ開店助手</span>
-            </div>
-            </a>
-            <div class="gallery-card"
-            onclick="handleCreateShop()"
-            style="cursor: pointer;">
-              <img
-                class="gallery-card__img"
-                src="images/decorations/store-function.svg"
-                alt="設計我的賣場"
-              />
-              <span class="gallery-card__label">設計我的賣場</span>
-            </div>
-          </div>
-
-          <!-- Column 2 (offset) -->
-          <div class="image-gallery__col image-gallery__col--offset fade-in-right delay-2">
-            <a href="goez-SellerOrder.html?sellerId=1" id="sellerOrderLink" style="text-decoration: none; color: inherit; display: block; width: 100%; height: 100%;">
-              <div class="gallery-card" style="cursor: pointer;">
-              <img
-                class="gallery-card__img"
-                src="images/decorations/order-function.svg"
-                alt="訂單與物流"
-              />
-              <span class="gallery-card__label">訂單與物流</span>
-              </div>
-            </a>
-            <div class="gallery-card">
-              <img
-                class="gallery-card__img"
-                src="images/decorations/sale-function.svg"
-                alt="銷售成效追蹤"
-              />
-              <span class="gallery-card__label">銷售成效追蹤</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── FAQ ───────────────────────────────────────── -->
-    <section class="faq" aria-label="常見問題">
-      <div class="faq__header fade-in">
-        <h2 class="faq__heading">常見問題</h2>
-      </div>
-
-      <div class="faq__cards">
-        <!-- Card 1 -->
-        <article class="faq-card fade-in-left delay-1">
-          <p class="faq-card__question">Q. 手機拍照背景很亂怎麼辦？</p>
-          <p class="faq-card__answer">A. 使用 Goez Shop 內建的 AI 去背與美化工具，一鍵清除雜亂背景、自動優化光線與色調，讓商品照片瞬間變得專業。</p>
-        </article>
-
-        <!-- Card 2 -->
-        <article class="faq-card fade-in-right delay-2">
-          <p class="faq-card__question">Q. 寫不出那種很有質感、會讓人想下單的文案怎麼辦？</p>
-          <p class="faq-card__answer">A. 交給 AI 開店助手，只要輸入商品重點，就能自動生成吸引人的商品文案與標題，你也能再依自己的語氣微調。</p>
-        </article>
-
-        <!-- Card 3 -->
-        <article class="faq-card fade-in-left delay-3">
-          <p class="faq-card__question">Q. 不會寫程式，也能架設自己的線上商店嗎？</p>
-          <p class="faq-card__answer">A. 完全不需要！Goez Shop 提供一鍵開店與拖拉式版面編輯器，不用寫任何程式碼，幾分鐘內就能打造出專屬賣場。</p>
-        </article>
-
-        <!-- Card 4 -->
-        <article class="faq-card fade-in-right delay-4">
-          <p class="faq-card__question">Q. 商店開張後，要怎麼追蹤訂單和銷售狀況？</p>
-          <p class="faq-card__answer">A. 後台內建「訂單與物流」與「銷售成效追蹤」功能，即時掌握每筆訂單狀態與營收數據，隨時掌握店鋪表現。</p>
-        </article>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- ── Footer ─────────────────────────────────────── -->
-  <footer class="footer" aria-label="Footer">
-    <img
-      class="footer__bg"
-      src="images/decorations/footer.svg"
-      alt=""
-      aria-hidden="true"
-    />
-    <div class="footer__content">
-      <p class="footer__contact">
-        若有操作上問題 請寄信至
-        <a
-          href="https://mail.google.com/mail/?view=cm&fs=1&to=goez-shop@gmail.com"
-          class="footer__contact-link"
-          target="_blank"
-          rel="noopener noreferrer"
-        >goez-shop@gmail.com</a> 客服將為您服務
-      </p>
+      <!-- 結合原版的超連結與新版的多語系屬性 -->
+    <a href="goez-member.html" id="memberCenterLink" class="topbar__member" data-i18n="memberCenter">會員中心</a>
+    <!-- 結合原版的點擊事件與新版的 ID、多語系屬性 -->
+    <button type="button" class="topbar__logout" id="btn-logout" onclick="handleLogout()" data-i18n="logout">登出</button>
     </div>
-  </footer>
-</div>
+  </header>
 
-<script>
-  // ── Scroll-triggered fade-in via Intersection Observer ──────────
-  const animatedEls = document.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right');
+  <div class="page">
+    <main class="container">
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target); // animate once
+      <!-- ── Quick Access：管理已建立賣場 / 優惠券設定 ─── -->
+      <section class="quick-access" aria-label="會員快速功能">
+        <div class="quick-access__cards fade-in">
+          <a href="goez-mystores-management.html" id="manageStoresLink"
+            style="text-decoration: none; color: inherit; display: block; width: 100%; height: 100%;">
+            <div class="gallery-card" style="cursor: pointer;">
+              <img class="gallery-card__img" src="images/decorations/complete-store.png" alt="管理已建立賣場" />
+              <span class="gallery-card__label" data-i18n="qaManageStores">管理已建立賣場</span>
+            </div>
+          </a>
+          <a href="goez-mycoupons-management.html" id="couponSettingLink"
+            style="text-decoration: none; color: inherit; display: block; width: 100%; height: 100%;">
+            <div class="gallery-card" style="cursor: pointer;">
+              <img class="gallery-card__img" src="images/decorations/coupong.png" alt="優惠券設定" />
+              <span class="gallery-card__label" data-i18n="qaCouponSettings">優惠券設定</span>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- ── Feature Gallery ───────────────────────────── -->
+      <section class="feature-gallery" aria-label="Feature gallery">
+        <div class="feature-gallery__inner">
+          <div class="feature-gallery__content fade-in">
+            <div class="feature-gallery__text">
+              <h2 class="feature-gallery__heading" data-i18n="galleryHeading">快來建立屬於自己的專屬賣場～</h2>
+              <p class="feature-gallery__desc" data-i18n="galleryDesc">
+                打造會自動賺錢的一頁式商店。<br>
+                內建多種優化工具，讓流量不再流失，<br>
+                輕鬆開啟你的電商生意。
+              </p>
+            </div>
+            <button class="btn--dark" data-i18n="galleryBtn">瞭解更多</button>
+          </div>
+
+          <div class="image-gallery">
+            <!-- Column 1 -->
+            <div class="image-gallery__col fade-in-left delay-1">
+              <a href="goez-ai-assistant.html"
+                style="text-decoration: none; color: inherit; display: block; width: 100%; height: 100%;">
+                <div class="gallery-card" style="cursor: pointer;">
+                  <img class="gallery-card__img" src="images/decorations/ai-function.svg" alt="AI 開店助手" />
+                  <span class="gallery-card__label" data-i18n="cardAiAssistant">ＡＩ開店助手</span>
+                </div>
+              </a>
+              <div class="gallery-card" onclick="handleCreateShop()" style="cursor: pointer;">
+                <img class="gallery-card__img" src="images/decorations/store-function.svg" alt="設計我的賣場" />
+                <span class="gallery-card__label" data-i18n="cardDesignStore">設計我的賣場</span>
+              </div>
+            </div>
+
+            <!-- Column 2 (offset) -->
+            <div class="image-gallery__col image-gallery__col--offset fade-in-right delay-2">
+              <a href="goez-SellerOrder.html?sellerId=1" id="sellerOrderLink"
+                style="text-decoration: none; color: inherit; display: block; width: 100%; height: 100%;">
+                <div class="gallery-card" style="cursor: pointer;">
+                  <img class="gallery-card__img" src="images/decorations/order-function.svg" alt="訂單與物流" />
+                  <span class="gallery-card__label" data-i18n="cardOrdersLogistics">訂單與物流</span>
+                </div>
+              </a>
+              <a href="goez-sales-analytics.html?sellerId={{sellerId}}" id="salesAnalyticsLink"
+                style="text-decoration: none; color: inherit; display: block; width: 100%; height: 100%;">
+                <div class="gallery-card" style="cursor: pointer;">
+                  <img class="gallery-card__img" src="images/decorations/sale-function.svg" alt="銷售成效追蹤" />
+                  <span class="gallery-card__label" data-i18n="cardSalesPerformance">銷售成效追蹤</span>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── FAQ ───────────────────────────────────────── -->
+      <section class="faq" aria-label="常見問題">
+        <div class="faq__header fade-in">
+          <h2 class="faq__heading" data-i18n="faqHeading">常見問題</h2>
+        </div>
+
+        <div class="faq__cards">
+          <!-- Card 1 -->
+          <article class="faq-card fade-in-left delay-1">
+            <p class="faq-card__question" data-i18n="faqQ1">Q. 手機拍照背景很亂怎麼辦？</p>
+            <p class="faq-card__answer" data-i18n="faqA1">A. 使用 Goez Shop 內建的 AI 去背與美化工具，一鍵清除雜亂背景、自動優化光線與色調，讓商品照片瞬間變得專業。
+            </p>
+          </article>
+
+          <!-- Card 2 -->
+          <article class="faq-card fade-in-right delay-2">
+            <p class="faq-card__question" data-i18n="faqQ2">Q. 寫不出那種很有質感、會讓人想下單的文案怎麼辦？</p>
+            <p class="faq-card__answer" data-i18n="faqA2">A. 交給 AI 開店助手，只要輸入商品重點，就能自動生成吸引人的商品文案與標題，你也能再依自己的語氣微調。</p>
+          </article>
+
+          <!-- Card 3 -->
+          <article class="faq-card fade-in-left delay-3">
+            <p class="faq-card__question" data-i18n="faqQ3">Q. 不會寫程式，也能架設自己的線上商店嗎？</p>
+            <p class="faq-card__answer" data-i18n="faqA3">A. 完全不需要！Goez Shop 提供一鍵開店與拖拉式版面編輯器，不用寫任何程式碼，幾分鐘內就能打造出專屬賣場。</p>
+          </article>
+
+          <!-- Card 4 -->
+          <article class="faq-card fade-in-right delay-4">
+            <p class="faq-card__question" data-i18n="faqQ4">Q. 商店開張後，要怎麼追蹤訂單和銷售狀況？</p>
+            <p class="faq-card__answer" data-i18n="faqA4">A. 後台內建「訂單與物流」與「銷售成效追蹤」功能，即時掌握每筆訂單狀態與營收數據，隨時掌握店鋪表現。</p>
+          </article>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ── Footer ─────────────────────────────────────── -->
+    <!-- ── Footer ─────────────────────────────────────── -->
+    <footer class="footer" aria-label="Footer">
+      <img class="footer__bg" src="images/decorations/footer.svg" alt="" aria-hidden="true" />
+      <div class="footer__content">
+        <p class="footer__contact">
+          <span data-i18n="footerContactPre">若有操作上問題 請寄信至</span>
+          <a href="https://mail.google.com/mail/?view=cm&fs=1&to=goez-shop@gmail.com" class="footer__contact-link"
+            target="_blank" rel="noopener noreferrer">goez-shop@gmail.com</a>
+          <span data-i18n="footerContactPost">客服將為您服務</span>
+        </p>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // ── Scroll-triggered fade-in via Intersection Observer ──────────
+    const animatedEls = document.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target); // animate once
+        }
+      });
+    }, { threshold: 0.15 });
+
+    animatedEls.forEach(el => observer.observe(el));
+
+    async function handleLogout() {
+      try {
+        // 1. 呼叫後端登出 API（注意路徑要改成你們現在統一的 /api/seller/logout）
+        await fetch('/api/seller/logout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+            // 如果你們的登出 API 驗證需要帶 Token，可以在這裡補上 Authorization
+          }
+        });
+      } catch (error) {
+        console.error('登出請求失敗:', error);
+      } finally {
+        // 2. 無論後端 API 是否成功，前端一定要把 localStorage 裡關於賣家的資料清空！
+        localStorage.removeItem('sellerToken');
+        localStorage.removeItem('sellerInfo');
+        localStorage.removeItem('sellerId');
+
+        // 3. 重新導向回登入頁或首頁 (看你們設計要跳回 landing 還是 login)
+        window.location.href = 'goez-landing.html';
       }
-    });
-  }, { threshold: 0.15 });
-
-  animatedEls.forEach(el => observer.observe(el));
-
-  async function handleLogout() {
-  try {
-    // 1. 呼叫後端登出 API（注意路徑要改成你們現在統一的 /api/seller/logout）
-    await fetch('/api/seller/logout', { 
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-        // 如果你們的登出 API 驗證需要帶 Token，可以在這裡補上 Authorization
-      }
-    });
-  } catch (error) {
-    console.error('登出請求失敗:', error);
-  } finally {
-    // 2. 無論後端 API 是否成功，前端一定要把 localStorage 裡關於賣家的資料清空！
-    localStorage.removeItem('sellerToken');
-    localStorage.removeItem('sellerInfo');
-    localStorage.removeItem('sellerId');
-    
-    // 3. 重新導向回登入頁或首頁 (看你們設計要跳回 landing 還是 login)
-    window.location.href = 'goez-landing.html'; 
-  }
-}
-</script>
-<script>
-async function handleCreateShop() {
-    try {
+    }
+  </script>
+  <script>
+    async function handleCreateShop() {
+      try {
         // 1. 顯示載入中（選配，增加儀式感）
         console.log("正在為您申請新賣場 ID...");
 
         // 2. 呼叫後端剛寫好的 POST 路由
         const response = await fetch('/api/store/create-new-shop', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
         });
 
         const result = await response.json();
 
         if (result.success && result.pageId) {
-            // 3. 拿到新 ID 了，自動跳轉到編輯頁，並帶上 pageId
-            console.log("申請成功，ID 為:", result.pageId);
-            window.location.href = `/goez-shop-store.html?pageId=${result.pageId}`;
+          // 3. 拿到新 ID 了，自動跳轉到編輯頁，並帶上 pageId
+          console.log("申請成功，ID 為:", result.pageId);
+          window.location.href = `/goez-store.html?pageId=${result.pageId}`;
         } else {
-            alert("建立失敗：" + (result.message || "未知錯誤"));
+          alert("建立失敗：" + (result.message || "未知錯誤"));
         }
-    } catch (error) {
+      } catch (error) {
         console.error("網路請求失敗:", error);
         alert("伺服器連線失敗，請檢查後端是否啟動");
+      }
     }
-}
-// ── 1. 從登入頁跳過來時，檢查網址列有沒有帶 sellerId ──
-const urlParams = new URLSearchParams(window.location.search);
-const urlSellerId = urlParams.get('sellerId');
-// 如果網址上有，就優先把它存進 localStorage 裡面
-if (urlSellerId) {
-    localStorage.setItem('sellerId', urlSellerId);
-}
-//──  2.宣告一次就好，全頁共用──────────
-// 當頁面載入時，自動去 localStorage 檢查有沒有登入的 sellerId，沒有就用 1 頂著
-const currentSellerId = localStorage.getItem('sellerId') || 1;
+    // ── 1. 從登入頁跳過來時，檢查網址列有沒有帶 sellerId ──
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlSellerId = urlParams.get('sellerId');
+    // 如果網址上有，就優先把它存進 localStorage 裡面
+    if (urlSellerId) {
+      localStorage.setItem('sellerId', urlSellerId);
+    }
+    //──  2.宣告一次就好，全頁共用──────────
+    // 當頁面載入時，自動去 localStorage 檢查有沒有登入的 sellerId，沒有就用 1 頂著
+    const currentSellerId = localStorage.getItem('sellerId') || 1;
 
-// ──  3.動態帶入訂單與物流的 sellerId ──────────
-// 用 id 來精準抓取這個超連結
-const linkElement = document.getElementById('sellerOrderLink');
-// 如果元素存在，就動態修改它的 href 網址 
-if (linkElement) {
-linkElement.href = `goez-SellerOrder.html?sellerId=${currentSellerId}`;
-} 
+    // ──  3.動態帶入訂單與物流的 sellerId ──────────
+    // 用 id 來精準抓取這個超連結
+    const linkElement = document.getElementById('sellerOrderLink');
+    // 如果元素存在，就動態修改它的 href 網址 
+    if (linkElement) {
+      linkElement.href = `goez-SellerOrder.html?sellerId=${currentSellerId}`;
+    }
 
-// ── 4.動態帶入會員中心的 sellerId ──────────
-const memberLinkElement = document.getElementById('memberCenterLink');
-if (memberLinkElement) {
-    memberLinkElement.href = `goez-member.html?sellerId=${currentSellerId}`;
-}
+    // ── 4.動態帶入會員中心的 sellerId ──────────
+    const memberLinkElement = document.getElementById('memberCenterLink');
+    if (memberLinkElement) {
+      memberLinkElement.href = `goez-member.html?sellerId=${currentSellerId}`;
+    }
 
-// ── 5.動態帶入「管理已建立賣場」的 sellerId ──────────
-const manageStoresLink = document.getElementById('manageStoresLink');
-if (manageStoresLink) {
-    manageStoresLink.href = `goez-mystores-management.html?sellerId=${currentSellerId}`;
-}
+    // ── 5.動態帶入「管理已建立賣場」的 sellerId ──────────
+    const manageStoresLink = document.getElementById('manageStoresLink');
+    if (manageStoresLink) {
+      manageStoresLink.href = `goez-mystores-management.html?sellerId=${currentSellerId}`;
+    }
 
-// ── 6.動態帶入「優惠券設定」的 sellerId ──────────
-const couponSettingLink = document.getElementById('couponSettingLink');
-if (couponSettingLink) {
-    couponSettingLink.href = `goez-mycoupons-management.html?sellerId=${currentSellerId}`;
-}
-</script>
+    // ── 6.動態帶入「優惠券設定」的 sellerId ──────────
+    const couponSettingLink = document.getElementById('couponSettingLink');
+    if (couponSettingLink) {
+      couponSettingLink.href = `goez-mycoupons-management.html?sellerId=${currentSellerId}`;
+    }
+    // ── 7.動態帶入「銷售成效追蹤」的 sellerId ──────────
+    const salesAnalyticsLink = document.getElementById('salesAnalyticsLink');
+    if (salesAnalyticsLink) {
+      salesAnalyticsLink.href = `goez-sales-analytics.html?sellerId=${currentSellerId}`;
+    }
+  </script>
+
+
+  <!-- 1. 先引入共用核心 -->
+  <script src="./i18n/i18n-core.js"></script>
+
+  <!-- 2. 再引入該頁專屬翻譯檔 -->
+  <script src="./i18n/home.js"></script>
+
+  <!-- 3. 頁面原本的 JavaScript 邏輯 -->
+  <script>
+    // ... 頁面原本的 JS 程式碼（如果有）...
+
+    // 4. 掛載下拉選單並自動套用語言
+    var langSwitcher = document.getElementById('lang-switch');
+    if (langSwitcher && window.GoezI18n) {
+      GoezI18n.mountSwitcher(langSwitcher, function () {
+        document.title = GoezI18n.t('pageTitleHome');
+      });
+    }
+
+    if (window.GoezI18n) {
+      GoezI18n.apply();
+      document.title = GoezI18n.t('pageTitleHome');
+    }
+  </script>
+
+  </script>
 </body>
+
 </html>

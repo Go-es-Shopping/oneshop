@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,12 +23,13 @@
         }
 
         body {
-            background-color: #eaf4fc; 
-            background-image: url('public/images/decoration/landing-bg.png'); 
+            background-color: #eaf4fc;
+            background-image: url('public/images/decorations/landing-bg.png');
+            /* 這裏改了decoration"s" */
             background-size: 100% auto;
             background-position: center top;
             background-repeat: no-repeat;
-            background-attachment: fixed; 
+            background-attachment: fixed;
             color: var(--text-dark);
             min-height: 100vh;
             display: flex;
@@ -49,12 +51,12 @@
         .logo {
             font-size: 1.4rem;
             font-weight: 700;
-            margin-bottom: 5px; 
+            margin-bottom: 5px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
-            letter-spacing: 1px; 
+            letter-spacing: 1px;
         }
 
         h1 {
@@ -62,15 +64,15 @@
             line-height: 1.3;
             color: var(--primary-blue);
             font-weight: 700;
-            margin-bottom: 12px; 
-            letter-spacing: 1px; 
+            margin-bottom: 12px;
+            letter-spacing: 1px;
             text-shadow: 0 10px 30px rgba(0, 50, 150, 0.1);
         }
 
         .subtitle {
             font-size: 1.15rem;
             margin-bottom: 35px;
-            letter-spacing: 1px; 
+            letter-spacing: 1px;
             font-weight: 400;
         }
 
@@ -88,7 +90,7 @@
             gap: 12px;
             transition: all 0.4s ease;
             box-shadow: 0 10px 30px rgba(0, 50, 150, 0.15);
-            letter-spacing: 1px; 
+            letter-spacing: 1px;
         }
 
         .cta-btn:hover {
@@ -175,7 +177,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            perspective: 1200px; 
+            perspective: 1200px;
         }
 
         .iso-container {
@@ -188,13 +190,20 @@
             transition: transform 0.5s ease;
         }
 
-        .center-mockup:hover .iso-container .layer-top { transform: translateZ(120px); }
-        .center-mockup:hover .iso-container .layer-bottom { transform: translateZ(-120px); }
+        .center-mockup:hover .iso-container .layer-top {
+            transform: translateZ(120px);
+        }
+
+        .center-mockup:hover .iso-container .layer-bottom {
+            transform: translateZ(-120px);
+        }
 
         .iso-layer {
             position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: var(--glass-bg);
             border: 2px solid var(--glass-border);
             border-radius: 24px;
@@ -208,21 +217,72 @@
 
         .layer-top {
             transform: translateZ(80px);
-            background: rgba(255, 255, 255, 0.6); 
+            background: rgba(255, 255, 255, 0.6);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             z-index: 3;
             padding: 20px;
             align-items: flex-start;
         }
-        
-        .ui-nav { width: 100%; display: flex; justify-content: space-between; margin-bottom: 20px; }
-        .ui-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--primary-blue); opacity: 0.5; }
-        .ui-line { height: 8px; width: 30px; background: rgba(26, 62, 122, 0.2); border-radius: 4px; }
-        .ui-img { width: 100%; height: 100px; background: rgba(255,255,255,0.7); border-radius: 12px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--primary-blue);}
-        .ui-text-1 { width: 80%; height: 10px; background: rgba(26, 62, 122, 0.2); border-radius: 5px; margin-bottom: 10px; }
-        .ui-text-2 { width: 50%; height: 10px; background: rgba(26, 62, 122, 0.1); border-radius: 5px; margin-bottom: 20px; }
-        .ui-btn { width: 100px; height: 25px; background: var(--primary-blue); border-radius: 20px; opacity: 0.8; }
+
+        .ui-nav {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .ui-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--primary-blue);
+            opacity: 0.5;
+        }
+
+        .ui-line {
+            height: 8px;
+            width: 30px;
+            background: rgba(26, 62, 122, 0.2);
+            border-radius: 4px;
+        }
+
+        .ui-img {
+            width: 100%;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--primary-blue);
+        }
+
+        .ui-text-1 {
+            width: 80%;
+            height: 10px;
+            background: rgba(26, 62, 122, 0.2);
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .ui-text-2 {
+            width: 50%;
+            height: 10px;
+            background: rgba(26, 62, 122, 0.1);
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .ui-btn {
+            width: 100px;
+            height: 25px;
+            background: var(--primary-blue);
+            border-radius: 20px;
+            opacity: 0.8;
+        }
 
         .layer-middle {
             transform: translateZ(0px);
@@ -230,12 +290,37 @@
             backdrop-filter: blur(5px);
             z-index: 2;
         }
-        .layer-middle i { font-size: 4rem; color: #ffbd2e; margin-bottom: 15px; text-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .design-palette { display: flex; gap: 10px; }
-        .design-palette span { width: 20px; height: 20px; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.1);}
-        .design-palette span:nth-child(1) { background: #ff9a9e; }
-        .design-palette span:nth-child(2) { background: #a1c4fd; }
-        .design-palette span:nth-child(3) { background: #a8e063; }
+
+        .layer-middle i {
+            font-size: 4rem;
+            color: #ffbd2e;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .design-palette {
+            display: flex;
+            gap: 10px;
+        }
+
+        .design-palette span {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .design-palette span:nth-child(1) {
+            background: #ff9a9e;
+        }
+
+        .design-palette span:nth-child(2) {
+            background: #a1c4fd;
+        }
+
+        .design-palette span:nth-child(3) {
+            background: #a8e063;
+        }
 
         .layer-bottom {
             transform: translateZ(-80px);
@@ -243,13 +328,37 @@
             border: 1px dashed rgba(26, 62, 122, 0.3);
             z-index: 1;
         }
-        .layer-bottom i { font-size: 3rem; color: var(--primary-blue); opacity: 0.5; margin-bottom: 15px; }
-        .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 60%; }
-        .data-box { height: 20px; background: rgba(26, 62, 122, 0.15); border-radius: 4px; }
+
+        .layer-bottom i {
+            font-size: 3rem;
+            color: var(--primary-blue);
+            opacity: 0.5;
+            margin-bottom: 15px;
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            width: 60%;
+        }
+
+        .data-box {
+            height: 20px;
+            background: rgba(26, 62, 122, 0.15);
+            border-radius: 4px;
+        }
 
         @keyframes iso-float {
-            0%, 100% { transform: rotateX(55deg) rotateZ(-45deg) translateZ(0px); }
-            50% { transform: rotateX(55deg) rotateZ(-45deg) translateZ(20px); }
+
+            0%,
+            100% {
+                transform: rotateX(55deg) rotateZ(-45deg) translateZ(0px);
+            }
+
+            50% {
+                transform: rotateX(55deg) rotateZ(-45deg) translateZ(20px);
+            }
         }
 
         .scroll-down {
@@ -267,28 +376,47 @@
         }
 
         @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-10px);
+            }
+
+            60% {
+                transform: translateY(-5px);
+            }
         }
 
         /* =========================================
            響應式設計 (RWD) 
            ========================================= */
         @media (max-width: 1100px) {
-            .content-wrapper { flex-direction: column; }
+            .content-wrapper {
+                flex-direction: column;
+            }
+
             .center-mockup {
-                order: -1; 
+                order: -1;
                 width: 100%;
                 margin-bottom: 50px;
             }
+
             .features-column {
                 flex-direction: row;
                 flex-wrap: wrap;
                 justify-content: center;
                 gap: 30px;
             }
-            .features-column.left .feature-item, .feature-item {
+
+            .features-column.left .feature-item,
+            .feature-item {
                 flex-direction: column;
                 text-align: center;
                 width: 40%;
@@ -296,19 +424,36 @@
         }
 
         @media (max-width: 799px) {
-            .hero-section { padding: 0 20px; } 
-            h1 { font-size: 2.4rem; letter-spacing: 1px; } 
-            
-            .content-wrapper { padding: 0 20px; } 
-            
-            .center-mockup { height: 250px; margin-bottom: 15px;}
-            
-            .iso-container { 
-                animation: iso-float-mobile 6s ease-in-out infinite; 
+            .hero-section {
+                padding: 0 20px;
             }
-            
-            .features-column { flex-direction: column; gap: 15px; width: 100%; }
-            .feature-item, .features-column.left .feature-item {
+
+            h1 {
+                font-size: 2.4rem;
+                letter-spacing: 1px;
+            }
+
+            .content-wrapper {
+                padding: 0 20px;
+            }
+
+            .center-mockup {
+                height: 250px;
+                margin-bottom: 15px;
+            }
+
+            .iso-container {
+                animation: iso-float-mobile 6s ease-in-out infinite;
+            }
+
+            .features-column {
+                flex-direction: column;
+                gap: 15px;
+                width: 100%;
+            }
+
+            .feature-item,
+            .features-column.left .feature-item {
                 flex-direction: row;
                 text-align: left;
                 width: 100%;
@@ -316,56 +461,124 @@
                 backdrop-filter: blur(15px);
                 border: 1px solid var(--glass-border);
                 border-radius: 16px;
-                padding: 15px; 
+                padding: 15px;
             }
+
             .icon-glass {
                 border: none;
                 background: rgba(255, 255, 255, 0.4);
                 box-shadow: none;
-                width: 45px; 
+                width: 45px;
                 height: 45px;
             }
         }
 
         @keyframes iso-float-mobile {
-            0%, 100% { transform: scale(0.75) rotateX(55deg) rotateZ(-45deg) translateZ(0px); }
-            50% { transform: scale(0.75) rotateX(55deg) rotateZ(-45deg) translateZ(20px); }
+
+            0%,
+            100% {
+                transform: scale(0.75) rotateX(55deg) rotateZ(-45deg) translateZ(0px);
+            }
+
+            50% {
+                transform: scale(0.75) rotateX(55deg) rotateZ(-45deg) translateZ(20px);
+            }
+        }
+
+        /* 右上角浮動容器 */
+        .landing-lang-wrap {
+            position: absolute;
+            top: 24px;
+            right: 32px;
+            z-index: 50;
+        }
+
+        /* 輕量極簡下拉選單（適合淺色背景） */
+        .landing-lang-select {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid #cbd5e1;
+            /* 淡灰色邊框 */
+            border-radius: 20px;
+            /* 圓潤膠囊造型 */
+            padding: 6px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #334155;
+            /* 深灰文字，清晰易讀 */
+            cursor: pointer;
+            outline: none;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+            transition: all 0.2s ease;
+        }
+
+        .landing-lang-select:hover {
+            background: #ffffff;
+            border-color: #94a3b8;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        /* 下拉選單展開時的選項 */
+        .landing-lang-select option {
+            color: #1e293b;
+            background: #ffffff;
+        }
+
+        /* 隱藏無障礙標籤 */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
         }
     </style>
 </head>
+
 <body>
 
+    <!-- 🌟 右上角獨立懸浮語言選單 -->
+    <div class="landing-lang-wrap">
+        <label for="lang-switch" class="sr-only" data-i18n="language">語言</label>
+        <select id="lang-switch" class="landing-lang-select"></select>
+    </div>
+
     <section class="hero-section">
-        <div class="logo"><i class="fa-solid fa-bag-shopping"></i> 購意思</div>
+        <div class="logo"><i class="fa-solid fa-bag-shopping"></i> <span data-i18n="brandSlogan">購意思</span></div>
         <h1>Goez Shop</h1>
-        <p class="subtitle">輕鬆打造您的專屬線上商店</p>
+        <p class="subtitle" data-i18n="heroSubtitle">輕鬆打造您的專屬線上商店</p>
         <a href="goez-login.html" style="text-decoration: none; display: inline-block;">
-            <button class="cta-btn" style="cursor: pointer;">立即開始 <i class="fa-solid fa-arrow-right"></i></button>
+            <button class="cta-btn" style="cursor: pointer;"><span data-i18n="startNowBtn">立即開始</span> <i
+                    class="fa-solid fa-arrow-right"></i></button>
         </a>
     </section>
 
     <section class="content-wrapper">
-        
+
         <div class="features-column left">
             <div class="feature-item">
                 <div class="icon-glass"><i class="fa-solid fa-store"></i></div>
                 <div class="feature-text">
-                    <h3>建立一頁式商店</h3>
-                    <p>快速建立品牌專屬商店</p>
+                    <h3 data-i18n="feature1Title">建立一頁式商店</h3>
+                    <p data-i18n="feature1Desc">快速建立品牌專屬商店</p>
                 </div>
             </div>
             <div class="feature-item">
                 <div class="icon-glass"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
                 <div class="feature-text">
-                    <h3>AI 功能輔助開店創意</h3>
-                    <p>智慧生成文案與設計靈感建議</p>
+                    <h3 data-i18n="feature2Title">AI 功能輔助開店創意</h3>
+                    <p data-i18n="feature2Desc">智慧生成文案與設計靈感建議</p>
                 </div>
             </div>
             <div class="feature-item">
                 <div class="icon-glass"><i class="fa-solid fa-chart-column"></i></div>
                 <div class="feature-text">
-                    <h3>Power BI 數據分析</h3>
-                    <p>即時掌握營運數據與趨勢</p>
+                    <h3 data-i18n="feature3Title">Power BI 數據分析</h3>
+                    <p data-i18n="feature3Desc">即時掌握營運數據與趨勢</p>
                 </div>
             </div>
         </div>
@@ -375,8 +588,10 @@
                 <div class="iso-layer layer-bottom">
                     <i class="fa-solid fa-database"></i>
                     <div class="data-grid">
-                        <div class="data-box"></div><div class="data-box"></div>
-                        <div class="data-box"></div><div class="data-box"></div>
+                        <div class="data-box"></div>
+                        <div class="data-box"></div>
+                        <div class="data-box"></div>
+                        <div class="data-box"></div>
                     </div>
                 </div>
 
@@ -389,7 +604,8 @@
 
                 <div class="iso-layer layer-top">
                     <div class="ui-nav">
-                        <div class="ui-dot"></div><div class="ui-line"></div>
+                        <div class="ui-dot"></div>
+                        <div class="ui-line"></div>
                     </div>
                     <div class="ui-img"><i class="fa-solid fa-store"></i></div>
                     <div class="ui-text-1"></div>
@@ -403,32 +619,51 @@
             <div class="feature-item">
                 <div class="icon-glass"><i class="fa-solid fa-palette"></i></div>
                 <div class="feature-text">
-                    <h3>質感主題與字體</h3>
-                    <p>一鍵套用品牌風格設計</p>
+                    <h3 data-i18n="feature4Title">質感主題與字體</h3>
+                    <p data-i18n="feature4Desc">一鍵套用品牌風格設計</p>
                 </div>
             </div>
             <div class="feature-item">
                 <div class="icon-glass"><i class="fa-regular fa-credit-card"></i></div>
                 <div class="feature-text">
-                    <h3>訂單與金物流處理</h3>
-                    <p>管理訂單物流資訊與平台統一代收按月撥款</p>
+                    <h3 data-i18n="feature5Title">訂單與金物流處理</h3>
+                    <p data-i18n="feature5Desc">管理訂單物流資訊與平台統一代收按月撥款</p>
                 </div>
             </div>
             <div class="feature-item">
                 <div class="icon-glass"><i class="fa-solid fa-globe"></i></div>
                 <div class="feature-text">
-                    <h3>中・日・英三國語言切換</h3>
-                    <p>輕鬆拓展海外市場</p>
+                    <h3 data-i18n="feature6Title">中・日・英三國語言切換</h3>
+                    <p data-i18n="feature6Desc">輕鬆拓展海外市場</p>
                 </div>
             </div>
-        </div>
 
     </section>
 
     <footer class="scroll-down">
         <i class="fa-solid fa-chevron-down"></i>
-        探索更多功能
+        <span data-i18n="scrollDown">探索更多功能</span>
     </footer>
 
+    <!-- 1. 共用核心與封面字典 -->
+    <script src="./i18n/i18n-core.js"></script>
+    <script src="./i18n/landing.js"></script>
+
+    <script>
+        // 2. 掛載選單 + 記憶切換
+        var langSwitcher = document.getElementById('lang-switch');
+        if (langSwitcher && window.GoezI18n) {
+            GoezI18n.mountSwitcher(langSwitcher, function () {
+                document.title = GoezI18n.t('pageTitleLanding');
+            });
+        }
+
+        // 3. 自動套用儲存的語言
+        if (window.GoezI18n) {
+            GoezI18n.apply();
+            document.title = GoezI18n.t('pageTitleLanding');
+        }
+    </script>
 </body>
+
 </html>

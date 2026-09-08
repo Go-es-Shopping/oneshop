@@ -669,4 +669,108 @@ router.post('/create-new-shop', async (req, res) => {
 });
 
 console.log("✅ store.js 路由檔案已成功載入");
+
+/* ═══════════════════════════════════════════════════════════════
+   ★ 新增：取得指定賣家的所有賣場清單 (供 mystores-management.html 使用)
+═══════════════════════════════════════════════════════════════ */
+router.get('/my-stores', async (req, res) => {
+  const Mock = await useMock();
+  const sellerId = req.query.sellerId || 15; // 預設帶 15
+
+  if (Mock) {
+    // Mock 模式回傳假資料
+    return res.json({
+      success: true,
+      stores: [
+        {
+          id: 19,
+          name: '北歐特色小店 (Mock)',
+          status: 'published',
+          createdAt: '2026-05-14'
+        },
+        {
+          id: 26,
+          name: '陶土橘風格店 (Mock)',
+          status: 'draft',
+          createdAt: '2026-07-24'
+        }
+      ]
+    });
+  }
+
+  try {
+    const { StorePage, PageContent } = require('../models');
+
+    // 1. 根據 SellerID 撈出該賣家的所有 StorePage
+    const pages = await StorePage.findAll({
+      where: { SellerID: sellerId },
+      order: [['CreatedAt', 'DESC']]
+    });
+
+    // 2. 為了把店名（PageTitle）也一併帶出來，我們需要去 PageContent 撈對應的主標題
+    const storesResult = [];
+    for (const page of pages) {
+      // 找該 PageID 的店鋪標題 (ProductID 為 null 或對應主頁的內容)
+      let content = await PageContent.findOne({
+        where: { PageID: page.PageID, ProductID: null }
+      });
+      if (!content) {
+        content = await PageContent.findOne({
+          where: { PageID: page.PageID }
+        });
+      }
+
+      storesResult.push({
+        id: page.PageID,
+        name: content?.PageTitle || `未命名賣場 (${page.PageID})`,
+        // 將資料庫的 IsPublished (true/false) 轉成前端需要的字串狀態
+        status: page.IsPublished ? 'published' : 'draft',
+        // 格式化日期 (只取 YYYY-MM-DD 或保留完整字串)
+        createdAt: page.CreatedAt ? page.CreatedAt.toISOString().split('T')[0] : '',
+        customUrl: page.PageUrl || '' // <-- 這裡對應資料庫真實欄位 PageUrl！
+      });
+    }
+
+    return res.json({
+      success: true,
+      stores: storesResult
+    });
+
+  } catch (err) {
+    console.error('[Backend Error] 撈取賣家賣場清單失敗:', err);
+    return res.status(500).json({ success: false, message: '伺服器內部發生錯誤' });
+  }
+});
+/* ═══════════════════════════════════════════════════════════════
+   ★ 新增：刪除指定賣場的 API (同步刪除 StorePage、PageContent、PageProduct)
+═══════════════════════════════════════════════════════════════ */
+router.delete('/pages/:PageID', async (req, res) => {
+  const Mock = await useMock();
+  const PageID = Number(req.params.PageID);
+
+  if (Mock) {
+    // Mock 模式簡單回傳成功
+    return res.json({ success: true, message: 'Mock 模式刪除成功' });
+  }
+
+  try {
+    const { StorePage, PageContent, PageProduct } = require('../models');
+
+    // 1. 為了保持資料庫乾淨，建議一併刪除關聯的 PageProduct 與 PageContent
+    await PageProduct.destroy({ where: { PageID: PageID } });
+    await PageContent.destroy({ where: { PageID: PageID } });
+
+    // 2. 刪除 StorePage 主檔
+    const deletedCount = await StorePage.destroy({ where: { PageID: PageID } });
+
+    if (deletedCount === 0) {
+      return res.status(404).json({ success: false, message: '找不到該賣場' });
+    }
+
+    return res.json({ success: true, message: '賣場刪除成功！' });
+  } catch (err) {
+    console.error('[Backend Error] 刪除賣場失敗:', err);
+    return res.status(500).json({ success: false, message: '伺服器內部發生錯誤，刪除失敗' });
+  }
+});
 module.exports = router;
