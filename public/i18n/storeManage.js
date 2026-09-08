@@ -3,7 +3,7 @@
     GoezI18n.register({
         'zh-Hant': {
             pageTitleStoreManage: 'Goez Shop - 管理已建立賣場',
-            backHome: '‹ 返回會員首頁',
+            backHome: '‹ 返回首頁',
             pageTitle: '管理已建立賣場',
             pageSubtitle: '查看、編輯或刪除你所有的賣場。',
             emptyTitle: '尚未建立賣場唷！',
@@ -24,7 +24,7 @@
         },
         en: {
             pageTitleStoreManage: 'Goez Shop - Manage Stores',
-            backHome: '‹ Back to Member Home',
+            backHome: '‹ Back to Home',
             pageTitle: 'Manage Stores',
             pageSubtitle: 'View, edit, or delete all of your online stores.',
             emptyTitle: 'No stores created yet!',
@@ -45,7 +45,7 @@
         },
         ja: {
             pageTitleStoreManage: 'Goez Shop - 作成済みショップ管理',
-            backHome: '‹ マイページに戻る',
+            backHome: 'トップページ',
             pageTitle: '作成済みショップ管理',
             pageSubtitle: '作成したすべてのショップを確認・編集・削除できます。',
             emptyTitle: 'ショップがまだ作成されていません！',

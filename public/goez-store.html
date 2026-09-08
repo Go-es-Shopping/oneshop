@@ -2209,6 +2209,8 @@
       /* 讓點擊能穿透文字，直接點到輸入框 */
       font-weight: 300;
       /* 讓它看起來輕盈一點 */
+      font-size: 13px;
+      /* 🌟 加上這行！將提示詞縮小（可依視覺調整成 12px 或 13px） */
     }
 
     /* 當滑鼠點進去但還沒打字時，讓顏色再淡一點點 */
@@ -3771,10 +3773,28 @@
 
     <!-- 3. 頁面控制與字體/視圖切換 -->
     <script>
+      // 🌟 新增：讓 contenteditable 的 data-placeholder 支援多語言
+      function updateEditablePlaceholders() {
+        if (!window.GoezI18n) return;
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
+          var key = el.getAttribute('data-i18n-placeholder');
+          var translated = GoezI18n.t(key);
+          if (translated && translated !== key) {
+            el.setAttribute('data-placeholder', translated);
+          }
+        });
+      }
+
       // 自動套用語言
       if (window.GoezI18n) {
         GoezI18n.apply();
         document.title = GoezI18n.t('pageTitleEditor');
+        updateEditablePlaceholders(); // 🌟 頁面載入時同步替換提示詞
+      }
+
+      // 監聽語言切換選單（如有在首頁切換或同頁連動）
+      if (window.GoezI18n && GoezI18n.onLangChange) {
+        GoezI18n.onLangChange(updateEditablePlaceholders);
       }
 
       // 字體設定資料庫
