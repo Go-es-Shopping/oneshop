@@ -96,7 +96,7 @@
       cursor: pointer;
     }
 
-    /* ─── Top bar（改用 Background.svg 當底圖） ─────────────────── */
+    /* ─── Top bar ─────────────────────────────────────────── */
     .topbar {
       position: relative;
       display: flex;
@@ -124,25 +124,6 @@
       font-weight: var(--fw-bold);
       letter-spacing: var(--ls-heading);
       color: var(--color-white);
-    }
-
-    .topbar__logout {
-      position: relative;
-      z-index: 1;
-      background: rgba(255, 255, 255, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: var(--radius-12);
-      padding: var(--spacing-8) var(--spacing-16);
-      font-size: var(--fs-16);
-      font-weight: var(--fw-medium);
-      color: var(--color-white);
-      cursor: pointer;
-      transition: background 0.2s ease, border-color 0.2s ease;
-    }
-
-    .topbar__logout:hover {
-      background: rgba(255, 255, 255, 0.25);
-      border-color: rgba(255, 255, 255, 0.4);
     }
 
     /* ─── Page ──────────────────────────────────────────────────── */
@@ -444,8 +425,8 @@
       <div class="profile-summary">
         <div class="profile-summary__avatar" id="avatarInitial">G</div>
         <div class="profile-summary__body">
-          <span class="profile-summary__name" id="summaryName">會員姓名</span>
-          <span class="profile-summary__email" id="summaryEmail">member@example.com</span>
+          <span class="profile-summary__name" id="summaryName">載入中...</span>
+          <span class="profile-summary__email" id="summaryEmail">loading...</span>
         </div>
       </div>
     </section>
@@ -467,6 +448,10 @@
             <label for="fieldPhone" data-i18n="phoneLabel">聯絡電話</label>
             <input type="tel" id="fieldPhone" name="phone" placeholder="0912-345-678"
               data-i18n-placeholder="phonePlaceholder" />
+          </div>
+          <div class="form-field form-field--full">
+            <label for="fieldStoreName">商店名稱</label>
+            <input type="text" id="fieldStoreName" name="storeName" placeholder="請輸入商店名稱" />
           </div>
           <div class="form-field form-field--full">
             <label for="fieldEmail">Email</label>
@@ -498,12 +483,12 @@
           </div>
           <div class="form-field">
             <label for="fieldNewPassword" data-i18n="newPasswordLabel">新密碼</label>
-            <input type="password" id="fieldNewPassword" name="newPassword" required minlength="8"
+            <input type="password" id="fieldNewPassword" name="newPassword" required minlength="6"
               autocomplete="new-password" />
           </div>
           <div class="form-field">
             <label for="fieldConfirmPassword" data-i18n="confirmPasswordLabel">確認新密碼</label>
-            <input type="password" id="fieldConfirmPassword" name="confirmPassword" required minlength="8"
+            <input type="password" id="fieldConfirmPassword" name="confirmPassword" required minlength="6"
               autocomplete="new-password" />
           </div>
         </div>
@@ -533,6 +518,9 @@
   <script src="./i18n/member.js"></script>
 
   <script>
+    // ── 1. 從 URL 取得 sellerId ─────────────────
+    const urlParams = new URLSearchParams(window.location.search);
+    const sellerId = urlParams.get('sellerId') || localStorage.getItem('sellerId') || '1';
     function t(key, fallback) {
       return (window.GoezI18n && GoezI18n.t(key)) ? GoezI18n.t(key) : fallback;
     }
@@ -550,14 +538,10 @@
       phone: '0912-345-678',
     };
 
-    function renderProfile() {
-      document.getElementById('summaryName').textContent = memberProfile.name;
-      document.getElementById('summaryEmail').textContent = memberProfile.email;
-      document.getElementById('avatarInitial').textContent = memberProfile.name.charAt(0) || 'G';
-
-      document.getElementById('fieldName').value = memberProfile.name;
-      document.getElementById('fieldPhone').value = memberProfile.phone;
-      document.getElementById('fieldEmail').value = memberProfile.email;
+    // 設定返回首頁連結
+    const backHomeLink = document.getElementById('backHomeLink');
+    if (backHomeLink) {
+      backHomeLink.href = `goez-home.html?sellerId=${sellerId}`;
     }
 
     function showStatus(el, message, type) {
@@ -565,35 +549,83 @@
       el.className = `form-status is-visible form-status--${type}`;
     }
 
+    // ── 2. 頁面載入時取得賣家資料 ────────────────
+    async function loadProfile() {
+      try {
+        const response = await fetch(`/api/seller/me?sellerId=${sellerId}`);
+        if (!response.ok) throw new Error('無法取得個人資料');
+
+        const seller = await response.json();
+
+        // 渲染畫面上半部摘要
+        const name = seller.SellerName || '賣家';
+        document.getElementById('summaryName').textContent = name;
+        document.getElementById('summaryEmail').textContent = seller.Email || '';
+        document.getElementById('avatarInitial').textContent = name.charAt(0).toUpperCase() || 'G';
+
+        // 填入基本資料表單
+        document.getElementById('fieldName').value = seller.SellerName || '';
+        document.getElementById('fieldPhone').value = seller.Phone || '';
+        document.getElementById('fieldStoreName').value = seller.StoreName || '';
+        document.getElementById('fieldEmail').value = seller.Email || '';
+      } catch (error) {
+        console.error('載入個人資料失敗:', error);
+      }
+    }
+
+    // ── 3. 更新基本資料 API 串接 ───────────────
     document.getElementById('profileForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const statusEl = document.getElementById('profileStatus');
+
       const payload = {
-        name: document.getElementById('fieldName').value.trim(),
+        sellerId: sellerId,
+        sellerName: document.getElementById('fieldName').value.trim(),
         phone: document.getElementById('fieldPhone').value.trim(),
+        storeName: document.getElementById('fieldStoreName').value.trim()
       };
 
       try {
-        const response = await fetch('/api/seller/me', {
-          method: 'PATCH',
+        const response = await fetch('/api/seller/update-profile', {
+          method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
-        if (!response.ok) throw new Error('更新失敗');
 
-        Object.assign(memberProfile, payload);
-        renderProfile();
-        showStatus(statusEl, t('profileSuccess', '個人資料已更新。'), 'success');
-      } catch (error) {
-        console.error('更新個人資料失敗:', error);
-        showStatus(statusEl, t('profileError', '更新失敗，請稍後再試。'), 'error');
+
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || (typeof t === 'function' ? t('updateFailed', '更新失敗') : '更新失敗'));
       }
+
+      // 重新更新頂部名字與大頭貼
+      const name = payload.sellerName;
+      const summaryNameEl = document.getElementById('summaryName');
+      const avatarInitialEl = document.getElementById('avatarInitial');
+      if (summaryNameEl) summaryNameEl.textContent = name;
+      if (avatarInitialEl) avatarInitialEl.textContent = name.charAt(0).toUpperCase() || 'G';
+
+      // 同步記憶體資料
+      if (typeof memberProfile !== 'undefined') {
+        Object.assign(memberProfile, payload);
+        if (typeof renderProfile === 'function') renderProfile();
+      }
+
+      // 顯示成功訊息 (支援多國語言)
+      const successMsg = typeof t === 'function' ? t('profileSuccess', '個人資料已更新。') : '個人資料已更新。';
+      showStatus(statusEl, successMsg, 'success');
+    } catch (error) {
+      console.error('更新個人資料失敗:', error);
+      const errorMsg = typeof t === 'function' ? t('profileError', '更新失敗，請稍後再試。') : (error.message || '更新失敗，請稍後再試。');
+      showStatus(statusEl, errorMsg, 'error');
+    }
     });
 
+    // ── 4. 變更密碼 API 串接 ───────────────────
     document.getElementById('passwordForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const statusEl = document.getElementById('passwordStatus');
-      const currentPassword = document.getElementById('fieldCurrentPassword').value;
+      const oldPassword = document.getElementById('fieldCurrentPassword').value;
       const newPassword = document.getElementById('fieldNewPassword').value;
       const confirmPassword = document.getElementById('fieldConfirmPassword').value;
 
@@ -603,36 +635,66 @@
       }
 
       try {
-        const response = await fetch('/api/seller/change-password', {
+        const response = await fetch('/api/seller/update-password', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ currentPassword, newPassword }),
+          body: JSON.stringify({
+            sellerId: sellerId,
+            oldPassword: oldPassword,
+            newPassword: newPassword
+          }),
         });
-        if (!response.ok) throw new Error('密碼變更失敗');
+
+        const result = await response.json();
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || '密碼變更失敗');
+        }
 
         e.target.reset();
-        showStatus(statusEl, t('passwordSuccess', '密碼已成功更新。'), 'success');
-      } catch (error) {
-        console.error('變更密碼失敗:', error);
-        showStatus(statusEl, t('passwordError', '密碼變更失敗，請確認目前密碼是否正確。'), 'error');
+// 顯示成功訊息 (支援多國語言)
+      const successMsg = typeof t === 'function' ? t('passwordSuccess', '密碼已成功更新！') : '密碼已成功更新！';
+      showStatus(statusEl, successMsg, 'success');
+    } catch (error) {
+      console.error('變更密碼失敗:', error);
+      const errorMsg = typeof t === 'function' ? t('passwordError', '密碼變更失敗，請確認目前密碼是否正確。') : (error.message || '密碼變更失敗，請確認目前密碼是否正確。');
+      showStatus(statusEl, errorMsg, 'error');
+    }
+  });
+
+// 5. 刪除帳號 API 串接 (結合多國語言與 API 刪除邏輯)
+  async function handleDeleteAccount() {
+    const confirmMsg = typeof t === 'function' 
+      ? t('confirmDeleteAlert', '確定要刪除帳號嗎？此操作無法復原，所有賣場與資料都會一併移除。') 
+      : '確定要刪除帳號嗎？此操作無法復原，所有賣場與資料都會一併移除。';
+      
+    const confirmed = confirm(confirmMsg);
+    if (!confirmed) return;
+
+    try {
+      const response = await fetch('/api/seller/delete-account', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sellerId: sellerId })
+      });
+
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || (typeof t === 'function' ? t('deleteFailed', '刪除失敗') : '刪除失敗'));
       }
-    });
 
-    function handleDeleteAccount() {
-      const confirmed = confirm(t('confirmDeleteAlert', '確定要刪除帳號嗎？此操作無法復原，所有賣場與資料都會一併移除。'));
-      if (!confirmed) return;
-
-      alert(t('deletePendingAlert', '帳號刪除功能尚未串接後端。'));
+      const successMsg = typeof t === 'function' ? t('accountDeleted', '帳號已成功刪除！') : '帳號已成功刪除！';
+      alert(successMsg);
+      localStorage.clear();
+      window.location.href = 'goez-landing.html';
+    } catch (error) {
+      console.error('刪除帳號失敗:', error);
+      const errorMsg = typeof t === 'function' ? t('deleteError', '刪除帳號失敗，請稍後再試。') : (error.message || '刪除帳號失敗，請稍後再試。');
+      alert(errorMsg);
     }
+  }
 
-    renderProfile();
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const sellerId = urlParams.get('sellerId') || localStorage.getItem('sellerId') || 1;
-    const backHomeLink = document.getElementById('backHomeLink');
-    if (backHomeLink) {
-      backHomeLink.href = `goez-home.html?sellerId=${sellerId}`;
-    }
+  // 初始化頁面
+  loadProfile();
   </script>
 </body>
 
