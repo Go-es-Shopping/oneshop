@@ -4,7 +4,7 @@
         'zh-Hant': {
             pageTitleRegister: 'Goez Shop - 建立賣家帳號',
             signupTitle: '建立賣家帳號',
-            signupSubtitle: '填寫以下資料註冊店鋪，送出後帳號狀態為「審核中」，並寄送 Email 驗證信。（示範流程）',
+            signupSubtitle: '填寫以下資料註冊店鋪。',
             // 基本資料
             sectionBasic: '基本資料',
             sellerName: '真實姓名',
@@ -40,7 +40,7 @@
         en: {
             pageTitleRegister: 'Goez Shop - Create Seller Account',
             signupTitle: 'Create Seller Account',
-            signupSubtitle: 'Fill in the information below to register your store. Your account will be set to "Under Review" upon submission. (Demo Process)',
+            signupSubtitle: 'Fill in the information below to register your store.',
             // Basic Info
             sectionBasic: 'Basic Information',
             sellerName: 'Real Name',
@@ -76,7 +76,7 @@
         ja: {
             pageTitleRegister: 'Goez Shop - 出店アカウント登録',
             signupTitle: '出店アカウント登録',
-            signupSubtitle: '以下の情報を入力してショップを登録してください。申請後、アカウントは「審査中」となり確認メールが送信されます。（デモフロー）',
+            signupSubtitle: '以下の情報を入力してショップを登録してください。',
             // 基本情報
             sectionBasic: '基本情報',
             sellerName: '氏名（本名）',
