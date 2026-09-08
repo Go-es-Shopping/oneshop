@@ -64,6 +64,8 @@
       errRegisterFailed: '註冊失敗，請檢查輸入資料或稍後再試。',
       errNetwork: '連線伺服器失敗，請稍後再試。',
       verifyTitle: '註冊申請已送出',
+      verifyMailSent: '已寄送驗證信到：{email}',
+      verifyStatus: '帳號已建立申請。',
       verifyOk: '我知道了'
     },
     en: {
@@ -125,6 +127,8 @@
       errRegisterFailed: 'Registration failed. Please check your details or try again later.',
       errNetwork: 'Failed to connect to server. Please try again later.',
       verifyTitle: 'Application submitted',
+      verifyMailSent: 'A verification email has been sent to: {email}',
+      verifyStatus: 'Account creation application submitted.',
       verifyOk: 'Got it'
     },
     ja: {
@@ -186,6 +190,8 @@
       errRegisterFailed: '登録に失敗しました。入力内容を確認するか、後でもう一度お試しください。',
       errNetwork: 'サーバーへの接続に失敗しました。後でもう一度お試しください。',
       verifyTitle: '申請を受け付けました',
+      verifyMailSent: '確認メールを送信しました：{email}',
+      verifyStatus: 'アカウント作成の申請を受け付けました。',
       verifyOk: '了解'
     }
   });
