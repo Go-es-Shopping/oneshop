@@ -1,22 +1,5 @@
 // 模組對應資料表：Order, Orderdetail, Product, PageContent, PageVisit
 // 對應頁面：goez-shop-sales-analytics.html（銷售成效追蹤）
-//
-// 寫法比照 store.js：Sequelize、useMock() 掉回假資料、欄位直接用資料庫的
-// PascalCase（ProductID / SellerID ...），不轉成小寫底線。
-//
-// 目前沒有真的登入 session，SellerID 一律吃 query 參數 + 預設值 15，
-// 跟 store.js 的 /my-stores 用同一套（等真的登入系統做好，把這行換成
-// session 讀值即可，其他都不用動）。
-//
-// 【欄位真實值，來自 SCHEMA.md】
-//   Order.PaymentStatus（int）：0=未付款 1=已付款 2=退款中 3=已退款 4=付款失敗
-//   Order.OrderStatus（代碼）：0=處理中 1=待出貨 2=已出貨 3=已送達 4=完成取貨 5=已取消
-//   營收/訂單數一律用 PaymentStatus=1 且 OrderStatus<>5 判定為有效訂單。
-//
-// 【還要確認的假設】
-//   - PageContent.LanguageCode 預設代碼是不是 'zh-TW'（跟 store.js 用一樣的值）
-//   - Product 是否真的有 Category 欄位（store.js 裡看到 prodMain?.Category，
-//     如果有，「商品銷售佔比」可以改回真的分類佔比，見 buildProductShare 註解）
 
 const express = require('express')
 const { Op, literal } = require('sequelize')
@@ -27,8 +10,19 @@ const router = express.Router()
 
 const PAID_PAYMENT_STATUS = 1
 const CANCELLED_ORDER_STATUS = '5'
-const DEFAULT_LANGUAGE = 'zh-TW'
 const RANGE_DAYS = { '7d': 7, '30d': 30, '90d': 90 }
+
+/**
+ * 將前端傳來的語系統一轉成專案對應代碼
+ * 前端可能帶 'zh-Hant' / 'zh-TW' / 'en' / 'ja'
+ */
+function resolveLang(raw) {
+  if (!raw) return 'zh-TW'
+  const l = String(raw).toLowerCase()
+  if (l.startsWith('en')) return 'en'
+  if (l.startsWith('ja')) return 'ja'
+  return 'zh-TW' // zh-Hant / zh-TW 預設對齊資料庫的 zh-TW
+}
 
 async function useMock() {
   if (process.env.FORCE_MOCK === 'true') return true
@@ -72,29 +66,13 @@ function resolveRange(rangeRaw) {
 }
 
 /**
- * GET /api/analytics/overview?range=30d&sellerId=15
- *
- * Response（前端 goez-shop-sales-analytics.html 直接吃這個形狀）：
- * {
- *   "success": true,
- *   "range": "30d",
- *   "period": { "from","to","prevFrom","prevTo" },
- *   "kpi": {
- *     "revenue":       { "value": 539300, "delta": 0.124 },
- *     "orders":        { "value": 486,    "delta": 0.081 },
- *     "activeRate":    { "value": 0.75, "activeCount": 18, "totalCount": 24, "deltaPoint": 0.04 },
- *     "avgOrderValue": { "value": 1110,   "delta": -0.023 }
- *   },
- *   "topProducts":   [ { "productId","name","qtySold","revenue" } ],
- *   "lowPerformers": [ { "productId","name","views","qtySold","conversionRate","turnoverDays","tag" } ],
- *   "productShare":  [ { "productId","name","revenue","pct" } ],
- *   "quadrant":      [ { "productId","name","traffic","conversionRate","revenue" } ],
- *   "actions":       { "grow":[string], "optimize":[string], "cut":[string] }
- * }
+ * GET /api/analytics/overview?range=30d&sellerId=15&lang=zh-TW
  */
 router.get('/overview', async (req, res) => {
   const SellerID = Number(req.query.sellerId) || 15
   const period = resolveRange(req.query.range)
+  // 動態讀取前端帶過來的語系參數或 header
+  const lang = resolveLang(req.query.lang || req.headers['accept-language'])
   const Mock = await useMock()
 
   if (Mock) {
@@ -112,11 +90,11 @@ router.get('/overview', async (req, res) => {
     const { Order, Orderdetail, Product, PageContent, PageVisit } = db
 
     const [cur, prev] = await Promise.all([
-      buildProductRollup({ Order, Orderdetail, Product, PageContent, PageVisit }, SellerID, period.from, period.to),
-      buildProductRollup({ Order, Orderdetail, Product, PageContent, PageVisit }, SellerID, period.prevFrom, period.prevTo),
+      buildProductRollup({ Order, Orderdetail, Product, PageContent, PageVisit }, SellerID, period.from, period.to, lang),
+      buildProductRollup({ Order, Orderdetail, Product, PageContent, PageVisit }, SellerID, period.prevFrom, period.prevTo, lang),
     ])
 
-    const payload = buildOverview(period, cur.rows, prev.rows, cur.totals, prev.totals)
+    const payload = buildOverview(period, cur.rows, prev.rows, cur.totals, prev.totals, lang)
     return res.json({ success: true, ...payload })
   } catch (err) {
     console.error('[analytics/overview] 查詢失敗:', err)
@@ -124,15 +102,14 @@ router.get('/overview', async (req, res) => {
   }
 })
 
-// ── 撈某段期間、某賣家的商品彙總（手動查 + 手動彙總，比照 store.js 風格）──
-async function buildProductRollup({ Order, Orderdetail, Product, PageContent, PageVisit }, SellerID, from, to) {
-  // 使用 literal 阻止 Sequelize 自動轉型成帶時區的 ISO 字串
+// ── 撈某段期間、某賣家的商品彙總（加入 lang 參數查詢多語系品名）──
+async function buildProductRollup({ Order, Orderdetail, Product, PageContent, PageVisit }, SellerID, from, to, lang) {
   const dateRange = {
     [Op.gte]: literal(`'${from} 00:00:00'`),
     [Op.lte]: literal(`'${to} 23:59:59'`)
   }
 
-  // 1) 有效訂單（已付款、未取消）→ 賣場層級的營收/訂單數
+  // 1) 有效訂單
   const orders = await Order.findAll({
     where: {
       SellerID,
@@ -149,7 +126,7 @@ async function buildProductRollup({ Order, Orderdetail, Product, PageContent, Pa
     revenue: orders.reduce((s, o) => s + (Number(o.TotalAmount) || 0), 0),
   }
 
-  // 2) 訂單明細 → 依商品彙總銷量/營收（只查上面那批有效訂單的明細）
+  // 2) 訂單明細
   const details = orderIds.length
     ? await Orderdetail.findAll({ where: { OrderID: { [Op.in]: orderIds } }, raw: true })
     : []
@@ -162,7 +139,7 @@ async function buildProductRollup({ Order, Orderdetail, Product, PageContent, Pa
     salesByProduct.set(d.ProductID, cur)
   }
 
-  // 3) 商品瀏覽事件 → 依商品彙總曝光數（views）與去重工作階段數（visit_sessions）
+  // 3) 商品瀏覽事件
   const visits = await PageVisit.findAll({
     where: { SellerID, CreatedAt: dateRange },
     attributes: ['ProductID', 'SessionID'],
@@ -176,19 +153,21 @@ async function buildProductRollup({ Order, Orderdetail, Product, PageContent, Pa
     visitsByProduct.set(v.ProductID, cur)
   }
 
-  // 4) 商品顯示名稱：PageContent 依商品取「最近更新」一筆（同商品可能多頁/多語系都有內容）
+  // 4) 商品顯示名稱：吃外部傳入的 lang，查不到則 fallback 抓最近一筆
   const contents = await PageContent.findAll({
-    where: { LanguageCode: DEFAULT_LANGUAGE },
+    where: { LanguageCode: lang },
     attributes: ['ProductID', 'ProductName', 'UpdatedAt'],
     order: [['UpdatedAt', 'DESC']],
     raw: true,
   })
   const nameByProduct = new Map()
   for (const c of contents) {
-    if (!nameByProduct.has(c.ProductID)) nameByProduct.set(c.ProductID, c.ProductName) // 已按 UpdatedAt DESC 排序，第一筆就是最新
+    if (!nameByProduct.has(c.ProductID) && c.ProductName) {
+      nameByProduct.set(c.ProductID, c.ProductName)
+    }
   }
 
-  // 5) 商品主檔：決定「上架商品」清單（動銷率分母）
+  // 5) 商品主檔
   const products = await Product.findAll({ where: { SellerID }, raw: true })
 
   const rows = products.map((p) => {
@@ -196,7 +175,7 @@ async function buildProductRollup({ Order, Orderdetail, Product, PageContent, Pa
     const visit = visitsByProduct.get(p.ProductID) || { views: 0, sessions: new Set() }
     return {
       product_id: p.ProductID,
-      name: nameByProduct.get(p.ProductID) || String(p.ProductID),
+      name: nameByProduct.get(p.ProductID) || p.ProductName || String(p.ProductID),
       stock: Number(p.Stock) || 0,
       is_active: !!p.IsActive,
       qty_sold: sale.qty_sold,
@@ -210,11 +189,6 @@ async function buildProductRollup({ Order, Orderdetail, Product, PageContent, Pa
   return { rows, totals }
 }
 
-// ══════════════════════════════════════════════════════════════════
-// 以下是把彙總列組成前端要的形狀——跟資料庫怎麼查完全無關，之後不管
-// 資料庫怎麼換，這段都不用動。
-// ══════════════════════════════════════════════════════════════════
-
 function num(v) { return Number(v) || 0 }
 function round4(n) { return Math.round((Number(n) || 0) * 10000) / 10000 }
 
@@ -223,7 +197,6 @@ function growthRate(cur, prev) {
   return (cur - prev) / prev
 }
 
-// 動銷率：上架品項（IsActive）中，期間內 qty_sold > 0 的比例
 function activeRate(rows) {
   const listed = rows.filter((r) => r.is_active)
   const active = listed.filter((r) => num(r.qty_sold) > 0)
@@ -234,7 +207,7 @@ function activeRate(rows) {
   }
 }
 
-function buildOverview(period, curRows, prevRows, curTotals, prevTotals) {
+function buildOverview(period, curRows, prevRows, curTotals, prevTotals, lang) {
   const revenue = num(curTotals.revenue)
   const orders = num(curTotals.orders_count)
   const prevRevenue = num(prevTotals.revenue)
@@ -290,7 +263,7 @@ function buildOverview(period, curRows, prevRows, curTotals, prevTotals) {
     .sort((a, b) => rankTag(b.tag) - rankTag(a.tag) || a.qtySold - b.qtySold)
     .slice(0, 8)
 
-  const productShare = buildProductShare(curRows)
+  const productShare = buildProductShare(curRows, lang)
 
   const quadrant = curRows
     .map((r) => ({
@@ -311,15 +284,13 @@ function buildOverview(period, curRows, prevRows, curTotals, prevTotals) {
     lowPerformers,
     productShare,
     quadrant,
-    actions: buildActions({ topProducts, lowPerformers, productShare }),
+    actions: buildActions({ topProducts, lowPerformers, productShare }, lang),
   }
 }
 
-// 商品銷售佔比：依營收排序取前 TOP_N 名，其餘併成一筆「其他商品」
-// TODO：如果 Product 真的有 Category 欄位（store.js 裡看到 prodMain?.Category），
-// 可以改成依分類 group by，會比現在這個更貼近原本「分類銷售佔比」的設計。
 const PRODUCT_SHARE_TOP_N = 6
-function buildProductShare(rows) {
+function buildProductShare(rows, lang) {
+  const otherName = lang === 'en' ? 'Other Products' : (lang === 'ja' ? 'その他の商品' : '其他商品')
   const total = rows.reduce((s, r) => s + num(r.revenue), 0) || 1
   const sold = [...rows].filter((r) => num(r.revenue) > 0).sort((a, b) => num(b.revenue) - num(a.revenue))
   const head = sold.slice(0, PRODUCT_SHARE_TOP_N).map((r) => ({
@@ -330,7 +301,7 @@ function buildProductShare(rows) {
   }))
   const restRevenue = sold.slice(PRODUCT_SHARE_TOP_N).reduce((s, r) => s + num(r.revenue), 0)
   if (restRevenue > 0) {
-    head.push({ productId: null, name: '其他商品', revenue: Math.round(restRevenue), pct: round4(restRevenue / total) })
+    head.push({ productId: null, name: otherName, revenue: Math.round(restRevenue), pct: round4(restRevenue / total) })
   }
   return head
 }
@@ -346,22 +317,60 @@ function rankTag(tag) {
   return { 滯銷可下架: 3, 滯銷不需補貨: 3, 有流量沒轉換: 2, 觀察中: 1 }[tag] || 0
 }
 
-function buildActions({ topProducts, lowPerformers, productShare }) {
+/**
+ * 🌟 核心修正：依語系組合建議行動句子
+ */
+function buildActions({ topProducts, lowPerformers, productShare }, lang = 'zh-TW') {
   const grow = []
   const optimize = []
   const cut = []
 
-  const hot = topProducts.slice(0, 2).map((p) => p.name).filter(Boolean)
-  if (hot.length) grow.push(`追加庫存並投放廣告：${hot.join('、')}`)
-
-  for (const r of lowPerformers) {
-    if (r.tag === '有流量沒轉換') optimize.push(`${r.name}：有曝光但轉換 ${(r.conversionRate * 100).toFixed(1)}%，換主圖／訂價測試`)
-    else if (r.tag.startsWith('滯銷')) cut.push(`${r.name}：週轉${r.turnoverDays ? ` ${r.turnoverDays} 天` : '過長'}，停止補貨、清庫存後下架`)
+  // 1. 定義句子樣板與連接符號
+  const templates = {
+    'zh-TW': {
+      sep: '、',
+      actGrow: (names) => `追加庫存並投放廣告：${names}`,
+      actOptTraffic: (name, cvr) => `${name}：有曝光但轉換 ${cvr}%，換主圖／訂價測試`,
+      actCutStale: (name, days) => `${name}：週轉${days ? ` ${days} 天` : '過長'}，停止補貨、清庫存後下架`,
+      actOptConcentration: (name, pct) => `「${name}」佔營收 ${pct}%，過度集中單一商品，建議培養第二主力分散風險`
+    },
+    'en': {
+      sep: ', ',
+      actGrow: (names) => `Restock & Run Ads: ${names}`,
+      actOptTraffic: (name, cvr) => `${name}: Sufficient traffic but conversion rate is ${cvr}%; test hero images or pricing`,
+      actCutStale: (name, days) => `${name}: Turnover ${days ? `is ${days} days` : 'is too long'}; halt restocking and liquidate`,
+      actOptConcentration: (name, pct) => `"${name}" accounts for ${pct}% of revenue; high concentration, recommend developing a second driver`
+    },
+    'ja': {
+      sep: '、',
+      actGrow: (names) => `在庫追加・広告配信：${names}`,
+      actOptTraffic: (name, cvr) => `${name}：露出はあるが転換率 ${cvr}%；メイン画像・価格の見直しを推奨`,
+      actCutStale: (name, days) => `${name}：回転${days ? ` ${days} 日` : '日数が長期化'}；仕入れ停止・在庫処分後に掲載終了`,
+      actOptConcentration: (name, pct) => `「${name}」が売上の ${pct}% を占めています。リスク分散のため第二の主力育成を推奨`
+    }
   }
 
+  const t = templates[lang] || templates['zh-TW']
+
+  // 2. 加碼品項
+  const hot = topProducts.slice(0, 2).map((p) => p.name).filter(Boolean)
+  if (hot.length) {
+    grow.push(t.actGrow(hot.join(t.sep)))
+  }
+
+  // 3. 優化與淘汰
+  for (const r of lowPerformers) {
+    if (r.tag === '有流量沒轉換') {
+      optimize.push(t.actOptTraffic(r.name, (r.conversionRate * 100).toFixed(1)))
+    } else if (r.tag && r.tag.startsWith('滯銷')) {
+      cut.push(t.actCutStale(r.name, r.turnoverDays))
+    }
+  }
+
+  // 4. 集中度過高警告
   const top = productShare[0]
   if (top && top.productId && top.pct > 0.5) {
-    optimize.push(`「${top.name}」佔營收 ${(top.pct * 100).toFixed(0)}%，過度集中單一商品，建議培養第二主力分散風險`)
+    optimize.push(t.actOptConcentration(top.name, (top.pct * 100).toFixed(0)))
   }
 
   return { grow, optimize, cut }

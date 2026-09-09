@@ -413,7 +413,7 @@
     <span class="topbar__brand">Goez Shop</span>
   </header>
   <main class="page">
-    <a href="goez-home.html" id="backHomeLink" class="breadcrumb" data-i18n="backHome">‹ 返回會員首頁</a>
+    <a href="goez-home.html" id="backHomeLink" class="breadcrumb" data-i18n="backHome">‹ 返回首頁</a>
 
     <div class="page__header">
       <h1 class="page__title" data-i18n="pageTitle">會員資料</h1>
@@ -450,8 +450,9 @@
               data-i18n-placeholder="phonePlaceholder" />
           </div>
           <div class="form-field form-field--full">
-            <label for="fieldStoreName">商店名稱</label>
-            <input type="text" id="fieldStoreName" name="storeName" placeholder="請輸入商店名稱" />
+            <label for="fieldStoreName" data-i18n="storeNameLabel">商店名稱</label>
+            <input type="text" id="fieldStoreName" name="storeName" placeholder="請輸入商店名稱"
+              data-i18n-placeholder="storeNamePlaceholder" />
           </div>
           <div class="form-field form-field--full">
             <label for="fieldEmail">Email</label>
@@ -593,32 +594,32 @@
         });
 
 
-      const result = await response.json();
-      if (!response.ok || !result.success) {
-        throw new Error(result.message || (typeof t === 'function' ? t('updateFailed', '更新失敗') : '更新失敗'));
+        const result = await response.json();
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || (typeof t === 'function' ? t('updateFailed', '更新失敗') : '更新失敗'));
+        }
+
+        // 重新更新頂部名字與大頭貼
+        const name = payload.sellerName;
+        const summaryNameEl = document.getElementById('summaryName');
+        const avatarInitialEl = document.getElementById('avatarInitial');
+        if (summaryNameEl) summaryNameEl.textContent = name;
+        if (avatarInitialEl) avatarInitialEl.textContent = name.charAt(0).toUpperCase() || 'G';
+
+        // 同步記憶體資料
+        if (typeof memberProfile !== 'undefined') {
+          Object.assign(memberProfile, payload);
+          if (typeof renderProfile === 'function') renderProfile();
+        }
+
+        // 顯示成功訊息 (支援多國語言)
+        const successMsg = typeof t === 'function' ? t('profileSuccess', '個人資料已更新。') : '個人資料已更新。';
+        showStatus(statusEl, successMsg, 'success');
+      } catch (error) {
+        console.error('更新個人資料失敗:', error);
+        const errorMsg = typeof t === 'function' ? t('profileError', '更新失敗，請稍後再試。') : (error.message || '更新失敗，請稍後再試。');
+        showStatus(statusEl, errorMsg, 'error');
       }
-
-      // 重新更新頂部名字與大頭貼
-      const name = payload.sellerName;
-      const summaryNameEl = document.getElementById('summaryName');
-      const avatarInitialEl = document.getElementById('avatarInitial');
-      if (summaryNameEl) summaryNameEl.textContent = name;
-      if (avatarInitialEl) avatarInitialEl.textContent = name.charAt(0).toUpperCase() || 'G';
-
-      // 同步記憶體資料
-      if (typeof memberProfile !== 'undefined') {
-        Object.assign(memberProfile, payload);
-        if (typeof renderProfile === 'function') renderProfile();
-      }
-
-      // 顯示成功訊息 (支援多國語言)
-      const successMsg = typeof t === 'function' ? t('profileSuccess', '個人資料已更新。') : '個人資料已更新。';
-      showStatus(statusEl, successMsg, 'success');
-    } catch (error) {
-      console.error('更新個人資料失敗:', error);
-      const errorMsg = typeof t === 'function' ? t('profileError', '更新失敗，請稍後再試。') : (error.message || '更新失敗，請稍後再試。');
-      showStatus(statusEl, errorMsg, 'error');
-    }
     });
 
     // ── 4. 變更密碼 API 串接 ───────────────────
@@ -651,50 +652,50 @@
         }
 
         e.target.reset();
-// 顯示成功訊息 (支援多國語言)
-      const successMsg = typeof t === 'function' ? t('passwordSuccess', '密碼已成功更新！') : '密碼已成功更新！';
-      showStatus(statusEl, successMsg, 'success');
-    } catch (error) {
-      console.error('變更密碼失敗:', error);
-      const errorMsg = typeof t === 'function' ? t('passwordError', '密碼變更失敗，請確認目前密碼是否正確。') : (error.message || '密碼變更失敗，請確認目前密碼是否正確。');
-      showStatus(statusEl, errorMsg, 'error');
-    }
-  });
-
-// 5. 刪除帳號 API 串接 (結合多國語言與 API 刪除邏輯)
-  async function handleDeleteAccount() {
-    const confirmMsg = typeof t === 'function' 
-      ? t('confirmDeleteAlert', '確定要刪除帳號嗎？此操作無法復原，所有賣場與資料都會一併移除。') 
-      : '確定要刪除帳號嗎？此操作無法復原，所有賣場與資料都會一併移除。';
-      
-    const confirmed = confirm(confirmMsg);
-    if (!confirmed) return;
-
-    try {
-      const response = await fetch('/api/seller/delete-account', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sellerId: sellerId })
-      });
-
-      const result = await response.json();
-      if (!response.ok || !result.success) {
-        throw new Error(result.message || (typeof t === 'function' ? t('deleteFailed', '刪除失敗') : '刪除失敗'));
+        // 顯示成功訊息 (支援多國語言)
+        const successMsg = typeof t === 'function' ? t('passwordSuccess', '密碼已成功更新！') : '密碼已成功更新！';
+        showStatus(statusEl, successMsg, 'success');
+      } catch (error) {
+        console.error('變更密碼失敗:', error);
+        const errorMsg = typeof t === 'function' ? t('passwordError', '密碼變更失敗，請確認目前密碼是否正確。') : (error.message || '密碼變更失敗，請確認目前密碼是否正確。');
+        showStatus(statusEl, errorMsg, 'error');
       }
+    });
 
-      const successMsg = typeof t === 'function' ? t('accountDeleted', '帳號已成功刪除！') : '帳號已成功刪除！';
-      alert(successMsg);
-      localStorage.clear();
-      window.location.href = 'goez-landing.html';
-    } catch (error) {
-      console.error('刪除帳號失敗:', error);
-      const errorMsg = typeof t === 'function' ? t('deleteError', '刪除帳號失敗，請稍後再試。') : (error.message || '刪除帳號失敗，請稍後再試。');
-      alert(errorMsg);
+    // 5. 刪除帳號 API 串接 (結合多國語言與 API 刪除邏輯)
+    async function handleDeleteAccount() {
+      const confirmMsg = typeof t === 'function'
+        ? t('confirmDeleteAlert', '確定要刪除帳號嗎？此操作無法復原，所有賣場與資料都會一併移除。')
+        : '確定要刪除帳號嗎？此操作無法復原，所有賣場與資料都會一併移除。';
+
+      const confirmed = confirm(confirmMsg);
+      if (!confirmed) return;
+
+      try {
+        const response = await fetch('/api/seller/delete-account', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sellerId: sellerId })
+        });
+
+        const result = await response.json();
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || (typeof t === 'function' ? t('deleteFailed', '刪除失敗') : '刪除失敗'));
+        }
+
+        const successMsg = typeof t === 'function' ? t('accountDeleted', '帳號已成功刪除！') : '帳號已成功刪除！';
+        alert(successMsg);
+        localStorage.clear();
+        window.location.href = 'goez-landing.html';
+      } catch (error) {
+        console.error('刪除帳號失敗:', error);
+        const errorMsg = typeof t === 'function' ? t('deleteError', '刪除帳號失敗，請稍後再試。') : (error.message || '刪除帳號失敗，請稍後再試。');
+        alert(errorMsg);
+      }
     }
-  }
 
-  // 初始化頁面
-  loadProfile();
+    // 初始化頁面
+    loadProfile();
   </script>
 </body>
 
