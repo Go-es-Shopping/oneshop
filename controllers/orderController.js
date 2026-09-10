@@ -10,34 +10,63 @@ const ORDER_STATUS = {
   DELIVERED: 3,      // 已送達
   CANCELLED: 9       // 已取消
 };
-
 const orderController = {
-  // 二、建立訂單 (POST /api/orders)
+// 二、建立訂單 (POST /api/orders)
   createOrder: async (req, res) => {
     const t = await sequelize.transaction();
     try {
+      const body = req.body || {};
       const { 
-        PageID, // 接收前端傳來的 PageID
         BuyerName, BuyerPhone, BuyerEmail, BuyerAddress, 
         items, UTM_Source, SessionID,
         ShippingMethod, StoreInfo,
         InvoiceType, CarrierCode,
         PaymentMethod, // 💡 1. 記得接收前端傳來的付款方式
         CouponID, CouponCode, DiscountValue // 💡 接收前端傳過來的優惠券欄位
-      } = req.body;
+      } = body;
+
+      // 💡 支援大小寫相容接收 PageID / pageId
+      let PageID = body.PageID !== undefined ? body.PageID : body.pageId;
 
       if (!items || items.length === 0) throw new Error("購物車不可為空");
-      if (!PageID) throw new Error("缺少賣場頁面編號 (PageID)");
+      // ❌ 拿掉原本會因為 PageID 為 null 而直接報錯中斷的這行：
+      // if (!PageID) throw new Error("缺少賣場頁面編號 (PageID)");
 
+      let resolvedSellerID = null;
       
       // ==========================================================
       // 💡 關鍵修正：透過 PageID 自動去資料庫查詢對應的 SellerID
       // ==========================================================
-      const storePage = await StorePage.findByPk(PageID, { transaction: t });
-      if (!storePage) {
-        throw new Error(`找不到對應的賣場頁面 (PageID: ${PageID})`);
+      if (PageID && StorePage) {
+        // 💡 智慧相容：同時支援數字 ID 與專屬網址字串 (PageUrl)
+        let storePage = await StorePage.findByPk(PageID, { transaction: t });
+        if (!storePage) {
+          storePage = await StorePage.findOne({
+            where: { PageUrl: PageID },
+            transaction: t
+          });
+        }
+
+        if (storePage) {
+          resolvedSellerID = storePage.SellerID; // 取得該賣場真正的擁有者 ID！
+        }
       }
-      const resolvedSellerID = storePage.SellerID; // 取得該賣場真正的擁有者 ID！
+
+      // 💡 終極防線：如果前端傳來的 PageID 是 null，直接從購物車第一個商品反查所屬的 SellerID！
+      if (!resolvedSellerID && items.length > 0 && Product) {
+        const firstProductID = items[0].ProductID !== undefined ? items[0].ProductID : items[0].productId;
+        if (firstProductID) {
+          const firstProduct = await Product.findByPk(firstProductID, { transaction: t });
+          if (firstProduct && firstProduct.SellerID) {
+            resolvedSellerID = firstProduct.SellerID;
+          }
+        }
+      }
+
+      // 如果到最後還是找不到賣家，才報錯
+      if (!resolvedSellerID) {
+        throw new Error(`缺少賣場頁面編號 (PageID) 且無法從商品反查賣家`);
+      }
 
       let subTotal = 0;
       const details = [];
@@ -126,10 +155,29 @@ const orderController = {
       // ==========================================
       // 💡：在 Commit 交易之前，先把 storeSlug 查好！
       // ==========================================
-      // 💡 嘗試查詢該賣場是否有設定專屬網址 (Slug)
       let storeSlug = null;
-      if (PageID && StorePageModel) {
-        const foundStore = await StorePageModel.findByPk(PageID, { transaction: t });
+      if (StorePage) {
+        let foundStore = null;
+        
+        // 1. 如果有 PageID，優先用 PageID / PageUrl 找
+        if (PageID) {
+          foundStore = await StorePage.findByPk(PageID, { transaction: t });
+          if (!foundStore) {
+            foundStore = await StorePage.findOne({
+              where: { PageUrl: PageID },
+              transaction: t
+            });
+          }
+        }
+        
+        // 2. 如果還是找不到（例如一開始 PageID 是 null），改用前面已解析出的 resolvedSellerID 去找該賣場
+        if (!foundStore && resolvedSellerID) {
+          foundStore = await StorePage.findOne({
+            where: { SellerID: resolvedSellerID },
+            transaction: t
+          });
+        }
+
         if (foundStore && foundStore.PageUrl) {
           storeSlug = foundStore.PageUrl;
         }

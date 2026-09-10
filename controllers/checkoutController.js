@@ -202,12 +202,38 @@ exports.checkout = async (req, res) => {
 
     if (!rawItems || rawItems.length === 0) throw new Error("購物車項目不可為空");
 
-    // 如果前端沒有傳 SellerID，但有傳 PageID，可以透過 StorePage 自動查出 SellerID
+    // 💡 智慧解析 SellerID：支援直接帶 SellerID、用 PageID(主鍵) 查、或用 PageUrl(專屬網址字串) 查
     if (!SellerID && PageID && StorePageModel) {
-      const storePage = await StorePageModel.findByPk(PageID, { transaction: t });
+      // 1. 先試著用主鍵 (findByPk) 查
+      let storePage = await StorePageModel.findByPk(PageID, { transaction: t });
+      
+      // 2. 如果用主鍵找不到，改用專屬網址欄位 (PageUrl) 查（對應像 retro 或 shop-xxx 這種字串）
+      if (!storePage) {
+        storePage = await StorePageModel.findOne({
+          where: { PageUrl: PageID },
+          transaction: t
+        });
+      }
+
       if (storePage) {
         SellerID = storePage.SellerID;
       }
+    }
+
+    // 💡 最後防線：如果還是找不到 SellerID，從購物車的第一項商品直接反查所屬的 SellerID！
+    if (!SellerID && rawItems.length > 0 && ProductModel) {
+      const firstItemProductID = rawItems[0].ProductID !== undefined ? rawItems[0].ProductID : rawItems[0].productId;
+      if (firstItemProductID) {
+        const firstProduct = await ProductModel.findByPk(firstItemProductID, { transaction: t });
+        if (firstProduct && firstProduct.SellerID) {
+          SellerID = firstProduct.SellerID;
+        }
+      }
+    }
+
+    // 如果還是找不到，直接拋出錯誤，避免帶入不存在的 ID=1 造成資料庫崩潰
+    if (!SellerID) {
+      throw new Error("無法辨識該筆訂單的所屬賣家 (SellerID 遺失)");
     }
 
     let subTotal = 0;
@@ -296,12 +322,18 @@ exports.checkout = async (req, res) => {
     // ==========================================
     // 💡 嘗試查詢該賣場是否有設定專屬網址 (Slug)
     let storeSlug = null;
-    if (PageID && StorePageModel) {
-      const foundStore = await StorePageModel.findByPk(PageID, { transaction: t });
-      if (foundStore && foundStore.PageUrl) {
-        storeSlug = foundStore.PageUrl;
-      }
+  if (PageID && StorePageModel) {
+    let foundStore = await StorePageModel.findByPk(PageID, { transaction: t });
+    if (!foundStore) {
+      foundStore = await StorePageModel.findOne({
+        where: { PageUrl: PageID },
+        transaction: t
+      });
     }
+    if (foundStore && foundStore.PageUrl) {
+      storeSlug = foundStore.PageUrl;
+    }
+  }
 
     // --- ✅ 提交所有變更 ---
     await t.commit();
