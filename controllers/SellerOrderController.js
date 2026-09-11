@@ -109,7 +109,40 @@ const SellerOrderController = {
       console.error('更新訂單狀態錯誤:', error);
       res.status(500).json({ Success: false, Error: error.message });
     }
+  },
+  // 5. 刪除指定訂單（完整級聯刪除：明細、付款、物流）
+  deleteOrder: async (req, res) => {
+    try {
+      const orderId = req.params.OrderID;
+      
+      const order = await Order.findByPk(orderId);
+      if (!order) {
+        return res.status(404).json({ Success: false, Error: '找不到該訂單' });
+      }
+
+      // 1. 刪除訂單明細
+      await OrderDetail.destroy({ where: { OrderID: orderId } });
+
+      // 2. 刪除付款記錄 (Payment)
+      if (Payment) {
+        await Payment.destroy({ where: { OrderID: orderId } });
+      }
+
+      // 3. 刪除物流記錄 (Shipment)
+      if (Shipment) {
+        await Shipment.destroy({ where: { OrderID: orderId } });
+      }
+
+      // 4. 最後刪除主訂單
+      await order.destroy();
+
+      return res.json({ Success: true, Message: '訂單與相關記錄刪除成功' });
+    } catch (error) {
+      console.error('刪除訂單發生嚴重錯誤:', error);
+      return res.status(500).json({ Success: false, Error: error.message });
+    }
   }
 };
+
 
 module.exports = SellerOrderController;

@@ -21,7 +21,6 @@
             discountTypeSelectDefault: '請選擇種類',
             discountTypeFixed: '固定',
             discountTypePercentage: '百分比',
-            btnAddRule: '新增規則',
             // Dynamic Rules
             ruleMoveTo: '移動到',
             ruleDragTitle: '拖曳排序',
@@ -70,7 +69,6 @@
             discountTypeSelectDefault: 'Select category',
             discountTypeFixed: 'Fixed Amount',
             discountTypePercentage: 'Percentage',
-            btnAddRule: 'Add Rule',
             // Dynamic Rules
             ruleMoveTo: 'Move to',
             ruleDragTitle: 'Drag to reorder',
@@ -119,7 +117,6 @@
             discountTypeSelectDefault: '種別を選択してください',
             discountTypeFixed: '定額割引',
             discountTypePercentage: '定率（パーセント）割引',
-            btnAddRule: '条件ルールを追加',
             // Dynamic Rules
             ruleMoveTo: '移動先',
             ruleDragTitle: 'ドラッグして並べ替え',

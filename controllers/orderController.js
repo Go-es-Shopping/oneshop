@@ -1,5 +1,5 @@
 // 💡 記得確定有把 StorePage 從 ../models 引入進來
-const { Order, Orderdetail, Product, Shipment, Payment, StorePage, sequelize } = require('../models');
+const { Order, Orderdetail, Product, Shipment, Payment, StorePage, PageContent, sequelize } = require('../models');
 const { createAesEncrypt, createSha256Encrypt } = require('../utils/newebpay'); // 請依你的檔案實際路徑調整
 
 // 一、定義狀態常數 (組長任務：核心共享基礎)
@@ -292,11 +292,17 @@ getOrderDetail: async (req, res) => {
       include: [
         {
           model: Orderdetail,
-          as: 'Items', // 👈 Order 與 Orderdetail 的別名
+          as: 'Items', // 👈 訂單明細別名
           include: [
             { 
               model: Product,
-              as: 'Product' // 👈 核心修正：補上 Product 的別名以解決報錯！
+              as: 'Product', // 👈 商品別名
+              include: [
+                {
+                  model: PageContent, // 👈 關鍵：把多國語系內容（內含 ProductName）包進來！
+                  required: false
+                }
+              ]
             }
           ]
         },
@@ -364,10 +370,25 @@ getOrderDetail: async (req, res) => {
         throw new Error("已取消或已送達之訂單不可更改狀態");
       }
 
-      // 💡 修正處：改為「若有填寫才更新單號；若沒填寫則自動給予預設值或略過」，避免前端沒欄位輸入時直接報錯崩潰
-      if (Number(OrderStatus) === ORDER_STATUS.SHIPPED) {
+      // 💡 修正處：根據不同的訂單狀態，同步更新物流單號與物流狀態
+      const orderStatusNum = Number(OrderStatus);
+
+      if (orderStatusNum === ORDER_STATUS.SHIPPED) { // 2 = 已出貨
         const finalTrackingNumber = TrackingNumber ? TrackingNumber : '無單號';
-        await Shipment.update({ TrackingNumber: finalTrackingNumber }, { where: { OrderID: orderID }, transaction: t });
+        await Shipment.update(
+          { 
+            TrackingNumber: finalTrackingNumber,
+            ShipmentStatus: 1 // 1 代表已出貨/配送中
+          }, 
+          { where: { OrderID: orderID }, transaction: t }
+        );
+      } else if (orderStatusNum === ORDER_STATUS.DELIVERED) { // 3 = 已送達
+        await Shipment.update(
+          { 
+            ShipmentStatus: 3 // 3 代表已送達（請依你的資料庫定義確認已送達的數字代號）
+          }, 
+          { where: { OrderID: orderID }, transaction: t }
+        );
       }
 
       // 任務：關鍵例外處理 - 自動庫存回補並自動恢復上架 (狀態改為 9:已取消)
