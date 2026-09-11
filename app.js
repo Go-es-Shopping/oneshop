@@ -44,48 +44,44 @@ console.log('目前 FORCE_MOCK 的值是:', process.env.FORCE_MOCK);
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// --- 🚀 新增：Multer 圖片上傳設定 ---
-// 確保目錄存在：public/images/logos
-const uploadDir = path.join(__dirname, 'public/images/logos');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
-// 📦 【Backend Lead 擴充】：確保商品圖片目錄存在
-const productUploadDir = path.join(__dirname, 'public/images/products');
-if (!fs.existsSync(productUploadDir)) {
-    fs.mkdirSync(productUploadDir, { recursive: true });
-}
+const cloudinary = require('cloudinary').v2;
+const streamifier = require('streamifier');
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'public/images/logos'); // 存到你指定的資料夾
-    },
-    filename: (req, file, cb) => {
-        // 檔名：logo-時間戳記-隨機數.副檔名
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, 'logo-' + uniqueSuffix + path.extname(file.originalname));
-    }
+// --- ☁️ Cloudinary 設定 ---
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
+// --- 🚀 改用記憶體暫存 (memoryStorage)，不再寫入本機硬碟 ---
+const storage = multer.memoryStorage();
 const upload = multer({ 
     storage: storage,
     limits: { fileSize: 5 * 1024 * 1024 } // 限制 5MB
 });
-// 📦 【Backend Lead 擴充】：商品圖片的獨立儲存引擎
-const productStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'public/images/products'); // 丟到專屬的 products 資料夾
-    },
-    filename: (req, file, cb) => {
-        // 檔名：product-時間戳記-隨機數.副檔名
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, 'product-' + uniqueSuffix + path.extname(file.originalname));
-    }
-});
+
 const uploadProduct = multer({ 
-    storage: productStorage,
-    limits: { fileSize: 5 * 1024 * 1024 } // 限制 5MB，對電商圖片來說非常夠用
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024 } // 限制 5MB
 });
+
+// 串流上傳到 Cloudinary 的輔助函式
+const streamUpload = (req, folderName) => {
+    return new Promise((resolve, reject) => {
+        let stream = cloudinary.uploader.upload_stream(
+            { folder: folderName },
+            (error, result) => {
+                if (result) {
+                    resolve(result);
+                } else {
+                    reject(error);
+                }
+            }
+        );
+        streamifier.createReadStream(req.file.buffer).pipe(stream);
+    });
+};
 
 
 // 1. 路由引入
@@ -141,32 +137,32 @@ app.post('/store/:slug', (req, res) => {
 });
 
 
-// --- 🚀 新增：商標圖片上傳 API 路由 ---
-app.post('/api/upload-logo', upload.single('logo'), (req, res) => {
+// --- 🚀 商標圖片直接上傳至 Cloudinary ---
+app.post('/api/upload-logo', upload.single('logo'), async (req, res) => {
     try {
         if (!req.file) return res.status(400).json({ success: false, message: '未選擇檔案' });
-        // 生成給前端用的網址 (不含 public)
-        const logoUrl = `/images/logos/${req.file.filename}`;
-        res.json({ success: true, url: logoUrl });
+        
+        const result = await streamUpload(req, 'logos');
+        console.log(`[System] Logo 成功上傳至 Cloudinary: ${result.secure_url}`);
+        
+        res.json({ success: true, url: result.secure_url });
     } catch (err) {
-        console.error("上傳失敗:", err);
+        console.error("Cloudinary Logo 上傳失敗:", err);
         res.status(500).json({ success: false, message: '伺服器上傳錯誤' });
     }
 });
 
-//  【商品圖片上傳 API 路由擴充】
-// 這裡前端上傳時的 input 欄位 name 要叫做 'product_file'
-app.post('/api/upload-product-img', uploadProduct.single('product_file'), (req, res) => {
+// --- 🚀 商品圖片直接上傳至 Cloudinary ---
+app.post('/api/upload-product-img', uploadProduct.single('product_file'), async (req, res) => {
     try {
         if (!req.file) return res.status(400).json({ success: false, message: '未選擇檔案' });
         
-        // 生成給前端用的虛擬網址 (上市平台標準：隱藏後端真實路徑 public)
-        const productImgUrl = `/images/products/${req.file.filename}`;
+        const result = await streamUpload(req, 'products');
+        console.log(`[System] 商品圖片成功上傳至 Cloudinary: ${result.secure_url}`);
         
-        console.log(`[System] 商品圖片背景上傳成功，暫存路徑為: ${productImgUrl}`);
-        return res.json({ success: true, url: productImgUrl });
+        return res.json({ success: true, url: result.secure_url });
     } catch (err) {
-        console.error("商品圖片上傳失敗:", err);
+        console.error("Cloudinary 商品圖片上傳失敗:", err);
         return res.status(500).json({ success: false, message: '伺服器上傳錯誤' });
     }
 });

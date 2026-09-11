@@ -242,12 +242,14 @@ async function createProduct(req, res) {
     }
 
     // 2. 正式資料庫環境：使用資料庫交易 (Transaction)
+    // 💡 既然圖片已經在獨立的 /api/upload-product-img 成功上傳並拿到雲端網址，這裡直接接收 body.ProductImg 即可
+  const uploadedImgUrl = body.ProductImg || "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=300";
     const result = await sequelize.transaction(async (t) => {
       
       // 【第一張表】新增商品主資訊到 dbo.Product
       const createdProduct = await Product.create({
         SellerID: finalSellerID,
-        ProductImg: body.ProductImg || "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=300", 
+        ProductImg: uploadedImgUrl, // 👈 改成使用上面的變數 
         Price: dec2(body.Price || 0),
         Stock: body.Stock !== undefined ? Number(body.Stock) : 0,
         IsActive: toBoolBit(body.IsActive ?? 1),
@@ -262,6 +264,9 @@ async function createProduct(req, res) {
         ProductID: createdProduct.ProductID, 
         ProductName: body.ProductName || '未命名商品',
         ProductDescription: body.ProductDescription || '',
+        // 💡 補上這兩行，讓新商品也能帶有對應的店名與簡介，資料庫就不會是 NULL 了！
+        PageTitle: mainContent?.PageTitle || '',
+        PageDescription: mainContent?.PageDescription || '',
         CTA_Text: '立即購買', 
         UpdatedAt: Sequelize.literal('GETDATE()')
       }, { transaction: t });
@@ -322,9 +327,14 @@ async function updateProduct(req, res) {
       return res.json(data)
     }
     const row = await Product.findByPk(ProductID)
-    if (!row) return res.status(404).json({ error: 'Not Found' })
-    if (body.ProductImg !== undefined) row.ProductImg = body.ProductImg
-    if (body.Price !== undefined) row.Price = dec2(body.Price)
+  if (!row) return res.status(404).json({ error: 'Not Found' })
+
+  // 💡 直接接收前端傳來的 Cloudinary 圖片網址
+  if (body.ProductImg !== undefined) {
+    row.ProductImg = body.ProductImg;
+  }
+
+  if (body.Price !== undefined) row.Price = dec2(body.Price)
     if (body.Stock !== undefined) row.Stock = Number(body.Stock)
     if (body.IsActive !== undefined) row.IsActive = toBoolBit(body.IsActive)
     row.UpdatedAt = new Date()
