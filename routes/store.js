@@ -645,7 +645,6 @@ await PageContent.update(
     where: { 
       PageID: PageID,
       ProductID: null,         // 確保只修改商店主頁，不改到商品
-      LanguageCode: Lang       // 確保只修改當前編輯的語系
     } 
   }
 );

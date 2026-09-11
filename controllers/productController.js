@@ -264,6 +264,9 @@ async function createProduct(req, res) {
         ProductID: createdProduct.ProductID, 
         ProductName: body.ProductName || '未命名商品',
         ProductDescription: body.ProductDescription || '',
+        // 💡 補上這兩行，讓新商品也能帶有對應的店名與簡介，資料庫就不會是 NULL 了！
+        PageTitle: mainContent?.PageTitle || '',
+        PageDescription: mainContent?.PageDescription || '',
         CTA_Text: '立即購買', 
         UpdatedAt: Sequelize.literal('GETDATE()')
       }, { transaction: t });
