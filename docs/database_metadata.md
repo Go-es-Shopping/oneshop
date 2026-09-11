@@ -100,7 +100,7 @@
 | BuyerPhone  | nvarchar(20)     | 否        | 購買人電話（E.164 標準，例：+886912345678），禁止括號、空格、橫線，方便跨國際訊息相容                          |
 | BuyerEmail  | nvarchar(255)    | 否        | 購買人 Email                                                          |
 | BuyerAddress| nvarchar(300)    | 否        | 完整收件地址                                                         |
-| OrderStatus | nvarchar(30)     | 否        | 訂單處理狀態（0=處理中；1=待出貨；2=已出貨；3=已送達；4=完成取貨；5=已取消） |
+| OrderStatus    | nvarchar(30)    | 否        | 訂單處理狀態（0=待付款；1=備貨中；2=已出貨；3=已送達；9=已取消） |
 | TotalAmount | decimal(12,2)    | 否        | 訂單總金額（含優惠折扣與運費）                                       |
 | PaymentStatus| int             | 否        | 支付狀態（0=未付款；1=已付款；2=退款中；3=已退款；4=失敗）           |
 | UTM_Source | nvarchar(100)    | 是        | 廣告來源標籤（由 PageVisit 自動帶入，用於廣告成效分析）                                       |
@@ -129,7 +129,7 @@
 | OrderID       | int             | 否        | 所屬訂單                                                     |
 | ShippingMethod| nvarchar(50)    | 否        | 物流方式（例：7-11、宅配等）                                 |
 | TrackingNumber| nvarchar(100)   | 是        | 物流單號（便於買家查詢）                                     |
-| ShipmentStatus| nvarchar(30)    | 否        | 物流狀態（0=處理中；1=待出貨；2=已出貨；3=已送達；4=完成取貨；5=已取消） |
+| ShipmentStatus | nvarchar(30)    | 否        | 物流狀態（0=準備中；1=已出貨；2=配送中；3=已送達；4=退貨中） |
 | ShippedAt     | datetime        | 否        | 賣家按下出貨的時間                                           |
 
 ## Orderdetail

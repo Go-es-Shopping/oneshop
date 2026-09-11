@@ -193,7 +193,15 @@
           .then(function (data) {
             console.log('✅ 驗證成功，正在跳轉至詳情頁...');
             // 3. 🎯 帶著 orderId 與 phone 參數跳轉至訂單詳情頁
-            window.location.href = 'goez-buyerOrder-detail.html?orderId=' + encodeURIComponent(idValue) + '&phone=' + encodeURIComponent(phoneValue);
+            var currentParams = new URLSearchParams(window.location.search);
+            var fromUrl = currentParams.get('from');
+
+            var detailUrl = 'goez-buyerOrder-detail.html?orderId=' + encodeURIComponent(idValue) + '&phone=' + encodeURIComponent(phoneValue);
+            if (fromUrl) {
+                detailUrl += '&from=' + encodeURIComponent(fromUrl);
+            }
+
+            window.location.href = detailUrl;
           })
           .catch(function (err) {
             console.warn('❌ 驗證失敗，停留在本頁:', err.message);

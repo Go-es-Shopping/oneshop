@@ -247,7 +247,7 @@
         resultOrderId.textContent = '#' + (order.OrderID || order.id) + ' · ' + formatDateTime(order.CreatedAt);
         resultBadges.innerHTML = getOrderStatusBadge(os) + ' ' + getPaymentStatusBadge(ps);
 
-        var discount = Number(order.Discount || order.DiscountAmount || 0);
+        var discount = Number(order.DiscountValue || order.Discount || order.DiscountAmount || 0);
         var couponCode = order.CouponCode || order.Coupon || '';
         var shippingFee = Number(order.ShippingFee || 0);
         var totalAmount = Number(order.TotalAmount || 0);
@@ -291,7 +291,16 @@
           var qty = Number(item.Quantity || item.quantity || 1);
           var price = Number(item.UnitPrice || item.unitPrice || (item.Product ? item.Product.Price : 0));
           var sub = qty * price;
-          var name = item.ProductName || (item.Product ? item.Product.ProductName : '商品');
+          var productObj = item.Product || {};
+          // 因為 PageContent 是 hasMany，回傳會是陣列，我們抓第一筆
+          var pageContents = productObj.PageContent || productObj.PageContents || [];
+          var firstContent = Array.isArray(pageContents) ? pageContents[0] : pageContents;
+
+          var name = item.ProductName || 
+                     productObj.ProductName || 
+                     (firstContent && firstContent.ProductName) || 
+                     (item.PageContent && item.PageContent.ProductName) ||
+                     '商品';
           var img = (item.ProductImg || (item.Product && item.Product.ProductImg))
             ? '<img src="' + (item.ProductImg || item.Product.ProductImg) + '" alt="" class="w-14 h-14 rounded-lg object-cover bg-slate-100 flex-shrink-0" onerror="this.style.display=\'none\'"/>'
             : '<div class="w-14 h-14 rounded-lg bg-slate-200 flex-shrink-0 flex items-center justify-center text-xs text-slate-500">商品</div>';
@@ -383,13 +392,39 @@
         });
       }
 
+      // ==========================================
+      // ✨ 讓返回查詢頁的按鈕，自動帶上原本的 from 參數接力回查詢頁
+      // ==========================================
       var backBtn = document.getElementById('back-to-lookup');
       if (backBtn) {
         backBtn.addEventListener('click', function (e) {
           e.preventDefault();
-          window.location.href = 'goez-buyerOrder.html';
+          
+          // 1. 抓取當前詳情頁網址帶有的 from 參數
+          var currentParams = new URLSearchParams(window.location.search);
+          var storeFrom = currentParams.get('from');
+
+          // 2. 組合返回查詢頁的網址
+          var lookupUrl = 'goez-buyerOrder.html';
+          if (storeFrom) {
+            lookupUrl += '?from=' + encodeURIComponent(storeFrom);
+          }
+
+          // 3. 執行跳轉
+          window.location.href = lookupUrl;
         });
       }
+
+      detailBody.addEventListener('click', function (e) {
+        var copyBtn = e.target.closest('.copy-tracking');
+        if (!copyBtn) return;
+        var text = copyBtn.getAttribute('data-tracking');
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function () {
+            alert(t('copiedMsg', '物流單號已複製！'));
+          });
+        }
+      });
 
       detailBody.addEventListener('click', function (e) {
         var copyBtn = e.target.closest('.copy-tracking');
