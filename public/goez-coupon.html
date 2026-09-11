@@ -150,19 +150,25 @@
                         </div>
                     </div>
 
-                    <div id="discount-rules-wrapper" class="hidden mt-2 pt-4 border-t border-slate-100">
-                        <div id="discount-rules-list" class="flex flex-col gap-4"></div>
-
-                        <button type="button" id="add-rule-btn"
-                            class="mt-4 inline-flex items-center gap-2 px-4 py-2 border border-slate-300 shadow-sm text-sm font-medium rounded-lg text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-200 transition-colors">
-                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 4v16m8-8H4"></path>
-                            </svg>
-                            <span data-i18n="btnAddRule">新增規則</span>
-                        </button>
+                    <!-- 單一規則輸入區（對應資料庫欄位 MinSpend 與 DiscountValue） -->
+                    <div id="discount-rules-wrapper" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4 mt-2 pt-4 border-t border-slate-100">
+                    <div>
+                        <div class="flex items-center gap-1 mb-2">
+                            <label for="min-spend" class="block text-sm font-medium text-slate-700" data-i18n="ruleSpendMinLabel">金額滿X元</label>
+                            <span class="text-red-500 text-xs font-bold">*</span>
+                        </div>
+                        <input type="number" id="min-spend" min="0" placeholder="0" required
+                            class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-400 focus:border-slate-400 transition-colors placeholder:text-slate-300">
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-1 mb-2">
+                                <label for="discount-value" id="discount-value-label" class="block text-sm font-medium text-slate-700">折扣金額</label>
+                                <span class="text-red-500 text-xs font-bold">*</span>
+                            </div>
+                            <input type="number" id="discount-value" min="0" step="0.01" placeholder="100" required
+                                class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-400 focus:border-slate-400 transition-colors placeholder:text-slate-300">
+                        </div>
                     </div>
-                </div>
             </section>
 
             <!-- 區塊 3：使用限制 -->
@@ -276,114 +282,24 @@
         document.addEventListener('DOMContentLoaded', () => {
             const discountTypeSelect = document.getElementById('discount-type');
             const rulesWrapper = document.getElementById('discount-rules-wrapper');
-            const rulesList = document.getElementById('discount-rules-list');
-            const addRuleBtn = document.getElementById('add-rule-btn');
+            const discountValueLabel = document.getElementById('discount-value-label');
+            const discountValueInput = document.getElementById('discount-value');
 
-            const getRightColumnInfo = (type) => {
-                if (type === 'percentage') {
-                    return {
-                        label: t('rulePercentLabel', '折扣百分比 例：10%請寫0.1'),
-                        placeholder: '0.1'
-                    };
-                } else {
-                    return {
-                        label: t('ruleFixedLabel', '折扣金額 100元請填100'),
-                        placeholder: '100'  // 👈 改成 100，跟標題的範例完全對齊！
-                    };
-                }
-            };
-
-            const updateRuleIndices = () => {
-                const ruleItems = rulesList.querySelectorAll('.rule-item');
-                ruleItems.forEach((item, index) => {
-                    const indexLabel = item.querySelector('.rule-index');
-                    if (indexLabel) {
-                        indexLabel.textContent = `#${index + 1}`;
-                    }
-                });
-            };
-
-            // 🌟 步驟 1：建立規則項目（已刪除多餘的紅星 *）
-            const createRuleItem = () => {
-                const currentType = discountTypeSelect.value;
-                const rightInfo = getRightColumnInfo(currentType);
-
-                const ruleDiv = document.createElement('div');
-                ruleDiv.className = 'rule-item border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm';
-
-                ruleDiv.innerHTML = `
-                    <div class="bg-slate-50 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between">
-                        <div class="flex items-center gap-1">
-                            <button type="button" class="text-slate-400 hover:text-slate-600 p-1 cursor-move" title="${t('ruleDragTitle', '拖曳排序')}">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path></svg>
-                            </button>
-                            <div class="flex items-center text-sm text-slate-600 border-l border-slate-200 pl-3 ml-2">
-                                <span class="mr-1 hidden sm:inline">${t('ruleMoveTo', '移動到')}</span>
-                                <select class="text-sm border-none bg-transparent focus:ring-0 cursor-pointer pr-6 py-0.5 text-slate-700 font-medium">
-                                    <option>1</option>
-                                </select>
-                            </div>
-                            <button type="button" class="delete-rule-btn text-slate-400 hover:text-red-500 border-l border-slate-200 pl-4 ml-2 py-1 transition-colors" title="${t('ruleDeleteTitle', '刪除此規則')}">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                            </button>
-                        </div>
-                        <div class="rule-index text-sm font-bold text-logo">
-                            #1
-                        </div>
-                    </div>
-                    
-                    <div class="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-slate-200">
-                        <div class="flex-1 p-4 bg-white hover:bg-slate-50 focus-within:bg-white focus-within:ring-1 focus-within:ring-inset focus-within:ring-slate-400 transition-all">
-                            <div class="flex justify-between items-center mb-1.5">
-                                <label class="text-xs font-medium text-slate-500">${t('ruleSpendMinLabel', '金額滿X元')}</label>
-                                <span class="text-red-500 text-xs font-bold">*</span>
-                            </div>
-                            <input type="number" min="0" placeholder="0" required class="w-full border-none p-0 text-slate-900 focus:outline-none focus:ring-0 text-sm placeholder:text-slate-300 bg-transparent">
-                        </div>
-                        
-                        <div class="flex-1 p-4 bg-white hover:bg-slate-50 focus-within:bg-white focus-within:ring-1 focus-within:ring-inset focus-within:ring-slate-400 transition-all">
-                            <div class="flex justify-between items-center mb-1.5">
-                                <label class="dynamic-right-label text-xs font-medium text-slate-500">${rightInfo.label}</label>
-                                <span class="text-red-500 text-xs font-bold">*</span>
-                            </div>
-                            <input type="number" min="0" step="0.01" placeholder="${rightInfo.placeholder}" required class="w-full border-none p-0 text-slate-900 focus:outline-none focus:ring-0 text-sm placeholder:text-slate-300 bg-transparent">
-                        </div>
-                    </div>
-                `;
-
-                const deleteBtn = ruleDiv.querySelector('.delete-rule-btn');
-                deleteBtn.addEventListener('click', () => {
-                    ruleDiv.remove();
-                    updateRuleIndices();
-                });
-
-                return ruleDiv;
-            };
-
+            // 監聽折扣種類切換，動態改變提示文字
             discountTypeSelect.addEventListener('change', () => {
-                if (discountTypeSelect.value) {
+                const type = discountTypeSelect.value;
+                if (type) {
                     rulesWrapper.classList.remove('hidden');
-
-                    const rightInfo = getRightColumnInfo(discountTypeSelect.value);
-
-                    if (rulesList.children.length === 0) {
-                        rulesList.appendChild(createRuleItem());
-                        updateRuleIndices();
+                    if (type === 'percentage') {
+                        discountValueLabel.textContent = t('rulePercentLabel', '折扣百分比 例：10%請寫0.1');
+                        discountValueInput.placeholder = '0.1';
                     } else {
-                        const rightLabels = rulesList.querySelectorAll('.dynamic-right-label');
-                        const rightInputs = rulesList.querySelectorAll('.flex-1:last-child input');
-
-                        rightLabels.forEach(label => label.textContent = rightInfo.label);
-                        rightInputs.forEach(input => input.placeholder = rightInfo.placeholder);
+                        discountValueLabel.textContent = t('ruleFixedLabel', '折扣金額 100元請填100');
+                        discountValueInput.placeholder = '100';
                     }
                 } else {
                     rulesWrapper.classList.add('hidden');
                 }
-            });
-
-            addRuleBtn.addEventListener('click', () => {
-                rulesList.appendChild(createRuleItem());
-                updateRuleIndices();
             });
 
             const noTimeLimitCheckbox = document.getElementById('no-time-limit');
