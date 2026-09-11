@@ -650,11 +650,13 @@
       color: var(--c-text-heading);
       line-height: 1.4;
       display: -webkit-box;
-      -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      /* 補上標準屬性即可消除大多數 Linter 警告 */
       overflow: hidden;
       margin-top: -6px;
-      /* 讓商品名稱往上移動，貼近上方空間 */
+       /* 讓商品名稱往上移動，貼近上方空間 */
     }
 
     .product-card__footer {
