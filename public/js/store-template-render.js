@@ -59,36 +59,36 @@ document.addEventListener('DOMContentLoaded', async () => {
         // 定義主題色對應字典（加入 --c-accent 讓 footer 與按鈕同步變色）
         const themes = {
             '冷靜石板': {
-              '--c-accent': '#64748b',
-              '--c-accent-dark': '#475569', // 👈 補上這個
-              '--c-theme-1': '#64748b',
-              '--c-theme-2': '#94a3b8',
-              '--c-theme-3': '#cbd5e1',
-              '--c-theme-4': '#f1f5f9'
+                '--c-accent': '#64748b',
+                '--c-accent-dark': '#475569', // 👈 補上這個
+                '--c-theme-1': '#64748b',
+                '--c-theme-2': '#94a3b8',
+                '--c-theme-3': '#cbd5e1',
+                '--c-theme-4': '#f1f5f9'
             },
             '鼠尾草綠': {
-              '--c-accent': '#869489',
-              '--c-accent-dark': '#657367', // 👈 補上這個
-              '--c-theme-1': '#869489',
-              '--c-theme-2': '#a3ad9e',
-              '--c-theme-3': '#c2c9bd',
-              '--c-theme-4': '#e8ebe4'
+                '--c-accent': '#869489',
+                '--c-accent-dark': '#657367', // 👈 補上這個
+                '--c-theme-1': '#869489',
+                '--c-theme-2': '#a3ad9e',
+                '--c-theme-3': '#c2c9bd',
+                '--c-theme-4': '#e8ebe4'
             },
             '陶土橘': {
-              '--c-accent': '#b38b7d',
-              '--c-accent-dark': '#8c685b', // 👈 補上這個
-              '--c-theme-1': '#b38b7d',
-              '--c-theme-2': '#d1b4a6',
-              '--c-theme-3': '#e5d3c8',
-              '--c-theme-4': '#f5efea'
+                '--c-accent': '#b38b7d',
+                '--c-accent-dark': '#8c685b', // 👈 補上這個
+                '--c-theme-1': '#b38b7d',
+                '--c-theme-2': '#d1b4a6',
+                '--c-theme-3': '#e5d3c8',
+                '--c-theme-4': '#f5efea'
             },
             '北歐沙色': {
-              '--c-accent': '#a8a29e',
-              '--c-accent-dark': '#78716c', // 👈 補上這個
-              '--c-theme-1': '#a8a29e',
-              '--c-theme-2': '#d6d3d1',
-              '--c-theme-3': '#e7e5e4',
-              '--c-theme-4': '#f5f5f4'
+                '--c-accent': '#a8a29e',
+                '--c-accent-dark': '#78716c', // 👈 補上這個
+                '--c-theme-1': '#a8a29e',
+                '--c-theme-2': '#d6d3d1',
+                '--c-theme-3': '#e7e5e4',
+                '--c-theme-4': '#f5f5f4'
             }
         };
 
@@ -110,15 +110,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         // 定義字體對應字典
         const fontFamilies = {
             'gothic': "'Noto Sans TC', sans-serif",
-            'serif':  "'Noto Serif TC', serif",
-            'round':  "'M PLUS Rounded 1c', 'Noto Sans TC', sans-serif"
+            'serif': "'Noto Serif TC', serif",
+            'round': "'M PLUS Rounded 1c', 'Noto Sans TC', sans-serif"
         };
 
         // 強制套用字體到整頁的所有元素（用 * 覆蓋掉子元件被寫死的字體）
         if (themeFont && fontFamilies[themeFont]) {
             const fontValue = fontFamilies[themeFont];
             document.body.style.fontFamily = fontValue;
-            
+
             // 建立一個即時注入的 style 標籤，強制讓所有標題與文字統一吃這個字體
             const styleId = 'dynamic-font-override';
             let styleTag = document.getElementById(styleId);
@@ -185,11 +185,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // 5. 轉換商品資料
         const rawProducts = data.products || [];
-        
+
         window.PRODUCTS = rawProducts.map((p, index) => ({
             id: p.id || index,
             name: p.name || '新商品',
-            tag: '', 
+            tag: '',
             price: Number(p.price) || 0,
             origPrice: p.origPrice ? Number(p.origPrice) : null,
             stock: (p.stock !== undefined) ? p.stock : 0,
@@ -210,7 +210,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
             console.error('無法從商店資料中取得 SellerID');
         }
- } catch (err) {
+    } catch (err) {
         console.error('載入資料失敗：', err);
     }
 });
@@ -290,15 +290,15 @@ function openProductModal(productId) {
     if (modalPrice) modalPrice.textContent = `$${p.price.toLocaleString()}.00`;
 
     const modalStock = document.getElementById('modalStock');
-if (modalStock) {
-    if (p.stock === 0) {
-        modalStock.textContent = '已售完';
-        modalStock.style.color = '#ef4444'; // 顯示紅色警示
-    } else {
-        modalStock.textContent = `剩餘 ${p.stock} 件`;
-        modalStock.style.color = '';
+    if (modalStock) {
+        if (p.stock === 0) {
+            modalStock.textContent = '已售完';
+            modalStock.style.color = '#ef4444'; // 顯示紅色警示
+        } else {
+            modalStock.textContent = `剩餘 ${p.stock} 件`;
+            modalStock.style.color = '';
+        }
     }
-}
 
     const modalQty = document.getElementById('modalQty');
     if (modalQty) modalQty.textContent = '1';
@@ -360,12 +360,12 @@ function filterCategory(category, btn) {
     查看更多與 Toast 提示
 ══════════════════════════════════ */
 function showToast(message) {
-  let toast = document.getElementById('toast');
-  if (!toast) {
-    // 如果頁面沒有 toast 元素，自動建立一個完美的漂浮小黑框
-    toast = document.createElement('div');
-    toast.id = 'toast';
-    toast.style.cssText = `
+    let toast = document.getElementById('toast');
+    if (!toast) {
+        // 如果頁面沒有 toast 元素，自動建立一個完美的漂浮小黑框
+        toast = document.createElement('div');
+        toast.id = 'toast';
+        toast.style.cssText = `
       position: fixed;
       bottom: 40px;
       left: 50%;
@@ -380,80 +380,97 @@ function showToast(message) {
       opacity: 0;
       z-index: 9999;
     `;
-    document.body.appendChild(toast);
-  }
+        document.body.appendChild(toast);
+    }
 
-  toast.textContent = message;
-  toast.style.transform = 'translateX(-50%) translateY(0)';
-  toast.style.opacity = '1';
+    toast.textContent = message;
+    toast.style.transform = 'translateX(-50%) translateY(0)';
+    toast.style.opacity = '1';
 
-  // 1.5秒後自動收回
-  setTimeout(() => {
-    toast.style.transform = 'translateX(-50%) translateY(100px)';
-    toast.style.opacity = '0';
-  }, 1500);
+    // 1.5秒後自動收回
+    setTimeout(() => {
+        toast.style.transform = 'translateX(-50%) translateY(100px)';
+        toast.style.opacity = '0';
+    }, 1500);
 }
 
 function showAllProducts() {
-  showToast('已顯示全部商品');
+    showToast('已顯示全部商品');
 }
 
 /* ══════════════════════════════════
     賣場前台優惠券動態渲染模組
 ══════════════════════════════════ */
 async function loadStoreCoupons(sellerId) {
-  try {
-    const response = await fetch(`/api/coupons?sellerID=${sellerId}`);
-    const result = await response.json();
-    
-    const container = document.getElementById('coupon-banner-container');
-    if (!container) return;
+    try {
+        const response = await fetch(`/api/coupons?sellerID=${sellerId}`);
+        const result = await response.json();
 
-    if (result.success && result.list && result.list.length > 0) {
-      container.innerHTML = ''; // 清空
+        const container = document.getElementById('coupon-banner-container');
+        if (!container) return;
 
-      console.log("準備渲染的優惠券資料：", result.list);
-      result.list.forEach(coupon => {
-        let discountDesc = '';
-        if (coupon.DiscountType === 'percentage') {
-          discountDesc = `全館精選商品 ${coupon.DiscountValue} 折`;
-        } else {
-          discountDesc = coupon.MinSpend ? `滿 ${coupon.MinSpend} 元折 ${coupon.DiscountValue} 元` : `現折 ${coupon.DiscountValue} 元`;
-        }
+        if (result.success && result.list && result.list.length > 0) {
+            container.innerHTML = ''; // 清空
 
-        const startDate = coupon.StartDate ? coupon.StartDate.split('T')[0].replace(/-/g, '/') : '';
-        const endDate = coupon.EndDate ? coupon.EndDate.split('T')[0].replace(/-/g, '/') : '';
-        const timeDesc = startDate && endDate ? `使用期限：${startDate} - ${endDate}` : '期限內皆可使用';
-        const ruleDesc = coupon.IsExclusive ? ' | 不可與其他優惠券並用' : '';
+            console.log("準備渲染的優惠券資料：", result.list);
 
-        const bannerHTML = `
+            // 取得多語言文字的輔助函式
+            const t = (key, fallback) => (window.GoezI18n ? GoezI18n.t(key, fallback) : fallback);
+
+            result.list.forEach(coupon => {
+                let discountDesc = '';
+                if (coupon.DiscountType === 'percentage') {
+                    // 例如：全館精選商品 9 折 / 10% OFF Featured Items
+                    discountDesc = t('couponBannerDiscountPercent', '全館精選商品 {val} 折').replace('{val}', coupon.DiscountValue);
+                } else {
+                    // 例如：滿 1000 元折 200 元 / $200 OFF over $1000
+                    discountDesc = coupon.MinSpend
+                        ? t('couponBannerDiscountMinSpend', '滿 {min} 元折 {val} 元')
+                            .replace('{min}', coupon.MinSpend)
+                            .replace('{val}', coupon.DiscountValue)
+                        : t('couponBannerDiscountFixed', '現折 {val} 元')
+                            .replace('{val}', coupon.DiscountValue);
+                }
+
+                const startDate = coupon.StartDate ? coupon.StartDate.split('T')[0].replace(/-/g, '/') : '';
+                const endDate = coupon.EndDate ? coupon.EndDate.split('T')[0].replace(/-/g, '/') : '';
+                const timeDesc = startDate && endDate
+                    ? `${t('couponBannerValidity', '使用期限：')}${startDate} - ${endDate}`
+                    : t('couponBannerAlwaysValid', '期限內皆可使用');
+                const ruleDesc = coupon.IsExclusive
+                    ? ` | ${t('couponBannerNoCombine', '不可與其他優惠券並用')}`
+                    : '';
+
+                const claimBtnText = t('btnClaimCoupon', '立即領取');
+
+                const bannerHTML = `
           <div class="promo-banner" style="margin: 0 24px 40px; background: var(--c-accent, #869489) !important; border-radius: 24px; padding: 32px; display: flex; align-items: center; justify-content: space-between; gap: 16px; position: relative;">
             <div class="promo-banner__text" style="position: relative; z-index: 1;">
               <div class="promo-banner__title" style="font-size: 20px; font-weight: 900; color: #ffffff !important; margin-bottom: 6px;">${coupon.Title}</div>
               <div class="promo-banner__sub" style="font-size: 13px; color: rgba(255,255,255,0.9) !important; line-height: 1.5;">${discountDesc}<br>${timeDesc}${ruleDesc}</div>
             </div>
-            <button class="promo-banner__btn claim-btn" data-code="${coupon.Code}" style="background: #ffffff !important; color: var(--c-accent, #869489) !important; font-weight: 700; font-size: 14px; padding: 10px 20px; border-radius: 50px; border: none; cursor: pointer; white-space: nowrap;">立即領取</button>
+            <button class="promo-banner__btn claim-btn" data-code="${coupon.Code}" style="background: #ffffff !important; color: var(--c-accent, #869489) !important; font-weight: 700; font-size: 14px; padding: 10px 20px; border-radius: 50px; border: none; cursor: pointer; white-space: nowrap;">${claimBtnText}</button>
           </div>
         `;
-        container.innerHTML += bannerHTML;
-      });
+                container.innerHTML += bannerHTML;
+            });
 
-      document.querySelectorAll('.claim-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-          const code = this.getAttribute('data-code');
-          navigator.clipboard.writeText(code).then(() => {
-            showToast(`記住優惠碼：${code}`);
-          }).catch(err => {
-            console.error('複製失敗', err);
-            prompt('請手動複製您的優惠碼：', code);
-          });
-        });
-      });
+            document.querySelectorAll('.claim-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const code = this.getAttribute('data-code');
+                    navigator.clipboard.writeText(code).then(() => {
+                        showToast(`記住優惠碼：${code}`);
+                    }).catch(err => {
+                        console.error('複製失敗', err);
+                        prompt('請手動複製您的優惠碼：', code);
+                    });
+                });
+            });
 
-    } else {
-      container.innerHTML = '';
+        } else {
+            container.innerHTML = '';
+        }
+    } catch (error) {
+        console.error('載入前台優惠券失敗:', error);
     }
-  } catch (error) {
-    console.error('載入前台優惠券失敗:', error);
-  }
 }

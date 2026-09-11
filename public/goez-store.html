@@ -2209,6 +2209,7 @@
       /* 讓點擊能穿透文字，直接點到輸入框 */
       font-weight: 300;
       /* 讓它看起來輕盈一點 */
+      font-size: 13px; /* 將提示詞字體縮小 */
     }
 
     /* 當滑鼠點進去但還沒打字時，讓顏色再淡一點點 */
@@ -3137,7 +3138,7 @@
           </button>
         </div>
 
-        <!-- 加上一個 <form> 表單標籤包裹，這樣等一下 JavaScript 一行就能抓完 -->
+        <!-- <form> 表單標籤包裹 -->
         <form id="add-product-form" enctype="multipart/form-data">
           <!-- Fields -->
           <div class="modal__fields">
@@ -3149,11 +3150,10 @@
                   <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
                   <line x1="7" y1="7" x2="7.01" y2="7" />
                 </svg>
-                商品名稱
+                <span data-i18n="modalProductNameLabel">商品名稱</span>
               </label>
-              <!-- 補上 name="ProductName" -->
               <input class="modal__input" id="modal-product-name" name="ProductName" type="text"
-                placeholder="例如：精選手作陶瓷盤" required />
+                placeholder="例如：精選手作陶瓷盤" data-i18n-placeholder="modalProductNamePh" required />
             </div>
 
             <!-- 商品簡介 -->
@@ -3167,11 +3167,10 @@
                   <line x1="16" y1="17" x2="8" y2="17" />
                   <polyline points="10 9 9 9 8 9" />
                 </svg>
-                商品簡介
+                <span data-i18n="modalProductDescLabel">商品簡介</span>
               </label>
-              <!-- 補上 name="ProductDescription" -->
               <textarea class="modal__input modal__textarea" id="modal-product-desc" name="ProductDescription"
-                placeholder="請輸入商品的詳細介紹..."></textarea>
+                placeholder="請輸入商品的詳細介紹..." data-i18n-placeholder="modalProductDescPh"></textarea>
             </div>
 
             <!-- 商品圖片 -->
@@ -3183,10 +3182,9 @@
                   <circle cx="8.5" cy="8.5" r="1.5" />
                   <polyline points="21 15 16 10 5 21" />
                 </svg>
-                商品圖片
+                <span data-i18n="modalProductImgLabel">商品圖片</span>
               </label>
               <div class="modal__img-upload" id="modal-img-drop">
-                <!-- 補上 name="product_file" 給後端 multer 辨識 -->
                 <input type="file" id="modal-product-img" name="product_file" accept="image/*" />
                 <img class="modal__img-preview" id="modal-img-preview" alt="預覽" />
                 <svg class="modal__img-upload__icon" width="28" height="28" viewBox="0 0 24 24" fill="none"
@@ -3195,8 +3193,8 @@
                   <polyline points="17 8 12 3 7 8" />
                   <line x1="12" y1="3" x2="12" y2="15" />
                 </svg>
-                <span class="modal__img-upload__text">點擊上傳或拖曳圖片</span>
-                <span class="modal__img-upload__hint">PNG、JPG、WEBP，最大 5MB</span>
+                <span class="modal__img-upload__text" data-i18n="modalImgUploadText">點擊上傳或拖曳圖片</span>
+                <span class="modal__img-upload__hint" data-i18n="modalImgUploadHint">PNG、JPG、WEBP，最大 5MB</span>
               </div>
             </div>
 
@@ -3209,300 +3207,212 @@
                     <line x1="12" y1="1" x2="12" y2="23" />
                     <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                   </svg>
-                  商品定價
+                  <span data-i18n="modalProductPriceLabel">商品定價</span>
                 </label>
                 <div class="modal__price-wrap">
                   <span class="modal__price-prefix">$</span>
-                  <!-- 補上 name="Price" -->
                   <input class="modal__input" id="modal-product-price" name="Price" type="number" min="0"
                     placeholder="0" required />
-                  >>>>>>> main
                 </div>
               </div>
-              <button class="modal__close" id="modal-close-btn" aria-label="關閉">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                  stroke-linecap="round">
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              </button>
+              <div class="modal__field">
+                <label class="modal__field-label" for="modal-product-stock">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path
+                      d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                  </svg>
+                  <span data-i18n="modalProductStockLabel">商品庫存</span>
+                </label>
+                <input class="modal__input" id="modal-product-stock" name="Stock" type="number" min="0" placeholder="0"
+                  required />
+              </div>
             </div>
-
-            <!-- <form> 表單標籤包裹 -->
-            <form id="add-product-form" enctype="multipart/form-data">
-              <!-- Fields -->
-              <div class="modal__fields">
-                <!-- 商品名稱 -->
-                <div class="modal__field">
-                  <label class="modal__field-label" for="modal-product-name">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                      stroke-linejoin="round">
-                      <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
-                      <line x1="7" y1="7" x2="7.01" y2="7" />
-                    </svg>
-                    <span data-i18n="modalProductNameLabel">商品名稱</span>
-                  </label>
-                  <input class="modal__input" id="modal-product-name" name="ProductName" type="text"
-                    placeholder="例如：精選手作陶瓷盤" data-i18n-placeholder="modalProductNamePh" required />
-                </div>
-
-                <!-- 商品簡介 -->
-                <div class="modal__field">
-                  <label class="modal__field-label" for="modal-product-desc">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                      stroke-linejoin="round">
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                      <polyline points="14 2 14 8 20 8" />
-                      <line x1="16" y1="13" x2="8" y2="13" />
-                      <line x1="16" y1="17" x2="8" y2="17" />
-                      <polyline points="10 9 9 9 8 9" />
-                    </svg>
-                    <span data-i18n="modalProductDescLabel">商品簡介</span>
-                  </label>
-                  <textarea class="modal__input modal__textarea" id="modal-product-desc" name="ProductDescription"
-                    placeholder="請輸入商品的詳細介紹..." data-i18n-placeholder="modalProductDescPh"></textarea>
-                </div>
-
-                <!-- 商品圖片 -->
-                <div class="modal__field">
-                  <label class="modal__field-label">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                      stroke-linejoin="round">
-                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                      <circle cx="8.5" cy="8.5" r="1.5" />
-                      <polyline points="21 15 16 10 5 21" />
-                    </svg>
-                    <span data-i18n="modalProductImgLabel">商品圖片</span>
-                  </label>
-                  <div class="modal__img-upload" id="modal-img-drop">
-                    <input type="file" id="modal-product-img" name="product_file" accept="image/*" />
-                    <img class="modal__img-preview" id="modal-img-preview" alt="預覽" />
-                    <svg class="modal__img-upload__icon" width="28" height="28" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                      <polyline points="17 8 12 3 7 8" />
-                      <line x1="12" y1="3" x2="12" y2="15" />
-                    </svg>
-                    <span class="modal__img-upload__text" data-i18n="modalImgUploadText">點擊上傳或拖曳圖片</span>
-                    <span class="modal__img-upload__hint" data-i18n="modalImgUploadHint">PNG、JPG、WEBP，最大 5MB</span>
-                  </div>
-                </div>
-
-                <!-- 定價 + 庫存 -->
-                <div class="modal__row">
-                  <div class="modal__field">
-                    <label class="modal__field-label" for="modal-product-price">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <line x1="12" y1="1" x2="12" y2="23" />
-                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                      </svg>
-                      <span data-i18n="modalProductPriceLabel">商品定價</span>
-                    </label>
-                    <div class="modal__price-wrap">
-                      <span class="modal__price-prefix">$</span>
-                      <input class="modal__input" id="modal-product-price" name="Price" type="number" min="0"
-                        placeholder="0" required />
-                    </div>
-                  </div>
-                  <div class="modal__field">
-                    <label class="modal__field-label" for="modal-product-stock">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path
-                          d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-                      </svg>
-                      <span data-i18n="modalProductStockLabel">商品庫存</span>
-                    </label>
-                    <input class="modal__input" id="modal-product-stock" name="Stock" type="number" min="0"
-                      placeholder="0" required />
-                  </div>
-                </div>
-              </div>
-
-              <!-- Footer -->
-              <div class="modal__footer">
-                <button class="modal__btn-cancel" id="modal-cancel-btn" type="button" data-i18n="btnCancel">取消</button>
-                <button class="modal__btn-confirm" id="modal-confirm-btn" type="button"
-                  data-i18n="btnConfirmAdd">確認新增</button>
-              </div>
-            </form>
           </div>
+
+          <!-- Footer -->
+          <div class="modal__footer">
+            <button class="modal__btn-cancel" id="modal-cancel-btn" type="button" data-i18n="btnCancel">取消</button>
+            <button class="modal__btn-confirm" id="modal-confirm-btn" type="button"
+              data-i18n="btnConfirmAdd">確認新增</button>
+          </div>
+        </form>
       </div>
+    </div>
 
-      <!-- Toast -->
-      <div class="modal-toast" id="modal-toast" data-i18n="toastProductAdded">✅ 商品已成功新增！</div>
+    <!-- Toast -->
+    <div class="modal-toast" id="modal-toast" data-i18n="toastProductAdded">✅ 商品已成功新增！</div>
 
-    </div><!-- /page -->
+  </div><!-- /page -->
 
 
 
-    <script>
-      // ── 2. Hamburger 手機版選單切換 ──
-      (function () {
-        var btn = document.getElementById('hamburger-btn');
-        var nav = document.getElementById('editor-mobile-nav');
-        if (!btn || !nav) return;
-        btn.addEventListener('click', function () {
-          var open = btn.getAttribute('aria-expanded') === 'true';
-          btn.setAttribute('aria-expanded', String(!open));
-          nav.classList.toggle('is-open', !open);
-        });
-      })();
-
-      // ── 3. 滾動漸顯觀察器 ──
-      var animEls = document.querySelectorAll('.fade-in');
-      var observer = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-            observer.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.12 });
-      animEls.forEach(function (el) { observer.observe(el); });
-
-      // ── 4. 主題配色資料庫 (改以英數代碼為 Key，防止語系切換造成找不到名稱) ──
-      var themes = {
-        'slate': {
-          '--c-accent': '#64748b',
-          '--c-theme-1': '#64748b',
-          '--c-theme-2': '#94a3b8',
-          '--c-theme-3': '#cbd5e1',
-          '--c-theme-4': '#f1f5f9'
-        },
-        'sage': {
-          '--c-accent': '#869489',
-          '--c-theme-1': '#869489',
-          '--c-theme-2': '#a3ad9e',
-          '--c-theme-3': '#c2c9bd',
-          '--c-theme-4': '#e8ebe4'
-        },
-        'terracotta': {
-          '--c-accent': '#b38b7d',
-          '--c-theme-1': '#b38b7d',
-          '--c-theme-2': '#d1b4a6',
-          '--c-theme-3': '#e5d3c8',
-          '--c-theme-4': '#f5efea'
-        },
-        'sand': {
-          '--c-accent': '#a8a29e',
-          '--c-theme-1': '#a8a29e',
-          '--c-theme-2': '#d6d3d1',
-          '--c-theme-3': '#e7e5e4',
-          '--c-theme-4': '#f5f5f4'
-        }
-      };
-
-      // ── 5. 主題色彩點選切換 ──
-      var preview = document.querySelector('.store-preview');
-      var mobilePreviewEl = document.querySelector('.mobile-preview');
-      document.querySelectorAll('.theme-option').forEach(function (opt, idx) {
-        opt.addEventListener('click', function () {
-          document.querySelectorAll('.theme-option').forEach(function (o) { o.classList.remove('selected'); });
-          opt.classList.add('selected');
-
-          // 優先讀取 data-theme 屬性，若無則依序號 fallback
-          var themeKey = opt.getAttribute('data-theme') || ['slate', 'sage', 'terracotta', 'sand'][idx];
-          var vars = themes[themeKey];
-          if (!vars) return;
-
-          // 同步寫入全域與兩組預覽畫面容器
-          Object.keys(vars).forEach(function (key) {
-            document.documentElement.style.setProperty(key, vars[key]);
-          });
-          [preview, mobilePreviewEl].forEach(function (el) {
-            if (!el) return;
-            Object.keys(vars).forEach(function (key) { el.style.setProperty(key, vars[key]); });
-          });
-
-          // 重新繪製商品卡片顏色
-          if (typeof renderAll === 'function') {
-            renderAll();
-          }
-        });
+  <script>
+    // ── 2. Hamburger 手機版選單切換 ──
+    (function () {
+      var btn = document.getElementById('hamburger-btn');
+      var nav = document.getElementById('editor-mobile-nav');
+      if (!btn || !nav) return;
+      btn.addEventListener('click', function () {
+        var open = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', String(!open));
+        nav.classList.toggle('is-open', !open);
       });
-    </script>
+    })();
 
-    <!-- 引入商品與渲染外部腳本 -->
-    <script src="./js/store-render.js"></script>
-    <script src="./js/product-manage.js"></script>
-
-    <script>
-      // ── 多語言取詞輔助函式 ──
-      function t(key, fallback) {
-        if (window.GoezI18n && typeof GoezI18n.t === 'function') {
-          return GoezI18n.t(key, fallback);
+    // ── 3. 滾動漸顯觀察器 ──
+    var animEls = document.querySelectorAll('.fade-in');
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
         }
-        return fallback || '';
+      });
+    }, { threshold: 0.12 });
+    animEls.forEach(function (el) { observer.observe(el); });
+
+    // ── 4. 主題配色資料庫 (改以英數代碼為 Key，防止語系切換造成找不到名稱) ──
+    var themes = {
+      'slate': {
+        '--c-accent': '#64748b',
+        '--c-theme-1': '#64748b',
+        '--c-theme-2': '#94a3b8',
+        '--c-theme-3': '#cbd5e1',
+        '--c-theme-4': '#f1f5f9'
+      },
+      'sage': {
+        '--c-accent': '#869489',
+        '--c-theme-1': '#869489',
+        '--c-theme-2': '#a3ad9e',
+        '--c-theme-3': '#c2c9bd',
+        '--c-theme-4': '#e8ebe4'
+      },
+      'terracotta': {
+        '--c-accent': '#b38b7d',
+        '--c-theme-1': '#b38b7d',
+        '--c-theme-2': '#d1b4a6',
+        '--c-theme-3': '#e5d3c8',
+        '--c-theme-4': '#f5efea'
+      },
+      'sand': {
+        '--c-accent': '#a8a29e',
+        '--c-theme-1': '#a8a29e',
+        '--c-theme-2': '#d6d3d1',
+        '--c-theme-3': '#e7e5e4',
+        '--c-theme-4': '#f5f5f4'
+      }
+    };
+
+    // ── 5. 主題色彩點選切換 ──
+    var preview = document.querySelector('.store-preview');
+    var mobilePreviewEl = document.querySelector('.mobile-preview');
+    document.querySelectorAll('.theme-option').forEach(function (opt, idx) {
+      opt.addEventListener('click', function () {
+        document.querySelectorAll('.theme-option').forEach(function (o) { o.classList.remove('selected'); });
+        opt.classList.add('selected');
+
+        // 優先讀取 data-theme 屬性，若無則依序號 fallback
+        var themeKey = opt.getAttribute('data-theme') || ['slate', 'sage', 'terracotta', 'sand'][idx];
+        var vars = themes[themeKey];
+        if (!vars) return;
+
+        // 同步寫入全域與兩組預覽畫面容器
+        Object.keys(vars).forEach(function (key) {
+          document.documentElement.style.setProperty(key, vars[key]);
+        });
+        [preview, mobilePreviewEl].forEach(function (el) {
+          if (!el) return;
+          Object.keys(vars).forEach(function (key) { el.style.setProperty(key, vars[key]); });
+        });
+
+        // 重新繪製商品卡片顏色
+        if (typeof renderAll === 'function') {
+          renderAll();
+        }
+      });
+    });
+  </script>
+
+  <!-- 引入商品與渲染外部腳本 -->
+  <script src="./js/store-render.js"></script>
+  <script src="./js/product-manage.js"></script>
+
+  <script>
+    // ── 多語言取詞輔助函式 ──
+    function t(key, fallback) {
+      if (window.GoezI18n && typeof GoezI18n.t === 'function') {
+        return GoezI18n.t(key, fallback);
+      }
+      return fallback || '';
+    }
+
+
+    // ── 1. 頁面初始化與後端資料載入 ──
+    window.addEventListener('DOMContentLoaded', async () => {
+      // 讀取網址參數
+      const urlParams = new URLSearchParams(window.location.search);
+      const pageId = urlParams.get('pageId');
+
+      if (!pageId) {
+        console.warn("網址列缺少 pageId，請確認網址格式為：...html?pageId=數字");
+        return;
       }
 
+      try {
+        const response = await fetch(`/api/store/pages/${pageId}`);
+        const result = await response.json();
 
-      // ── 1. 頁面初始化與後端資料載入 ──
-      window.addEventListener('DOMContentLoaded', async () => {
-        // 讀取網址參數
-        const urlParams = new URLSearchParams(window.location.search);
-        const pageId = urlParams.get('pageId');
+        if (result.success && result.data) {
+          const store = result.data;
 
-        if (!pageId) {
-          console.warn("網址列缺少 pageId，請確認網址格式為：...html?pageId=數字");
-          return;
-        }
+          // A. 填入店名與簡介
+          const nameInput = document.getElementById('store-name-input');
+          if (nameInput) nameInput.textContent = store.PageTitle || "";
 
-        try {
-          const response = await fetch(`/api/store/pages/${pageId}`);
-          const result = await response.json();
+          const descInput = document.getElementById('store-desc-input');
+          if (descInput) descInput.textContent = store.PageDescription || "";
 
-          if (result.success && result.data) {
-            const store = result.data;
+          // B. 填入 Logo
+          const logoImg = document.getElementById('logo-preview-img');
+          if (logoImg) {
+            const defaultLogo = "https://www.figma.com/api/mcp/asset/665605e6-519c-4fa0-8070-daa26e795351";
+            const finalLogoUrl = (store.StoreLogo && store.StoreLogo.trim() !== "")
+              ? store.StoreLogo
+              : defaultLogo;
+            logoImg.src = finalLogoUrl;
+          }
 
-            // A. 填入店名與簡介
-            const nameInput = document.getElementById('store-name-input');
-            if (nameInput) nameInput.textContent = store.PageTitle || "";
+          // C. 優先宣告後端回傳的顏色與字體
+          const dbColor = store.ThemeColor || store.themeColor || '#2b4c7e';
+          const dbFont = store.ThemeFont || store.themeFont || '現代黑體';
 
-            const descInput = document.getElementById('store-desc-input');
-            if (descInput) descInput.textContent = store.PageDescription || "";
+          // 📦 ─── 初始化商品卡片渲染 ───
+          const targetContainer = document.getElementById('product-list');
+          if (targetContainer && store.PageProducts && Array.isArray(store.PageProducts)) {
 
-            // B. 填入 Logo
-            const logoImg = document.getElementById('logo-preview-img');
-            if (logoImg) {
-              const defaultLogo = "https://www.figma.com/api/mcp/asset/665605e6-519c-4fa0-8070-daa26e795351";
-              const finalLogoUrl = (store.StoreLogo && store.StoreLogo.trim() !== "")
-                ? store.StoreLogo
-                : defaultLogo;
-              logoImg.src = finalLogoUrl;
+            if (store.PageProducts.length > 0) {
+              targetContainer.innerHTML = '';
+              targetContainer.style.display = "flex";
+              targetContainer.style.flexWrap = "wrap";
+              targetContainer.style.gap = "20px";
+              targetContainer.style.justifyContent = "flex-start";
             }
 
-            // C. 優先宣告後端回傳的顏色與字體
-            const dbColor = store.ThemeColor || store.themeColor || '#2b4c7e';
-            const dbFont = store.ThemeFont || store.themeFont || '現代黑體';
-
-            // 📦 ─── 初始化商品卡片渲染 ───
-            const targetContainer = document.getElementById('product-list');
-            if (targetContainer && store.PageProducts && Array.isArray(store.PageProducts)) {
-
-              if (store.PageProducts.length > 0) {
-                targetContainer.innerHTML = '';
-                targetContainer.style.display = "flex";
-                targetContainer.style.flexWrap = "wrap";
-                targetContainer.style.gap = "20px";
-                targetContainer.style.justifyContent = "flex-start";
+            // 跑迴圈畫出商品卡片
+            store.PageProducts.forEach(prod => {
+              let displayPrice = prod.Price;
+              if (typeof displayPrice === 'number' || (typeof displayPrice === 'string' && !displayPrice.includes('.'))) {
+                displayPrice = `${displayPrice}.00`;
+              } else if (typeof displayPrice === 'string' && displayPrice.includes('.')) {
+                displayPrice = parseFloat(displayPrice).toFixed(2);
               }
 
-              // 跑迴圈畫出商品卡片
-              store.PageProducts.forEach(prod => {
-                let displayPrice = prod.Price;
-                if (typeof displayPrice === 'number' || (typeof displayPrice === 'string' && !displayPrice.includes('.'))) {
-                  displayPrice = `${displayPrice}.00`;
-                } else if (typeof displayPrice === 'string' && displayPrice.includes('.')) {
-                  displayPrice = parseFloat(displayPrice).toFixed(2);
-                }
+              const stockText = `${t('stockPrefix', '剩餘')} ${prod.Stock}`;
+              const descText = prod.ProductDescription || t('noDescPlaceholder', '暫無商品描述');
+              const deleteBtnText = t('btnCardDelete', '刪除');
 
-                const stockText = `${t('stockPrefix', '剩餘')} ${prod.Stock}`;
-                const descText = prod.ProductDescription || t('noDescPlaceholder', '暫無商品描述');
-                const deleteBtnText = t('btnCardDelete', '刪除');
-
-                const cardHtml = `
+              const cardHtml = `
                 <div class="product-card" data-id="${prod.ProductID}" style="background: var(--c-white, #fff); border: 1px solid var(--c-border-light, #eaeaea); border-radius: 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.04); overflow: hidden; display: flex !important; flex-direction: column !important; align-items: stretch !important; cursor: pointer; width: 280px !important; box-sizing: border-box; position: relative; font-family: var(--f-body, sans-serif) !important; transition: transform 0.25s ease, box-shadow 0.25s ease;">
                   <!-- 商品圖片區 -->
                   <div style="height: 180px; flex-shrink: 0; overflow: hidden; position: relative; background: #f5f5f5;">
@@ -3538,316 +3448,316 @@
                   </div>
                 </div>
               `;
-                targetContainer.insertAdjacentHTML('beforeend', cardHtml);
-              });
+              targetContainer.insertAdjacentHTML('beforeend', cardHtml);
+            });
 
-              // 樣式校正防禦
-              const currentProductCards = targetContainer.querySelectorAll('.product-card');
-              currentProductCards.forEach(card => {
-                const cartBtn = card.querySelector('.add-to-cart-btn');
-                if (cartBtn) {
-                  cartBtn.style.setProperty('background', dbColor, 'important');
-                  cartBtn.style.setProperty('background-color', dbColor, 'important');
-                  cartBtn.style.setProperty('border-color', dbColor, 'important');
-                }
-
-                const priceSpan = card.querySelector('.product-card__price');
-                if (priceSpan) {
-                  priceSpan.style.setProperty('color', dbColor, 'important');
-                }
-
-                let targetFontFamily = '"Noto Sans TC", "Arial", "Microsoft JhengHei", sans-serif';
-                if (dbFont.includes('明體') || dbFont.toLowerCase() === 'serif') {
-                  targetFontFamily = '"Noto Serif TC", "Georgia", serif';
-                } else if (dbFont.includes('圓體') || dbFont.includes('溫潤')) {
-                  targetFontFamily = '"M PLUS Rounded 1c", "Noto Sans TC", sans-serif';
-                }
-
-                const textNodes = card.querySelectorAll('.product-card__name, .product-card__tag-text, .product-card__stock, p, span, h4, div');
-                textNodes.forEach(el => {
-                  el.style.setProperty('font-family', targetFontFamily, 'important');
-                });
-                card.style.setProperty('font-family', targetFontFamily, 'important');
-              });
-            }
-          }
-        } catch (error) {
-          console.error("❌ 載入資料失敗:", error);
-        }
-      });
-    </script>
-
-    <script>
-      // ── 2. 購物車數量計數 ──
-      (function () {
-        var cartCount = 0;
-
-        function updateCartBadge() {
-          var desktopSpan = document.getElementById('cart-count-desktop');
-          var mobileBadge = document.getElementById('cart-badge-mobile');
-          var desktopBadge = document.getElementById('cart-badge-desktop');
-          if (desktopSpan) desktopSpan.textContent = cartCount;
-          if (mobileBadge) mobileBadge.textContent = cartCount;
-          if (desktopBadge) desktopBadge.setAttribute('aria-label', '購物車 ' + cartCount + ' 件');
-        }
-
-        document.addEventListener('click', function (e) {
-          var btn = e.target.closest('.add-to-cart-btn, .product-card__cart-btn, .mobile-product-card__cart');
-          if (btn) {
-            cartCount++;
-            updateCartBadge();
-          }
-        });
-      })();
-
-      // ── 3. 新增商品 Modal 與圖片拖曳上傳 ──
-      (function () {
-        var backdrop = document.getElementById('add-product-modal');
-        var closeBtn = document.getElementById('modal-close-btn');
-        var cancelBtn = document.getElementById('modal-cancel-btn');
-        var confirmBtn = document.getElementById('modal-confirm-btn');
-        var addBtn = document.querySelector('.btn-add-product');
-        var toast = document.getElementById('modal-toast');
-
-        var imgInput = document.getElementById('modal-product-img');
-        var imgPreview = document.getElementById('modal-img-preview');
-        var imgDrop = document.getElementById('modal-img-drop');
-        var uploadIcon = imgDrop ? imgDrop.querySelector('.modal__img-upload__icon') : null;
-        var uploadText = imgDrop ? imgDrop.querySelector('.modal__img-upload__text') : null;
-        var uploadHint = imgDrop ? imgDrop.querySelector('.modal__img-upload__hint') : null;
-
-        function openModal() {
-          if (!backdrop) return;
-          backdrop.classList.add('is-open');
-          document.body.style.overflow = 'hidden';
-          setTimeout(function () {
-            var nameField = document.getElementById('modal-product-name');
-            if (nameField) nameField.focus();
-          }, 200);
-        }
-
-        function closeModal() {
-          if (!backdrop) return;
-          backdrop.classList.remove('is-open');
-          document.body.style.overflow = '';
-        }
-
-        function resetModal() {
-          var nameInput = document.getElementById('modal-product-name');
-          var descInput = document.getElementById('modal-product-desc');
-          var priceInput = document.getElementById('modal-product-price');
-          var stockInput = document.getElementById('modal-product-stock');
-          if (nameInput) nameInput.value = '';
-          if (descInput) descInput.value = '';
-          if (priceInput) priceInput.value = '';
-          if (stockInput) stockInput.value = '';
-          if (imgInput) imgInput.value = '';
-          if (imgPreview) {
-            imgPreview.src = '';
-            imgPreview.classList.remove('has-img');
-          }
-          if (uploadIcon) uploadIcon.style.display = '';
-          if (uploadText) uploadText.style.display = '';
-          if (uploadHint) uploadHint.style.display = '';
-        }
-
-        function showToast(msg) {
-          if (!toast) return;
-          toast.textContent = msg;
-          toast.classList.add('show');
-          setTimeout(function () { toast.classList.remove('show'); }, 3000);
-        }
-
-        function handleImageFile(file) {
-          if (!file || !file.type.startsWith('image/')) return;
-          if (file.size > 5 * 1024 * 1024) {
-            showToast(t('toastFileTooLarge', '⚠️ 圖片大小不能超過 5MB'));
-            return;
-          }
-          var reader = new FileReader();
-          reader.onload = function (e) {
-            if (imgPreview) {
-              imgPreview.src = e.target.result;
-              imgPreview.classList.add('has-img');
-            }
-            if (uploadIcon) uploadIcon.style.display = 'none';
-            if (uploadText) uploadText.style.display = 'none';
-            if (uploadHint) uploadHint.style.display = 'none';
-          };
-          reader.readAsDataURL(file);
-        }
-
-        if (addBtn) addBtn.addEventListener('click', openModal);
-
-        if (closeBtn) closeBtn.addEventListener('click', function () { closeModal(); resetModal(); });
-        if (cancelBtn) cancelBtn.addEventListener('click', function () { closeModal(); resetModal(); });
-
-        if (backdrop) {
-          backdrop.addEventListener('click', function (e) {
-            if (e.target === backdrop) { closeModal(); resetModal(); }
-          });
-        }
-
-        document.addEventListener('keydown', function (e) {
-          if (e.key === 'Escape' && backdrop && backdrop.classList.contains('is-open')) {
-            closeModal(); resetModal();
-          }
-        });
-
-        if (imgInput) {
-          imgInput.addEventListener('change', function () {
-            if (this.files && this.files[0]) handleImageFile(this.files[0]);
-          });
-        }
-
-        if (imgDrop) {
-          imgDrop.addEventListener('dragover', function (e) {
-            e.preventDefault();
-            imgDrop.style.borderColor = 'var(--c-accent)';
-            imgDrop.style.background = '#eef3f7';
-          });
-          imgDrop.addEventListener('dragleave', function () {
-            imgDrop.style.borderColor = '';
-            imgDrop.style.background = '';
-          });
-          imgDrop.addEventListener('drop', function (e) {
-            e.preventDefault();
-            imgDrop.style.borderColor = '';
-            imgDrop.style.background = '';
-            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-              handleImageFile(e.dataTransfer.files[0]);
-            }
-          });
-        }
-
-        if (confirmBtn) {
-          confirmBtn.addEventListener('click', function () {
-            var nameEl = document.getElementById('modal-product-name');
-            var name = nameEl ? nameEl.value.trim() : '';
-            var priceEl = document.getElementById('modal-product-price');
-            var price = priceEl ? priceEl.value : '';
-            var stockEl = document.getElementById('modal-product-stock');
-            var stock = stockEl ? stockEl.value : '';
-            var descEl = document.getElementById('modal-product-desc');
-
-            if (!name) {
-              if (nameEl) {
-                nameEl.focus();
-                nameEl.style.borderColor = '#f87171';
-                setTimeout(function () {
-                  nameEl.style.borderColor = '';
-                }, 1500);
+            // 樣式校正防禦
+            const currentProductCards = targetContainer.querySelectorAll('.product-card');
+            currentProductCards.forEach(card => {
+              const cartBtn = card.querySelector('.add-to-cart-btn');
+              if (cartBtn) {
+                cartBtn.style.setProperty('background', dbColor, 'important');
+                cartBtn.style.setProperty('background-color', dbColor, 'important');
+                cartBtn.style.setProperty('border-color', dbColor, 'important');
               }
-              showToast(t('toastNameRequired', '⚠️ 請填寫商品名稱'));
-              return;
-            }
 
-            var newProduct = {
-              name: name,
-              desc: descEl ? descEl.value.trim() : '',
-              img: (imgPreview && imgPreview.src) ? imgPreview.src : '',
-              price: price ? Number(price) : 0,
-              stock: stock ? Number(stock) : 0
-            };
+              const priceSpan = card.querySelector('.product-card__price');
+              if (priceSpan) {
+                priceSpan.style.setProperty('color', dbColor, 'important');
+              }
 
-            document.dispatchEvent(new CustomEvent('product:add', { detail: newProduct }));
+              let targetFontFamily = '"Noto Sans TC", "Arial", "Microsoft JhengHei", sans-serif';
+              if (dbFont.includes('明體') || dbFont.toLowerCase() === 'serif') {
+                targetFontFamily = '"Noto Serif TC", "Georgia", serif';
+              } else if (dbFont.includes('圓體') || dbFont.includes('溫潤')) {
+                targetFontFamily = '"M PLUS Rounded 1c", "Noto Sans TC", sans-serif';
+              }
 
-            closeModal();
-            resetModal();
-
-            const successMsg = t('toastProductAddSuccess', '✅ 商品「{name}」已成功新增！').replace('{name}', newProduct.name);
-            showToast(successMsg);
-          });
+              const textNodes = card.querySelectorAll('.product-card__name, .product-card__tag-text, .product-card__stock, p, span, h4, div');
+              textNodes.forEach(el => {
+                el.style.setProperty('font-family', targetFontFamily, 'important');
+              });
+              card.style.setProperty('font-family', targetFontFamily, 'important');
+            });
+          }
         }
-      })();
-    </script>
+      } catch (error) {
+        console.error("❌ 載入資料失敗:", error);
+      }
+    });
+  </script>
 
-    <!-- 1. 唯一且正確的 i18n 引入位置 -->
-    <script src="./i18n/i18n-core.js"></script>
-    <script src="./i18n/storeEditor.js"></script>
+  <script>
+    // ── 2. 購物車數量計數 ──
+    (function () {
+      var cartCount = 0;
 
-    <!-- 2. 引入編輯器主要邏輯 (請確認檔名是 store-editor.js) -->
-    <script src="./js/store-editor.js"></script>
-
-    <!-- 3. 頁面控制與字體/視圖切換 -->
-    <script>
-      // 自動套用語言
-      if (window.GoezI18n) {
-        GoezI18n.apply();
-        document.title = GoezI18n.t('pageTitleEditor');
+      function updateCartBadge() {
+        var desktopSpan = document.getElementById('cart-count-desktop');
+        var mobileBadge = document.getElementById('cart-badge-mobile');
+        var desktopBadge = document.getElementById('cart-badge-desktop');
+        if (desktopSpan) desktopSpan.textContent = cartCount;
+        if (mobileBadge) mobileBadge.textContent = cartCount;
+        if (desktopBadge) desktopBadge.setAttribute('aria-label', '購物車 ' + cartCount + ' 件');
       }
 
-      // 字體設定資料庫
-      var fontFamilies = {
-        'gothic': "'Noto Sans TC', sans-serif",
-        'serif': "'Noto Serif TC', serif",
-        'round': "'M PLUS Rounded 1c', 'Noto Sans TC', sans-serif"
-      };
+      document.addEventListener('click', function (e) {
+        var btn = e.target.closest('.add-to-cart-btn, .product-card__cart-btn, .mobile-product-card__cart');
+        if (btn) {
+          cartCount++;
+          updateCartBadge();
+        }
+      });
+    })();
 
-      var roundFont = document.createElement('link');
-      roundFont.rel = 'stylesheet';
-      roundFont.href = 'https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap';
-      document.head.appendChild(roundFont);
+    // ── 3. 新增商品 Modal 與圖片拖曳上傳 ──
+    (function () {
+      var backdrop = document.getElementById('add-product-modal');
+      var closeBtn = document.getElementById('modal-close-btn');
+      var cancelBtn = document.getElementById('modal-cancel-btn');
+      var confirmBtn = document.getElementById('modal-confirm-btn');
+      var addBtn = document.querySelector('.btn-add-product');
+      var toast = document.getElementById('modal-toast');
 
-      var desktopPreview = document.getElementById('desktop-preview');
-      var mobilePreviewWrapper = document.getElementById('mobile-preview');
-      var mobilePreviewInner = document.querySelector('.mobile-preview');
+      var imgInput = document.getElementById('modal-product-img');
+      var imgPreview = document.getElementById('modal-img-preview');
+      var imgDrop = document.getElementById('modal-img-drop');
+      var uploadIcon = imgDrop ? imgDrop.querySelector('.modal__img-upload__icon') : null;
+      var uploadText = imgDrop ? imgDrop.querySelector('.modal__img-upload__text') : null;
+      var uploadHint = imgDrop ? imgDrop.querySelector('.modal__img-upload__hint') : null;
 
-      document.querySelectorAll('.font-option').forEach(function (opt) {
-        opt.addEventListener('click', function () {
-          document.querySelectorAll('.font-option').forEach(function (o) { o.classList.remove('selected'); });
-          opt.classList.add('selected');
+      function openModal() {
+        if (!backdrop) return;
+        backdrop.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+        setTimeout(function () {
+          var nameField = document.getElementById('modal-product-name');
+          if (nameField) nameField.focus();
+        }, 200);
+      }
 
-          var key = opt.getAttribute('data-font');
-          if (!key) {
-            if (opt.classList.contains('font-option--gothic')) key = 'gothic';
-            else if (opt.classList.contains('font-option--serif')) key = 'serif';
-            else if (opt.classList.contains('font-option--round')) key = 'round';
+      function closeModal() {
+        if (!backdrop) return;
+        backdrop.classList.remove('is-open');
+        document.body.style.overflow = '';
+      }
+
+      function resetModal() {
+        var nameInput = document.getElementById('modal-product-name');
+        var descInput = document.getElementById('modal-product-desc');
+        var priceInput = document.getElementById('modal-product-price');
+        var stockInput = document.getElementById('modal-product-stock');
+        if (nameInput) nameInput.value = '';
+        if (descInput) descInput.value = '';
+        if (priceInput) priceInput.value = '';
+        if (stockInput) stockInput.value = '';
+        if (imgInput) imgInput.value = '';
+        if (imgPreview) {
+          imgPreview.src = '';
+          imgPreview.classList.remove('has-img');
+        }
+        if (uploadIcon) uploadIcon.style.display = '';
+        if (uploadText) uploadText.style.display = '';
+        if (uploadHint) uploadHint.style.display = '';
+      }
+
+      function showToast(msg) {
+        if (!toast) return;
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(function () { toast.classList.remove('show'); }, 3000);
+      }
+
+      function handleImageFile(file) {
+        if (!file || !file.type.startsWith('image/')) return;
+        if (file.size > 5 * 1024 * 1024) {
+          showToast(t('toastFileTooLarge', '⚠️ 圖片大小不能超過 5MB'));
+          return;
+        }
+        var reader = new FileReader();
+        reader.onload = function (e) {
+          if (imgPreview) {
+            imgPreview.src = e.target.result;
+            imgPreview.classList.add('has-img');
           }
-          if (!key || !fontFamilies[key]) return;
+          if (uploadIcon) uploadIcon.style.display = 'none';
+          if (uploadText) uploadText.style.display = 'none';
+          if (uploadHint) uploadHint.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+      }
 
-          var fontVal = fontFamilies[key];
-          [desktopPreview, mobilePreviewWrapper, mobilePreviewInner].forEach(function (container) {
-            if (!container) return;
-            container.style.fontFamily = fontVal;
-            var allEls = container.querySelectorAll('*');
-            allEls.forEach(function (el) {
-              el.style.fontFamily = fontVal;
-            });
+      if (addBtn) addBtn.addEventListener('click', openModal);
+
+      if (closeBtn) closeBtn.addEventListener('click', function () { closeModal(); resetModal(); });
+      if (cancelBtn) cancelBtn.addEventListener('click', function () { closeModal(); resetModal(); });
+
+      if (backdrop) {
+        backdrop.addEventListener('click', function (e) {
+          if (e.target === backdrop) { closeModal(); resetModal(); }
+        });
+      }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && backdrop && backdrop.classList.contains('is-open')) {
+          closeModal(); resetModal();
+        }
+      });
+
+      if (imgInput) {
+        imgInput.addEventListener('change', function () {
+          if (this.files && this.files[0]) handleImageFile(this.files[0]);
+        });
+      }
+
+      if (imgDrop) {
+        imgDrop.addEventListener('dragover', function (e) {
+          e.preventDefault();
+          imgDrop.style.borderColor = 'var(--c-accent)';
+          imgDrop.style.background = '#eef3f7';
+        });
+        imgDrop.addEventListener('dragleave', function () {
+          imgDrop.style.borderColor = '';
+          imgDrop.style.background = '';
+        });
+        imgDrop.addEventListener('drop', function (e) {
+          e.preventDefault();
+          imgDrop.style.borderColor = '';
+          imgDrop.style.background = '';
+          if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            handleImageFile(e.dataTransfer.files[0]);
+          }
+        });
+      }
+
+      if (confirmBtn) {
+        confirmBtn.addEventListener('click', function () {
+          var nameEl = document.getElementById('modal-product-name');
+          var name = nameEl ? nameEl.value.trim() : '';
+          var priceEl = document.getElementById('modal-product-price');
+          var price = priceEl ? priceEl.value : '';
+          var stockEl = document.getElementById('modal-product-stock');
+          var stock = stockEl ? stockEl.value : '';
+          var descEl = document.getElementById('modal-product-desc');
+
+          if (!name) {
+            if (nameEl) {
+              nameEl.focus();
+              nameEl.style.borderColor = '#f87171';
+              setTimeout(function () {
+                nameEl.style.borderColor = '';
+              }, 1500);
+            }
+            showToast(t('toastNameRequired', '⚠️ 請填寫商品名稱'));
+            return;
+          }
+
+          var newProduct = {
+            name: name,
+            desc: descEl ? descEl.value.trim() : '',
+            img: (imgPreview && imgPreview.src) ? imgPreview.src : '',
+            price: price ? Number(price) : 0,
+            stock: stock ? Number(stock) : 0
+          };
+
+          document.dispatchEvent(new CustomEvent('product:add', { detail: newProduct }));
+
+          closeModal();
+          resetModal();
+
+          const successMsg = t('toastProductAddSuccess', '✅ 商品「{name}」已成功新增！').replace('{name}', newProduct.name);
+          showToast(successMsg);
+        });
+      }
+    })();
+  </script>
+
+  <!-- 1. 唯一且正確的 i18n 引入位置 -->
+  <script src="./i18n/i18n-core.js"></script>
+  <script src="./i18n/storeEditor.js"></script>
+
+  <!-- 2. 引入編輯器主要邏輯 (請確認檔名是 store-editor.js) -->
+  <script src="./js/store-editor.js"></script>
+
+  <!-- 3. 頁面控制與字體/視圖切換 -->
+  <script>
+    // 自動套用語言
+    if (window.GoezI18n) {
+      GoezI18n.apply();
+      document.title = GoezI18n.t('pageTitleEditor');
+    }
+
+    // 字體設定資料庫
+    var fontFamilies = {
+      'gothic': "'Noto Sans TC', sans-serif",
+      'serif': "'Noto Serif TC', serif",
+      'round': "'M PLUS Rounded 1c', 'Noto Sans TC', sans-serif"
+    };
+
+    var roundFont = document.createElement('link');
+    roundFont.rel = 'stylesheet';
+    roundFont.href = 'https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap';
+    document.head.appendChild(roundFont);
+
+    var desktopPreview = document.getElementById('desktop-preview');
+    var mobilePreviewWrapper = document.getElementById('mobile-preview');
+    var mobilePreviewInner = document.querySelector('.mobile-preview');
+
+    document.querySelectorAll('.font-option').forEach(function (opt) {
+      opt.addEventListener('click', function () {
+        document.querySelectorAll('.font-option').forEach(function (o) { o.classList.remove('selected'); });
+        opt.classList.add('selected');
+
+        var key = opt.getAttribute('data-font');
+        if (!key) {
+          if (opt.classList.contains('font-option--gothic')) key = 'gothic';
+          else if (opt.classList.contains('font-option--serif')) key = 'serif';
+          else if (opt.classList.contains('font-option--round')) key = 'round';
+        }
+        if (!key || !fontFamilies[key]) return;
+
+        var fontVal = fontFamilies[key];
+        [desktopPreview, mobilePreviewWrapper, mobilePreviewInner].forEach(function (container) {
+          if (!container) return;
+          container.style.fontFamily = fontVal;
+          var allEls = container.querySelectorAll('*');
+          allEls.forEach(function (el) {
+            el.style.fontFamily = fontVal;
           });
         });
       });
+    });
 
-      // 視圖切換（桌面版 ⇄ 行動版）
-      var canvas = document.getElementById('preview-canvas');
-      var viewportBtns = document.querySelectorAll('.viewport-btn');
+    // 視圖切換（桌面版 ⇄ 行動版）
+    var canvas = document.getElementById('preview-canvas');
+    var viewportBtns = document.querySelectorAll('.viewport-btn');
 
-      viewportBtns.forEach(function (btn, idx) {
-        btn.addEventListener('click', function () {
-          viewportBtns.forEach(function (b) {
-            b.classList.remove('viewport-btn--active');
-            b.setAttribute('aria-pressed', 'false');
-            var lbl = b.querySelector('.viewport-btn__label');
-            if (lbl) lbl.classList.add('viewport-btn__label--inactive');
-          });
-
-          btn.classList.add('viewport-btn--active');
-          btn.setAttribute('aria-pressed', 'true');
-          var lbl = btn.querySelector('.viewport-btn__label');
-          if (lbl) lbl.classList.remove('viewport-btn__label--inactive');
-
-          if (idx === 0) {
-            if (desktopPreview) desktopPreview.style.display = '';
-            if (mobilePreviewWrapper) mobilePreviewWrapper.style.display = 'none';
-            if (canvas) canvas.classList.remove('center__canvas--mobile');
-          } else {
-            if (desktopPreview) desktopPreview.style.display = 'none';
-            if (mobilePreviewWrapper) mobilePreviewWrapper.style.display = 'flex';
-            if (canvas) canvas.classList.add('center__canvas--mobile');
-          }
+    viewportBtns.forEach(function (btn, idx) {
+      btn.addEventListener('click', function () {
+        viewportBtns.forEach(function (b) {
+          b.classList.remove('viewport-btn--active');
+          b.setAttribute('aria-pressed', 'false');
+          var lbl = b.querySelector('.viewport-btn__label');
+          if (lbl) lbl.classList.add('viewport-btn__label--inactive');
         });
+
+        btn.classList.add('viewport-btn--active');
+        btn.setAttribute('aria-pressed', 'true');
+        var lbl = btn.querySelector('.viewport-btn__label');
+        if (lbl) lbl.classList.remove('viewport-btn__label--inactive');
+
+        if (idx === 0) {
+          if (desktopPreview) desktopPreview.style.display = '';
+          if (mobilePreviewWrapper) mobilePreviewWrapper.style.display = 'none';
+          if (canvas) canvas.classList.remove('center__canvas--mobile');
+        } else {
+          if (desktopPreview) desktopPreview.style.display = 'none';
+          if (mobilePreviewWrapper) mobilePreviewWrapper.style.display = 'flex';
+          if (canvas) canvas.classList.add('center__canvas--mobile');
+        }
       });
-    </script>
+    });
+  </script>
 </body>
 
 </html>

@@ -11,7 +11,7 @@
       qaCouponSettings: '優惠券設定',
       // Feature Gallery
       galleryHeading: '快來建立屬於自己的專屬賣場～',
-      galleryDesc: '打造會自動賺錢的一頁式商店。<br>內建多種優化工具，讓流量不再流失，<br>輕鬆開啟你的電商生意。',
+      galleryDesc: '打造會自動賺錢的一頁式商店。內建多種優化工具，讓流量不再流失，輕鬆開啟你的電商生意。',
       galleryBtn: '瞭解更多',
       cardAiAssistant: 'ＡＩ開店助手',
       cardDesignStore: '設計我的賣場',
@@ -41,7 +41,7 @@
       qaCouponSettings: 'Coupon Settings',
       // Feature Gallery
       galleryHeading: 'Create Your Exclusive Store Now!',
-      galleryDesc: 'Build a profitable one-page shop with ease.<br>Built-in optimization tools to maximize conversions<br>and jumpstart your e-commerce journey.',
+      galleryDesc: 'Build a profitable one-page shop with ease.Built-in optimization tools to maximize conversions and jumpstart your e-commerce journey.',
       galleryBtn: 'Learn More',
       cardAiAssistant: 'AI Assistant',
       cardDesignStore: 'Design Store',
@@ -71,7 +71,7 @@
       qaCouponSettings: 'クーポン設定',
       // Feature Gallery
       galleryHeading: 'あなただけのオリジナルショップを作ろう！',
-      galleryDesc: '自動で売れるワンページショップを簡単に構築。<br>多様な最適化ツールを内蔵し、離脱を防いで<br>スムーズにネットショップを始められます。',
+      galleryDesc: '自動で売れるワンページショップを簡単に構築。多様な最適化ツールを内蔵し、離脱を防いでスムーズにネットショップを始められます。',
       galleryBtn: '詳しく見る',
       cardAiAssistant: 'AI開店アシスタント',
       cardDesignStore: 'ショップをデザイン',

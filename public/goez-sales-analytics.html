@@ -1641,8 +1641,13 @@
 
       var range = $('range-select') ? $('range-select').value : '30d';
       try {
-        var res = await fetch(API + '?range=' + encodeURIComponent(range), {
-          headers: { 'Accept': 'application/json' },
+        // 自動抓取當前語系代碼（支援 zh-Hant, en, ja）
+        var currentLang = (window.GoezI18n && GoezI18n.currentLang) || localStorage.getItem('goezLang') || 'zh-Hant';
+        var res = await fetch(API + '?range=' + encodeURIComponent(range) + '&lang=' + encodeURIComponent(currentLang), {
+          headers: {
+            'Accept': 'application/json',
+            'Accept-Language': currentLang
+          },
           credentials: 'same-origin'
         });
         var json = await res.json();
