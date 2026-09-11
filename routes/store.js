@@ -6,6 +6,7 @@ const { readMock, writeMock } = require('../src/mocks/utils') // 💡 新增引�
 const { Sequelize } = require('sequelize');
 const path = require('path');
 const fs = require('fs');
+const { upload } = require('../config/cloudinary')
 
 const router = express.Router()
 
@@ -542,8 +543,9 @@ router.get('/store/:slug', async (req, res) => {
   }
 });
 
-router.post('/pages/:PageID/update', async (req, res) => {
+router.post('/pages/:PageID/update', upload.single('logoUrl'), async (req, res) => {
   console.log('收到 Body內容:', req.body);
+  console.log('收到上傳檔案:', req.file); // 👈 可以順便印出來看看有沒有收到檔案
   const Sequelize = require('sequelize'); 
   const { StorePage, PageContent } = require('../models');
 
@@ -566,6 +568,10 @@ router.post('/pages/:PageID/update', async (req, res) => {
 
   // 🎨 🚀 確保這裡完整接收前端打包帶過來的 themeColor 與 themeFont
   const { isPublished, shopName, shopDesc, logoUrl, themeColor, themeFont, storeEmail, storePhone, storeBankAccount, pageUrl } = req.body || {}; 
+  
+  // 🚀 關鍵修改：如果有上傳新 Logo 檔案，優先使用 Cloudinary 回傳的網址
+  const finalLogoUrl = req.file ? req.file.path : logoUrl;
+  
   const Mock = await useMock();
 
   if (Mock) {
@@ -578,7 +584,7 @@ router.post('/pages/:PageID/update', async (req, res) => {
       const updatePageData = (p) => {
         if (Number(p.PageID) === PageID) {
           p.IsPublished = isPublished ? 1 : 0;
-          p.StoreLogo = logoUrl;
+          p.StoreLogo = req.file ? req.file.path : logoUrl;
           // 新增：Mock 模式寫入主表聯絡資訊
           p.StoreEmail = storeEmail || "";
           p.StorePhone = storePhone || "";
@@ -615,7 +621,7 @@ router.post('/pages/:PageID/update', async (req, res) => {
     await StorePage.update(
       { 
         IsPublished: isPublished,
-        StoreLogo: logoUrl,
+        StoreLogo: finalLogoUrl, // 👈 改用這裡
         ThemeColor: themeColor || '冷靜石板', // 📥 直接使用解構出來的變數
         ThemeFont: themeFont || 'gothic',   // 📥 直接使用解構出來的變數
         // 新增：成功將前台傳回的聯絡資訊塞入實體主表！
@@ -628,15 +634,21 @@ router.post('/pages/:PageID/update', async (req, res) => {
       { where: { PageID: PageID } }
     );
 
-    // 2. 更新商店內容
-    await PageContent.update(
-      { 
-        PageTitle: shopName,
-        PageDescription: shopDesc,
-        UpdatedAt: Sequelize.literal('GETDATE()')
-      },
-      { where: { PageID: PageID } }
-    );
+    // 2. 更新商店內容（加上 ProductID: null 與 LanguageCode 限制，避免誤改商品資料）
+await PageContent.update(
+  { 
+    PageTitle: shopName,
+    PageDescription: shopDesc,
+    UpdatedAt: Sequelize.literal('GETDATE()')
+  },
+  { 
+    where: { 
+      PageID: PageID,
+      ProductID: null,         // 確保只修改商店主頁，不改到商品
+      LanguageCode: Lang       // 確保只修改當前編輯的語系
+    } 
+  }
+);
 
     return res.json({ success: true, message: isPublished ? '賣場已正式發布！' : '草稿儲存成功！' });
   } catch (err) {
