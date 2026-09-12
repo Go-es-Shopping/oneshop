@@ -1339,7 +1339,7 @@
 
   </div><!-- /page -->
 
-  <!-- 1. 優先載入多語言核心與字典檔 -->
+  <!-- 1. 確保優先載入多語言核心與字典檔 -->
   <script src="./i18n/i18n-core.js"></script>
   <script src="./i18n/sales.js"></script>
 
@@ -1353,14 +1353,14 @@
     }
 
     //--------- 跳轉回去帶有 sellerId 的首頁 ------------------
-    document.addEventListener('DOMContentLoaded', () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const urlSellerId = urlParams.get('sellerId');
+    document.addEventListener('DOMContentLoaded', function () {
+      var urlParams = new URLSearchParams(window.location.search);
+      var urlSellerId = urlParams.get('sellerId');
       if (urlSellerId) localStorage.setItem('sellerId', urlSellerId);
-      const sellerId = urlSellerId || localStorage.getItem('sellerId') || 15;
-      const backHomeLink = document.getElementById('backHomeLink');
+      var sellerId = urlSellerId || localStorage.getItem('sellerId') || 15;
+      var backHomeLink = document.getElementById('backHomeLink');
       if (backHomeLink) {
-        backHomeLink.href = `goez-home.html?sellerId=${sellerId}`;
+        backHomeLink.href = 'goez-home.html?sellerId=' + sellerId;
       }
     });
 
@@ -1389,6 +1389,7 @@
     ════════════════════════════════════════════════════════════════ */
     var API = '/api/analytics/overview';
 
+    // 🌟 關鍵補回：DEMO 示範資料
     var DEMO = {
       range: '30d',
       period: null,
@@ -1406,10 +1407,10 @@
         { name: '復古黃銅書籤', qtySold: 61, revenue: 18300 }
       ],
       lowPerformers: [
-        { name: '限量聯名帆布袋', views: 1240, qtySold: 4, conversionRate: 0.003, turnoverDays: null, tag: '有流量沒轉換' },
-        { name: '大型藤編收納籃', views: 210, qtySold: 9, conversionRate: 0.043, turnoverDays: 96, tag: '滯銷可下架' },
-        { name: '羊毛氈杯墊', views: 180, qtySold: 22, conversionRate: 0.122, turnoverDays: 68, tag: '滯銷不需補貨' },
-        { name: '陶瓷筷架 2 入', views: 96, qtySold: 14, conversionRate: 0.146, turnoverDays: 41, tag: '觀察中' }
+        { name: '限量聯名帆布袋', views: 1240, qtySold: 4, conversionRate: 0.003, turnoverDays: null, tag: 'HIGH_TRAFFIC_LOW_CONV' },
+        { name: '大型藤編收納籃', views: 210, qtySold: 9, conversionRate: 0.043, turnoverDays: 96, tag: 'STALE_LIQUIDATE' },
+        { name: '羊毛氈杯墊', views: 180, qtySold: 22, conversionRate: 0.122, turnoverDays: 68, tag: 'STALE_NO_RESTOCK' },
+        { name: '陶瓷筷架 2 入', views: 96, qtySold: 14, conversionRate: 0.146, turnoverDays: 41, tag: 'OBSERVING' }
       ],
       productShare: [
         { productId: 'p1', name: '手沖咖啡濾杯組', revenue: 187200, pct: 0.3471 },
@@ -1429,18 +1430,18 @@
       ],
       actions: {
         grow: [
-          t('actGrow1', '咖啡濾杯組、香氛蠟燭：追加庫存並投放廣告'),
-          t('actGrow2', '沿「咖啡器具」延伸：濾紙、手沖壺、電子秤'),
-          t('actGrow3', '推出濾杯＋蠟燭的生活組合包提高客單價')
+          'actGrow1:::咖啡濾杯組、香氛蠟燭：追加庫存並投放廣告',
+          'actGrow2:::沿「咖啡器具」延伸：濾紙、手沖壺、電子秤',
+          'actGrow3:::推出濾杯＋蠟燭的生活組合包提高客單價'
         ],
         optimize: [
-          t('actOpt1', '限量聯名帆布袋：流量足但轉換低，換主圖與售價測試 2 週'),
-          t('actOpt2', '陶瓷馬克杯：加入評價與情境照，推動往明星象限'),
-          t('actOpt3', '「手沖咖啡濾杯組」佔營收 35%，建議培養第二主力分散風險')
+          'actOpt1:::限量聯名帆布袋：流量足但轉換低，換主圖與售價測試 2 週',
+          'actOpt2:::陶瓷馬克杯：加入評價與情境照，推動往明星象限',
+          'actOpt3:::「手沖咖啡濾杯組」佔營收 35%，建議培養第二主力分散風險'
         ],
         cut: [
-          t('actCut1', '大型藤編收納籃、羊毛氈杯墊：週轉逾 60 天，不再補貨'),
-          t('actCut2', '清倉出清後將商品下架，讓版位留給明星商品')
+          'actCut1:::大型藤編收納籃、羊毛氈杯墊：週轉逾 60 天，不再補貨',
+          'actCut2:::清倉出清後將商品下架，讓版位留給明星商品'
         ]
       }
     };
@@ -1457,6 +1458,21 @@
     function pct(n, d) { return ((Number(n) || 0) * 100).toFixed(d == null ? 1 : d) + '%'; }
     function short(name) { return String(name || '').replace(/\s+/g, '').slice(0, 3); }
 
+    function getTagText(rawTag) {
+      if (!rawTag) return '';
+      var key = 'tag_' + rawTag;
+      var text = t(key, '');
+      if (text) return text;
+
+      var legacyMap = {
+        '有流量沒轉換': t('tag_HIGH_TRAFFIC_LOW_CONV', '有流量沒轉換'),
+        '滯銷可下架': t('tag_STALE_LIQUIDATE', '滯銷可下架'),
+        '滯銷不需補貨': t('tag_STALE_NO_RESTOCK', '滯銷不需補貨'),
+        '觀察中': t('tag_OBSERVING', '觀察中')
+      };
+      return legacyMap[rawTag] || rawTag;
+    }
+
     function deltaHTML(delta, isPoint) {
       if (delta == null || !isFinite(delta)) return '<div class="kpi__delta">' + t('kpiNoCompare', '— 無前期可比') + '</div>';
       var up = delta >= 0;
@@ -1470,16 +1486,6 @@
       if (el) el.className = 'data-status is-' + kind;
       var textEl = $('data-status-text');
       if (textEl) textEl.textContent = text;
-    }
-
-    function renderKPI(k) {
-      if (!k || !$('kpi-grid')) return;
-      $('kpi-grid').innerHTML = [
-        kpiCard(t('kpiRevenue', '營收'), ntd(k.revenue && k.revenue.value), deltaHTML(k.revenue && k.revenue.delta)),
-        kpiCard(t('kpiOrders', '訂單數'), (k.orders && k.orders.value != null ? k.orders.value : '—'), deltaHTML(k.orders && k.orders.delta)),
-        kpiCard(t('kpiActiveRate', '商品動銷率'), pct(k.activeRate && k.activeRate.value, 0), activeRateSub(k.activeRate)),
-        kpiCard(t('kpiAvgOrderValue', '平均客單價'), ntd(k.avgOrderValue && k.avgOrderValue.value), deltaHTML(k.avgOrderValue && k.avgOrderValue.delta))
-      ].join('');
     }
 
     function activeRateSub(a) {
@@ -1499,6 +1505,16 @@
     function kpiCard(label, value, deltaHtml) {
       return '<div class="kpi"><div class="kpi__label">' + esc(label) + '</div>' +
         '<div class="kpi__value">' + esc(value) + '</div>' + deltaHtml + '</div>';
+    }
+
+    function renderKPI(k) {
+      if (!k || !$('kpi-grid')) return;
+      $('kpi-grid').innerHTML = [
+        kpiCard(t('kpiRevenue', '營收'), ntd(k.revenue && k.revenue.value), deltaHTML(k.revenue && k.revenue.delta)),
+        kpiCard(t('kpiOrders', '訂單數'), (k.orders && k.orders.value != null ? k.orders.value : '—'), deltaHTML(k.orders && k.orders.delta)),
+        kpiCard(t('kpiActiveRate', '商品動銷率'), pct(k.activeRate && k.activeRate.value, 0), activeRateSub(k.activeRate)),
+        kpiCard(t('kpiAvgOrderValue', '平均客單價'), ntd(k.avgOrderValue && k.avgOrderValue.value), deltaHTML(k.avgOrderValue && k.avgOrderValue.delta))
+      ].join('');
     }
 
     function renderTop(list) {
@@ -1525,16 +1541,24 @@
     function renderStale(list) {
       var box = $('stale-list');
       if (!box) return;
-      if (!list || !list.length) { box.innerHTML = '<p class="card__empty">' + t('emptyNoStale', '目前沒有明顯滯銷或低轉換的商品 👍') + '</p>'; return; }
+      if (!list || !list.length) {
+        box.innerHTML = '<p class="card__empty">' + t('emptyNoStale', '目前沒有明顯滯銷或低轉換的商品 👍') + '</p>';
+        return;
+      }
       box.innerHTML = list.map(function (r) {
-        var isBad = String(r.tag || '').indexOf('滯銷') === 0;
+        var tagStr = String(r.tag || '');
+        var isBad = tagStr === 'STALE_LIQUIDATE' ||
+          tagStr === 'STALE_NO_RESTOCK' ||
+          tagStr.indexOf('滯銷') === 0;
+
         var meta = t('metaViews', '曝光') + ' ' + (Number(r.views) || 0).toLocaleString('en-US') + ' · ' +
           t('metaSold', '售出') + ' ' + (Number(r.qtySold) || 0) + ' ' + t('unitPiece', '件') + ' · ' +
           (r.turnoverDays != null ? t('metaTurnover', '週轉 {days} 天').replace('{days}', r.turnoverDays) : t('metaConversion', '轉換 {pct}').replace('{pct}', pct(r.conversionRate)));
+
         return '<div class="stale-row"><div>' +
           '<div class="stale-row__name">' + esc(r.name) + '</div>' +
           '<div class="stale-row__meta">' + esc(meta) + '</div></div>' +
-          '<span class="stale-row__tag ' + (isBad ? 'tag-bad' : 'tag-warn') + '">' + esc(r.tag) + '</span></div>';
+          '<span class="stale-row__tag ' + (isBad ? 'tag-bad' : 'tag-warn') + '">' + esc(getTagText(r.tag)) + '</span></div>';
       }).join('');
     }
 
@@ -1572,7 +1596,7 @@
       var top2 = list.slice(0, 2);
       var sum2 = top2.reduce(function (s, c) { return s + (Number(c.pct) || 0); }, 0);
       var txt = top2.length > 1
-        ? t('shareInsightCombined', '{names} 合計 {pct}，是你的營收主力。').replace('{names}', top2.map(c => c.name).join('＋')).replace('{pct}', pct(sum2, 0))
+        ? t('shareInsightCombined', '{names} 合計 {pct}，是你的營收主力。').replace('{names}', top2.map(function (c) { return c.name; }).join('＋')).replace('{pct}', pct(sum2, 0))
         : t('shareInsightSingle', '「{name}」佔營收 {pct}。').replace('{name}', top.name).replace('{pct}', pct(top.pct, 0));
       if (top.pct > 0.5) txt += ' ' + t('shareInsightHighConcentration', '單一商品集中度偏高，建議培養第二主力分散風險。');
       insight.textContent = txt;
@@ -1598,21 +1622,30 @@
       }).join('');
     }
 
+    function fillList(id, arr) {
+      var el = $(id);
+      if (!el) return;
+      if (!arr || !arr.length) { el.innerHTML = '<li>' + t('emptyNoAdvice', '目前沒有特別建議') + '</li>'; return; }
+      el.innerHTML = arr.map(function (item) {
+        var text = item;
+        if (typeof item === 'string' && item.indexOf(':::') > 0) {
+          var parts = item.split(':::');
+          text = t(parts[0], parts[1]);
+        }
+        return '<li>' + esc(text) + '</li>';
+      }).join('');
+    }
+
     function renderActions(a) {
       a = a || {};
       fillList('act-grow', a.grow);
       fillList('act-optimize', a.optimize);
       fillList('act-cut', a.cut);
     }
-    function fillList(id, arr) {
-      var el = $(id);
-      if (!el) return;
-      if (!arr || !arr.length) { el.innerHTML = '<li>' + t('emptyNoAdvice', '目前沒有特別建議') + '</li>'; return; }
-      el.innerHTML = arr.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('');
-    }
 
     var currentData = null;
     function render(data) {
+      if (!data) return;
       currentData = data;
       renderKPI(data.kpi);
       renderTop(data.topProducts);
@@ -1641,7 +1674,6 @@
 
       var range = $('range-select') ? $('range-select').value : '30d';
       try {
-        // 自動抓取當前語系代碼（支援 zh-Hant, en, ja）
         var currentLang = (window.GoezI18n && GoezI18n.currentLang) || localStorage.getItem('goezLang') || 'zh-Hant';
         var res = await fetch(API + '?range=' + encodeURIComponent(range) + '&lang=' + encodeURIComponent(currentLang), {
           headers: {
@@ -1682,7 +1714,7 @@
           r.traffic,
           r.conversionRate === '' ? '' : (r.conversionRate * 100).toFixed(2) + '%',
           r.turnoverDays,
-          r.tag,
+          getTagText(r.tag),
           r.from.join(' / ')
         ].map(csvCell).join(','));
       });
@@ -1755,16 +1787,12 @@
     if ($('mnav-refresh')) $('mnav-refresh').addEventListener('click', function (e) { e.preventDefault(); loadOverview(); });
     if ($('mnav-export')) $('mnav-export').addEventListener('click', function (e) { e.preventDefault(); exportCsv(); });
 
-    // ── 初始化自動套用多語言（標準公式）─────────────────────────
-    if (window.GoezI18n) {
+    // ── 初始化執行 ───────────────────────────────────────────────
+    if (window.GoezI18n && typeof GoezI18n.apply === 'function') {
       GoezI18n.apply();
-      document.title = GoezI18n.t('pageTitleSales');
+      document.title = GoezI18n.t('pageTitleSales', '銷售成效追蹤');
     }
 
-    // 先鋪一版 DEMO，再打 API 覆蓋
     render(DEMO);
     loadOverview();
   </script>
-</body>
-
-</html>
