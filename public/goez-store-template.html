@@ -2274,9 +2274,11 @@
         saveCart();
         updateCartUI();
 
-        if (typeof showToast === 'function') {
-          showToast(`✓ ${pName} 已加入購物車`, 'success');
-        }
+       if (typeof showToast === 'function') {
+  const t = (key, fallback) => (window.GoezI18n && typeof GoezI18n.t === 'function') ? GoezI18n.t(key, fallback) : fallback;
+  const msg = t('toastAddedToCart', '✓ {name} 已加入購物車').replace('{name}', pName);
+  showToast(msg, 'success');
+}
       }
 
       function removeFromCart(productId) {

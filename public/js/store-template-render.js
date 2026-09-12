@@ -5,17 +5,12 @@
  * 負責消費者前台（goez-store-template.html）的動態資料非同步撈取與介面渲染。
  * 
  * 【運作流程】
- * 1. 參數解析：從網址列抓取 pageId（或對應路由），向後端發送請求撈取該店家的完整設定。
- * 2. 佈景與主題色套用：即時動態注入主題色（--c-accent 系列變數）與字體樣式，防止畫面閃爍。
- * 3. 頁面元素繫結：將店名、Logo、簡介、聯絡資訊（信箱、電話）與 Copyright 注入對應的 DOM 節點。
- * 4. 商品列表渲染：動態將後端回傳的商品陣列轉換並繪製成前台的商品卡片與互動燈箱（Modal）。
- * 5. 優惠券動態掛載：自動依據店家真實的 SellerID 向後端撈取並渲染專屬的滿額/折扣優惠券清單。
- * 
- * 【注意事項】
- * * 本檔案僅負責「前台消費者的瀏覽、商品互動與優惠券領取」。
- * * 任何後台管理、欄位修改或裝潢儲存功能請一律參照後台對應控制檔。
+ * 1. 參數解析：從網址列抓取 pageId，向後端撈取店家設定。
+ * 2. 佈景與主題色套用：動態注入主題色與字體樣式。
+ * 3. 頁面元素繫結：店名、Logo、簡介、聯絡資訊等。
+ * 4. 商品列表渲染：支援平台介面多語言標籤（商品名稱/簡介維持原樣）。
+ * 5. 優惠券動態掛載：多語言優惠券規則與複製提示。
  * ====================================================================
- *  由 goez-store-template.html 引用
  */
 
 window.PRODUCTS = window.PRODUCTS || [];
@@ -23,15 +18,22 @@ let currentCategory = 'all';
 let modalProductId = null;
 let modalQtyVal = 1;
 
+// 安全取詞輔助函式
+function t(key, fallback) {
+    if (window.GoezI18n && typeof GoezI18n.t === 'function') {
+        return GoezI18n.t(key, fallback);
+    }
+    return fallback || '';
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
-    // 1. 先試著從網址查詢參數（Query String）抓取 pageId (例如 ?pageId=19)
+    // 1. 從 Query String 抓取 pageId
     const urlParams = new URLSearchParams(window.location.search);
     let pageId = urlParams.get('pageId');
 
-    // 2. 如果沒有，就從路徑（Pathname）中解析（例如 /store/retro -> 抓出 retro）
+    // 2. 從 Pathname 解析
     if (!pageId) {
         const pathParts = window.location.pathname.split('/');
-        // 如果路徑是 /store/retro，pathParts 會是 ['', 'store', 'retro']
         if (pathParts.length >= 3 && pathParts[1] === 'store') {
             pageId = pathParts[2];
         }
@@ -41,26 +43,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('網址沒有 pageId 或有效代號！');
         return;
     }
+
     try {
         const response = await fetch(`/api/store/template/${pageId}`);
         const result = await response.json();
 
         const data = result.success && result.data ? result.data : result;
         console.log("👉 後端回傳的完整 data 物件：", data);
-        window.PRODUCTS = data.products; // 確保把後端的商品陣列指定給全域變數 PRODUCTS
+        window.PRODUCTS = data.products || [];
 
-        // ==========================================
-        // 🎨 0. 優先執行：動態套用賣場主題色與字體 (防止畫面閃爍或未套用)
-        // ==========================================
+        // 🎨 0. 動態套用主題色與字體
         const themeColorName = data.ThemeColor || data.themeColor;
         const accentColor = data.accentColor || data.AccentColor;
         const themeFont = data.ThemeFont || data.themeFont;
 
-        // 定義主題色對應字典（加入 --c-accent 讓 footer 與按鈕同步變色）
         const themes = {
             '冷靜石板': {
                 '--c-accent': '#64748b',
-                '--c-accent-dark': '#475569', // 👈 補上這個
+                '--c-accent-dark': '#475569',
                 '--c-theme-1': '#64748b',
                 '--c-theme-2': '#94a3b8',
                 '--c-theme-3': '#cbd5e1',
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             },
             '鼠尾草綠': {
                 '--c-accent': '#869489',
-                '--c-accent-dark': '#657367', // 👈 補上這個
+                '--c-accent-dark': '#657367',
                 '--c-theme-1': '#869489',
                 '--c-theme-2': '#a3ad9e',
                 '--c-theme-3': '#c2c9bd',
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             },
             '陶土橘': {
                 '--c-accent': '#b38b7d',
-                '--c-accent-dark': '#8c685b', // 👈 補上這個
+                '--c-accent-dark': '#8c685b',
                 '--c-theme-1': '#b38b7d',
                 '--c-theme-2': '#d1b4a6',
                 '--c-theme-3': '#e5d3c8',
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             },
             '北歐沙色': {
                 '--c-accent': '#a8a29e',
-                '--c-accent-dark': '#78716c', // 👈 補上這個
+                '--c-accent-dark': '#78716c',
                 '--c-theme-1': '#a8a29e',
                 '--c-theme-2': '#d6d3d1',
                 '--c-theme-3': '#e7e5e4',
@@ -92,7 +92,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         };
 
-        // 優先套用「整套主題色系列」
         let applied = false;
         if (themeColorName && themes[themeColorName]) {
             const selectedTheme = themes[themeColorName];
@@ -102,24 +101,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             applied = true;
         }
 
-        // 如果沒有對應的主題名稱，但有單獨的 accentColor，才用單一顏色補底
         if (!applied && accentColor) {
             document.documentElement.style.setProperty('--c-accent', accentColor);
         }
 
-        // 定義字體對應字典
         const fontFamilies = {
             'gothic': "'Noto Sans TC', sans-serif",
             'serif': "'Noto Serif TC', serif",
             'round': "'M PLUS Rounded 1c', 'Noto Sans TC', sans-serif"
         };
 
-        // 強制套用字體到整頁的所有元素（用 * 覆蓋掉子元件被寫死的字體）
         if (themeFont && fontFamilies[themeFont]) {
             const fontValue = fontFamilies[themeFont];
             document.body.style.fontFamily = fontValue;
 
-            // 建立一個即時注入的 style 標籤，強制讓所有標題與文字統一吃這個字體
             const styleId = 'dynamic-font-override';
             let styleTag = document.getElementById(styleId);
             if (!styleTag) {
@@ -133,7 +128,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             `;
         }
-        // 1. 填入店名
+
+        // 1. 填入店名（使用者自訂內容保持原樣）
         const nameEl = document.querySelector('.store-nav__name');
         if (nameEl && data.name) nameEl.textContent = data.name;
 
@@ -143,11 +139,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             logoContainer.innerHTML = `<img src="${data.logoUrl}" alt="Store Logo" style="width:100%; height:100%; object-fit:cover; border-radius:inherit;">`;
         }
 
-        // 3. 填入商店簡介
+        // 3. 填入商店簡介（使用者自訂內容保持原樣）
         const taglineEl = document.querySelector('.store-hero__tagline');
         if (taglineEl && data.tagline) taglineEl.textContent = data.tagline;
 
-        // 4. 🚀 Footer 聯絡資訊、簡介與店名
+        // 4. Footer 聯絡資訊
         const email = data.StoreEmail || data.storeEmail || '';
         const phone = data.StorePhone || data.storePhone || '';
         const tagline = data.tagline || '';
@@ -185,16 +181,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // 5. 轉換商品資料
         const rawProducts = data.products || [];
-
         window.PRODUCTS = rawProducts.map((p, index) => ({
             id: p.id || index,
             name: p.name || '新商品',
-            tag: '',
+            tag: p.tag || '',
             price: Number(p.price) || 0,
             origPrice: p.origPrice ? Number(p.origPrice) : null,
             stock: (p.stock !== undefined) ? p.stock : 0,
             badge: p.badge || null,
-            desc: p.description || '享受美好質感生活',
+            desc: p.description || '',
             img: p.imageUrl || '',
             emoji: '🛍️',
             gradientClass: 'placeholder-gradient-' + ((index % 4) + 1)
@@ -203,10 +198,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         // 6. 渲染商品與優惠券
         renderProducts('all');
 
-        // 👇 【修正】從後端回傳的商店資料中取得真正的 sellerID（支援大小寫屬性）
         const realSellerId = data.SellerID || data.sellerID;
         if (realSellerId) {
-            loadStoreCoupons(realSellerId); // 傳入真實的 SellerID（例如 15）
+            loadStoreCoupons(realSellerId);
         } else {
             console.error('無法從商店資料中取得 SellerID');
         }
@@ -215,8 +209,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-
-
 function renderProducts(category = 'all') {
     const grid = document.getElementById('productsGrid') || document.querySelector('.store-products__grid');
     if (!grid) {
@@ -224,7 +216,6 @@ function renderProducts(category = 'all') {
         return;
     }
 
-    // 【強制修正】確保網格容器本身有正確的 Grid 排版與顯示樣式，絕對不會隱形
     grid.style.display = 'grid';
     grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(260px, 1fr))';
     grid.style.gap = '24px';
@@ -236,11 +227,11 @@ function renderProducts(category = 'all') {
         : window.PRODUCTS.filter(p => p.tag === category);
 
     if (products.length === 0) {
-        grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:40px;color:var(--c-text-faint);font-family:\'Noto Sans TC\',sans-serif;">此區域暫無商品</p>';
+        grid.innerHTML = `<p style="grid-column:1/-1;text-align:center;padding:40px;color:var(--c-text-faint);font-family:'Noto Sans TC',sans-serif;" data-i18n="emptyProductsSection">${t('emptyProductsSection', '此區域暫無商品')}</p>`;
         return;
     }
 
-    grid.innerHTML = products.map((p, i) => `
+    grid.innerHTML = products.map((p) => `
         <article class="product-card" aria-label="${p.name}" onclick="openProductModal(${p.id})" style="cursor: pointer;">
           <div class="product-card__image-area ${p.img ? '' : 'product-card__image-area--empty ' + p.gradientClass}">
             ${p.img ? `<img src="${p.img}" alt="${p.name}">` : `<div class="placeholder-art">${p.emoji}</div>`}
@@ -249,10 +240,16 @@ function renderProducts(category = 'all') {
           <div class="product-card__body">
             <div class="product-card__meta">
               <div class="product-card__tag"><span class="product-card__tag-text">${p.tag}</span></div>
+              
+              <!-- 🌟 平台介面：售完與庫存走 i18n -->
               <span class="product-card__stock ${p.stock === 0 ? 'out-of-stock' : (p.stock <= 5 ? 'low' : '')}">
-  ${p.stock === 0 ? '已售完' : `剩餘 ${p.stock}`}
-</span>
+                ${p.stock === 0
+            ? `<span data-i18n="stockSoldOut">${t('stockSoldOut', '已售完')}</span>`
+            : `<span data-i18n="stockPrefix">${t('stockPrefix', '剩餘')}</span> ${p.stock}`
+        }
+              </span>
             </div>
+            <!-- 商品名稱與簡介：維持資料庫原文字串 -->
             <div class="product-card__name">${p.name}</div>
             <div style="color: var(--c-theme-2); font-size: 13px; font-family: 'Noto Sans TC', sans-serif; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; margin-top: -2px;">${p.desc}</div>
             <div class="product-card__footer">
@@ -260,14 +257,20 @@ function renderProducts(category = 'all') {
                 <span class="product-card__price">$${p.price.toLocaleString()}.00</span>
                 ${p.origPrice ? `<span class="product-card__price-orig">$${p.origPrice.toLocaleString()}</span>` : ''}
               </div>
-              <button class="product-card__cart-btn" type="button" aria-label="加入購物車"
-  ${p.stock === 0 ? 'disabled style="background-color: #cbd5e1; cursor: not-allowed;"' : `onclick="event.stopPropagation(); addToCart(${p.id})"`}>
+              <!-- 🌟 購物車按鈕 aria-label 走 i18n -->
+              <button class="product-card__cart-btn" type="button" aria-label="${t('btnAddToCart', '加入購物車')}" data-i18n-aria-label="btnAddToCart"
+                ${p.stock === 0 ? 'disabled style="background-color: #cbd5e1; cursor: not-allowed;"' : `onclick="event.stopPropagation(); addToCart(${p.id})"`}>
                 <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.33333 14.6667C5.70152 14.6667 6 14.3682 6 14C6 13.6318 5.70152 13.3333 5.33333 13.3333C4.96514 13.3333 4.66666 13.6318 4.66666 14C4.66666 14.3682 4.96514 14.6667 5.33333 14.6667Z" stroke="white" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M12.6667 14.6667C13.0349 14.6667 13.3333 14.3682 13.3333 14C13.3333 13.6318 13.0349 13.3333 12.6667 13.3333C12.2985 13.3333 12 13.6318 12 14C12 14.3682 12.2985 14.6667 12.6667 14.6667Z" stroke="white" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/><path d="M1.36667 1.36667H2.7L4.47334 9.64667C4.53839 9.94991 4.70712 10.221 4.95048 10.4132C5.19384 10.6055 5.49661 10.7069 5.80667 10.7H12.3267C12.6301 10.6995 12.9243 10.5955 13.1607 10.4052C13.397 10.2149 13.5614 9.94969 13.6267 9.65333L14.7267 4.7H3.41334" stroke="white" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </button>
             </div>
           </div>
         </article>
     `).join('');
+
+    // 🌟 渲染完畢立即套用多語言
+    if (window.GoezI18n && typeof GoezI18n.apply === 'function') {
+        GoezI18n.apply();
+    }
 }
 
 // 彈跳視窗控制
@@ -292,10 +295,10 @@ function openProductModal(productId) {
     const modalStock = document.getElementById('modalStock');
     if (modalStock) {
         if (p.stock === 0) {
-            modalStock.textContent = '已售完';
-            modalStock.style.color = '#ef4444'; // 顯示紅色警示
+            modalStock.innerHTML = `<span data-i18n="stockSoldOut">${t('stockSoldOut', '已售完')}</span>`;
+            modalStock.style.color = '#ef4444';
         } else {
-            modalStock.textContent = `剩餘 ${p.stock} 件`;
+            modalStock.innerHTML = `<span data-i18n="stockPrefix">${t('stockPrefix', '剩餘')}</span> ${p.stock} <span data-i18n="unitPiece">${t('unitPiece', '件')}</span>`;
             modalStock.style.color = '';
         }
     }
@@ -318,6 +321,10 @@ function openProductModal(productId) {
     if (modalOverlay) {
         modalOverlay.classList.add('open');
         document.body.style.overflow = 'hidden';
+    }
+
+    if (window.GoezI18n && typeof GoezI18n.apply === 'function') {
+        GoezI18n.apply();
     }
 }
 
@@ -357,29 +364,28 @@ function filterCategory(category, btn) {
 }
 
 /* ══════════════════════════════════
-    查看更多與 Toast 提示
+    Toast 提示
 ══════════════════════════════════ */
 function showToast(message) {
     let toast = document.getElementById('toast');
     if (!toast) {
-        // 如果頁面沒有 toast 元素，自動建立一個完美的漂浮小黑框
         toast = document.createElement('div');
         toast.id = 'toast';
         toast.style.cssText = `
-      position: fixed;
-      bottom: 40px;
-      left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: #364649ff;
-      color: #fff;
-      padding: 10px 24px;
-      border-radius: 30px;
-      font-size: 14px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      transition: transform 0.3s ease, opacity 0.3s ease;
-      opacity: 0;
-      z-index: 9999;
-    `;
+          position: fixed;
+          bottom: 40px;
+          left: 50%;
+          transform: translateX(-50%) translateY(100px);
+          background: #364649ff;
+          color: #fff;
+          padding: 10px 24px;
+          border-radius: 30px;
+          font-size: 14px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          transition: transform 0.3s ease, opacity 0.3s ease;
+          opacity: 0;
+          z-index: 9999;
+        `;
         document.body.appendChild(toast);
     }
 
@@ -387,7 +393,6 @@ function showToast(message) {
     toast.style.transform = 'translateX(-50%) translateY(0)';
     toast.style.opacity = '1';
 
-    // 1.5秒後自動收回
     setTimeout(() => {
         toast.style.transform = 'translateX(-50%) translateY(100px)';
         toast.style.opacity = '0';
@@ -395,7 +400,7 @@ function showToast(message) {
 }
 
 function showAllProducts() {
-    showToast('已顯示全部商品');
+    showToast(t('toastAllProductsShown', '已顯示全部商品'));
 }
 
 /* ══════════════════════════════════
@@ -410,20 +415,13 @@ async function loadStoreCoupons(sellerId) {
         if (!container) return;
 
         if (result.success && result.list && result.list.length > 0) {
-            container.innerHTML = ''; // 清空
-
-            console.log("準備渲染的優惠券資料：", result.list);
-
-            // 取得多語言文字的輔助函式
-            const t = (key, fallback) => (window.GoezI18n ? GoezI18n.t(key, fallback) : fallback);
+            container.innerHTML = '';
 
             result.list.forEach(coupon => {
                 let discountDesc = '';
                 if (coupon.DiscountType === 'percentage') {
-                    // 例如：全館精選商品 9 折 / 10% OFF Featured Items
                     discountDesc = t('couponBannerDiscountPercent', '全館精選商品 {val} 折').replace('{val}', coupon.DiscountValue);
                 } else {
-                    // 例如：滿 1000 元折 200 元 / $200 OFF over $1000
                     discountDesc = coupon.MinSpend
                         ? t('couponBannerDiscountMinSpend', '滿 {min} 元折 {val} 元')
                             .replace('{min}', coupon.MinSpend)
@@ -444,14 +442,15 @@ async function loadStoreCoupons(sellerId) {
                 const claimBtnText = t('btnClaimCoupon', '立即領取');
 
                 const bannerHTML = `
-          <div class="promo-banner" style="margin: 0 24px 40px; background: var(--c-accent, #869489) !important; border-radius: 24px; padding: 32px; display: flex; align-items: center; justify-content: space-between; gap: 16px; position: relative;">
-            <div class="promo-banner__text" style="position: relative; z-index: 1;">
-              <div class="promo-banner__title" style="font-size: 20px; font-weight: 900; color: #ffffff !important; margin-bottom: 6px;">${coupon.Title}</div>
-              <div class="promo-banner__sub" style="font-size: 13px; color: rgba(255,255,255,0.9) !important; line-height: 1.5;">${discountDesc}<br>${timeDesc}${ruleDesc}</div>
-            </div>
-            <button class="promo-banner__btn claim-btn" data-code="${coupon.Code}" style="background: #ffffff !important; color: var(--c-accent, #869489) !important; font-weight: 700; font-size: 14px; padding: 10px 20px; border-radius: 50px; border: none; cursor: pointer; white-space: nowrap;">${claimBtnText}</button>
-          </div>
-        `;
+                  <div class="promo-banner" style="margin: 0 24px 40px; background: var(--c-accent, #869489) !important; border-radius: 24px; padding: 32px; display: flex; align-items: center; justify-content: space-between; gap: 16px; position: relative;">
+                    <div class="promo-banner__text" style="position: relative; z-index: 1;">
+                      <!-- 優惠券標題維持原樣 -->
+                      <div class="promo-banner__title" style="font-size: 20px; font-weight: 900; color: #ffffff !important; margin-bottom: 6px;">${coupon.Title}</div>
+                      <div class="promo-banner__sub" style="font-size: 13px; color: rgba(255,255,255,0.9) !important; line-height: 1.5;">${discountDesc}<br>${timeDesc}${ruleDesc}</div>
+                    </div>
+                    <button class="promo-banner__btn claim-btn" data-code="${coupon.Code}" data-i18n="btnClaimCoupon" style="background: #ffffff !important; color: var(--c-accent, #869489) !important; font-weight: 700; font-size: 14px; padding: 10px 20px; border-radius: 50px; border: none; cursor: pointer; white-space: nowrap;">${claimBtnText}</button>
+                  </div>
+                `;
                 container.innerHTML += bannerHTML;
             });
 
@@ -459,13 +458,18 @@ async function loadStoreCoupons(sellerId) {
                 btn.addEventListener('click', function () {
                     const code = this.getAttribute('data-code');
                     navigator.clipboard.writeText(code).then(() => {
-                        showToast(`記住優惠碼：${code}`);
+                        showToast(t('toastCopiedCoupon', '已複製優惠碼：{code}').replace('{code}', code));
                     }).catch(err => {
                         console.error('複製失敗', err);
-                        prompt('請手動複製您的優惠碼：', code);
+                        prompt(t('promptCopyCoupon', '請手動複製您的優惠碼：'), code);
                     });
                 });
             });
+
+            // 🌟 優惠券載入完畢後套用多語言
+            if (window.GoezI18n && typeof GoezI18n.apply === 'function') {
+                GoezI18n.apply();
+            }
 
         } else {
             container.innerHTML = '';

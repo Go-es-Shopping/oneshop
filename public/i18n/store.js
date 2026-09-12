@@ -1,4 +1,4 @@
-//store.template.html
+// store.js - 賣場前台專用多語言字典檔
 (function () {
   if (!window.GoezI18n) return;
   GoezI18n.register({
@@ -13,12 +13,18 @@
       btnLearnBrand: '瞭解品牌',
       hotProductsTitle: '熱門商品',
       viewMore: '查看更多',
-      // Footer 導覽與版權
       loading: '載入中...',
-      previewQuickLinks: '快速連結',
-      previewLatestProducts: '最新商品',
-      previewPrivacy: '隱私條款',
-      previewContactUs: '聯絡我們',
+      toastAddedToCart: '✓ {name} 已加入購物車',    
+
+      // ── 平台商品與卡片狀態 ──
+      emptyProductsSection: '此區域暫無商品',
+      stockSoldOut: '已售完',
+      stockPrefix: '剩餘',
+      unitPiece: '件',
+      btnAddToCart: '加入購物車',
+      toastAllProductsShown: '已顯示全部商品',
+
+      // ── 優惠券橫幅 ──
       btnClaimCoupon: '立即領取',
       couponBannerDiscountPercent: '全館精選商品 {val} 折',
       couponBannerDiscountMinSpend: '滿 {min} 元折 {val} 元',
@@ -26,22 +32,31 @@
       couponBannerValidity: '使用期限：',
       couponBannerAlwaysValid: '期限內皆可使用',
       couponBannerNoCombine: '不可與其他優惠券並用',
-      footerQuickLinks: '快速連結',
-      footerLatestProducts: '最新商品',
-      footerPrivacy: '隱私條款',
-      footerContactUs: '聯絡我們',
-      footerRights: 'All rights reserved. Powered by Figma Make.',
+      toastCopiedCoupon: '已複製優惠碼：{code}',
+      promptCopyCoupon: '請手動複製您的優惠碼：',
+
+      // ── 搜尋覆蓋層 ──
+      searchPlaceholder: '搜尋商品…',
+      searchPrompt: '輸入關鍵字搜尋商品',
+      searchNoResult: '找不到「{query}」的相關商品',
+
+      // ── 購物車抽屜 ──
       cartDrawerTitle: '購物車',
       modalCloseAria: '關閉',
       cartEmpty: '購物車是空的',
       cartDrawerTotalLabel: '合計金額',
       btnGoToCheckout: '前往結帳',
-      searchPlaceholder: '搜尋商品…',
-      searchPrompt: '輸入關鍵字搜尋商品',
-      searchNoResult: '查無符合商品',
-      btnAddToCart: '加入購物車',
-      searchPrompt: '輸入關鍵字搜尋商品',
-      searchNoResult: '找不到「{query}」的相關商品'
+
+      // ── 頁尾 ──
+      previewQuickLinks: '快速連結',
+      previewLatestProducts: '最新商品',
+      previewPrivacy: '隱私條款',
+      previewContactUs: '聯絡我們',
+      footerQuickLinks: '快速連結',
+      footerLatestProducts: '最新商品',
+      footerPrivacy: '隱私條款',
+      footerContactUs: '聯絡我們',
+      footerRights: 'All rights reserved. Powered by Figma Make.'
     },
     en: {
       pageTitleStore: 'Goez Shop - Online Store',
@@ -54,35 +69,50 @@
       btnLearnBrand: 'About Brand',
       hotProductsTitle: 'Hot Products',
       viewMore: 'View More',
-      // Footer Links & Copyright
       loading: 'Loading...',
-      previewQuickLinks: 'Quick Links',
-      previewLatestProducts: 'Latest Products',
-      previewPrivacy: 'Privacy Policy',
-      previewContactUs: 'Contact Us',
+      toastAddedToCart: '✓ {name} added to cart',
+
+      // ── Platform Products & Status ──
+      emptyProductsSection: 'No products in this section',
+      stockSoldOut: 'Sold Out',
+      stockPrefix: 'Stock:',
+      unitPiece: 'pcs',
+      btnAddToCart: 'Add to Cart',
+      toastAllProductsShown: 'All products are now displayed',
+
+      // ── Coupon Banner ──
       btnClaimCoupon: 'Claim Now',
-      couponBannerDiscountPercent: '{val}0% OFF on Selected Items',
-      couponBannerDiscountMinSpend: '${val} OFF on orders over ${min}',
+      couponBannerDiscountPercent: '{val}% OFF featured items',
+      couponBannerDiscountMinSpend: '${val} OFF orders over ${min}',
       couponBannerDiscountFixed: '${val} OFF',
       couponBannerValidity: 'Valid: ',
-      couponBannerAlwaysValid: 'Valid within promotion period',
+      couponBannerAlwaysValid: 'Always valid during campaign',
       couponBannerNoCombine: 'Cannot be combined with other coupons',
-      footerQuickLinks: 'Quick Links',
-      footerLatestProducts: 'Latest Products',
-      footerPrivacy: 'Privacy Policy',
-      footerContactUs: 'Contact Us',
-      footerRights: 'All rights reserved. Powered by Figma Make.',
+      toastCopiedCoupon: 'Coupon code copied: {code}',
+      promptCopyCoupon: 'Please copy your code manually:',
+
+      // ── Search Overlay ──
+      searchPlaceholder: 'Search products...',
+      searchPrompt: 'Enter keywords to search products',
+      searchNoResult: 'No products found for "{query}"',
+
+      // ── Cart Drawer ──
       cartDrawerTitle: 'Shopping Cart',
       modalCloseAria: 'Close',
       cartEmpty: 'Your cart is empty',
       cartDrawerTotalLabel: 'Total',
       btnGoToCheckout: 'Checkout',
-      searchPlaceholder: 'Search products...',
-      searchPrompt: 'Enter keywords to search products',
-      searchNoResult: 'No products found',
-      btnAddToCart: 'Add to Cart',
-      searchPrompt: 'Enter keywords to search products',
-      searchNoResult: 'No products found for "{query}"'
+
+      // ── Footer ──
+      previewQuickLinks: 'Quick Links',
+      previewLatestProducts: 'Latest Products',
+      previewPrivacy: 'Privacy Policy',
+      previewContactUs: 'Contact Us',
+      footerQuickLinks: 'Quick Links',
+      footerLatestProducts: 'Latest Products',
+      footerPrivacy: 'Privacy Policy',
+      footerContactUs: 'Contact Us',
+      footerRights: 'All rights reserved. Powered by Figma Make.'
     },
     ja: {
       pageTitleStore: 'Goez Shop - オンラインストア',
@@ -95,35 +125,50 @@
       btnLearnBrand: 'ブランドについて',
       hotProductsTitle: 'おすすめ商品',
       viewMore: 'もっと見る',
-      // フッターリンク・著作権
       loading: '読み込み中...',
-      previewQuickLinks: 'クイックリンク',
-      previewLatestProducts: '新着商品',
-      previewPrivacy: 'プライバシーポリシー',
-      previewContactUs: 'お問い合わせ',
+      toastAddedToCart: '✓ {name} をカートに追加しました',
+
+      // ── プラットフォーム商品・状態 ──
+      emptyProductsSection: 'このエリアには商品がありません',
+      stockSoldOut: '売り切れ',
+      stockPrefix: '残り',
+      unitPiece: '点',
+      btnAddToCart: 'カートに追加',
+      toastAllProductsShown: '全商品を表示しました',
+
+      // ── クーポンバナー ──
       btnClaimCoupon: '今すぐ獲得',
-      couponBannerDiscountPercent: '厳選商品 {val} 割引',
+      couponBannerDiscountPercent: '対象商品 {val} 折',
       couponBannerDiscountMinSpend: '{min}円以上で {val}円引き',
       couponBannerDiscountFixed: '{val}円引き',
       couponBannerValidity: '有効期限：',
-      couponBannerAlwaysValid: '有効期間内利用可能',
+      couponBannerAlwaysValid: '期間中いつでも利用可能',
       couponBannerNoCombine: '他のクーポンと併用不可',
-      footerQuickLinks: 'クイックリンク',
-      footerLatestProducts: '新着商品',
-      footerPrivacy: 'プライバシーポリシー',
-      footerContactUs: 'お問い合わせ',
-      footerRights: 'All rights reserved. Powered by Figma Make.',
+      toastCopiedCoupon: 'クーポンコードをコピーしました：{code}',
+      promptCopyCoupon: 'クーポンコードを手動でコピーしてください：',
+
+      // ── 検索オーバーレイ ──
+      searchPlaceholder: '商品を検索…',
+      searchPrompt: 'キーワードを入力して商品を検索',
+      searchNoResult: '「{query}」に一致する商品が見つかりません',
+
+      // ── ショッピングカート ──
       cartDrawerTitle: 'ショッピングカート',
       modalCloseAria: '閉じる',
       cartEmpty: 'カートは空です',
       cartDrawerTotalLabel: '合計金額',
       btnGoToCheckout: 'レジに進む',
-      searchPlaceholder: '商品を検索…',
-      searchPrompt: 'キーワードを入力して商品を検索',
-      searchNoResult: '該当する商品がありません',
-      btnAddToCart: 'カートに追加',
-      searchPrompt: 'キーワードを入力して商品を検索',
-      searchNoResult: '「{query}」に一致する商品が見つかりません'
+
+      // ── フッター ──
+      previewQuickLinks: 'クイックリンク',
+      previewLatestProducts: '新着商品',
+      previewPrivacy: 'プライバシーポリシー',
+      previewContactUs: 'お問い合わせ',
+      footerQuickLinks: 'クイックリンク',
+      footerLatestProducts: '新着商品',
+      footerPrivacy: 'プライバシーポリシー',
+      footerContactUs: 'お問い合わせ',
+      footerRights: 'All rights reserved. Powered by Figma Make.'
     }
   });
 })();
