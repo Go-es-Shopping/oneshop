@@ -3,7 +3,7 @@
     GoezI18n.register({
         'zh-Hant': {
             pageTitleCouponManage: 'Goez Shop - 優惠券設定',
-            backHome: '‹ 返回會員首頁',
+            backHome: '‹ 返回首頁',
             pageTitle: '優惠券設定',
             pageSubtitle: '建立與管理優惠碼，設定折扣方式與使用期限。',
             btnAddCoupon: '＋ 新增優惠券',
@@ -56,7 +56,7 @@
         },
         en: {
             pageTitleCouponManage: 'Goez Shop - Coupon Settings',
-            backHome: '‹ Back to Member Home',
+            backHome: '‹ Back to Home',
             pageTitle: 'Coupon Settings',
             pageSubtitle: 'Create and manage promo codes, configure discount types and validity periods.',
             btnAddCoupon: '＋ Add Coupon',
@@ -109,7 +109,7 @@
         },
         ja: {
             pageTitleCouponManage: 'Goez Shop - クーポン管理',
-            backHome: '‹ マイページに戻る',
+            backHome: '‹ トップページ',
             pageTitle: 'クーポン設定',
             pageSubtitle: 'プロモコードを作成・管理し、割引方法と有効期限を設定します。',
             btnAddCoupon: '＋ クーポン新規作成',
