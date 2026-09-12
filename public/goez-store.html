@@ -2209,7 +2209,8 @@
       /* 讓點擊能穿透文字，直接點到輸入框 */
       font-weight: 300;
       /* 讓它看起來輕盈一點 */
-      font-size: 13px; /* 將提示詞字體縮小 */
+      font-size: 13px;
+      /* 將提示詞字體縮小 */
     }
 
     /* 當滑鼠點進去但還沒打字時，讓顏色再淡一點點 */
@@ -3407,10 +3408,12 @@
                 displayPrice = parseFloat(displayPrice).toFixed(2);
               }
 
+              // 1. 剩餘庫存（中：剩餘 10 / 英：Stock: 10 / 日：残り 10）
               const stockText = `${t('stockPrefix', '剩餘')} ${prod.Stock}`;
+              // 2. 暫無描述預設文字
               const descText = prod.ProductDescription || t('noDescPlaceholder', '暫無商品描述');
+              // 3. 卡片刪除按鈕文字
               const deleteBtnText = t('btnCardDelete', '刪除');
-
               const cardHtml = `
                 <div class="product-card" data-id="${prod.ProductID}" style="background: var(--c-white, #fff); border: 1px solid var(--c-border-light, #eaeaea); border-radius: 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.04); overflow: hidden; display: flex !important; flex-direction: column !important; align-items: stretch !important; cursor: pointer; width: 280px !important; box-sizing: border-box; position: relative; font-family: var(--f-body, sans-serif) !important; transition: transform 0.25s ease, box-shadow 0.25s ease;">
                   <!-- 商品圖片區 -->

@@ -1,3 +1,4 @@
+//store.template.html
 (function () {
   if (!window.GoezI18n) return;
   GoezI18n.register({
@@ -29,7 +30,18 @@
       footerLatestProducts: '最新商品',
       footerPrivacy: '隱私條款',
       footerContactUs: '聯絡我們',
-      footerRights: 'All rights reserved. Powered by Figma Make.'
+      footerRights: 'All rights reserved. Powered by Figma Make.',
+      cartDrawerTitle: '購物車',
+      modalCloseAria: '關閉',
+      cartEmpty: '購物車是空的',
+      cartDrawerTotalLabel: '合計金額',
+      btnGoToCheckout: '前往結帳',
+      searchPlaceholder: '搜尋商品…',
+      searchPrompt: '輸入關鍵字搜尋商品',
+      searchNoResult: '查無符合商品',
+      btnAddToCart: '加入購物車',
+      searchPrompt: '輸入關鍵字搜尋商品',
+      searchNoResult: '找不到「{query}」的相關商品'
     },
     en: {
       pageTitleStore: 'Goez Shop - Online Store',
@@ -59,7 +71,18 @@
       footerLatestProducts: 'Latest Products',
       footerPrivacy: 'Privacy Policy',
       footerContactUs: 'Contact Us',
-      footerRights: 'All rights reserved. Powered by Figma Make.'
+      footerRights: 'All rights reserved. Powered by Figma Make.',
+      cartDrawerTitle: 'Shopping Cart',
+      modalCloseAria: 'Close',
+      cartEmpty: 'Your cart is empty',
+      cartDrawerTotalLabel: 'Total',
+      btnGoToCheckout: 'Checkout',
+      searchPlaceholder: 'Search products...',
+      searchPrompt: 'Enter keywords to search products',
+      searchNoResult: 'No products found',
+      btnAddToCart: 'Add to Cart',
+      searchPrompt: 'Enter keywords to search products',
+      searchNoResult: 'No products found for "{query}"'
     },
     ja: {
       pageTitleStore: 'Goez Shop - オンラインストア',
@@ -89,7 +112,18 @@
       footerLatestProducts: '新着商品',
       footerPrivacy: 'プライバシーポリシー',
       footerContactUs: 'お問い合わせ',
-      footerRights: 'All rights reserved. Powered by Figma Make.'
+      footerRights: 'All rights reserved. Powered by Figma Make.',
+      cartDrawerTitle: 'ショッピングカート',
+      modalCloseAria: '閉じる',
+      cartEmpty: 'カートは空です',
+      cartDrawerTotalLabel: '合計金額',
+      btnGoToCheckout: 'レジに進む',
+      searchPlaceholder: '商品を検索…',
+      searchPrompt: 'キーワードを入力して商品を検索',
+      searchNoResult: '該当する商品がありません',
+      btnAddToCart: 'カートに追加',
+      searchPrompt: 'キーワードを入力して商品を検索',
+      searchNoResult: '「{query}」に一致する商品が見つかりません'
     }
   });
 })();

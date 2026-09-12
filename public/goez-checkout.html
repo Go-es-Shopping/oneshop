@@ -1855,37 +1855,29 @@
     }
 
     function handleGoBack() {
-      // 若有上一頁歷史紀錄，倒退回上一頁
       if (window.history.length > 1) {
         window.history.back();
       } else {
-        // 沒有上一頁紀錄時（例如直接輸入網址開頁面），保底退回賣場首頁
         window.location.href = 'goez-store-template.html';
       }
     }
-
-    /* ══════════════════════════════════
-       初始化：自動套用記憶中的多語言
-    ══════════════════════════════════ */
-    if (window.GoezI18n) {
-      GoezI18n.apply();
-      document.title = GoezI18n.t('pageTitleCheckout');
-    }
-    renderOrderSummary();
   </script>
 
-  <!-- 1. 引入 i18n 核心與字典檔 -->
+  <!-- 1. 核心在上方，字典在下方，確保先載入完成 -->
   <script src="./i18n/i18n-core.js"></script>
   <script src="./i18n/checkout.js"></script>
 
-  <!-- 2. 原本的結帳業務外部 JS 放在最底端 -->
+  <!-- 2. 原本的結帳業務外部 JS -->
   <script src="./js/checkout-manage.js"></script>
 
-  <!-- 3. 保底再次觸發全頁翻譯（確保外部 JS 渲染完成後不會被蓋回中文） -->
+  <!-- 3. 初始化：在核心與業務 JS 就緒後，自動套用多語言並渲染畫面 -->
   <script>
     if (window.GoezI18n) {
       GoezI18n.apply();
       document.title = GoezI18n.t('pageTitleCheckout');
+    }
+    if (typeof renderOrderSummary === 'function') {
+      renderOrderSummary();
     }
   </script>
 </body>
