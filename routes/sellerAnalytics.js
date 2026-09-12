@@ -306,15 +306,30 @@ function buildProductShare(rows, lang) {
   return head
 }
 
+// 後端 sellerAnalytics.js
 function tagFor({ views, cvr, turnoverDays }) {
-  if (views >= 500 && cvr < 0.01) return '有流量沒轉換'
-  if (turnoverDays === null && views < 50) return '滯銷不需補貨'
-  if (turnoverDays !== null && turnoverDays > 60) return '滯銷可下架'
-  if (turnoverDays !== null && turnoverDays > 30) return '觀察中'
-  return null
+  // 1. 高曝光低轉換
+  if (views >= 500 && cvr < 0.01) return 'HIGH_TRAFFIC_LOW_CONV';
+
+  // 2. 週轉天數過長（庫存呆滯）
+  if (turnoverDays !== null && turnoverDays > 60) return 'STALE_LIQUIDATE';
+
+  // 3. 週轉偏長但還在容忍範圍
+  if (turnoverDays !== null && turnoverDays > 30) return 'OBSERVING';
+
+  // 4. 無週轉天數（未曾售出）且長期無流量（可視需要加上上架時間判斷，避免誤殺新品）
+  if (turnoverDays === null && views < 50) return 'STALE_NO_RESTOCK';
+
+  return null;
 }
+
 function rankTag(tag) {
-  return { 滯銷可下架: 3, 滯銷不需補貨: 3, 有流量沒轉換: 2, 觀察中: 1 }[tag] || 0
+  return {
+    STALE_LIQUIDATE: 3,
+    STALE_NO_RESTOCK: 3,
+    HIGH_TRAFFIC_LOW_CONV: 2,
+    OBSERVING: 1
+  }[tag] || 0;
 }
 
 /**
@@ -360,9 +375,9 @@ function buildActions({ topProducts, lowPerformers, productShare }, lang = 'zh-T
 
   // 3. 優化與淘汰
   for (const r of lowPerformers) {
-    if (r.tag === '有流量沒轉換') {
+    if (r.tag === 'HIGH_TRAFFIC_LOW_CONV' || r.tag === '有流量沒轉換') {
       optimize.push(t.actOptTraffic(r.name, (r.conversionRate * 100).toFixed(1)))
-    } else if (r.tag && r.tag.startsWith('滯銷')) {
+    } else if (r.tag && (r.tag.startsWith('STALE_') || r.tag.startsWith('滯銷'))) {
       cut.push(t.actCutStale(r.name, r.turnoverDays))
     }
   }

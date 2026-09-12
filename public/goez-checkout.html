@@ -1247,27 +1247,27 @@
                 <label><span data-i18n="cityLabel">縣市</span> <span class="req">*</span></label>
                 <select id="fCity">
                   <option value="" data-i18n="citySelectDefault">請選擇縣市</option>
-                  <option>台北市</option>
-                  <option>新北市</option>
-                  <option>桃園市</option>
-                  <option>台中市</option>
-                  <option>台南市</option>
-                  <option>高雄市</option>
-                  <option>基隆市</option>
-                  <option>新竹市</option>
-                  <option>嘉義市</option>
-                  <option>新竹縣</option>
-                  <option>苗栗縣</option>
-                  <option>彰化縣</option>
-                  <option>南投縣</option>
-                  <option>雲林縣</option>
-                  <option>嘉義縣</option>
-                  <option>屏東縣</option>
-                  <option>宜蘭縣</option>
-                  <option>花蓮縣</option>
-                  <option>台東縣</option>
-                  <option>澎湖縣</option>
-                  <option>金門縣</option>
+                  <option value="台北市" data-i18n="cityTaipei">台北市</option>
+                  <option value="新北市" data-i18n="cityNewTaipei">新北市</option>
+                  <option value="桃園市" data-i18n="cityTaoyuan">桃園市</option>
+                  <option value="台中市" data-i18n="cityTaichung">台中市</option>
+                  <option value="台南市" data-i18n="cityTainan">台南市</option>
+                  <option value="高雄市" data-i18n="cityKaohsiung">高雄市</option>
+                  <option value="基隆市" data-i18n="cityKeelung">基隆市</option>
+                  <option value="新竹市" data-i18n="cityHsinchuCity">新竹市</option>
+                  <option value="嘉義市" data-i18n="cityChiayiCity">嘉義市</option>
+                  <option value="新竹縣" data-i18n="cityHsinchuCounty">新竹縣</option>
+                  <option value="苗栗縣" data-i18n="cityMiaoli">苗栗縣</option>
+                  <option value="彰化縣" data-i18n="cityChanghua">彰化縣</option>
+                  <option value="南投縣" data-i18n="cityNantou">南投縣</option>
+                  <option value="雲林縣" data-i18n="cityYunlin">雲林縣</option>
+                  <option value="嘉義縣" data-i18n="cityChiayiCounty">嘉義縣</option>
+                  <option value="屏東縣" data-i18n="cityPingtung">屏東縣</option>
+                  <option value="宜蘭縣" data-i18n="cityYilan">宜蘭縣</option>
+                  <option value="花蓮縣" data-i18n="cityHualien">花蓮縣</option>
+                  <option value="台東縣" data-i18n="cityTaitung">台東縣</option>
+                  <option value="澎湖縣" data-i18n="cityPenghu">澎湖縣</option>
+                  <option value="金門縣" data-i18n="cityKinmen">金門縣</option>
                 </select>
                 <span class="form-field__hint" data-i18n="cityHint">請選擇縣市</span>
               </div>
@@ -1652,31 +1652,61 @@
     }
 
     /* ══════════════════════════════════
-       優惠券
-    ══════════════════════════════════ */
+    優惠券模組（多語言支援）
+   ══════════════════════════════════ */
     const VALID_COUPONS = {
-      'GOEZ10': { type: 'percent', value: 10, label: '全單 9 折' },
-      'GOEZ100': { type: 'fixed', value: 100, label: '$100 折扣' },
-      'WELCOME': { type: 'fixed', value: 50, label: '新會員 $50 折' },
+      'GOEZ10': { type: 'percent', value: 10, labelKey: 'couponLabelGoez10', fallbackLabel: '全單 9 折' },
+      'GOEZ100': { type: 'fixed', value: 100, labelKey: 'couponLabelGoez100', fallbackLabel: '$100 折扣' },
+      'WELCOME': { type: 'fixed', value: 50, labelKey: 'couponLabelWelcome', fallbackLabel: '新會員 $50 折' },
     };
 
-    function applyCoupon() {
-      const code = document.getElementById('couponInput').value.trim().toUpperCase();
+    function getCouponLabel(coupon) {
+      return t(coupon.labelKey, coupon.fallbackLabel);
+    }
+
+    function updateCouponMsg() {
       const msgEl = document.getElementById('couponMsg');
-      if (!code) { msgEl.textContent = '請輸入優惠碼'; msgEl.className = 'coupon-msg err'; return; }
+      if (!msgEl || !appliedCoupon) return;
+      const coupon = VALID_COUPONS[appliedCoupon];
+      if (!coupon) return;
+
+      const label = getCouponLabel(coupon);
+      const msgTemplate = t('couponAppliedMsg', '✓ 優惠碼「{code}」已套用 — {label}，折抵 -${val}');
+      msgEl.textContent = msgTemplate
+        .replace('{code}', appliedCoupon)
+        .replace('{label}', label)
+        .replace('{val}', couponDiscount.toLocaleString());
+      msgEl.className = 'coupon-msg ok';
+    }
+
+    function applyCoupon() {
+      const inputEl = document.getElementById('couponInput');
+      const code = inputEl.value.trim().toUpperCase();
+      const msgEl = document.getElementById('couponMsg');
+
+      if (!code) {
+        msgEl.textContent = t('couponErrEmpty', '請輸入優惠碼');
+        msgEl.className = 'coupon-msg err';
+        return;
+      }
+
       const coupon = VALID_COUPONS[code];
       if (!coupon) {
-        couponDiscount = 0; appliedCoupon = '';
-        msgEl.textContent = '優惠碼無效或已過期'; msgEl.className = 'coupon-msg err';
-        renderTotals(); return;
+        couponDiscount = 0;
+        appliedCoupon = '';
+        msgEl.textContent = t('couponErrInvalid', '優惠碼無效或已過期');
+        msgEl.className = 'coupon-msg err';
+        renderTotals();
+        return;
       }
+
       const sub = calcSubtotal();
       couponDiscount = coupon.type === 'percent'
         ? Math.round(sub * coupon.value / 100)
         : Math.min(coupon.value, sub);
       appliedCoupon = code;
-      msgEl.textContent = `✓ 優惠碼「${code}」已套用 — ${coupon.label}，折抵 -$${couponDiscount}`;
-      msgEl.className = 'coupon-msg ok';
+
+      updateCouponMsg();
       renderTotals();
     }
 
@@ -1872,12 +1902,29 @@
 
   <!-- 3. 初始化：在核心與業務 JS 就緒後，自動套用多語言並渲染畫面 -->
   <script>
+    // 3-1. 初次載入自動套用
     if (window.GoezI18n) {
       GoezI18n.apply();
       document.title = GoezI18n.t('pageTitleCheckout');
     }
+
+    // 3-2. 渲染訂單摘要
     if (typeof renderOrderSummary === 'function') {
       renderOrderSummary();
+    }
+
+    // 🌟 3-3. 關鍵補充：監聽語系切換，同步即時重新計算金額與優惠券提示
+    if (window.GoezI18n && typeof GoezI18n.onLangChange === 'function') {
+      GoezI18n.onLangChange(function () {
+        GoezI18n.apply();
+        document.title = GoezI18n.t('pageTitleCheckout');
+        if (typeof renderTotals === 'function') {
+          renderTotals();
+        }
+        if (typeof updateCouponMsg === 'function') {
+          updateCouponMsg();
+        }
+      });
     }
   </script>
 </body>
