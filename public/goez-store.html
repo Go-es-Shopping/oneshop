@@ -2209,7 +2209,8 @@
       /* 讓點擊能穿透文字，直接點到輸入框 */
       font-weight: 300;
       /* 讓它看起來輕盈一點 */
-      font-size: 13px; /* 將提示詞字體縮小 */
+      font-size: 13px;
+      /* 將提示詞字體縮小 */
     }
 
     /* 當滑鼠點進去但還沒打字時，讓顏色再淡一點點 */
@@ -3397,8 +3398,7 @@
               targetContainer.style.gap = "20px";
               targetContainer.style.justifyContent = "flex-start";
             }
-
-            // 跑迴圈畫出商品卡片
+            // 跑迴圈畫出商品卡片（套用多語言動態詞彙）
             store.PageProducts.forEach(prod => {
               let displayPrice = prod.Price;
               if (typeof displayPrice === 'number' || (typeof displayPrice === 'string' && !displayPrice.includes('.'))) {
@@ -3407,10 +3407,10 @@
                 displayPrice = parseFloat(displayPrice).toFixed(2);
               }
 
-              const stockText = `${t('stockPrefix', '剩餘')} ${prod.Stock}`;
+              // 暫無描述預設文字
               const descText = prod.ProductDescription || t('noDescPlaceholder', '暫無商品描述');
-              const deleteBtnText = t('btnCardDelete', '刪除');
 
+              // 🌟 將整張卡片的 HTML 完整包裹在反引號內，並掛上 data-i18n
               const cardHtml = `
                 <div class="product-card" data-id="${prod.ProductID}" style="background: var(--c-white, #fff); border: 1px solid var(--c-border-light, #eaeaea); border-radius: 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.04); overflow: hidden; display: flex !important; flex-direction: column !important; align-items: stretch !important; cursor: pointer; width: 280px !important; box-sizing: border-box; position: relative; font-family: var(--f-body, sans-serif) !important; transition: transform 0.25s ease, box-shadow 0.25s ease;">
                   <!-- 商品圖片區 -->
@@ -3419,22 +3419,27 @@
                          alt="${prod.ProductName}" 
                          style="width: 100%; height: 100%; object-fit: cover;">
                   </div>
-                  
+
                   <!-- 商品文字與資訊主體 -->
                   <div style="padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 8px;">
+                    <!-- 名稱與剩餘數量行 -->
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
                       <h4 class="product-card__name" style="margin: 0; font-family: 'Noto Sans TC', sans-serif; font-weight: 700; font-size: 16px; color: #333; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${prod.ProductName}</h4>
-                      <span class="product-card__stock" style="font-family: 'Noto Sans TC', sans-serif; font-weight: 400; font-size: 12px; color: #888; white-space: nowrap; margin-top: 2px;">${stockText}</span>
+                      <span class="product-card__stock" style="font-family: 'Noto Sans TC', sans-serif; font-weight: 400; font-size: 12px; color: #888; white-space: nowrap; margin-top: 2px;">
+                        <span data-i18n="stockPrefix">剩餘</span> ${prod.Stock}
+                      </span>
                     </div>
-                    
+
+                    <!-- 商品描述欄位 -->
                     <p style="color: #888; font-size: 12px; margin: 0; font-family: 'Noto Sans TC', sans-serif; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 34px;">
                       ${descText}
                     </p>
-                    
+
+                    <!-- 價格與刪除按鈕 -->
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px;">
                       <div style="display: flex; align-items: center; gap: 8px;">
                         <span class="product-card__price" style="font-family: 'Noto Sans TC', sans-serif; font-weight: 900; font-size: 18px; color: ${dbColor}; line-height: 1;">$${displayPrice}</span>
-                        <button class="delete-product-btn" data-id="${prod.ProductID}" style="background: #ff4d4f; color: white; border: none; padding: 4px 8px; border-radius: 8px; cursor: pointer; font-size: 12px;">${deleteBtnText}</button>
+                        <button class="delete-product-btn" data-id="${prod.ProductID}" data-i18n="btnCardDelete" style="background: #ff4d4f; color: white; border: none; padding: 4px 8px; border-radius: 8px; cursor: pointer; font-size: 12px;">刪除</button>
                       </div>
                       <button class="add-to-cart-btn" style="position: absolute; right: 16px; bottom: 16px; background: var(--c-theme-1, #2b4c7e); border-radius: 14px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.12); flex-shrink: 0; transition: transform 0.15s ease;">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -3449,6 +3454,11 @@
               `;
               targetContainer.insertAdjacentHTML('beforeend', cardHtml);
             });
+
+            // 🌟 卡片生成完成後，立即套用一次多語言（確保「剩餘」與「刪除」翻譯成功）
+            if (window.GoezI18n && typeof GoezI18n.apply === 'function') {
+              GoezI18n.apply();
+            }
 
             // 樣式校正防禦
             const currentProductCards = targetContainer.querySelectorAll('.product-card');
@@ -3485,7 +3495,6 @@
       }
     });
   </script>
-
   <script>
     // ── 2. 購物車數量計數 ──
     (function () {
@@ -3671,16 +3680,45 @@
     })();
   </script>
 
-  <!-- 1. 唯一且正確的 i18n 引入位置 -->
+  <!-- 1. 優先載入 i18n 核心與字典檔 -->
   <script src="./i18n/i18n-core.js"></script>
   <script src="./i18n/storeEditor.js"></script>
 
-  <!-- 2. 頁面控制與字體/視圖切換 -->
+  <!-- 2. 引入編輯器主要業務邏輯 (請確認路徑與檔名) -->
+  <script src="./js/store-editor.js"></script>
+
+  <!-- 3. 頁面控制、字體與視圖切換 -->
   <script>
-    // 自動套用語言
+    // 讓 contenteditable 的 data-placeholder 支援多語言切換
+    function updateEditablePlaceholders() {
+      if (!window.GoezI18n) return;
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
+        var key = el.getAttribute('data-i18n-placeholder');
+        var translated = GoezI18n.t(key);
+        if (translated && translated !== key) {
+          el.setAttribute('data-placeholder', translated);
+        }
+      });
+    }
+
+    // 自動套用語言與網頁標題
     if (window.GoezI18n) {
       GoezI18n.apply();
       document.title = GoezI18n.t('pageTitleEditor');
+      if (typeof updateEditablePlaceholders === 'function') {
+        updateEditablePlaceholders();
+      }
+    }
+
+    // 🌟 關鍵修正：語言切換時，同時執行全頁翻譯與更新提示詞
+    if (window.GoezI18n && GoezI18n.onLangChange) {
+      GoezI18n.onLangChange(function () {
+        GoezI18n.apply(); // 讓商品卡片上的「剩餘」、「刪除」等 data-i18n 標籤即時切換
+        document.title = GoezI18n.t('pageTitleEditor');
+        if (typeof updateEditablePlaceholders === 'function') {
+          updateEditablePlaceholders();
+        }
+      });
     }
 
     // 字體設定資料庫

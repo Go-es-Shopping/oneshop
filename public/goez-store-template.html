@@ -656,7 +656,7 @@
       /* 補上標準屬性即可消除大多數 Linter 警告 */
       overflow: hidden;
       margin-top: -6px;
-       /* 讓商品名稱往上移動，貼近上方空間 */
+      /* 讓商品名稱往上移動，貼近上方空間 */
     }
 
     .product-card__footer {
@@ -1813,26 +1813,28 @@
      CART DRAWER
 ══════════════════════════════════ -->
   <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
-  <aside class="cart-drawer" id="cartDrawer" aria-label="購物車">
+  <aside class="cart-drawer" id="cartDrawer" aria-label="購物車" data-i18n-aria-label="cartDrawerTitle">
     <div class="cart-drawer__header">
       <div class="cart-drawer__title">
-        購物車 <span class="cart-drawer__count" id="cartCountBadge">0</span>
+        <span data-i18n="cartDrawerTitle">購物車</span>
+        <span class="cart-drawer__count" id="cartCountBadge">0</span>
       </div>
-      <button class="cart-drawer__close" onclick="closeCart()" aria-label="關閉">✕</button>
+      <button class="cart-drawer__close" onclick="closeCart()" aria-label="關閉"
+        data-i18n-aria-label="modalCloseAria">✕</button>
     </div>
     <div class="cart-drawer__body" id="cartBody">
       <div class="cart-empty" id="cartEmpty">
         <div class="cart-empty__icon">🛒</div>
-        <div class="cart-empty__text">購物車是空的</div>
+        <div class="cart-empty__text" data-i18n="cartEmpty">購物車是空的</div>
       </div>
       <div id="cartItems"></div>
     </div>
     <div class="cart-drawer__footer" id="cartFooter" style="display:none">
       <div class="cart-drawer__summary">
-        <span class="cart-drawer__summary-label">合計金額</span>
+        <span class="cart-drawer__summary-label" data-i18n="cartDrawerTotalLabel">合計金額</span>
         <span class="cart-drawer__total" id="cartTotal">$0</span>
       </div>
-      <button class="cart-drawer__checkout" onclick="checkout()">前往結帳</button>
+      <button class="cart-drawer__checkout" onclick="checkout()" data-i18n="btnGoToCheckout">前往結帳</button>
     </div>
   </aside>
 
@@ -1844,11 +1846,12 @@
       <div class="search-box__input-row">
         <span class="search-box__icon">🔍</span>
         <input class="search-box__input" id="searchInput" type="text" placeholder="搜尋商品…"
-          oninput="doSearch(this.value)" />
-        <button class="search-box__close" onclick="closeSearch()" aria-label="關閉搜尋">✕</button>
+          data-i18n-placeholder="searchPlaceholder" oninput="doSearch(this.value)" />
+        <button class="search-box__close" onclick="closeSearch()" aria-label="關閉搜尋"
+          data-i18n-aria-label="modalCloseAria">✕</button>
       </div>
       <div class="search-box__results" id="searchResults">
-        <div class="search-no-results">輸入關鍵字搜尋商品</div>
+        <div class="search-no-results" data-i18n="searchPrompt">輸入關鍵字搜尋商品</div>
       </div>
     </div>
   </div>
@@ -1860,7 +1863,8 @@
     <div class="product-modal" id="productModal">
       <div class="product-modal__img" id="modalImg">
         <div class="product-modal__img-placeholder" id="modalImgPlaceholder"></div>
-        <button class="product-modal__close-btn" onclick="closeModal()" aria-label="關閉">✕</button>
+        <button class="product-modal__close-btn" onclick="closeModal()" aria-label="關閉"
+          data-i18n-aria-label="modalCloseAria">✕</button>
       </div>
       <div class="product-modal__body">
         <div class="product-modal__tag" id="modalTag"></div>
@@ -1876,7 +1880,7 @@
             <span class="product-modal__qty-num" id="modalQty">1</span>
             <button class="product-modal__qty-btn" onclick="changeModalQty(1)">+</button>
           </div>
-          <button class="product-modal__add-btn" id="modalAddBtn" onclick="addModalToCart()">
+          <button class="product-modal__add-btn" id="modalAddBtn" onclick="addModalToCart()" data-i18n="btnAddToCart">
             加入購物車
           </button>
         </div>
@@ -2270,9 +2274,11 @@
         saveCart();
         updateCartUI();
 
-        if (typeof showToast === 'function') {
-          showToast(`✓ ${pName} 已加入購物車`, 'success');
-        }
+       if (typeof showToast === 'function') {
+  const t = (key, fallback) => (window.GoezI18n && typeof GoezI18n.t === 'function') ? GoezI18n.t(key, fallback) : fallback;
+  const msg = t('toastAddedToCart', '✓ {name} 已加入購物車').replace('{name}', pName);
+  showToast(msg, 'success');
+}
       }
 
       function removeFromCart(productId) {
@@ -2438,36 +2444,42 @@
         if (e.target === document.getElementById('searchOverlay')) closeSearch();
       }
 
-      function doSearch(query) {
-        const results = document.getElementById('searchResults');
-        const q = query.trim().toLowerCase();
-        if (!q) {
-          results.innerHTML = '<div class="search-no-results">輸入關鍵字搜尋商品</div>';
-          return;
-        }
+     function doSearch(query) {
+  const results = document.getElementById('searchResults');
+  const q = query.trim().toLowerCase();
 
-        // 🚀 關鍵修改：明確強制讀取 window.PRODUCTS
-        const targetProducts = window.PRODUCTS || [];
+  // 取得多語言輔助函式
+  const t = (key, fallback) => (window.GoezI18n && typeof GoezI18n.t === 'function') ? GoezI18n.t(key, fallback) : fallback;
 
-        const matches = targetProducts.filter(p =>
-          (p.name && p.name.toLowerCase().includes(q)) ||
-          (p.tag && p.tag.toLowerCase().includes(q)) ||
-          (p.category && p.category.toLowerCase().includes(q)) ||
-          (p.desc && p.desc.toLowerCase().includes(q)) ||
-          (p.description && p.description.toLowerCase().includes(q))
-        );
+  if (!q) {
+    results.innerHTML = `<div class="search-no-results">${t('searchPrompt', '輸入關鍵字搜尋商品')}</div>`;
+    return;
+  }
 
-        if (matches.length === 0) {
-          results.innerHTML = `<div class="search-no-results">找不到「${query}」的相關商品</div>`;
-          return;
-        }
+  // 🚀 強制讀取 window.PRODUCTS
+  const targetProducts = window.PRODUCTS || [];
 
-        results.innerHTML = matches.map(p => {
-          const imgSrc = p.img || p.imageUrl || '';
-          const itemTag = p.tag || p.category || '';
-          const itemPrice = p.price ? Number(p.price).toLocaleString() : '0';
+  const matches = targetProducts.filter(p =>
+    (p.name && p.name.toLowerCase().includes(q)) ||
+    (p.tag && p.tag.toLowerCase().includes(q)) ||
+    (p.category && p.category.toLowerCase().includes(q)) ||
+    (p.desc && p.desc.toLowerCase().includes(q)) ||
+    (p.description && p.description.toLowerCase().includes(q))
+  );
 
-          return `
+  if (matches.length === 0) {
+    // 🌟 關鍵修改：多語言提示「找不到相關商品」
+    const noResultText = t('searchNoResult', '找不到「{query}」的相關商品').replace('{query}', query);
+    results.innerHTML = `<div class="search-no-results">${noResultText}</div>`;
+    return;
+  }
+
+  results.innerHTML = matches.map(p => {
+    const imgSrc = p.img || p.imageUrl || '';
+    const itemTag = p.tag || p.category || '';
+    const itemPrice = p.price ? Number(p.price).toLocaleString() : '0';
+
+    return `
       <div class="search-result-item" onclick="openProductModal(${p.id}); closeSearch();">
         <div class="search-result-item__img ${imgSrc ? '' : (p.gradientClass || '')}">
           ${imgSrc ? `<img src="${imgSrc}" alt="${p.name}">` : (p.emoji || '📦')}
@@ -2479,9 +2491,8 @@
         <span class="search-result-item__price">$${itemPrice}.00</span>
       </div>
     `;
-        }).join('');
-      }
-
+  }).join('');
+}
       document.addEventListener('keydown', e => {
         if (e.key === 'Escape') {
           closeSearch();
