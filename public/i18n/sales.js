@@ -6,7 +6,7 @@
             logout: '登出',
             // 工具列與導覽
             editorBrandName: '銷售成效追蹤',
-            backHomeLink: '‹ 返回會員首頁',
+            backHomeLink: '‹ 返回首頁',
             navBackToEditor: '回到賣場編輯',
             btnRefresh: '重新整理',
             btnExport: '匯出報表',
@@ -32,6 +32,12 @@
             hintQuadrantAxis: 'X：流量／曝光 Y：轉換率',
             cardActionsTitle: '建議行動',
             hintActionsSummary: '依上方分析自動歸納',
+            // 🌟 低表現商品標籤
+            // 🌟 低表現商品標籤
+            tag_HIGH_TRAFFIC_LOW_CONV: '有流量沒轉換',
+            tag_STALE_LIQUIDATE: '滯銷可下架',
+            tag_STALE_NO_RESTOCK: '滯銷不需補貨',
+            tag_OBSERVING: '觀察中',
             // 象限圖文字
             quadNiche: '小眾但穩定',
             quadStar: '明星商品',
@@ -86,7 +92,7 @@
             pageTitleSales: 'Goez Shop — Sales Performance Analytics',
             logout: 'Log out',
             editorBrandName: 'Sales Performance Analytics',
-            backHomeLink: '‹ Back to Member Home',
+            backHomeLink: '‹ Back to Home',
             navBackToEditor: 'Back to Store Editor',
             btnRefresh: 'Refresh',
             btnExport: 'Export Report',
@@ -110,6 +116,11 @@
             hintQuadrantAxis: 'X: Traffic / Views   Y: Conversion Rate',
             cardActionsTitle: 'Recommended Actions',
             hintActionsSummary: 'Automatically deduced from analysis above',
+            // 🌟 Low Performer Tags
+            tag_HIGH_TRAFFIC_LOW_CONV: 'High Traffic Low Conv.',
+            tag_STALE_LIQUIDATE: 'Stale / Liquidate',
+            tag_STALE_NO_RESTOCK: 'Stale / Do Not Restock',
+            tag_OBSERVING: 'Observing',
             quadNiche: 'Niche & Steady',
             quadStar: 'Star Products',
             quadStaleCandidate: 'Clearance Candidate',
@@ -157,7 +168,7 @@
             pageTitleSales: 'Goez Shop — 売上実績分析',
             logout: 'ログアウト',
             editorBrandName: '売上実績分析',
-            backHomeLink: '‹ マイページに戻る',
+            backHomeLink: '‹ トップページ',
             navBackToEditor: 'ショップ編集に戻る',
             btnRefresh: '更新',
             btnExport: 'レポート出力',
@@ -181,6 +192,11 @@
             hintQuadrantAxis: 'X：PV／アクセス数 Y：転換率',
             cardActionsTitle: '推奨アクション',
             hintActionsSummary: '上記分析より自動集計',
+            // 🌟 滞留商品タグ
+            tag_HIGH_TRAFFIC_LOW_CONV: '高露出・低転換',
+            tag_STALE_LIQUIDATE: '滞留品・掲載終了可',
+            tag_STALE_NO_RESTOCK: '滞留品・補充不要',
+            tag_OBSERVING: '経過観察中',
             quadNiche: 'ニッチ・安定',
             quadStar: '花形商品',
             quadStaleCandidate: '滞留候補',

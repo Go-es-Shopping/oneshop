@@ -146,6 +146,23 @@
             maximumFractionDigits: 2
         });
 
+        // 格式化為 24 小時制：YYYY/MM/DD HH:mm:ss
+        function format24DateTime(iso) {
+            if (!iso) return '-';
+            const d = new Date(iso);
+            if (isNaN(d.getTime())) return '-';
+
+            const pad = (n) => String(n).padStart(2, '0');
+            const year = d.getFullYear();
+            const month = pad(d.getMonth() + 1);
+            const day = pad(d.getDate());
+            const hours = pad(d.getHours());     // 24 小時制 (00-23)
+            const minutes = pad(d.getMinutes());
+            const seconds = pad(d.getSeconds());
+
+            return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             // 自動套用當前語系
             if (window.GoezI18n) {

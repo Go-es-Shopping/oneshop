@@ -2210,7 +2210,7 @@
       font-weight: 300;
       /* 讓它看起來輕盈一點 */
       font-size: 13px;
-      /* 將提示詞字體縮小 */
+      /* 🌟 加上這行！將提示詞縮小（可依視覺調整成 12px 或 13px） */
     }
 
     /* 當滑鼠點進去但還沒打字時，讓顏色再淡一點點 */
@@ -3500,13 +3500,51 @@
     (function () {
       var cartCount = 0;
 
-      function updateCartBadge() {
+function updateCartBadge() {
         var desktopSpan = document.getElementById('cart-count-desktop');
         var mobileBadge = document.getElementById('cart-badge-mobile');
         var desktopBadge = document.getElementById('cart-badge-desktop');
         if (desktopSpan) desktopSpan.textContent = cartCount;
         if (mobileBadge) mobileBadge.textContent = cartCount;
         if (desktopBadge) desktopBadge.setAttribute('aria-label', '購物車 ' + cartCount + ' 件');
+      }
+    </script>
+
+    <!-- 1. 唯一且正確的 i18n 引入位置 -->
+    <script src="./i18n/i18n-core.js"></script>
+    <script src="./i18n/storeEditor.js"></script>
+
+    <!-- 2. 引入編輯器主要邏輯 (請確認檔名是 store-editor.js) -->
+    <script src="./js/store-editor.js"></script>
+
+    <!-- 3. 頁面控制與字體/視圖切換 -->
+    <script>
+      // 讓 contenteditable 的 data-placeholder 支援多語言
+      function updateEditablePlaceholders() {
+        if (!window.GoezI18n) return;
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
+          var key = el.getAttribute('data-i18n-placeholder');
+          var translated = GoezI18n.t(key);
+          if (translated && translated !== key) {
+            el.setAttribute('data-placeholder', translated);
+          }
+        });
+      }
+
+      // 自動套用語言
+      if (window.GoezI18n) {
+        GoezI18n.apply();
+        document.title = GoezI18n.t('pageTitleEditor');
+        updateEditablePlaceholders(); // 頁面載入時同步替換提示詞
+      }
+
+      // 監聽語言切換選單（切換語言時同步全頁翻譯與更新提示詞）
+      if (window.GoezI18n && GoezI18n.onLangChange) {
+        GoezI18n.onLangChange(function () {
+          GoezI18n.apply();
+          document.title = GoezI18n.t('pageTitleEditor');
+          updateEditablePlaceholders();
+        });
       }
 
       document.addEventListener('click', function (e) {
