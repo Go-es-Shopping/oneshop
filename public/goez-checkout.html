@@ -1721,11 +1721,7 @@
     }
   </script>
 
-  <!-- 1. 引入多語言核心與結帳頁字典檔 -->
-  <script src="./i18n/i18n-core.js"></script>
-  <script src="./i18n/checkout.js"></script>
-
-  <!-- 2. 將所有 JavaScript 函式完整包在 <script> 標籤裡面 -->
+  <!--  將所有 JavaScript 函式完整包在 <script> 標籤裡面 -->
   <script>
     function t(key, fallback) {
       return (window.GoezI18n && GoezI18n.t(key)) ? GoezI18n.t(key) : fallback;
@@ -1770,30 +1766,30 @@
       const codFee = calcCodFee();
       const total = calcTotal(sub, shipping);
 
-      const freeTag = ` <small style="color:var(--c-success)">${t('freeShippingTag', '（滿千免運）')}</small>`;
+      const freeTag = ` <small style="color:var(--c-success)">(Free shipping over $1000)</small>`;
       const shippingLabel = shippingType === 'cvs'
-        ? t('labelCvsShipping', '超商取件運費')
-        : `${t('labelHomeShipping', '運費')}${shipping === 0 ? freeTag : ''}`;
+        ? 'CVS Shipping'
+        : `Shipping${shipping === 0 ? freeTag : ''}`;
 
       const shippingHtml = (shippingType === 'home' && shipping === 0)
-        ? `<span class="order-total-row__val free">${t('freeLabel', '免費')}</span>`
+        ? `<span class="order-total-row__val free">Free</span>`
         : `<span class="order-total-row__val">$${shipping}</span>`;
 
       const codHtml = codFee > 0
-        ? `<div class="order-total-row"><span class="order-total-row__label">${t('labelCodFee', '貨到付款手續費')}</span><span class="order-total-row__val">$${codFee}</span></div>`
+        ? `<div class="order-total-row"><span class="order-total-row__label">COD Fee</span><span class="order-total-row__val">$${codFee}</span></div>`
         : '';
       const couponHtml = couponDiscount > 0
-        ? `<div class="order-total-row"><span class="order-total-row__label">${t('labelCouponDiscount', '優惠券折抵')}</span><span class="order-total-row__val" style="color:var(--c-success)">-$${couponDiscount.toLocaleString()}</span></div>`
+        ? `<div class="order-total-row"><span class="order-total-row__label">Coupon Discount</span><span class="order-total-row__val" style="color:var(--c-success)">-$${couponDiscount.toLocaleString()}</span></div>`
         : '';
 
       document.getElementById('orderTotals').innerHTML = `
-        <div class="order-total-row"><span class="order-total-row__label">${t('labelSubtotal', '小計')}</span><span class="order-total-row__val">$${sub.toLocaleString()}</span></div>
+        <div class="order-total-row"><span class="order-total-row__label">Subtotal</span><span class="order-total-row__val">$${sub.toLocaleString()}</span></div>
         <div class="order-total-row"><span class="order-total-row__label">${shippingLabel}</span>${shippingHtml}</div>
         ${codHtml}
         ${couponHtml}
         <div class="order-divider"></div>
         <div class="order-total-row order-total-row--grand">
-          <span class="order-total-row__label">${t('labelGrandTotal', '合計')}</span>
+          <span class="order-total-row__label">Total</span>
           <span class="order-total-row__val">$${total.toLocaleString()}</span>
         </div>`;
     }
@@ -1900,32 +1896,36 @@
   <!-- 2. 原本的結帳業務外部 JS -->
   <script src="./js/checkout-manage.js"></script>
 
-  <!-- 3. 初始化：在核心與業務 JS 就緒後，自動套用多語言並渲染畫面 -->
+  <!-- 初始化：在核心與業務 JS 就緒後，自動套用多語言並渲染畫面 -->
   <script>
-    // 3-1. 初次載入自動套用
-    if (window.GoezI18n) {
-      GoezI18n.apply();
-      document.title = GoezI18n.t('pageTitleCheckout');
-    }
-
-    // 3-2. 渲染訂單摘要
-    if (typeof renderOrderSummary === 'function') {
-      renderOrderSummary();
-    }
-
-    // 🌟 3-3. 關鍵補充：監聽語系切換，同步即時重新計算金額與優惠券提示
-    if (window.GoezI18n && typeof GoezI18n.onLangChange === 'function') {
-      GoezI18n.onLangChange(function () {
+    window.addEventListener('DOMContentLoaded', () => {
+      // 3-1. 初次載入自動套用
+      if (window.GoezI18n) {
         GoezI18n.apply();
-        document.title = GoezI18n.t('pageTitleCheckout');
-        if (typeof renderTotals === 'function') {
-          renderTotals();
-        }
-        if (typeof updateCouponMsg === 'function') {
-          updateCouponMsg();
-        }
-      });
-    }
+        const pt = GoezI18n.t('pageTitleCheckout');
+        if (pt) document.title = pt;
+      }
+
+      // 3-2. 渲染訂單摘要
+      if (typeof renderOrderSummary === 'function') {
+        renderOrderSummary();
+      }
+
+      // 🌟 3-3. 關鍵補充：監聽語系切換，同步即時重新計算金額與優惠券提示
+      if (window.GoezI18n && typeof GoezI18n.onLangChange === 'function') {
+        GoezI18n.onLangChange(function () {
+          GoezI18n.apply();
+          const pt = GoezI18n.t('pageTitleCheckout');
+          if (pt) document.title = pt;
+          if (typeof renderTotals === 'function') {
+            renderTotals();
+          }
+          if (typeof updateCouponMsg === 'function') {
+            updateCouponMsg();
+          }
+        });
+      }
+    });
   </script>
 </body>
 

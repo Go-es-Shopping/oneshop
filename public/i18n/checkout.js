@@ -105,7 +105,8 @@
 
       couponErrEmpty: '請輸入優惠碼',
       couponErrInvalid: '優惠碼無效或已過期',
-      couponAppliedMsg: '✓ 優惠碼「{code}」已套用 — {label}，折抵 -${val}',
+      couponErrThreshold: '無法使用此優惠券：未達使用門檻', 
+      couponAppliedMsg: '✓ 優惠碼已套用 — {label}，折抵 -${val}',
       couponLabelGoez10: '全單 9 折',
       couponLabelGoez100: '$100 折扣',
       couponLabelWelcome: '新會員 $50 折'
@@ -213,7 +214,8 @@
       labelGrandTotal: 'Total',
       couponErrEmpty: 'Please enter a promo code',
       couponErrInvalid: 'Invalid or expired promo code',
-      couponAppliedMsg: '✓ Promo code "{code}" applied — {label}, discount -${val}',
+      couponErrThreshold: 'Cannot use this coupon: Minimum spend not met',
+      couponAppliedMsg: '✓ Promo code  applied — {label}, discount -${val}',
       couponLabelGoez10: '10% OFF Entire Order',
       couponLabelGoez100: '$100 OFF',
       couponLabelWelcome: 'New Member $50 OFF'
@@ -321,7 +323,8 @@
       labelGrandTotal: '合計',
       couponErrEmpty: 'プロモコードを入力してください',
       couponErrInvalid: 'プロモコードが無効か期限切れです',
-      couponAppliedMsg: '✓ クーポン「{code}」が適用されました — {label}、-${val} 割引',
+      couponErrThreshold: '最低利用金額を満たしていないため利用できません',
+      couponAppliedMsg: '✓ クーポンが適用されました — {label}、-${val} 割引',
       couponLabelGoez10: '全品10%OFF',
       couponLabelGoez100: '100円引き',
       couponLabelWelcome: '新規会員 50円引き'

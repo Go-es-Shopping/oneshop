@@ -4,7 +4,8 @@ const {
   getProduct,
   createProduct,
   updateProduct,
-  deleteProduct
+  deleteProduct,
+  upload // 👈 1. 引入 upload
 } = require('../controllers/productController')
 
 const router = express.Router()

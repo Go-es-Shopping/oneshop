@@ -144,22 +144,25 @@ function loadCheckoutSummary() {
     const finalTotal = subtotal + shippingFee;
 
     if (orderTotalsContainer) {
-      orderTotalsContainer.innerHTML = `
-        <div class="order-total-row">
-          <span class="order-total-row__label">小計</span>
-          <span class="order-total-row__val">$${subtotal.toLocaleString()}</span>
-        </div>
-        <div class="order-total-row">
-          <span class="order-total-row__label">運費 ${subtotal >= 1000 ? '<span style="color:var(--c-success); font-size:12px;">(滿千免運)</span>' : ''}</span>
-          <span class="order-total-row__val ${shippingFee === 0 ? 'free' : ''}">${shippingFee === 0 ? '免費' : '$' + shippingFee}</span>
-        </div>
-        <div class="order-divider"></div>
-        <div class="order-total-row order-total-row--grand" style="margin-top:8px;">
-          <span class="order-total-row__label">合計</span>
-          <span class="order-total-row__val" id="totalVal" data-raw-total="${finalTotal}">$${finalTotal.toLocaleString()}</span>
-        </div>
-      `;
-    }
+  orderTotalsContainer.innerHTML = `
+    <div class="order-total-row">
+      <span class="order-total-row__label" data-i18n="labelSubtotal">Subtotal</span>
+      <span class="order-total-row__val">$${subtotal.toLocaleString()}</span>
+    </div>
+    <div class="order-total-row">
+      <span class="order-total-row__label">
+        <span data-i18n="labelHomeShipping">Shipping</span> 
+        ${subtotal >= 1000 ? '<span style="color:var(--c-success); font-size:12px;" data-i18n="freeShippingTag">(Free shipping over $1000)</span>' : ''}
+      </span>
+      <span class="order-total-row__val ${shippingFee === 0 ? 'free' : ''}">${shippingFee === 0 ? '<span data-i18n="freeLabel">Free</span>' : '$' + shippingFee}</span>
+    </div>
+    <div class="order-divider"></div>
+    <div class="order-total-row order-total-row--grand" style="margin-top:8px;">
+      <span class="order-total-row__label" data-i18n="labelGrandTotal">Total</span>
+      <span class="order-total-row__val" id="totalVal" data-raw-total="${finalTotal}">$${finalTotal.toLocaleString()}</span>
+    </div>
+  `;
+}
     // 💡 關鍵保險：只要順利執行到這裡（代表有讀到商品），就強制解鎖下單按鈕！
     const confirmBtn = document.getElementById('confirmBtn');
     const mobileConfirmBtn = document.getElementById('mobileConfirmBtn');
@@ -224,28 +227,46 @@ async function applyCoupon() {
       };
 
       if (couponMsg) {
-        couponMsg.textContent = `優惠券套用成功！折抵 $${discountAmount}`;
-        couponMsg.className = 'coupon-msg ok';
-      }
-      updateFinalTotalAfterDiscount(finalTotal);
-    } else {
-      // 驗證失敗則清空暫存
-      appliedCouponData = null;
-      if (couponMsg) {
-        couponMsg.textContent = `無法使用此優惠券：${result.message || '代碼無效或未達門檻'}`;
-        couponMsg.className = 'coupon-msg err';
-      }
-    }
-  } catch (error) {
-    console.error('套用優惠券發生錯誤:', error);
-    appliedCouponData = null;
-    if (couponMsg) {
-      couponMsg.textContent = '系統忙碌中，請稍後再試';
-      couponMsg.className = 'coupon-msg err';
-    }
-  }
+  const codeStr = appliedCouponData ? appliedCouponData.code : '';
+  const labelStr = appliedCouponData ? (appliedCouponData.label || '') : '';
+  const msgTpl = (window.GoezI18n && typeof GoezI18n.t === 'function') 
+    ? GoezI18n.t('couponAppliedMsg', '✓ 優惠碼「{code}」已套用 — {label}，折抵 -${val}')
+    : '✓ 優惠碼已套用 — {label}，折抵 -${val}';
+  
+  const text = msgTpl
+    .replace('{code}', codeStr)
+    .replace('{label}', labelStr)
+    .replace('{val}', discountAmount.toLocaleString());
+  
+  couponMsg.textContent = text;
+  couponMsg.className = 'coupon-msg ok';
 }
-
+updateFinalTotalAfterDiscount(finalTotal);
+} else {
+// 驗證失敗則清空暫存
+appliedCouponData = null;
+if (couponMsg) {
+  const isThreshold = result.message && (result.message.includes('門檻') || result.message.includes('Threshold') || result.message.includes('利用金額'));
+  let errKey = isThreshold ? 'couponErrThreshold' : 'couponErrInvalid';
+  let defaultFallback = isThreshold ? '無法使用此優惠券：未達使用門檻' : (result.message || '優惠碼無效或已過期');
+  
+  const errText = (window.GoezI18n && typeof GoezI18n.t === 'function')
+    ? GoezI18n.t(errKey, defaultFallback)
+    : `無法使用此優惠券：${result.message || '代碼無效或未達門檻'}`;
+    
+  couponMsg.textContent = errText;
+  couponMsg.className = 'coupon-msg err';
+}
+}
+} catch (error) {
+console.error('套用優惠券發生錯誤:', error);
+appliedCouponData = null;
+if (couponMsg) {
+  couponMsg.textContent = (window.GoezI18n && GoezI18n.currentLang === 'en') ? 'System busy, please try later' : ((window.GoezI18n && GoezI18n.currentLang === 'ja') ? 'システム混雑中、しばらくしてからお試しください' : '系統忙碌中，請稍後再試');
+  couponMsg.className = 'coupon-msg err';
+}
+}
+}
 /**
  * 更新折扣後的最終金額
  */
