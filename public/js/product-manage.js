@@ -155,13 +155,13 @@
         });
         const data = await res.json();
 
-        if (data.success) {
-          uploadedProductImgUrl = data.url; 
-          console.log("🔥 背景圖片上傳大成功！後端真實圖片網址暫存為:", uploadedProductImgUrl);
-        } else {
-          console.error("圖片背景上傳失敗:", data.message);
-          showToast("⚠️ 圖片伺服器拒絕接收，將使用預設占位圖");
-        }
+        if (data.success || data.url || data.path || data.secure_url || data.fileUrl) {
+        uploadedProductImgUrl = data.url || data.path || data.secure_url || data.fileUrl || ""; 
+        console.log("🔥 背景圖片上傳大成功！後端真實圖片網址暫存為:", uploadedProductImgUrl);
+      } else {
+        console.error("圖片背景上傳失敗:", data.message || data);
+        showToast("⚠️ 圖片伺服器拒絕接收，將使用預設占位圖");
+      }
       } catch (err) {
         console.error("圖片非同步上傳失敗:", err);
         showToast("⚠️ 圖片上傳失敗，請檢查硬碟寫入權限");
@@ -310,12 +310,16 @@ const cardHtml = `
   // ─────────────────────────────────────────────────────────────────
   document.addEventListener('click', async (e) => {
       if (e.target.classList.contains('delete-product-btn')) {
-          const productId = e.target.getAttribute('data-id');
+          const card = e.target.closest('.product-card');
+          const productId = e.target.getAttribute('data-id') || (card ? card.getAttribute('data-id') : null);
+          
+          if (!productId || productId === 'undefined' || isNaN(Number(productId))) {
+              return alert("❌ 無效的商品 ID，無法刪除！");
+          }
           
           if (!confirm("確定要刪除這個商品嗎？")) return;
 
           try {
-              // 發送 DELETE 請求給後端 API
               const response = await fetch(`/api/products/${productId}`, {
                   method: 'DELETE'
               });
@@ -323,18 +327,14 @@ const cardHtml = `
               if (response.ok || response.status === 204) {
                   showToast("✅ 商品刪除成功！");
 
-                  // 1. 從前端全域記憶體陣列中同步濾除該商品
                   if (window.currentStoreData && window.currentStoreData.products) {
                       window.currentStoreData.products = window.currentStoreData.products.filter(
                           p => Number(p.ProductID) !== Number(productId)
                       );
                   }
 
-                  // 2. 直接從畫面上移除該張卡片
-                  const card = e.target.closest('.product-card');
                   if (card) card.remove();
 
-                  // 3. 如果全部刪光了，補上「目前尚無商品」提示
                   const targetContainer = document.getElementById('product-list');
                   if (targetContainer && targetContainer.querySelectorAll('.product-card').length === 0) {
                       targetContainer.innerHTML = `<div style="color: #888; text-align: center; width: 100%; padding: 40px;">目前尚無商品</div>`;

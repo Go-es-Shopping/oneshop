@@ -197,6 +197,7 @@ async function createProduct(req, res) {
     const Mock = await useMock()
     const body = req.body || {}
     const Lang = req.query.lang || 'zh-TW'
+    const mainContent = body.mainContent || {};
     
     // 💡 為了配合前端，如果前端沒傳，預設綁定到與 store.js 一致的 SellerID: 15
     const finalSellerID = body.SellerID ? Number(body.SellerID) : 15;
@@ -358,6 +359,10 @@ async function deleteProduct(req, res) {
   try {
     const Mock = await useMock()
     const ProductID = Number(req.params.ProductID)
+    // 🛡️ 防禦性攔截：避免 undefined/NaN 噴到 SQL 造成崩潰
+    if (isNaN(ProductID) || !ProductID) {
+      return res.status(400).json({ error: '無效的商品 ID (NaN)' })
+    }
     if (Mock) {
       return res.status(204).send()
     }
