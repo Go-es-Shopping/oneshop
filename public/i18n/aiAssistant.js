@@ -2,8 +2,8 @@
   if (!window.GoezI18n) return;
   GoezI18n.register({
     'zh-Hant': {
-      pageTitleAi: 'Goez Shop - AI 商店助手',
-      aiTitle: 'AI 商店助手',
+      pageTitleAi: 'Goez Shop - AI 開店助手',
+      aiTitle: 'AI 開店助手',
       aiSubtitle: '使用 AI 工具優化您的產品內容',
       monthlyQuota: '本月 AI 使用量',
       timesUnit: '次',
