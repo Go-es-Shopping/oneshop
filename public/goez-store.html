@@ -3407,10 +3407,12 @@
                 displayPrice = parseFloat(displayPrice).toFixed(2);
               }
 
-              // 暫無描述預設文字
-              const descText = prod.ProductDescription || t('noDescPlaceholder', '暫無商品描述');
+              // 1. 暫無描述判定：若無描述則包覆 data-i18n 標籤以支援動態語系切換
+              const descHtml = prod.ProductDescription
+                ? `<span class="product-card__desc-text">${esc(prod.ProductDescription)}</span>`
+                : `<span data-i18n="noDescPlaceholder">${t('noDescPlaceholder', '暫無商品描述')}</span>`;
 
-              // 🌟 將整張卡片的 HTML 完整包裹在反引號內，並掛上 data-i18n
+              // 🌟 將整張卡片的 HTML 完整包裹在反引號內，並掛上完整 data-i18n
               const cardHtml = `
                 <div class="product-card" data-id="${prod.ProductID}" style="background: var(--c-white, #fff); border: 1px solid var(--c-border-light, #eaeaea); border-radius: 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.04); overflow: hidden; display: flex !important; flex-direction: column !important; align-items: stretch !important; cursor: pointer; width: 280px !important; box-sizing: border-box; position: relative; font-family: var(--f-body, sans-serif) !important; transition: transform 0.25s ease, box-shadow 0.25s ease;">
                   <!-- 商品圖片區 -->
@@ -3432,7 +3434,7 @@
 
                     <!-- 商品描述欄位 -->
                     <p style="color: #888; font-size: 12px; margin: 0; font-family: 'Noto Sans TC', sans-serif; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 34px;">
-                      ${descText}
+                      ${descHtml}
                     </p>
 
                     <!-- 價格與刪除按鈕 -->
@@ -3455,7 +3457,7 @@
               targetContainer.insertAdjacentHTML('beforeend', cardHtml);
             });
 
-            // 🌟 卡片生成完成後，立即套用一次多語言（確保「剩餘」與「刪除」翻譯成功）
+            // 🌟 關鍵補強：迴圈結束、所有卡片插入 DOM 後，立即執行多語言掃描套用
             if (window.GoezI18n && typeof GoezI18n.apply === 'function') {
               GoezI18n.apply();
             }
@@ -3500,7 +3502,7 @@
     (function () {
       var cartCount = 0;
 
-function updateCartBadge() {
+      function updateCartBadge() {
         var desktopSpan = document.getElementById('cart-count-desktop');
         var mobileBadge = document.getElementById('cart-badge-mobile');
         var desktopBadge = document.getElementById('cart-badge-desktop');
@@ -3508,45 +3510,8 @@ function updateCartBadge() {
         if (mobileBadge) mobileBadge.textContent = cartCount;
         if (desktopBadge) desktopBadge.setAttribute('aria-label', '購物車 ' + cartCount + ' 件');
       }
-    </script>
 
-    <!-- 1. 唯一且正確的 i18n 引入位置 -->
-    <script src="./i18n/i18n-core.js"></script>
-    <script src="./i18n/storeEditor.js"></script>
-
-    <!-- 2. 引入編輯器主要邏輯 (請確認檔名是 store-editor.js) -->
-    <script src="./js/store-editor.js"></script>
-
-    <!-- 3. 頁面控制與字體/視圖切換 -->
-    <script>
-      // 讓 contenteditable 的 data-placeholder 支援多語言
-      function updateEditablePlaceholders() {
-        if (!window.GoezI18n) return;
-        document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
-          var key = el.getAttribute('data-i18n-placeholder');
-          var translated = GoezI18n.t(key);
-          if (translated && translated !== key) {
-            el.setAttribute('data-placeholder', translated);
-          }
-        });
-      }
-
-      // 自動套用語言
-      if (window.GoezI18n) {
-        GoezI18n.apply();
-        document.title = GoezI18n.t('pageTitleEditor');
-        updateEditablePlaceholders(); // 頁面載入時同步替換提示詞
-      }
-
-      // 監聽語言切換選單（切換語言時同步全頁翻譯與更新提示詞）
-      if (window.GoezI18n && GoezI18n.onLangChange) {
-        GoezI18n.onLangChange(function () {
-          GoezI18n.apply();
-          document.title = GoezI18n.t('pageTitleEditor');
-          updateEditablePlaceholders();
-        });
-      }
-
+      // 🌟 事件委派：點擊加入購物車按鈕時增加數量
       document.addEventListener('click', function (e) {
         var btn = e.target.closest('.add-to-cart-btn, .product-card__cart-btn, .mobile-product-card__cart');
         if (btn) {
@@ -3554,11 +3519,57 @@ function updateCartBadge() {
           updateCartBadge();
         }
       });
-    })();
+    })(); // 🌟 補回閉合的大括號與圓括號
+  </script>
 
-    // ── 3. 新增商品 Modal 與圖片拖曳上傳 ──
+  <!-- 1. 優先載入 i18n 核心與字典檔 -->
+  <script src="./i18n/i18n-core.js"></script>
+  <script src="./i18n/storeEditor.js"></script>
+
+  <!-- 2. 引入編輯器主要業務邏輯 (請確認路徑與檔名) -->
+  <script src="./js/store-editor.js"></script>
+
+  <!-- 3. 頁面控制、字體與視圖切換 -->
+  <script>
+    // ── 多語言取詞輔助函式 ──
+    function t(key, fallback) {
+      if (window.GoezI18n && typeof GoezI18n.t === 'function') {
+        return GoezI18n.t(key, fallback);
+      }
+      return fallback || '';
+    }
+
+    // ── 讓 contenteditable 的 data-placeholder 支援多語言 ──
+    function updateEditablePlaceholders() {
+      if (!window.GoezI18n) return;
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
+        var key = el.getAttribute('data-i18n-placeholder');
+        var translated = GoezI18n.t(key);
+        if (translated && translated !== key) {
+          el.setAttribute('data-placeholder', translated);
+        }
+      });
+    }
+
+    // ── 自動套用多語言 ──
+    if (window.GoezI18n) {
+      GoezI18n.apply();
+      document.title = GoezI18n.t('pageTitleEditor');
+      updateEditablePlaceholders();
+    }
+
+    // ── 監聽語言切換選單 ──
+    if (window.GoezI18n && GoezI18n.onLangChange) {
+      GoezI18n.onLangChange(function () {
+        GoezI18n.apply();
+        document.title = GoezI18n.t('pageTitleEditor');
+        updateEditablePlaceholders();
+      });
+    }
+
+    // ── 1. 新增商品 Modal 與圖片上傳控制 ──
     (function () {
-      var backdrop = document.getElementById('add-product-modal');
+      var backdrop = document.getElementById('add-product-modal') || document.querySelector('.modal-backdrop');
       var closeBtn = document.getElementById('modal-close-btn');
       var cancelBtn = document.getElementById('modal-cancel-btn');
       var confirmBtn = document.getElementById('modal-confirm-btn');
@@ -3575,6 +3586,7 @@ function updateCartBadge() {
       function openModal() {
         if (!backdrop) return;
         backdrop.classList.add('is-open');
+        backdrop.style.display = 'flex';
         document.body.style.overflow = 'hidden';
         setTimeout(function () {
           var nameField = document.getElementById('modal-product-name');
@@ -3585,6 +3597,7 @@ function updateCartBadge() {
       function closeModal() {
         if (!backdrop) return;
         backdrop.classList.remove('is-open');
+        backdrop.style.display = 'none';
         document.body.style.overflow = '';
       }
 
@@ -3634,7 +3647,6 @@ function updateCartBadge() {
       }
 
       if (addBtn) addBtn.addEventListener('click', openModal);
-
       if (closeBtn) closeBtn.addEventListener('click', function () { closeModal(); resetModal(); });
       if (cancelBtn) cancelBtn.addEventListener('click', function () { closeModal(); resetModal(); });
 
@@ -3645,8 +3657,9 @@ function updateCartBadge() {
       }
 
       document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && backdrop && backdrop.classList.contains('is-open')) {
-          closeModal(); resetModal();
+        if (e.key === 'Escape' && backdrop) {
+          var isOpen = backdrop.classList.contains('is-open') || backdrop.style.display === 'flex';
+          if (isOpen) { closeModal(); resetModal(); }
         }
       });
 
@@ -3690,9 +3703,7 @@ function updateCartBadge() {
             if (nameEl) {
               nameEl.focus();
               nameEl.style.borderColor = '#f87171';
-              setTimeout(function () {
-                nameEl.style.borderColor = '';
-              }, 1500);
+              setTimeout(function () { nameEl.style.borderColor = ''; }, 1500);
             }
             showToast(t('toastNameRequired', '⚠️ 請填寫商品名稱'));
             return;
@@ -3707,59 +3718,16 @@ function updateCartBadge() {
           };
 
           document.dispatchEvent(new CustomEvent('product:add', { detail: newProduct }));
-
           closeModal();
           resetModal();
 
-          const successMsg = t('toastProductAddSuccess', '✅ 商品「{name}」已成功新增！').replace('{name}', newProduct.name);
+          var successMsg = t('toastProductAddSuccess', '✅ 商品「{name}」已成功新增！').replace('{name}', newProduct.name);
           showToast(successMsg);
         });
       }
     })();
-  </script>
 
-  <!-- 1. 優先載入 i18n 核心與字典檔 -->
-  <script src="./i18n/i18n-core.js"></script>
-  <script src="./i18n/storeEditor.js"></script>
-
-  <!-- 2. 引入編輯器主要業務邏輯 (請確認路徑與檔名) -->
-  <script src="./js/store-editor.js"></script>
-
-  <!-- 3. 頁面控制、字體與視圖切換 -->
-  <script>
-    // 讓 contenteditable 的 data-placeholder 支援多語言切換
-    function updateEditablePlaceholders() {
-      if (!window.GoezI18n) return;
-      document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
-        var key = el.getAttribute('data-i18n-placeholder');
-        var translated = GoezI18n.t(key);
-        if (translated && translated !== key) {
-          el.setAttribute('data-placeholder', translated);
-        }
-      });
-    }
-
-    // 自動套用語言與網頁標題
-    if (window.GoezI18n) {
-      GoezI18n.apply();
-      document.title = GoezI18n.t('pageTitleEditor');
-      if (typeof updateEditablePlaceholders === 'function') {
-        updateEditablePlaceholders();
-      }
-    }
-
-    // 🌟 關鍵修正：語言切換時，同時執行全頁翻譯與更新提示詞
-    if (window.GoezI18n && GoezI18n.onLangChange) {
-      GoezI18n.onLangChange(function () {
-        GoezI18n.apply(); // 讓商品卡片上的「剩餘」、「刪除」等 data-i18n 標籤即時切換
-        document.title = GoezI18n.t('pageTitleEditor');
-        if (typeof updateEditablePlaceholders === 'function') {
-          updateEditablePlaceholders();
-        }
-      });
-    }
-
-    // 字體設定資料庫
+    // ── 2. 字體設定資料庫與切換 ──
     var fontFamilies = {
       'gothic': "'Noto Sans TC', sans-serif",
       'serif': "'Noto Serif TC', serif",
@@ -3800,7 +3768,7 @@ function updateCartBadge() {
       });
     });
 
-    // 視圖切換（桌面版 ⇄ 行動版）
+    // ── 3. 視圖切換（桌面版 ⇄ 行動版） ──
     var canvas = document.getElementById('preview-canvas');
     var viewportBtns = document.querySelectorAll('.viewport-btn');
 
