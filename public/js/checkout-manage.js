@@ -144,25 +144,38 @@ function loadCheckoutSummary() {
     const finalTotal = subtotal + shippingFee;
 
     if (orderTotalsContainer) {
+  const freeTag = ` <span style="color:var(--c-success); font-size:12px;" data-i18n="freeShippingTag">${t('freeShippingTag', '（滿千免運）')}</span>`;
+  const shippingValHtml = shippingFee === 0 
+    ? `<span data-i18n="freeLabel">${t('freeLabel', '免費')}</span>` 
+    : '$' + shippingFee;
+
   orderTotalsContainer.innerHTML = `
     <div class="order-total-row">
-      <span class="order-total-row__label" data-i18n="labelSubtotal">Subtotal</span>
+      <span class="order-total-row__label" data-i18n="labelSubtotal">${t('labelSubtotal', '小計')}</span>
       <span class="order-total-row__val">$${subtotal.toLocaleString()}</span>
     </div>
     <div class="order-total-row">
       <span class="order-total-row__label">
-        <span data-i18n="labelHomeShipping">Shipping</span> 
-        ${subtotal >= 1000 ? '<span style="color:var(--c-success); font-size:12px;" data-i18n="freeShippingTag">(Free shipping over $1000)</span>' : ''}
+        <span data-i18n="labelHomeShipping">${t('labelHomeShipping', '運費')}</span> 
+        ${subtotal >= 1000 ? freeTag : ''}
       </span>
-      <span class="order-total-row__val ${shippingFee === 0 ? 'free' : ''}">${shippingFee === 0 ? '<span data-i18n="freeLabel">Free</span>' : '$' + shippingFee}</span>
+      <span class="order-total-row__val ${shippingFee === 0 ? 'free' : ''}">
+        ${shippingValHtml}
+      </span>
     </div>
     <div class="order-divider"></div>
     <div class="order-total-row order-total-row--grand" style="margin-top:8px;">
-      <span class="order-total-row__label" data-i18n="labelGrandTotal">Total</span>
+      <span class="order-total-row__label" data-i18n="labelGrandTotal">${t('labelGrandTotal', '合計')}</span>
       <span class="order-total-row__val" id="totalVal" data-raw-total="${finalTotal}">$${finalTotal.toLocaleString()}</span>
     </div>
   `;
+
+  // 🌟 關鍵補強：插入 DOM 後立即重新掃描一次多語言
+  if (window.GoezI18n && typeof GoezI18n.apply === 'function') {
+    GoezI18n.apply();
+  }
 }
+
     // 💡 關鍵保險：只要順利執行到這裡（代表有讀到商品），就強制解鎖下單按鈕！
     const confirmBtn = document.getElementById('confirmBtn');
     const mobileConfirmBtn = document.getElementById('mobileConfirmBtn');
