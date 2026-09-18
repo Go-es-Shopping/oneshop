@@ -153,19 +153,38 @@ async function buildProductRollup({ Order, Orderdetail, Product, PageContent, Pa
     visitsByProduct.set(v.ProductID, cur)
   }
 
-  // 4) 商品顯示名稱：吃外部傳入的 lang，查不到則 fallback 抓最近一筆
-  const contents = await PageContent.findAll({
-    where: { LanguageCode: lang },
+  // 4) 商品顯示名稱：先找指定 lang，沒有再 fallback 找中文預設語系 ('zh-TW')
+const defaultLang = typeof DEFAULT_LANGUAGE !== 'undefined' ? DEFAULT_LANGUAGE : 'zh-TW';
+const targetLang = lang || defaultLang;
+
+const contents = await PageContent.findAll({
+    where: { LanguageCode: targetLang },
     attributes: ['ProductID', 'ProductName', 'UpdatedAt'],
     order: [['UpdatedAt', 'DESC']],
     raw: true,
-  })
-  const nameByProduct = new Map()
-  for (const c of contents) {
+});
+
+const nameByProduct = new Map();
+for (const c of contents) {
     if (!nameByProduct.has(c.ProductID) && c.ProductName) {
-      nameByProduct.set(c.ProductID, c.ProductName)
+        nameByProduct.set(c.ProductID, c.ProductName);
     }
-  }
+}
+
+// 🛡️ 雙保險：如果切換到英文/日文但有些商品沒翻譯，用預設語系 ('zh-TW') 補齊空缺 ID
+if (targetLang !== defaultLang) {
+    const fallbackContents = await PageContent.findAll({
+        where: { LanguageCode: defaultLang },
+        attributes: ['ProductID', 'ProductName', 'UpdatedAt'],
+        order: [['UpdatedAt', 'DESC']],
+        raw: true,
+    });
+    for (const c of fallbackContents) {
+        if (!nameByProduct.has(c.ProductID) && c.ProductName) {
+            nameByProduct.set(c.ProductID, c.ProductName);
+        }
+    }
+}
 
   // 5) 商品主檔
   const products = await Product.findAll({ where: { SellerID }, raw: true })
