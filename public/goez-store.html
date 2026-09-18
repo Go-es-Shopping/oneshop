@@ -529,13 +529,44 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      position: relative;
+      cursor: pointer;
     }
 
-    .field__logo-area img {
+    .field__logo-area .logo-img {
+      display: none;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      border-radius: 12px
+      border-radius: 12px;
+    }
+
+    .field__logo-area.has-logo .logo-img {
+      display: block;
+    }
+
+    .field__logo-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .field__logo-area.has-logo .field__logo-placeholder {
+      display: none;
+    }
+
+    .field__logo-placeholder img {
+      width: 32px;
+      height: 32px;
+      opacity: 0.45;
+    }
+
+    .field__logo-placeholder span {
+      font-family: 'Inter', 'Noto Sans TC', sans-serif;
+      font-size: var(--fs-13, 13px);
+      color: var(--c-text-muted);
     }
 
     .product-mgmt {
@@ -732,12 +763,37 @@
       box-shadow: var(--shadow-card);
       overflow: hidden;
       flex-shrink: 0;
+      position: relative;
+      background: var(--c-bg-light);
     }
 
-    .store-nav__logo img {
+    .store-nav__logo .logo-img {
+      display: none;
       width: 100%;
       height: 100%;
-      object-fit: cover
+      object-fit: cover;
+    }
+
+    .store-nav__logo.has-logo .logo-img {
+      display: block;
+    }
+
+    .store-nav__logo .logo-empty-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+    }
+
+    .store-nav__logo.has-logo .logo-empty-placeholder {
+      display: none;
+    }
+
+    .store-nav__logo .logo-empty-placeholder img {
+      width: 60%;
+      height: 60%;
+      opacity: 0.45;
     }
 
     .store-nav__name {
@@ -1507,11 +1563,6 @@
     }
 
     /* ── Logo upload area ────────────────────────────────────────────── */
-    .field__logo-area {
-      position: relative;
-      cursor: pointer;
-    }
-
     .logo-upload-overlay {
       position: absolute;
       inset: 2px;
@@ -1552,8 +1603,8 @@
     }
 
     .mobile-frame {
-      width: 390px;
-      min-width: 390px;
+      width: 100%;
+      max-width: min(390px, calc(100% - 32px));
       background: var(--c-white);
       border-radius: 40px;
       box-shadow: 0 0 0 10px #1d293d, 0 30px 60px rgba(0, 0, 0, 0.35);
@@ -1614,12 +1665,37 @@
       box-shadow: var(--shadow-card);
       overflow: hidden;
       flex-shrink: 0;
+      position: relative;
+      background: var(--c-bg-light);
     }
 
-    .mobile-store-nav__logo img {
+    .mobile-store-nav__logo .logo-img {
+      display: none;
       width: 100%;
       height: 100%;
       object-fit: cover;
+    }
+
+    .mobile-store-nav__logo.has-logo .logo-img {
+      display: block;
+    }
+
+    .mobile-store-nav__logo .logo-empty-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+    }
+
+    .mobile-store-nav__logo.has-logo .logo-empty-placeholder {
+      display: none;
+    }
+
+    .mobile-store-nav__logo .logo-empty-placeholder img {
+      width: 60%;
+      height: 60%;
+      opacity: 0.45;
     }
 
     .mobile-store-nav__name {
@@ -2662,18 +2738,17 @@
                       style="min-height: auto; height: 38px; line-height: 22px; padding: 8px;"></div>
                   </div>
                   <div class="field">
-                    <div class="field__label" data-i18n="storeLogoLabel">店鋪商標</div>
+                    <label class="field__label">店鋪商標</label>
                     <div class="field__logo-area" id="logo-drop-zone">
-                      <img id="logo-preview-img" src=" " alt="店鋪商標" />
+                      <img id="logo-preview-img" class="logo-img" alt="店鋪商標" />
+                      <div class="field__logo-placeholder logo-empty-placeholder">
+                        <img src="images/decorations/image-placeholder.svg" alt="" aria-hidden="true" />
+                        <span>點擊或拖曳上傳商標</span>
+                      </div>
                       <div class="logo-upload-overlay" id="logo-upload-overlay">
                         <div class="logo-upload-overlay__inner">
-                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                            <polyline points="17 8 12 3 7 8" />
-                            <line x1="12" y1="3" x2="12" y2="15" />
-                          </svg>
-                          <span data-i18n="uploadLogoBtn">上傳商標</span>
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                          <span>更換商標</span>
                         </div>
                       </div>
                     </div>
@@ -2869,7 +2944,10 @@
                   <nav class="mobile-store-nav">
                     <div class="mobile-store-nav__brand">
                       <div class="mobile-store-nav__logo">
-                        <img id="preview-logo-mobile" src=" " alt="商標" />
+                        <img id="preview-logo-mobile" class="logo-img" alt="店鋪商標" />
+                        <div class="logo-empty-placeholder" aria-hidden="true">
+                          <img src="images/decorations/image-placeholder.svg" alt="" />
+                        </div>
                       </div>
                       <span class="mobile-store-nav__name" id="preview-name-mobile">風格生活選物</span>
                     </div>
@@ -3413,12 +3491,20 @@
 
         // B. 填入 Logo
         const logoImg = document.getElementById('logo-preview-img');
-        if (logoImg) {
-          const defaultLogo = "https://www.figma.com/api/mcp/asset/665605e6-519c-4fa0-8070-daa26e795351";
-          const finalLogoUrl = (store.StoreLogo && store.StoreLogo.trim() !== "")
-            ? store.StoreLogo
-            : defaultLogo;
-          logoImg.src = finalLogoUrl;
+        const logoZone = document.getElementById('logo-drop-zone');
+        const previewLogoDesktop = document.getElementById('preview-logo-desktop');
+        const previewLogoMobile = document.getElementById('preview-logo-mobile');
+        if (store.StoreLogo && store.StoreLogo.trim() !== "") {
+          if (logoImg) logoImg.src = store.StoreLogo;
+          if (logoZone) logoZone.classList.add('has-logo');
+          if (previewLogoDesktop) {
+            previewLogoDesktop.src = store.StoreLogo;
+            previewLogoDesktop.closest('.store-nav__logo').classList.add('has-logo');
+          }
+          if (previewLogoMobile) {
+            previewLogoMobile.src = store.StoreLogo;
+            previewLogoMobile.closest('.mobile-store-nav__logo').classList.add('has-logo');
+          }
         }
 
         // C. 優先宣告後端回傳的顏色與字體
@@ -3427,6 +3513,7 @@
 
         // 📦 ─── 初始化商品卡片渲染 ───
         const targetContainer = document.getElementById('product-list');
+        const mobileContainer = document.getElementById('mobile-product-list');
         if (targetContainer && store.PageProducts && Array.isArray(store.PageProducts)) {
 
           if (store.PageProducts.length > 0) {
@@ -3435,6 +3522,7 @@
             targetContainer.style.flexWrap = "wrap";
             targetContainer.style.gap = "20px";
             targetContainer.style.justifyContent = "flex-start";
+            if (mobileContainer) mobileContainer.innerHTML = '';
           }
           // 跑迴圈畫出商品卡片（套用多語言動態詞彙）
           store.PageProducts.forEach(prod => {
@@ -3491,6 +3579,32 @@
               </div>
             `;
             targetContainer.insertAdjacentHTML('beforeend', cardHtml);
+
+            // 手機預覽也同步渲染同一批商品，避免行動版商品列表空白
+            if (mobileContainer) {
+              const mobileCardHtml = `
+                <div class="mobile-product-card" data-id="${prod.ProductID}">
+                  <div class="mobile-product-card__img">
+                    <img src="${prod.ProductImg || 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=300'}" alt="${prod.ProductName}">
+                  </div>
+                  <div class="mobile-product-card__body">
+                    <span class="mobile-product-card__tag"><span data-i18n="stockPrefix">剩餘</span> ${prod.Stock}</span>
+                    <span class="mobile-product-card__name">${prod.ProductName}</span>
+                    <div class="mobile-product-card__footer">
+                      <span class="mobile-product-card__price" style="color:${dbColor}">$${displayPrice}</span>
+                      <button class="mobile-product-card__cart" style="background:${dbColor}">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                          <circle cx="9" cy="21" r="1"></circle>
+                          <circle cx="20" cy="21" r="1"></circle>
+                          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              `;
+              mobileContainer.insertAdjacentHTML('beforeend', mobileCardHtml);
+            }
           });
 
           // 🌟 卡片生成完成後，立即套用一次多語言（確保「剩餘」與「刪除」翻譯成功）
@@ -3713,6 +3827,53 @@
         showToast(successMsg);
       });
     }
+  })();
+
+  // ── 店鋪商標上傳 ──
+  (function () {
+    var dropZone = document.getElementById('logo-drop-zone');
+    var fileInput = document.getElementById('logo-file-input');
+    var logoImg = document.getElementById('logo-preview-img');
+    var previewLogoDesktop = document.getElementById('preview-logo-desktop');
+    var previewLogoMobile = document.getElementById('preview-logo-mobile');
+    if (!dropZone || !fileInput || !logoImg) return;
+
+    function setLogo(file) {
+      if (!file || !file.type.startsWith('image/')) return;
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        logoImg.src = e.target.result;
+        dropZone.classList.add('has-logo');
+        if (previewLogoDesktop) {
+          previewLogoDesktop.src = e.target.result;
+          previewLogoDesktop.closest('.store-nav__logo').classList.add('has-logo');
+        }
+        if (previewLogoMobile) {
+          previewLogoMobile.src = e.target.result;
+          previewLogoMobile.closest('.mobile-store-nav__logo').classList.add('has-logo');
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    dropZone.addEventListener('click', function () { fileInput.click(); });
+
+    fileInput.addEventListener('change', function () {
+      if (this.files && this.files[0]) setLogo(this.files[0]);
+    });
+
+    dropZone.addEventListener('dragover', function (e) {
+      e.preventDefault();
+      dropZone.style.borderColor = 'var(--c-accent)';
+    });
+    dropZone.addEventListener('dragleave', function () {
+      dropZone.style.borderColor = '';
+    });
+    dropZone.addEventListener('drop', function (e) {
+      e.preventDefault();
+      dropZone.style.borderColor = '';
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) setLogo(e.dataTransfer.files[0]);
+    });
   })();
 
   // ── 字體設定資料庫 ──
