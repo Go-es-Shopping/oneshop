@@ -144,25 +144,32 @@ function loadCheckoutSummary() {
     const finalTotal = subtotal + shippingFee;
 
     if (orderTotalsContainer) {
-  orderTotalsContainer.innerHTML = `
-    <div class="order-total-row">
-      <span class="order-total-row__label" data-i18n="labelSubtotal">Subtotal</span>
-      <span class="order-total-row__val">$${subtotal.toLocaleString()}</span>
-    </div>
-    <div class="order-total-row">
-      <span class="order-total-row__label">
-        <span data-i18n="labelHomeShipping">Shipping</span> 
-        ${subtotal >= 1000 ? '<span style="color:var(--c-success); font-size:12px;" data-i18n="freeShippingTag">(Free shipping over $1000)</span>' : ''}
-      </span>
-      <span class="order-total-row__val ${shippingFee === 0 ? 'free' : ''}">${shippingFee === 0 ? '<span data-i18n="freeLabel">Free</span>' : '$' + shippingFee}</span>
-    </div>
-    <div class="order-divider"></div>
-    <div class="order-total-row order-total-row--grand" style="margin-top:8px;">
-      <span class="order-total-row__label" data-i18n="labelGrandTotal">Total</span>
-      <span class="order-total-row__val" id="totalVal" data-raw-total="${finalTotal}">$${finalTotal.toLocaleString()}</span>
-    </div>
-  `;
-}
+      // 💡 透過 GoezI18n.t() 根據當前語系直接取得對應的翻譯文字
+      const tSubtotal = window.GoezI18n ? GoezI18n.t('labelSubtotal') : 'Subtotal';
+      const tShipping = window.GoezI18n ? GoezI18n.t('labelHomeShipping') : 'Shipping';
+      const tFreeTag = window.GoezI18n ? GoezI18n.t('freeShippingTag') : '(Free shipping over $1000)';
+      const tFree = window.GoezI18n ? GoezI18n.t('freeLabel') : 'Free';
+      const tTotal = window.GoezI18n ? GoezI18n.t('labelGrandTotal') : 'Total';
+
+      orderTotalsContainer.innerHTML = `
+        <div class="order-total-row">
+          <span class="order-total-row__label" data-i18n="labelSubtotal">${tSubtotal}</span>
+          <span class="order-total-row__val">$${subtotal.toLocaleString()}</span>
+        </div>
+        <div class="order-total-row">
+          <span class="order-total-row__label">
+            <span data-i18n="labelHomeShipping">${tShipping}</span> 
+            ${subtotal >= 1000 ? `<span style="color:var(--c-success); font-size:12px;" data-i18n="freeShippingTag">${tFreeTag}</span>` : ''}
+          </span>
+          <span class="order-total-row__val ${shippingFee === 0 ? 'free' : ''}">${shippingFee === 0 ? `<span data-i18n="freeLabel">${tFree}</span>` : '$' + shippingFee}</span>
+        </div>
+        <div class="order-divider"></div>
+        <div class="order-total-row order-total-row--grand" style="margin-top:8px;">
+          <span class="order-total-row__label" data-i18n="labelGrandTotal">${tTotal}</span>
+          <span class="order-total-row__val" id="totalVal" data-raw-total="${finalTotal}">$${finalTotal.toLocaleString()}</span>
+        </div>
+      `;
+    }
     // 💡 關鍵保險：只要順利執行到這裡（代表有讀到商品），就強制解鎖下單按鈕！
     const confirmBtn = document.getElementById('confirmBtn');
     const mobileConfirmBtn = document.getElementById('mobileConfirmBtn');
