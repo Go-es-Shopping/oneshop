@@ -614,8 +614,8 @@ router.post('/pages/:PageID/update', upload.single('logoUrl'), async (req, res) 
     }
   }
 
-  try {
-    const { StorePage, PageContent } = require('../models');
+ try {
+    const { StorePage, PageContent, PageProduct } = require('../models');
 
     // 1. 更新商店主表 (🎨 🚀 核心：同步把顏色與字體寫進實體 SQL Server！)
     await StorePage.update(
@@ -624,7 +624,7 @@ router.post('/pages/:PageID/update', upload.single('logoUrl'), async (req, res) 
         StoreLogo: finalLogoUrl, // 👈 改用這裡
         ThemeColor: themeColor || '冷靜石板', // 📥 直接使用解構出來的變數
         ThemeFont: themeFont || 'gothic',   // 📥 直接使用解構出來的變數
-        // 新增：成功將前台傳回的聯絡資訊塞入實體主表！
+        // 新進：成功將前台傳回的聯絡資訊塞入實體主表！
         StoreEmail: storeEmail || "", 
         StorePhone: storePhone || "",
         StoreBankAccount: storeBankAccount || "", // 💡 成功將前台傳回的銀行帳號塞入實體主表！
@@ -634,20 +634,44 @@ router.post('/pages/:PageID/update', upload.single('logoUrl'), async (req, res) 
       { where: { PageID: PageID } }
     );
 
-    // 2. 更新商店內容（加上 ProductID: null 與 LanguageCode 限制，避免誤改商品資料）
-await PageContent.update(
-  { 
-    PageTitle: shopName,
-    PageDescription: shopDesc,
-    UpdatedAt: Sequelize.literal('GETDATE()')
-  },
-  { 
-    where: { 
-      PageID: PageID,
-      ProductID: null,         // 確保只修改商店主頁，不改到商品
-    } 
-  }
-);
+    // 2. 💡【關鍵修正】先找出該 PageID 底下任何一個真實存在的 PageProduct 作為主頁對應，避開外來鍵衝突
+    const firstPageProd = await PageProduct.findOne({
+      where: { PageID: PageID }
+    });
+    const targetProductID = firstPageProd ? firstPageProd.ProductID : null;
+
+    // 更新商店內容（加上條件，避免誤改商品資料）
+    let content = await PageContent.findOne({
+      where: { 
+        PageID: PageID,
+        [Sequelize.Op.or]: [
+          { ProductID: targetProductID },
+          { ProductID: null },
+          { ProductID: 0 }
+        ]
+      }
+    });
+
+    if (content) {
+      // 找得到就直接更新
+      await content.update({
+        PageTitle: shopName,
+        PageDescription: shopDesc,
+        UpdatedAt: Sequelize.literal('GETDATE()')
+      });
+    } else {
+      // 💡 找不到就幫忙建立一筆，並帶入真實存在的 ProductID 避開外來鍵錯誤
+      await PageContent.create({
+        PageID: PageID,
+        LanguageCode: req.query.lang || 'zh-TW',
+        PageTitle: shopName,
+        PageDescription: shopDesc,
+        ProductID: targetProductID,          // 👈 帶入真實存在的商品 ID 避開外來鍵限制
+        ProductName: "商店主頁", 
+        CTA_Text: "立即購買",     
+        UpdatedAt: Sequelize.literal('GETDATE()')
+      });
+    }
 
     return res.json({ success: true, message: isPublished ? '賣場已正式發布！' : '草稿儲存成功！' });
   } catch (err) {
@@ -655,8 +679,6 @@ await PageContent.update(
     return res.status(500).json({ success: false, message: '伺服器寫入失敗' });
   }
 });
-
-
 router.post('/create-new-shop', async (req, res) => {
   try {
     const Sequelize = require('sequelize'); 
